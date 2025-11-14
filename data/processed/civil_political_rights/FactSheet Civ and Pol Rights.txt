@@ -1,0 +1,1045 @@
+Human Rights
+Civil and Political Rights:
+The Human Rights Committee
+Fact Sheet No. 15 (Rev.1)
+CONTENTS
+Page
+Introduction................................................................................... 1
+Part I - The International Covenant on Civil and Political Rights 
+and its Protocols . .......................................................................... 3Structure and Contents of the Covenant ....................................... 4
+Parts I and II - Overarching Provisions ............................ 4
+Part III - The Substantive Rights of the Covenant ........... 6Parts IV to VI - Monitoring and Technical Aspects 
+of the Covenant ............................................................ 9
+Contents of the Two Optional Protocols to the Covenant............. 10
+Part II - The Human Rights Committee........................................... 12
+What is the Committee and who are its members? ............... 12What are the roles of the Committee members? ................... 12When does the Committee meet and how does it work? ......... 14
+Part III - The Four Monitoring Functions of the Committee ............ 14
+Examination of Reports Submitted by States Parties............... 15
+What should a State party’s report to the Committee include?............................................ 15
+How should a State party’s report be compiled?............ 16How does the Committee examine 
+a State party’s report? ................................................... 18
+What happens during the session when the Committee
+examines a State party’s report? .................................... 18
+What happens once the Committee has adopted its
+concluding observations? .............................................. 20
+What happens if a State party fails to submit 
+a report to the Committee? .......................................... 21
+Adoption of General Comments on Articles of the Covenant ..................................................................... 24
+Consideration of Individual Complaints Underthe Optional Protocol ............................................................ 25
+iii
+What if my complaint is urgent? ................................... 25
+What technical and/or procedural requirements 
+must my complaint satisfy? ........................................... 26
+What about the substance of my case?......................... 26What happens if the Committee finds in my favour? .... 27
+Assessment of Inter-State Complaints.................................... 27
+What impact does the Committee’s work have?............ 29
+Conclusion..................................................................................... 30
+LIST OF BOXES
+I.1. How does a State agree to be bound by the terms of
+a treaty such as the Covenant and its Optional Protocols? . 3
+I.2. Can the rights that have been described in Part III 
+be limited or restricted?................................................. 8
+I.3. Can the Covenant be rejected or denounced by a State 
+that no longer wishes to be bound by it? What about 
+new States emerging from the break-up of an old State that was a party to the treaty? ....................................... 10
+III.1. Purpose and value of the reporting process................... 22
+III.2. Where is the reporting process headed?........................ 23III.3. Where can I find detailed information on how 
+to submit an individual complaint?................................ 25
+III.4. How can I access the Committee’s work?...................... 28
+ANNEXES
+I. International Covenant on Civil and Political Rights ................. 31II. Optional Protocol to the International Covenant on Civil
+and Political Rights .................................................................. 55
+III. Second Optional Protocol to the International Covenant 
+on Civil and Political Rights, aiming at the abolition 
+of the death penalty................................................................ 61 
+iv
+Introduction
+The Charter of the United Nations (1945) proclaims that one of the
+purposes of the United Nations is to promote and encourage respect forhuman rights and fundamental freedoms for all. This call was first givenconcrete expression with the promulgation of the Universal Declaration ofHuman Rights by the United Nations General Assembly in 1948. Adoptedagainst the background of the horrors of the Second World War, theUniversal Declaration was the first attempt by all States to agree, in asingle document, on a comprehensive catalogue of the rights of thehuman person. As its name suggests, it was not conceived of as a treatybut rather a proclamation of basic rights and fundamental freedoms,bearing the moral force of universal agreement. Its purpose has thus beendescribed as setting “a common standard of achievement for all peoplesin all nations”. Broadly speaking, the Universal Declaration sets down twobroad categories of rights and freedoms - civil and political rights, on theone hand, and economic, social and cultural rights, on the other.
+At the time of the adoption of the Universal Declaration, there was
+already broad agreement that human rights should be translated intolegal form as a treaty, which would be directly binding on the States thatagreed to be bound by its terms. This led to extensive negotiations in theCommission on Human Rights, the political body established in 1946,composed of State representatives meeting annually in Geneva to discussa wide variety of human rights issues. The year 1966 saw the adoption bythe General Assembly of the International Covenant on Civil and PoliticalRights and the International Covenant on Economic, Social and CulturalRights. The two International Covenants on Human Rights form thecornerstone of an extensive series of internationally binding treatiescovering a wide variety of issues in the field of human rights. The treatiesdefine human rights and fundamental freedoms and set basic standardsthat have inspired more than 100 international and regional human rightsconventions, declarations, sets of rules and principles.
+Alongside the two Covenants are five further core United Nations human
+rights treaties: the International Convention on the Elimination of AllForms of Racial Discrimination (1965); the Convention on the Eliminationof All Forms of Discrimination against Women (1979); the Conventionagainst Torture and Other Cruel, Inhuman or Degrading Treatment orPunishment (1984); the Convention on the Rights of the Child (1989);and the International Convention on the Protection of the Rights of AllMigrant Workers and Members of Their Families (1990). Many of thetreaties also have optional protocols, separate treaties which add
+1
+substantive and/or procedural provisions to the original treaty to which
+they relate.
+Each of these treaties, including the two Covenants, follows the same
+pattern. They set out a series of substantive rights, in what is often knownas the “normative” part of the treaty, that define the basic rights andfundamental freedoms in the area addressed by that treaty. Anindependent monitoring body, or committee, established by the treatyitself, oversees the implementation of the treaty by States parties. Thesecommittees are comprised of independent experts, elected by the Statesthat are parties to the treaty, whose impartiality, independence andexperience in the field of human rights make them well placed to assessthe progress made by States parties against the standards set out in thetreaty in question. For the International Covenant on Civil and PoliticalRights, the treaty body established for that purpose is the Human RightsCommittee.
+This Fact Sheet will first provide an introduction to the International
+Covenant on Civil and Political Rights and its two Optional Protocols, thetexts of which are annexed. Second, the Fact Sheet will describe the workof the Human Rights Committee. The Committee should not be confusedwith the Commission on Human Rights, which is a quite separate entity,as mentioned above. Nor should the Human Rights Committee beunderstood as a “global” body that addresses all human rights describedin all the treaties; rather, it may best be described as a committee on civiland political rights as it is responsible for oversight of the implementationof the civil and political rights set out in the International Covenant onCivil and Political Rights. 
+2
+PART I - The International Convenant on Civil and
+Political Rights and its Protocol
+Although the text of the Covenant was adopted in 1966, it took another
+10 years before the necessary 35 States had become parties to it and itformally entered into force on 23 March 1976 for those States. As of June2004, a further 117 States had become parties to the Covenant, makingfor a current total of 152 States parties. Updated lists of States parties to all the treaties may be found in the Treaty Bodies database ofthe Office of the United Nations High Commissioner for Human Rights(http://www.unhchr.ch/tbs/doc.nsf) and also in the United Nations TreatyCollection at http://untreaty.un.org (subscribers only).
+Box I.1. How does a State agree to be bound by the
+terms of a treaty such as the Covenant and itsOptional Protocols?
+A State can become party to a treaty in one of two main ways.Firstly, it can sign the treaty, following which, according to the rulesof international law, the State may not act contrary to the objectsand purposes of the treaty. Signature is followed by ratification. Indepositing an instrument of ratification, a State formally indicates itsintent to be bound by the treaty. Alternatively, a State can accede toa treaty. Accession, whereby a State that has not signed a treatyagrees to be bound by it, is equivalent to ratification. The treaty inquestion typically provides a short period of time after the date ofratification or accession before the State is actually bound by theterms of the treaty. In the case of the Covenant, this is three months.For further details on these steps, refer to the Treaty Handbook ofthe United Nations of the Office of Legal Affairs, accessible at:
+http://untreaty.un.org/ola-internet/Assistance/
+handbook_eng/hbframeset.htm.
+Parties to the Covenant may also become parties to either or both of itstwo Optional Protocols. The first Optional Protocol sets out a system bywhich the Human Rights Committee can receive and consider complaintsfrom individuals who allege that their human rights have been violated,while the second Optional Protocol abolishes the death penalty for Statesparties. The first Optional Protocol also came into force on 23 March 1976and currently has 104 States parties, while the Second Optional Protocolcame into force on 11 July 1991 and has 53 States parties.
+3
+Structure and Contents of the Covenant
+The Covenant is divided into six major Parts. Parts I and II set out a series
+of provisions generally applicable to all the rights described in theCovenant. Part III is the “backbone” of the Covenant, elaborating thesubstantive individual rights. The final Parts deal with the establishmentof the Human Rights Committee, the Committee’s monitoring functionsand a variety of technical matters. The Parts will now be described in turn.
+Parts I and II - Overarching Provisions
+The first two Parts, comprising articles 1 to 5, are an important set of
+what may best be described as provisions of an overarching or structuralnature. Article 1, which forms Part I, guarantees the right of self-determination. This right differs from the other Covenant rights in that itis a right expressly ascribed to “peoples” rather than to individuals. It isalso the only right that is common to both Covenants, as article 1 of theInternational Covenant on Economic, Social and Cultural Rights isidentical. While the precise contours under international law of the rightof self-determination remain in a state of flux, it can safely be taken thata precondition for a full and genuine expression of self-determination onthe part of a people is the enjoyment by its members in whole measureof the rights contained in the Covenant.
+Part II comprises articles 2 through 5. Article 2 is one of the fundamental
+cornerstones of the Covenant. It provides that a State party must respectand ensure the rights of the Covenant to all persons within its jurisdiction.With some exceptions, such as the right to vote, these rights extend notonly to citizens but to all persons in the State’s territory, and must berespected without discrimination. If necessary, legislation should beenacted to properly guarantee these rights. Crucially, States parties arerequired to provide remedies to persons whose rights under the Covenantare breached. The Committee, in its jurisprudence, has interpreted thisright to require a forum to be available to hear an allegation of a violationof a Covenant right when it is “sufficiently well founded to be arguableunder the Covenant”. Commonly, it is the courts and administrativeauthorities that provide these remedies. Without this right to enforce aCovenant right before the domestic authorities by way of remedy, theactual substantive rights of the Covenant would be deprived of muchpractical effect. For greater detail on the scope of the obligation entailedby this key article, see General Comment No. 31 on the nature of thegeneral legal obligation imposed on States parties to the Covenant(CCPR/C/74/CRP .4/Rev.6).
+4
+Treaty bodies and academic commentary have developed a three-part
+understanding of the responsibilities imposed by treaties on a State party.The first obligation is to respect the rights, which most obviously requires
+Governments to refrain from violating human rights. This is often alsocalled a “negative” obligation, or an obligation not to engage in aparticular act or practice. The classic example is that a State must refrainfrom an act of torture or arbitrary deprivation of life. The secondobligation, to protect enjoyment of the rights, goes further: the State
+party must not only refrain from violating an individual’s rights itself, butit must also protect an individual from a violation of his or her rights bythird parties, be they private individuals, corporations, or other non-Stateactors. This may well require positive action by the State party, forexample by establishing an appropriate legislative and policy frameworkand devoting sufficient resources to their effective implementation.Thirdly, a State party must promote or fulfil an individual’s rights, that is
+take the required steps to create a necessary and conducive environmentwithin which the relevant rights can be fully realized. This again is a“positive” obligation which may require a State party to take substantialsteps, including the allocation of appropriate resources, to satisfy itsobligations under the treaty. So, for example, with respect to theCovenant, a State party must provide legal aid to persons “where theinterests of justice so require” under article 14, paragraph 3 (d), andprevent overcrowding in prisons so as to comply with the guarantee inarticle 10, paragraph 1, of humane conditions of detention for prisoners.
+Article 3 of the Covenant provides for the equal right of men and women
+to the enjoyment of Covenant rights. As the Committee’s jurisprudencehas evolved, article 26 in Part III of the Covenant, which provides forequality before the law and equal protection of the law withoutdiscrimination, including on the basis of sex, has been interpreted toencompass the same protection, but the importance of this question tothe framers of the Covenant may be seen by virtue of its location in thefirst Part of the Covenant.
+Article 4 of the Covenant recognizes that exceptional situations affecting
+a State party may make the guarantee of some rights difficult orimpossible, at a practical level, for a temporary period of time.Accordingly, article 4 clearly sets out the strictly permissible boundaries forsuspending or derogating from certain rights, in order to foreclose thepossibility of any abuses. The threshold condition is that there must exista public emergency, officially proclaimed, which threatens the life of thenation. The Human Rights Committee can, and does, question, inappropriate cases, whether this basic requirement has been satisfiedwhen a State decides to derogate from its obligations under the
+5
+Covenant. Even if such a situation does exist, the measures taken must be
+“strictly required by the exigencies of” the relevant crisis. This is a highstandard, the respect for which a State party may be required todemonstrate to the Committee’s satisfaction. In addition, regardless ofthe situation, there are some rights, including the rights to life and to beprotected from torture, which may not be derogated from in anycircumstances. These rights are listed in paragraph 2 of article 4. Forgreater detail on issues arising under article 4, see General Comment No.29 on states of emergency (CCPR/C/21/Rev.1/Add.11).
+Part II of the Covenant concludes with article 5, a general protective
+provision stating that nothing in the Covenant confers the right to limitor destroy any of its provisions, and that a State party whose domestic lawprovides greater protections than those contained in the Covenant maynot use that as an excuse to restrict or derogate from the fundamentalrights contained in the Covenant.
+Part III - The Substantive Rights of the Covenant
+Part III is the heart of the Covenant. It lists the substantive rights and
+fundamental freedoms guaranteed by the treaty. These are the articlesthat are commonly invoked by individuals alleging that their rights underthe Covenant have been violated, although provisions of Part I may alsobe invoked and may lend support to their interpretation.
+Articles 6 to 11 may be regarded as core provisions for the protection of
+the life, liberty and physical security of the individual. These provisionsalso stipulate the narrow confines within which the death penalty maylegitimately be imposed in States parties where that penalty has not beenabolished. Specific prohibitions are set out concerning torture,unauthorized medical experimentation, slavery and forced labour. Therights of a person in the context of deprivation of liberty, commonly byarrest, and in detention are also covered here. Articles 12 and 13 dealwith movement into, out of and within a State, with particular rulesapplicable to the expulsion of aliens.
+Articles 14 to 16 deal with how a person must be treated by the judicial
+process. Article 14 guarantees the right to a fair trial in both criminal andcivil cases, a right of fundamental importance, especially so given theclose links to the right to an effective remedy contained in article 2. It setsout the rights to equality before the courts and to fair adjudication ofclaims resolved before courts and tribunals, and lists a series of additionalprotections applicable to criminal trials. Article 15 prohibits retrospective
+6
+criminal punishment, while article 16 states simply that everyone has the
+right to be recognized as a person before the law.
+Articles 17 to 22 set out fundamental freedoms to be enjoyed free of
+unjustified external interference. Article 17 addresses the right to privacy,article 18 freedom of thought and religion, article 19 freedom of opinionand expression (subject to the prohibitions in article 20 of advocacy ofwar or of national, racial or religious hatred), article 21 the right topeaceful assembly and article 22 freedom of association, includingthrough trade unions.
+Articles 23 and 24 recognize the particular role of the family unit and
+addres issues of marriage and the rights of children. Article 25 standsalone as the major right to political participation in the Covenant,outlining the rights to vote and to be elected at genuine periodic electionsby universal suffrage and secret ballot as well as the rights to take part inpublic affairs and to have equal access to the public service.
+Alongside articles 2 and 14, article 26, as noted above, is a fundamental
+provision of the Covenant. It sets out the rights to equality before the lawand to equal protection of the law, with a wide guarantee of non-discrimination. The Human Rights Committee has taken a broad view ofthis provision, relating it to all provisions of law, rather than simply theterms of the Covenant. Thus, if a State party confers a particular benefitof any kind on a person or group of persons, it must be accorded in anon-discriminatory fashion. That is to say, distinctions drawn by law mustbe based upon reasonable and objective grounds, these being criteria theCommittee may assess, in order to be consistent with this provision.
+Part III of the Covenant concludes with article 27, which guarantees
+persons belonging to ethnic, religious or linguistic minorities the right, incommunity with other members of the group, to enjoy and practise theirown culture, religion or language. While nominally expressed as anindividual right, this provision, by definition, may best be understood as agroup right protecting a community of individuals. 
+7
+Box I.2.Can the rights that have been described in 
+Part III be limited or restricted?
+A number of the rights described in Part III are expressly set out as
+being subject to restrictions or limitations, commonly whereprovided by law and necessary for specific enumerated purposes.Articles 17, 18, 19, 21, 22 and 25 expressly permit some form ofrestriction or limitation. If a State party chooses to limit or restrictone of these rights within the limits prescribed, this is permissibleand does not amount to a violation of the right in question. Otherrights, notably those protecting against “arbitrary” action on thepart of the State, implicitly recognize as permissible certainreasonable measures taken by the State.
+It should be emphasized, however, that in any case the permissible
+limits are neither wide nor generous, and certainly do not permit aState party effectively to void a certain right of practical meaning.The burden of justification in such a case lies with the State party toshow, including to the Committee, that a certain limitation satisfiesthe tests of legality, necessity, reasonableness and legitimatepurpose. Some rights may never be restricted or limited, no matterhow serious the circumstances. In other cases, a right claimed byone person may have to be balanced against a right claimed byanother. For example, it may be necessary, consistent with a child’sright to necessary measures of protection under article 24, for achild to be removed from an abusive domestic environment, eventhough such a separation from a family may appear contrary to theparents’ right under article 23 to protection of the family unit.
+The other method by which rights may be restricted is by
+reservation. A reservation is a formal declaration lodged by a Stateparty at the time it becomes party to a treaty that it declines to applyone or more provisions, either in whole or in part, in its jurisdiction.In contrast to some other treaties, the Covenant is silent on theeffect of reservations. A reservation may be entered, subject to thegeneral rule of international law, as expressed in the ViennaConvention on the Law of Treaties, that it may not be inconsistentwith the object and purpose of the treaty. The traditional indicatorof whether a reservation is acceptable is the reaction of other Statesparties, which may submit objections to a reservation lodged byanother State party.
+The Committee itself, as the body charged with monitoring the
+implementation of the Covenant, has assumed the power to make
+8
+a determination on the compatibility of a reservation with the
+Covenant’s object and purpose and has expressed its view on thismatter with respect to several States parties. If the Committee findsa reservation to be incompatible, it “severs” the reservation andapplies the full obligation in question to the State party. While thepossibility of lodging reservations may encourage States to becomeparty to a treaty when they may not be willing to assume the wholeextent of the obligations deriving therefrom, reservations are oftenregarded as a poor policy choice in that they may deprive certainpersons of rights for reasons which are unclear to other Statesparties or which may only be valid for a time. For this reason, theCommittee consistently encourages States parties to review, with a view to their removal, reservations that they have lodged. Forfurther details on the Committee’s approach to these matters, seeGeneral Comment No. 24 on issues relating to reservations(CCPR/C/21/Rev.1/Add.6).
+Part IV to VI - Monitoring and Technical Aspects of the Covenant
+The remaining Parts of the Covenant establish the Human Rights
+Committee as the treaty’s monitoring body. Part IV, covering articles 28 to45, sets up the Committee and provides for its functions and procedures.These will be covered in detail below. Part V of the Covenant, in articles46 and 47, includes savings provisions with respect to the United NationsCharter and, linked with article 1, to the inherent right of peoples freelyto enjoy and utilize their natural wealth and resources. Articles 48 to 53,comprising the final Part VI, contain standard treaty provisions concerningmechanics for becoming a party, notification and amendments. Article 50provides that the Covenant’s provisions extend to all parts of a federalState without limitation or exception. This is important for States whosedomestic law reserves exclusive competence in certain areas to state orprovincial rather than federal authorities. In such a case, the federalauthorities, who usually represent a State party before the Committee,must take such measures as may be necessary to ensure that theCovenant is fully applicable within its territory and that the necessaryremedies for violations are available. In this sense, article 50 is arestatement of the well-known principles of international law whereby aState’s international responsibility is engaged by the acts and omissions ofits authorities at all levels, whether national, provincial or local, and thata State’s domestic law does not excuse a breach of a treaty obligation.
+9
+Box I.3. Can the Covenant be rejected or denounced by
+a State that no longer wishes to be bound by
+it? What about new States emerging from thebreak-up of an old State that was a party tothe treaty?
+Unlike many treaties, the concluding provisions of the Covenant donot provide for denunciation of the treaty allowing a State party towithdraw from the treaty regime. In these circumstances, theCommittee has taken the view that in the light of the particularcharacter of human rights treaties such as the Covenant, whichextend basic rights and freedoms to persons within a State party’sjurisdiction, these rights and freedoms may not be withdrawn onceconfirmed. Accordingly, once a State has ratified the Covenant, it isnot permitted to withdraw from its obligations by denouncing thetreaty. Likewise, States parties may not denounce the SecondOptional Protocol, which does not contain any provisions ondenunciation either. In contrast, the first Optional Protocolspecifically sets out a denunciation procedure.
+A related issue is the situation in terms of ongoing applicability of
+the Covenant when a State party to the Covenant breaks up into aseries of successor States. Applying a similar approach, theCommittee has taken the view that a successor State succeeds to apredecessor State’s obligations under the Covenant. Thus, forexample, the Committee views Kazakhstan as being bound by theCovenant, as a successor State to the USSR, which was a State partyat the time of its dissolution. Generally, this precise situation doesnot arise, as successor States have acted to confirm the applicabilityof the Covenant in their jurisdictions, such as by making adeclaration of succession. Similarly, when the United Kingdom andPortugal, as States parties to the Covenant, returned sovereigntyover Hong Kong and Macau respectively to China, China agreed toapply the Covenant obligations in those territories, even though itwas not itself a State party to the Covenant.
+Contents of the Two Optional Protocols to the Covenant?
+The first Optional Protocol is procedural and provides a mechanism for the
+Committee to receive and consider individual complaints alleging aviolation of the Covenant, that is to say of the substantive rightscontained in Part III, if appropriate in conjunction with the provisions of
+10
+Parts I and II. As its name makes clear, the Protocol is not compulsory, but
+once a State party to the Covenant also becomes a party to the Protocol,any person subject to the jurisdiction of the State party may lodge awritten complaint with the Human Rights Committee (subject to anypermissible reservations). This is not limited to nationals, or to personswithin a State’s territory, but extends to all persons who are directlysubject to a State’s exercise of power through its authorities. Thus, forexample, a national of a State party residing abroad who was denied apassport by that State was able to bring a claim to the Committee.
+The Protocol sets out in articles 1, 2, 3 and 5 a series of admissibility
+requirements, explicit and implicit, which a complaint must satisfy beforeits substance, or merits, can be considered. Article 4 of the Protocol setsout basic procedural requirements for the treatment of a complaint.Under article 6, the Committee reports annually to the General Assemblyon its activities concerning complaints, while articles 7 through 14 containlargely standard savings and technical provisions on the mechanics ofbecoming a party, entry into force, notification, amendment,denunciation and the like. Article 10, like the parent Covenant, providesthat the Protocol too extends without exception to all parts of federalStates. Article 12 allows a State party to denounce the Optional Protocol.
+The purpose of the Second Optional Protocol is revealed by its full title,
+“aiming at the abolition of the death penalty”. Its single substantiveprovision, article 1, states directly that no person within a State party’sjurisdiction shall be executed, and that each State party shall take allnecessary measures to abolish the death penalty. Article 2 permits, subjectto certain procedural requirements, only one reservation, namely onereserving the death penalty in time of war pursuant to a conviction for amost serious crime of a military nature committed in wartime. Article 6provides that these provisions are non-derogable and, as substantiveprovisions, apply as additional provisions to the Covenant. Articles 3 to 5apply to the Protocol the same reporting and State complaint proceduresthat are discussed below with respect to the Covenant, as well ascomplaints lodged under the Optional Protocol. The remaining articles 7to 11 set out the federal provision discussed above as well as the usualtreaty mechanics dealing with its entry into force, amendment and so on.
+11
+Part II - The Human Rights Committee
+What is the Committee and who are its members?
+The Human Rights Committee is established under article 28 of the
+Covenant. It has 18 members, who must be nationals of States parties tothe Covenant. Members of the Committee, as of other treaty bodies, arealso often called “experts”. Under article 28 of the Covenant, Committeemembers must be “persons of high moral character and recognizedcompetence in the field of human rights”, with “consideration given tothe usefulness of the participation of some persons having legalexperience”. Each member is a national of the State party that nominatesthem. Most Committee members (past and present) have a legalbackground, whether from the judicial bench, as a practitioner or inacademia.
+Under article 31, the Committee “may not include more than one
+national of the same State”. Rather, “consideration should be given toequitable geographical distribution of membership and to therepresentation of the different forms of civilization and of the principallegal systems”. It is these principles, set out in the Covenant, that guideStates parties when they nominate members and then elect them bysecret ballot to four-year terms. Elections for half of the Committee’smembers are held at two-yearly intervals at United Nations Headquarters,during the annual session of the General Assembly. Members may be re-elected, if renominated, upon the expiry of their terms. If a Committeemember should vacate his or her position early, for example by reason ofdeath or resignation, another election may be held. The practice has,however, arisen whereby such members are replaced by personsnominated by the same State party as the vacating member. Afterelections, members also maintain contact with States parties and engagein dialogue on general issues of mutual concern through the forum ofmeetings with States parties that the Committee regularly schedulesduring its sessions.
+What are the roles of the Committee members?
+Members of the Committee serve in their personal capacity, not as
+representatives of their Governments. Therefore, the proceedings of theCommittee should be politically impartial. In order to ensure higheststandards of conduct, the Committee has adopted ethical guidelines for
+12
+the guidance of its members. The Committee’s rules of procedure
+(CCPR/C/3/Rev.7) also formalize certain of these elements. Accordingly,safeguards are in place to promote impartiality in appearance as well asin substance. For example, a Committee member does not participate inthe consideration of a periodic report submitted by the State of which heor she is a national, or in the adoption of concluding observationsthereon. Nor does a Committee member take part in discussion of acomplaint under the Optional Protocol that is directed against his or hercountry. If for any other reason there may be a general apprehension ofpartiality with respect to a particular matter, a Committee member mayrecuse him- or herself from any proceedings on the question.
+The members elect the Committee’s officers for terms of two years. These
+officers are the Committee’s Chairperson, with overall responsibility forthe conduct of the Committee’s work, three Vice-Chairpersons, and theRapporteur, to whom the preparation of the Committee’s annual reportto the General Assembly is entrusted. In addition, there are currently threespecial rapporteurs who are appointed by the Committee for the sameterms to perform specific functions. These are:
+ The Special Rapporteur on New Communications, whose functions
+include the registration of new complaints under the Optional Protocol
+and such preliminary issues as requests for interim measures ofprotection that may be necessary to prevent irreparable harm in a casepresented to the Committee;
+ The Special Rapporteur on Follow-up to Views, who monitors the
+implementation of the Committee’s decisions on the merits ofindividual cases; and
+ The Special Rapporteur on Follow-up to Concluding Observations, who
+is tasked with the Committee’s new procedure of follow-up withrespect to individual State party reports considered by the Committee(see below).
+In electing these officers of the Committee, a variety of factors areconsidered, including the desirability of a fair geographical and linguisticspread amongst them. The Committee is serviced by a secretariatprovided by the Secretary-General of the United Nations and which isbased at the Office of the United Nations High Commissioner for HumanRights in Geneva, Switzerland.
+13
+When does the Committee meet and how does it work?
+The Human Rights Committee normally holds three plenary sessions for
+its full membership, each lasting three weeks, during the course of a year.These sessions are usually held at United Nations Headquarters in Marchand at the United Nations Office at Geneva in July and October,respectively. The Committee may also meet at a different location. Onesuch occasion was when, at the invitation of the (then) Federal Republic of Germany, a session was held in Bonn in 1981. TheCommittee’s rules of procedure, available in the Treaty Bodies database ofthe Office of the United Nations High Commissioner for Human Rights(http://www
+.unhchr .ch/tbs/doc.nsf ), set out in considerable detail the
+modalities of the Committee’s operation. Thus, 12 Committee membersconstitute a quorum, with each member having one vote. The Committeemakes all reasonable efforts to reach its decisions by consensus. On rareoccasions when consensus cannot be reached, the Committee membersmay resort to a vote of those present.
+Each session of the Committee is usually preceded by a one-week
+meeting of the Committee’s working group, typically made up of fivemembers. The functions of the working group have evolved over theyears and are currently devoted solely to handling, as an initial chamber,decisions on individual complaints under the Optional Protocol. While itmay declare complaints admissible in whole, its decisions oninadmissibility (whether in whole or in part) and on the merits of acomplaint proceed to the full Committee for debate and formal plenarydecision. For further details on these matters, see Fact Sheet 7 (Rev.1),entitled Complaints Procedures, published by the Office of the United
+Nations High Commissioner for Human Rights.
+Part III - The Four Monitoring Functions of the
+Committee
+The Human Rights Committee’s task is to supervise and monitor theimplementation of Covenant obligations by States parties. One of thegreat strengths of the Committee is the moral authority it derives fromthe fact that its membership represents all parts of the world. Accordingly,far from representing a single geographical or national perspective, theCommittee speaks with a global voice. In carrying out its monitoring andsupervisory functions, the Committee has four major responsibilities. First,the Committee receives and examines reports from the States parties onthe steps they have taken to give effect to the rights spelled out in the
+14
+Covenant. Second, the Committee elaborates so-called general
+comments, which are designed to assist States parties to give effect to theprovisions of the Covenant by providing greater detail regarding thesubstantive and procedural obligations of States parties. Third, theCommittee receives and considers individual complaints, also known as“communications”, under the Optional Protocol made by individuals whoclaim violations of their Covenant rights by a State party. Fourth, theCommittee has jurisdiction to consider certain complaints made by aState party that another State party is not abiding by the obligationsassumed under the Covenant.
+Examination of Reports Submitted by States Parties
+All States that have ratified or acceded to the Covenant undertake to
+submit reports to the Committee on the measures they have adopted togive effect to the rights the Covenant establishes and on the progressmade in the enjoyment of those rights. This obligation is contained inarticle 40 of the Covenant.
+A State party’s initial report is due within one year of the entry into force
+of the Covenant for the country concerned. Subsequent reports, knownas “periodic reports”, are now due at a time individually specified by theCommittee for each State party. In 1997, the Committee changed itsprevious rule regarding subsequent periodic reports, under which Statesparties were generally required to submit reports every five years.Occasionally, the Committee would also call for reports outside the five-year cycle from States suffering from acute human rights crises, such asthe States of the former Yugoslavia and Rwanda, during the respectivecivil wars. Owing to the growth in the number of States parties to theCovenant and the limited meeting time of the Committee, a fixedreporting period for all States parties became increasingly impractical. Atpresent, the Committee sets, in the final paragraph of its concludingobservations on a particular report (discussed below), the date by whichthe next periodic report should be submitted. Typically, this time frame isof the order of four to five years, although on occasion shorter periodshave also been set. The Committee nevertheless retains the discretion, asexceptional circumstances warrant, to call for an additional report prior tothe time that has been formally set for submission of the next report.
+What should a State party’s report to the Committee include?
+The Committee provides general guidelines to help Governments in
+preparing their reports. At the outset, States should submit what is
+15
+known as a “core document”. This document details basic information
+about a State, its demography and geography, as well as itsconstitutional, legal and political structures and other generalinformation. Because this information is of common interest to all thetreaty bodies, it is provided in a single document available to all the treatybodies that examine a particular State. The State in question is thusrelieved of having to supply afresh the same information when it comesup for consideration before each treaty body. As important changes in aState take place, the core document should be updated in order that thetreaty bodies can remain apprised of current developments of generalinterest to them.
+The initial reports submitted by States to the Committee under the
+Covenant should comprehensively cover all substantive articles of theCovenant, including information on the State’s constitutional and legalframework that is not set out in the core document, and the legal andpractical measures taken in order to implement the Covenant. It is ofcritical importance that States ensure that they describe the factualsituation, or, in other words, the practical realities regarding theimplementation and enjoyment of Covenant rights, rather than limitingthemselves to a description of the formal situation as represented in the State’s laws and policies. These requirements are set out in muchgreater detail both in reporting guidelines published by the Committee,as well as in the Manual on Human Rights Reporting published 
+by the Office of the United Nations High Commissioner for Human Rights.These documents are available in the Treaty Bodies database of the Office of the United Nations High Commissioner for Human Rights (http://www.unhchr.ch/tbs/doc.nsf) and under the Office’s onlineProfessional Training Series at http://www.unhchr.ch/html/menu6/2/training.htm, respectively.
+Thereafter, States are advised to submit shorter periodic reports that focus
+on the issues raised by the Committee in its previous concludingobservations, and on significant developments since the previous report.All reports should also include explanations of the measures taken toaddress any decisions made against the State on the merits of individualcomplaints lodged under the Optional Protocol.
+How should a State party’s report be compiled?
+There is no one set method for compiling a report in the State. As the
+implementation of Covenant rights affects areas that cut right across thetypical activities of Government, many if not all government departmentswill have an interest in the presentation of laws, programmes and policies
+16
+to the Committee that fall within their areas of expertise. In addition, in
+many States, especially ones with a federal structure, provincial andregional governments may have particular competencies in certain areasand from whom contributions to the report will accordingly be required.As a result, it is crucial that a coordination mechanism be developed,whereby the different authorities are briefed on and tasked with therequirements of a report. Usually, the Ministry for Foreign Affairs takes thelead role in the submission of a report.
+Non-governmental organizations (NGOs) and other members of civil
+society have assumed an increasingly prominent role in the reportingprocess, including in the compilation of a report. The Committee regardsas best practice in the preparation of a report the involvement of a broadrange of members of civil society. There is no set formula for how civilsociety should contribute, and different States have experimented with avariety of mechanisms. These include consultations with civil society priorto compiling a report, use of information and statistics provided by civilsociety, involving civil society in reviews of draft reports, and so on. InStates with a national human rights institution (such as a Human RightsCommission), such an organization may also often possess valuableexpertise and insights in the areas covered by the report. The key toachieving a report that reflects as broadly as possible a common view ofgovernmental and society actors of the enjoyment of Covenant rights inthe State in question is for consultation to be comprehensive andmeaningful. (See the section below, entitled “Where is the reportingprocess headed?”, for further discussion of related issues.) It may be thaton one or several issues, there is disagreement between the State and oneor more members of civil society. In such a case, naturally the State willsubmit its report to the Committee in a form that it regards asappropriate.
+Upon submission, the report is translated into the official United Nations
+languages and posted publicly on the web site of the Office of the UnitedNations High Commissioner for Human Rights. Preferably prior to this, butat the latest by this point, members of civil society advancing a differentperspective on issues raised in the report - or, alternatively, not addressedtherein - may provide their own submissions to the Committee. In orderto limit the information supplied to a manageable volume, civil society isencouraged, to the extent possible, to submit a common report reflectingthe agreed views of a variety of groups or organizations. Such a report,which often tracks the format of the State’s report, is known as a“shadow report”. Naturally, the Committee is often able to give greaterweight to information supplied in a report compiled by a number of
+17
+members of civil society than to information supplied by one group alone,
+though this information can also be useful.
+How does the Committee examine a State party’s report?
+The process of examining a report runs across two consecutive
+Committee sessions. At the first session, the report is assigned to a groupof between four and six Committee members known as a Country ReportTask Force (CRTF). The decision to create CRTFs was adopted in March2002. They are designed to streamline the reporting procedure andimprove the quality of the dialogue with States parties. At least one CRTFmember should come from the same region as the relevant State. Onemember is the designated “country rapporteur”, whose mainresponsibility is to accompany a report through the Committee’sprocesses. With the assistance of the Committee’s secretariat, the CRTFdraws up a “List of Issues” arising from the relevant report and otherinformation supplied to the Committee. The List of Issues addresses themost crucial matters regarding the enjoyment of Covenant rights in therelevant State and often seeks additional information with respect to keyquestions. The List of Issues is sent to the State party well in advance - atleast one session ahead - of the session at which the report will beexamined in the presence of representatives of the State party. It isincreasingly common, and of real assistance to Committee members, forStates to provide written answers (ideally in the Committee’s threeworking languages of English, French and Spanish) to the List of Issues inadvance or at the beginning of the Committee’s public examination of thereport.
+What happens during the session when the Committee examines a
+State party’s report?
+At the beginning of the Committee’s session, the Committee hears in a
+private meeting representatives of specialized agencies and other parts ofthe United Nations that wish to provide information on the State to beconsidered. The Committee is also often briefed, typically in an informallunchtime meeting, on views of members of civil society wishing to bringCommittee members up to date on certain issues.
+The Committee then proceeds to examine each report in a public
+constructive dialogue with a delegation of the relevant State party. Thisdelegation typically comprises the State party’s ambassador to the UnitedNations Office at Geneva and other members of diplomatic staff, as wellas representatives from government departments and agencies withexpertise in matters dealt with in the Covenant. It is not uncommon for
+18
+ministers of government departments to be part of these delegations,
+and on occasion members of civil society and minority groups, forexample, have also been included. It usually takes one and a half days forthe Committee to examine an initial report, with two half-day meetingsbeing in general devoted to subsequent periodic reports. The examinationbegins by an opening presentation of the report by the State party’sdelegation, often including a response to the List of Issues. Thereafter,Committee members put questions to the representatives, seeking toclarify or deepen understanding of issues arising concerning theimplementation and enjoyment of Covenant rights in the State party. Thisoften includes questions that have not been fully clarified by theresponses to the List of Issues. Members of the relevant CRTF have themain responsibility for putting questions to the State representatives,though other Committee members have an opportunity to intervene.There may be several rounds of exchanges between the Committee andthe State party’s delegation on different issues. The dialogue is alsofacilitated by the holding, where possible, of the initial meeting in theafternoon and the second meeting the following morning, to enable thedelegation to obtain information and clarifications overnight fromauthorities in the State party. After the conclusion of the dialogue, thereis usually also a short time for the delegation to supply additionalinformation to the Committee.
+After the conclusion of this dialogue, the Committee drafts detailed
+written concluding observations on the report in question. Concludingobservations, which have been adopted since 1992, set out the results ofthe dialogue with the Committee’s conclusions and are therefore a veryuseful way of monitoring a State’s human rights record. The countryrapporteur for the report in question, with the assistance of the membersof the relevant CRTF, has initial responsibility for drafting the concludingobservations, which are circulated to all members of the Committee forcomment and are then referred for discussion and adoption by theCommittee in plenary. Concluding observations are consensus commentson positive and negative aspects of a State party’s implementation of theCovenant. They are generally divided into the following sections:Introduction, Positive factors, and Principal subjects of concern andrecommendations. The bulk of the concluding observations is generallydevoted to the last heading, where the issues that remain of concern to the Committee are paired with the Committee’s recommendations for remedial action. The final paragraph sets forth the date by which the next periodic report should be submitted to the Committee. Theconcluding observations have the dual function of helping States toprepare future reports, and helping the Committee to focus on the most 
+19
+important issues in future dialogues over future reports. All concluding
+observations are publicly available via the Treaty Bodies database of theOffice of the United Nations High Commissioner for Human Rights(http://www
+.unhchr .ch/tbs/doc.nsf ).
+What happens once the Committee has adopted its concludingobservations?
+In 2001, the Committee created a new position, that of Special
+Rapporteur on Follow-up to Concluding Observations. In almost allconcluding observations, the Committee identifies, in the final paragraphof its findings, a limited number of issues of particular priority. It then asksthe State party to provide, no later than a year thereafter, information onthe measures it has taken to address those particular issues. This follow-up information is translated and in general made publicly available on theTreaty Bodies database of the Office of the United Nations HighCommissioner for Human Rights (http://www
+.unhchr .ch/tbs/doc.nsf ).
+Along with whatever information may have been supplied from othersources on these issues, the Special Rapporteur, with the assistance of theCommittee secretariat, assesses this follow-up information and makes arecommendation to the Committee on any further steps that may beappropriate. The Committee then sets aside time to discuss the SpecialRapporteur’s findings and decides on further action. The decisions arevery flexible, and may range from changing the date for the submissionof the State party’s next report, to requesting further information, torequesting the Special Rapporteur to meet with representatives of theState party on a specific issue. If States fail to submit the follow-upinformation, the Special Rapporteur will meet with representatives inorder to pursue the issue. If a State continues to be unresponsive to theCommittee’s request, that fact is recorded in the Committee’s annualreport to the General Assembly. The initial reactions of States parties tothe follow-up procedure within the reporting process have been veryencouraging.
+The Committee’s follow-up procedure complements and focuses the
+efforts of States parties and civil society subsequent to the adoption ofconcluding observations. The Committee seeks to encourage, first of all,considered and comprehensive public debate on its findings, and for thisreason routinely requests States parties to give appropriate publicity to itsconcluding observations. If necessary, this may involve translating theminto one or more local languages. Debating the concluding observationsin the national parliament is also a constructive way of publicizing and generating discussion on the Committee’s findings andrecommendations. Thereafter, government departments, again ideally in
+20
+consultation with civil society and other relevant stakeholders, are best
+placed to assess whether changes of law, policy and practice arenecessary or appropriate to give effect to the concluding observations andto monitor those steps, including proposals for legislative change, as theytake their course. These responses at the national level lay thegroundwork for the next report, in the preparation of which theCommittee regards as best practice a thorough accounting of the stepstaken, area by area, in response to its previous concluding observations.
+What happens if a State party fails to submit a report to the
+Committee?
+Some States have been chronically late in submitting their reports, and/or
+have failed to attend scheduled dialogues. This has meant that thesituation in some States parties has not been examined by the Committeefor many years. As a result of this unsatisfactory situation, the Committeedecided in 2001 that a State’s record under the Covenant could beexamined at the Committee’s discretion in the absence of a report, and ifnecessary in the absence of a delegation from a State party, which wouldbe advised in advance of the proposed date of such an examination. Themajor factor in deciding which States are examined in this fashion is of course the delay in reporting or the non-submission of reports. In thesecircumstances, the Committee adopts provisional concludingobservations in private session on the basis of information that has beensubmitted to it concerning the State party being examined. Theseobservations are transmitted to the State party, and may subsequently bemade public in original or amended form.
+21
+Box III.1. Purpose and value of the reporting process
+The process of compiling a report, as described, provides an
+opportunity for a State party to clarify, in the context of its ownnational framework, the content of its obligations assumed underthe Covenant and to take stock of the current situation with respectto Covenant rights, as well as to identify areas that require reform toensure full compliance with the Covenant. The consultationsrequired within government structures and between Governmentand civil society in order to prepare a thorough report can improveunderstanding of the Covenant and the objectives of human rightsgenerally. At the same time, publicity surrounding the preparation ofa report draws attention to the level of the State’s compliance withits obligations and the ways individuals and groups can furthercontribute to their implementation. The report’s consideration bythe Committee allows for dialogue between the State party and agroup of impartial and highly experienced experts during whichareas requiring improvement can be identified and suggestionsmade. Reporting also highlights good practices and lessons learnedwhich may be drawn on by other States as they seek to implementthe Covenant. Finally, the outcome of the procedure in the form ofconcluding observations constitutes an authoritative guide for futurelegislation, policies and programmes. Although directed at the Stateparty, they can also be used by other stakeholders to encourageimplementation and a culture of human rights in the State party.They also serve as a valuable guide to other States parties wheresimilar issues arise.
+22
+Box III.2. Where is the reporting process headed?
+The reporting process has been the subject of debate for some
+years, not least as a result of substantial backlogs which emerged todiffering degrees within all of the treaty bodies in the 1990s, as wellas of general concerns about the efficacy of the process. TheCommittee has in past years been clearly concerned with improvingthe reporting process. Typically, one or more Committee memberswill make a proposal for reform, which is studied on behalf of theCommittee by an informal working group of members with thesecretariat’s assistance, and then debated and decided upon inplenary. At the same time, treaty bodies are increasing their effortsto harmonize procedures, with a view to reducing overlap andduplication and drawing on the respective skills and experiences ofthe treaty bodies. Examples of the greater coordination taking placebetween the treaty bodies are the outcomes of the recentlyinstituted annual meetings of the chairpersons of the treaty bodies and the inter-committee meetings, which bring together members of each of the treaty bodies. The documents agreed upon at thesemeetings are available on the Treaty Bodies database of the Officeof the United Nations High Commissioner for Human Rights(http://www
+.unhchr .ch/tbs/doc.nsf ).
+In 2002, the Secretary-General called for further reform of the treatybody system. In response, the Office of the United Nations HighCommissioner for Human Rights has moved forward withconsultations with treaty bodies, States parties and otherstakeholders in order to chart a path towards a more efficient andeffective treaty body system. One possible simplification mootedwas that States should submit a single combined report to all thetreaty bodies covering the full scope of their obligations under thosetreaties to which they are parties. Studies are in progress examining,for example, the use that might be made of a much expanded coredocument covering all matters common to the treaties, with concisereports then focusing on treaty-specific issues, with particularreference to follow-up to that treaty body’s previous concludingobservations. In June 2004, the inter-committee meeting and themeeting of chairpersons of the committees agreed that Stateswishing to utilize such an approach in their reporting to treatybodies may do so. Further improvements to the methods of workand practices of all treaty bodies, including the Human RightsCommittee, can be expected to emerge in coming years.
+23
+Adoption of General Comments on Articles of the Covenant
+A further means by which the Committee carries out its function of
+interpreting the Covenant and to clarify the scope and meaning of itsarticles, and thus of all States parties’ obligations, is through thedevelopment and adoption of so-called general comments. As theprovisions of the Covenant, like most human rights treaties, are phrasedin general terms and thus liable to be interpreted in a variety of ways, theCommittee has taken up the elaboration of general comments by way ofadvice to all States parties. Rather than dealing with a particular issue asit arises in the context of a particular State party’s situation, generalcomments analyse a specific article or general issue in the Covenant in anextended and comprehensive fashion. While most general comments aredetailed interpretations of a specific Covenant right, some address the Covenant rights of specific groups, such as aliens, while othersaddress procedural issues, such as the preparation of reports, ormiscellaneous issues, such as reservations to the Covenant. The generalcomments are available on the Treaty Bodies database of the Office of the United Nations High Commissioner for Human Rights(http://www
+.unhchr .ch/tbs/doc.nsf ).
+The Committee takes its authority for these documents from article 40,paragraph 4, of the Covenant, which provides that it may transmit “suchgeneral comments as it may consider appropriate” to all States parties.The first general comments, issued in the early 1980s, were quite brief.However, those issued since the late 1980s have become increasinglydetailed. A general comment now reads as a general statement of lawthat expresses the Committee’s conceptual understanding of the contentof a particular provision, and as such is a very useful guide to thenormative substance of international human rights obligations. Thisfunction enables the Committee to permit the Covenant to speak tomodern circumstances, in which understandings and perceptions oflanguage and practice may have evolved substantially since the Covenantwas adopted. In this sense, the Covenant is a living instrument thatremains as relevant to the contemporary challenges of today as it waswhen it was adopted. These comments thus continue to guide Statesparties in applying the provisions of the Covenant, as well as in preparingtheir reports.
+In 2003, there was discussion during the inter-committee meeting of the
+possibility of treaty bodies’ issuing joint general comments, in view of theat times considerable overlap between provisions of different treatiesmonitored by different committees. The committees may thus, in thefuture, move towards adopting parallel general comments on issues of
+24
+common concern, such as the meaning of the prohibition on
+discrimination or on the consequences of non-reporting by States parties.
+Consideration of Individual Complaints Under the Optional
+Protocol
+As has been observed above in the discussion of the content of the
+Optional Protocol to the Covenant, individuals who claim that their rightsand freedoms under the Covenant have been violated may call the Statein question to account for its actions if that State is a party to theCovenant and to the Optional Protocol. As of early June 2004, 1,295 suchcomplaints had been registered by the Committee, of which 362 hadbeen declared inadmissible under the criteria described in articles 3 and 5of the Protocol and 452 considered on the merits of the case. Of those,violations of the Covenant were found in 349 cases; 178 werewithdrawn, and 305 were pending. Further updates on these figures maybe obtained at: http://www
+.unhchr .ch/html/menu2/8/stat2.htm . Typically,
+it may take several years for a complaint to proceed from initialsubmission through the series of exchanges between the parties to a finaldecision by the Committee. In certain circumstances, a final resolutionmay be achieved much more quickly.
+Box III.3. Where can I find detailed information on how
+to submit an individual complaint?
+The process for submitting a communication and having it examinedby the Human Rights Committee is set out in detail in Fact Sheet No. 7 (Rev.1), Complaint Procedures, also published by the Office of the United Nations High Commissioner for Human Rights. This publication is available in hard copy on request and is alsoaccessible online at the following address: http://www.unhchr.ch/html/menu6/2/sheets.htm. The reader is referred to that source fora full discussion of the following elements, which are set out in brief.
+What if my complaint is urgent?
+When a complaint is first submitted, the Committee may sometimes
+request the State party concerned to take what are called “interimmeasures” to avoid irreparable damage to the alleged victim while thecomplaint is being considered. These measures are designed to preservethe respective rights of the parties until the Committee takes a decisionon a complaint. For example, States have been requested to refrain from
+25
+executing or extraditing persons before the Committee examines the
+compatibility with the Covenant of such actions, which cannot be undoneafter the event.
+What technical and/or procedural requirements must my complaint
+satisfy?
+The complaint having been lodged, there are a number of admissibility
+criteria that must be satisfied before the Committee will consider themerits of an individual communication under the Optional Protocol. Theseare set out in the Optional Protocol itself and in the Committee’sjurisprudence. The Committee does not have independent fact-findingfunctions under the Optional Protocol, but rather considers all writteninformation made available to it by the author of the complaint and theState party concerned. No oral evidence is submitted. There is no strictrule regarding the allocation of the burden of proof in Optional Protocolcases. The Committee will tend to accept the facts as alleged by the victimif it receives no information from the relevant State, or if the State merelysubmits refutations in general terms. The Committee will tend to acceptthe State’s specific denials of certain facts unless the victim can providedocumentary proof supporting his or her own assertions. However, theCommittee has on occasion recognized that the nature of a complaintmay make it impossible for the victim to submit further relevant evidence,and/or that certain information is occasionally exclusively in the hands ofthe State party. In such cases, the burden placed upon the State to refutethe alleged victim’s allegations will be higher. At the very least, a State isrequired to investigate a complainant’s allegations in good faith.
+What about the substance of my case?
+If the Committee finds the case to be admissible, it adopts “Views” on
+the substance, or merits, of the complaint. These Views consist of eithera finding of violation, or a finding of non-violation, or a mixture of bothif the complaint has made a number of allegations. The Views arecommunicated to the author of the complaint as well as to the Stateparty, and are made public after the session at which they are adopted.Being decisions on individual complaints, this case law is a very importantguide to the specific meaning in concrete circumstances of what theCovenant requires, and is thus a valuable point of reference for courts anddecision markers in all States parties when considering the same or similarissues.
+26
+What happens if the Committee finds in my favour?
+If the Committee finds a violation in a particular case, the State party is
+requested to remedy that violation, pursuant to the obligation in article 2,paragraph 3, of the Covenant to provide an effective remedy forCovenant violations. The recommended remedy may take specific form,such as the payment of compensation, the repeal or amendment oflegislation, and/or the release of a detained person. Thereupon, the caseis taken up by the Committee’s Special Rapporteur on Follow-up to Views,who communicates with the parties with a view to achieving asatisfactory resolution to the case in the light of the Committee’s Views.In many cases, significant remedies have been achieved through theOptional Protocol process for victims of human rights violations. Inaddition, laws and policies have been changed in order to ensure that infuture other individuals do not suffer the same violations. Each year, theresults of these activities undertaken following a finding of a violation andthe remedies provided by States parties are described in the annual reportof the Committee.
+Assessment of Inter-State Complaints
+A State party may submit a communication to the Committee alleging that
+another State party is not fulfilling its obligations under the Covenant. Thisreflects the dual understanding of a human rights treaty as not simply acontract between a State party and persons subject to its jurisdiction, butalso a multilateral treaty in the traditional sense that all States parties to atreaty have an interest in the compliance of other States parties with theirobligations. In this fashion, it can be legally said that human rights violationsin a State party are of direct concern to all other States parties. Such acomplaint, which is provided for in article 41 of the Covenant, may,however, only be made in respect of two States parties that have declaredthat they recognize the competence of the Committee to receive andconsider such inter-State complaints. As of publication, some 48 States hadmade such a declaration. To date, however, no inter-State complaint hasbeen submitted to the Committee. Nevertheless, it is instructive to outlinethe way in which this procedure would operate.
+The first step would be for the State lodging the complaint to bring the
+matter to the attention of the State that is alleged not to be fulfilling itsobligations. Within three months, the latter should reply, in the form of awritten explanation or clarification. If, within six months, the matter is notsettled to the satisfaction of both parties, either may refer it to theCommittee, which may deal with it once satisfied that, within a reasonableperiod of time, all domestic remedies have been tried, without success.
+27
+The Committee may then take the matter up and propose its good offices
+in the search for a friendly solution. If there is still no agreement, theCommittee may appoint a five-person conciliation commission, with theagreement of the States parties directly concerned, but not including theirnationals among its members, with instructions to complete its businessand submit a report to the Chairperson of the Committee and, throughthat person, to the parties in dispute, within 12 months.
+Box III.4. How can I access the Committee’s work?
+The concluding observations, general comments, final decisions on
+individual complaints and other documents produced by and for theCommittee are all available and searchable online in the TreatyBodies database of the Office of the United Nations HighCommissioner for Human Rights (http://www.unhchr.ch/tbs/doc.nsf).In order to stay up to date with developments as they occur, anyindividual can subscribe to a free public electronic LISTSERV whichdistributes via e-mail the results of each session of the Human RightsCommittee at or shortly after the conclusion of each session. E-mailaddresses may be added to this distribution mechanism by visitingthe following web page and adding the address in the fieldprovided: http://www.unhchr.ch/tbmailin.nsf/email?Openform. ThisLISTSERV provides a link to an updated chart showing which Statesparties have submitted reports and when they are scheduled forconsideration by the Committee.
+In order to stay abreast of developments while a session 
+is in progress, press releases summarizing each day’s developmentscan be consulted daily on the homepage of the Office of the United Nations High Commissioner for Human Rights(http://www.ohchr.org). A final press release after the end of thesession reviews the most important decisions on individualcomplaints adopted during the session in question.
+The same information may also be found in hard copy form in the
+Committee’s annual report to the General Assembly, which isavailable for consultation in many libraries and information centres.The most important decisions with respect to individual complaintsare also collected in the ongoing series “Selected Decisions of theHuman Rights Committee Under the Optional Protocol”. Thesevolumes are likewise available for consultation in many libraries andinformation centres.
+28
+What impact does the Committee’s work have?
+No country’s record of protecting and promoting civil and political rights
+is perfect and free from criticism. As a result, the Committee’s fourfoldtask, in respect of the particular circumstances of each national context,is to encourage each State party:
+ To maintain in place those laws, policies and practices that enhance the
+enjoyment of these rights;
+ To withdraw or suitably amend those measures that are destructive or
+corrosive of Covenant rights;
+ To take appropriate positive action when a State party has failed to act
+to promote and protect these rights; and
+ To consider appropriately the effects in terms of the Covenant of new
+laws, policies and practices that a State party proposes to introduce in
+order to ensure that it does not regress in giving practical effect toCovenant rights.
+The Committee’s work has had a real effect in promoting the enjoymentof civil and political rights in many countries, even though the cause andeffect relationship is at times difficult to discern clearly. One can readilyidentify numerous instances of an individual complaint leading to positiveresults for the individual concerned, be it in the form of a payment ofcompensation, a commutation of a death sentence, a retrial, aninvestigation into particular events, or a number of other remedies, in theState party concerned. Such cases have also led to changes in laws thatgave rise to a finding of violation of the Covenant. Each year, the resultsof the individual communications considered during the year may beconsulted in the Committee’s annual report to the General Assembly,which is published as Supplement No. 40 of the Official Records of theAssembly’s session.
+Similarly, in the context of the reporting process, the instances are
+numerous of the recommendations of the Human Rights Committeeleading, directly or indirectly, to positive changes to law, policy andpractice. One wide-ranging survey of these effects at national level is a2001 study by C. Heyns and F. Viljoen, entitled “The Impact of the UnitedNations Human Rights Treaties at the Domestic Level”. Similarly, a detailedstudy by the International Law Association has compiled the effects oftreaty body recommendations upon national courts and tribunals. Withthe Committee’s follow-up procedure by which feedback is requestedfrom a State concerning priority recommendations contained inconcluding observations within a year, the specific results in this field will
+29
+become easier to trace. The broader effects should also not be neglected
+- when the Committee issues a recommendation on a matter or a findingon an individual complaint, other States parties with similar issues canderive guidance from the Committee’s analysis and undertakeappropriate action. The same effect is intended from the elaboration ofgeneral comments, which are not directed at a particular State party. Insimilar fashion, the institution of procedures to “vet” new laws or policiesprior to their introduction for consistency or compatibility with, amongother instruments, the Covenant has the effect of preventing violationsbefore they can arise.
+Conclusion
+The Human Rights Committee performs the vital function of monitoring
+the enjoyment of the rights set out in the Covenant, a legally bindinginternational treaty. Whether in its consideration of States parties’ reports,its adoption of general comments, or its examination of complaints byindividuals or States alleging violations of the Covenant, the Committeeis the pre-eminent interpreter of the meaning of the InternationalCovenant on Civil and Political Rights. In doing so, it seeks to give a fulland generous interpretation to the meaning of the Covenant’s provisions,consistent with its character as an instrument guaranteeing fundamentalrights and freedoms. The Committee’s members do not simply look at theformal legal position applicable in a particular State or case, but rather godeeper, to the practical realities on the ground in the States with which itis concerned, and issue findings with a view to achieving positive change.Indeed, compliance by a State with the Committee’s Views is evidence ofa State’s good faith attitude towards its Covenant obligations. Over theyears, the Committee’s work has resulted in numerous changes of law,policy and practice, both at the general national level and in the contextof individual cases. In a direct sense, therefore, the Committee’s dischargeof the monitoring functions entrusted to it under the Covenant hasimproved the lives of individuals in countries in all parts of the world. It isin this spirit that the Committee will continue to make its work relevantand applicable to all States parties, and to strive for the enjoyment of allcivil and political rights guaranteed by the Covenant, in full and withoutdiscrimination, by all people.
+30
+ANNEXES
+Annex I
+INTERNATIONAL COVENANT ON CIVIL AND POLITICAL RIGHTS
+Adopted and opened for signature, ratification and accession by
+General Assembly resolution 2200 A (XXI) of 16 December 1966
+Entry into force: 23 March 1976, in accordance with article 49
+Preamble
+The States parties to the present Covenant,
+Considering that, in accordance with the principles proclaimed in
+the Charter of the United Nations, recognition of the inherent dignity and
+of the equal and inalienable rights of all members of the human family isthe foundation of freedom, justice and peace in the world,
+Recognizing that these rights derive from the inherent dignity of the
+human person,
+Recognizing that, in accordance with the Universal Declaration of
+Human Rights, the ideal of free human beings enjoying civil and politicalfreedom and freedom from fear and want can only be achieved ifconditions are created whereby everyone may enjoy his civil and politicalrights, as well as his economic, social and cultural rights,
+Considering the obligation of States under the Charter of the United
+Nations to promote universal respect for, and observance of, humanrights and freedoms,
+Realizing that the individual, having duties to other individuals and
+to the community to which he belongs, is under a responsibility to strivefor the promotion and observance of the rights recognized in the presentCovenant,
+31
+Agree upon the following articles:
+PART I
+Article 1
+1. All peoples have the right of self-determination. By virtue of that
+right they freely determine their political status and freely pursue their
+economic, social and cultural development.
+2. All peoples may, for their own ends, freely dispose of their
+natural wealth and resources without prejudice to any obligations arisingout of international economic cooperation, based upon the principle ofmutual benefit, and international law. In no case may a people bedeprived of its own means of subsistence.
+3. The States parties to the present Covenant, including those
+having responsibility for the administration of Non-Self-Governing andTrust Territories, shall promote the realization of the right of self-determination, and shall respect that right, in conformity with theprovisions of the Charter of the United Nations.
+PART II
+Article 2
+1. Each State party to the present Covenant undertakes to respect
+and to ensure to all individuals within its territory and subject to itsjurisdiction the rights recognized in the present Covenant, withoutdistinction of any kind, such as race, colour, sex, language, religion,political or other opinion, national or social origin, property, birth or otherstatus.
+2. Where not already provided for by existing legislative or other
+measures, each State party to the present Covenant undertakes to takethe necessary steps, in accordance with its constitutional processes andwith the provisions of the present Covenant, to adopt such legislative orother measures as may be necessary to give effect to the rightsrecognized in the present Covenant.
+3. Each State party to the present Covenant undertakes:
+(a) To ensure that any person whose rights or freedoms as
+herein recognized are violated shall have an effective remedy,
+32
+notwithstanding that the violation has been committed by persons acting
+in an official capacity;
+(b) To ensure that any person claiming such a remedy shall have
+his right thereto determined by competent judicial, administrative orlegislative authorities, or by any other competent authority provided forby the legal system of the State, and to develop the possibilities of judicialremedy;
+(c) To ensure that the competent authorities shall enforce such
+remedies when granted.
+Article 3
+The States parties to the present Covenant undertake to ensure the
+equal right of men and women to the enjoyment of all civil and politicalrights set forth in the present Covenant.
+Article 4
+1. In time of public emergency which threatens the life of the
+nation and the existence of which is officially proclaimed, the Statesparties to the present Covenant may take measures derogating from theirobligations under the present Covenant to the extent strictly required bythe exigencies of the situation, provided that such measures are notinconsistent with their other obligations under international law and donot involve discrimination solely on the ground of race, colour, sex,language, religion or social origin.
+2. No derogation from articles 6, 7, 8 (paras. 1 and 2), 11, 15, 16
+and 18 may be made under this provision.
+3. Any State party to the present Covenant availing itself of the
+right of derogation shall immediately inform the other States parties tothe present Covenant, through the intermediary of the Secretary-Generalof the United Nations, of the provisions from which it has derogated andof the reasons by which it was actuated. A further communication shallbe made, through the same intermediary, on the date on which itterminates such derogation.
+Article 5
+1. Nothing in the present Covenant may be interpreted as implying
+for any State, group or person any right to engage in any activity orperform any act aimed at the destruction of any of the rights and
+33
+freedoms recognized herein or at their limitation to a greater extent than
+is provided for in the present Covenant.
+2. There shall be no restriction upon or derogation from any of the
+fundamental human rights recognized or existing in any State party to thepresent Covenant pursuant to law, conventions, regulations or custom onthe pretext that the present Covenant does not recognize such rights orthat it recognizes them to a lesser extent.
+PART III
+Article 6
+1. Every human being has the inherent right to life. This right shall
+be protected by law. No one shall be arbitrarily deprived of his life.
+2. In countries which have not abolished the death penalty,
+sentence of death may be imposed only for the most serious crimes inaccordance with the law in force at the time of the commission of thecrime and not contrary to the provisions of the present Covenant and tothe Convention on the Prevention and Punishment of the Crime ofGenocide. This penalty can only be carried out pursuant to a finaljudgement rendered by a competent court.
+3. When deprivation of life constitutes the crime of genocide, it is
+understood that nothing in this article shall authorize any State party tothe present Covenant to derogate in any way from any obligationassumed under the provisions of the Convention on the Prevention andPunishment of the Crime of Genocide.
+4. Anyone sentenced to death shall have the right to seek pardon
+or commutation of the sentence. Amnesty, pardon or commutation of thesentence of death may be granted in all cases.
+5. Sentence of death shall not be imposed for crimes committed by
+persons below 18 years of age and shall not be carried out on pregnantwomen.
+6. Nothing in this article shall be invoked to delay or to prevent the
+abolition of capital punishment by any State party to the presentCovenant.
+34
+Article 7
+No one shall be subjected to torture or to cruel, inhuman or
+degrading treatment or punishment. In particular, no one shall be
+subjected without his free consent to medical or scientificexperimentation.
+Article 8
+1. No one shall be held in slavery; slavery and the slave trade in all
+their forms shall be prohibited.
+2. No one shall be held in servitude.
+3. (a) No one shall be required to perform forced or compulsory
+labour;
+(b) Paragraph 3 (a) shall not be held to preclude, in countries
+where imprisonment with hard labour may be imposed as a punishment
+for a crime, the performance of hard labour in pursuance of a sentenceto such punishment by a competent court;
+(c) For the purpose of this paragraph the term “forced or
+compulsory labour” shall not include:
+(i) Any work or service, not referred to in subparagraph ( b),
+normally required of a person who is under detention in consequence ofa lawful order of a court, or of a person during conditional release fromsuch detention;
+(ii) Any service of a military character and, in countries
+where conscientious objection is recognized, any national service requiredby law of conscientious objectors;
+(iii) Any service exacted in cases of emergency or calamity
+threatening the life or well-being of the community;
+(iv) Any work or service which forms part of normal civil
+obligations.
+Article 9
+1. Everyone has the right to liberty and security of person. No one
+shall be subjected to arbitrary arrest or detention. No one shall bedeprived of his liberty except on such grounds and in accordance withsuch procedure as are established by law.
+35
+2. Anyone who is arrested shall be informed, at the time of arrest,
+of the reasons for his arrest and shall be promptly informed of any
+charges against him.
+3. Anyone arrested or detained on a criminal charge shall be
+brought promptly before a judge or other officer authorized by law toexercise judicial power and shall be entitled to trial within a reasonabletime or to release. It shall not be the general rule that persons awaitingtrial shall be detained in custody, but release may be subject to guaranteesto appear for trial, at any other stage of the judicial proceedings, and,should occasion arise, for execution of the judgement.
+4. Anyone who is deprived of his liberty by arrest or detention shall
+be entitled to take proceedings before a court, in order that that courtmay decide without delay on the lawfulness of his detention and order hisrelease if the detention is not lawful.
+5. Anyone who has been the victim of unlawful arrest or detention
+shall have an enforceable right to compensation.
+Article 10
+1. All persons deprived of their liberty shall be treated with
+humanity and with respect for the inherent dignity of the human person.
+2. (a) Accused persons shall, save in exceptional circumstances, be
+segregated from convicted persons and shall be subject to separatetreatment appropriate to their status as unconvicted persons;
+(b) Accused juvenile persons shall be separated from adults and
+brought as speedily as possible for adjudication.
+3. The penitentiary system shall comprise treatment of prisoners
+the essential aim of which shall be their reformation and socialrehabilitation. Juvenile offenders shall be segregated from adults and beaccorded treatment appropriate to their age and legal status.
+Article 11
+No one shall be imprisoned merely on the ground of inability to fulfil
+a contractual obligation.
+36
+Article 12
+1. Everyone lawfully within the territory of a State shall, within that
+territory, have the right to liberty of movement and freedom to choose his
+residence.
+2. Everyone shall be free to leave any country, including his own.
+3. The above-mentioned rights shall not be subject to any
+restrictions except those which are provided by law, are necessary to
+protect national security, public order ( ordre public), public health or
+morals or the rights and freedoms of others, and are consistent with theother rights recognized in the present Covenant.
+4. No one shall be arbitrarily deprived of the right to enter his own
+country.
+Article 13
+An alien lawfully in the territory of a State party to the present
+Covenant may be expelled therefrom only in pursuance of a decisionreached in accordance with law and shall, except where compellingreasons of national security otherwise require, be allowed to submit thereasons against his expulsion and to have his case reviewed by, and berepresented for the purpose before, the competent authority or a personor persons especially designated by the competent authority.
+Article 14
+1. All persons shall be equal before the courts and tribunals. In the
+determination of any criminal charge against him, or of his rights andobligations in a suit at law, everyone shall be entitled to a fair and publichearing by a competent, independent and impartial tribunal establishedby law. The press and the public may be excluded from all or part of a trialfor reasons of morals, public order (ordre public) or national security in a
+democratic society, or when the interest of the private lives of the partiesso requires, or to the extent strictly necessary in the opinion of the courtin special circumstances where publicity would prejudice the interests ofjustice; but any judgement rendered in a criminal case or in a suit at lawshall be made public except where the interest of juvenile personsotherwise requires or the proceedings concern matrimonial disputes orthe guardianship of children.
+2. Everyone charged with a criminal offence shall have the right to
+be presumed innocent until proved guilty according to law.
+37
+3. In the determination of any criminal charge against him,
+everyone shall be entitled to the following minimum guarantees, in full
+equality:
+(a) To be informed promptly and in detail in a language which
+he understands of the nature and cause of the charge against him;
+(b) To have adequate time and facilities for the preparation of
+his defence and to communicate with counsel of his own choosing;
+(c) To be tried without undue delay;
+(d) To be tried in his presence, and to defend himself in person
+or through legal assistance of his own choosing; to be informed, if hedoes not have legal assistance, of this right; and to have legal assistanceassigned to him, in any case where the interests of justice so require, andwithout payment by him in any such case if he does not have sufficientmeans to pay for it;
+(e) To examine, or have examined, the witnesses against him
+and to obtain the attendance and examination of witnesses on his behalfunder the same conditions as witnesses against him;
+(f) To have the free assistance of an interpreter if he cannot
+understand or speak the language used in court;
+(g) Not to be compelled to testify against himself or to confess
+guilt.
+4. In the case of juvenile persons, the procedure shall be such as
+will take account of their age and the desirability of promoting theirrehabilitation.
+5. Everyone convicted of a crime shall have the right to his
+conviction and sentence being reviewed by a higher tribunal according tolaw.
+6. When a person has by a final decision been convicted of a
+criminal offence and when subsequently his conviction has been reversedor he has been pardoned on the ground that a new or newly discoveredfact shows conclusively that there has been a miscarriage of justice, theperson who has suffered punishment as a result of such conviction shallbe compensated according to law, unless it is proved that the non-disclosure of the unknown fact in time is wholly or partly attributable tohim.
+38
+7. No one shall be liable to be tried or punished again for an
+offence for which he has already been finally convicted or acquitted in
+accordance with the law and penal procedure of each country.
+Article 15
+1. No one shall be held guilty of any criminal offence on account of
+any act or omission which did not constitute a criminal offence, undernational or international law, at the time when it was committed. Norshall a heavier penalty be imposed than the one that was applicable at thetime when the criminal offence was committed. If, subsequent to thecommission of the offence, provision is made by law for the imposition ofthe lighter penalty, the offender shall benefit thereby.
+2. Nothing in this article shall prejudice the trial and punishment of
+any person for any act or omission which, at the time when it wascommitted, was criminal according to the general principles of lawrecognized by the community of nations.
+Article 16
+Everyone shall have the right to recognition everywhere as a person
+before the law.
+Article 17
+1. No one shall be subjected to arbitrary or unlawful interference
+with his privacy, family, home or correspondence, nor to unlawful attackson his honour and reputation.
+2. Everyone has the right to the protection of the law against such
+interference or attacks.
+Article 18
+1. Everyone shall have the right to freedom of thought, conscience
+and religion. This right shall include freedom to have or to adopt a religionor belief of his choice, and freedom, either individually or in communitywith others and in public or private, to manifest his religion or belief inworship, observance, practice and teaching.
+2. No one shall be subject to coercion which would impair his
+freedom to have or to adopt a religion or belief of his choice.
+39
+3. Freedom to manifest one’s religion or beliefs may be subject only
+to such limitations as are prescribed by law and are necessary to protect
+public safety, order, health, or morals or the fundamental rights andfreedoms of others.
+4. The States parties to the present Covenant undertake to have
+respect for the liberty of parents and, when applicable, legal guardians toensure the religious and moral education of their children in conformitywith their own convictions.
+Article 19
+1. Everyone shall have the right to hold opinions without
+interference.
+2. Everyone shall have the right to freedom of expression; this right
+shall include freedom to seek, receive and impart information and ideasof all kinds, regardless of frontiers, either orally, in writing or in print, inthe form of art, or through any other media of his choice.
+3. The exercise of the rights provided for in paragraph 2 of this
+article carries with it special duties and responsibilities. It may therefore besubject to certain restrictions, but these shall only be such as are providedby law and are necessary:
+(a) For respect of the rights or reputations of others;
+(b) For the protection of national security or of public order
+(ordre public), or of public health or morals.
+Article 20
+1. Any propaganda for war shall be prohibited by law.2. Any advocacy of national, racial or religious hatred that
+constitutes incitement to discrimination, hostility or violence shall be
+prohibited by law.
+Article 21
+The right of peaceful assembly shall be recognized. No restrictions
+may be placed on the exercise of this right other than those imposed inconformity with the law and which are necessary in a democratic societyin the interests of national security or public safety, public order (ordrepublic ), the protection of public health or morals or the protection of the
+rights and freedoms of others.
+40
+Article 22
+1. Everyone shall have the right to freedom of association with
+others, including the right to form and join trade unions for the
+protection of his interests.
+2. No restrictions may be placed on the exercise of this right other
+than those which are prescribed by law and which are necessary in ademocratic society in the interests of national security or public safety,public order ( ordre public), the protection of public health or morals or
+the protection of the rights and freedoms of others. This article shall notprevent the imposition of lawful restrictions on members of the armedforces and of the police in their exercise of this right.
+3. Nothing in this article shall authorize States parties to the
+International Labour Organisation Convention of 1948 concerningFreedom of Association and Protection of the Right to Organise to takelegislative measures which would prejudice, or to apply the law in such amanner as to prejudice, the guarantees provided for in that Convention.
+Article 23
+1. The family is the natural and fundamental group unit of society
+and is entitled to protection by society and the State.
+2. The right of men and women of marriageable age to marry and
+to found a family shall be recognized.
+3. No marriage shall be entered into without the free and full
+consent of the intending spouses.
+4. States parties to the present Covenant shall take appropriate
+steps to ensure equality of rights and responsibilities of spouses as tomarriage, during marriage and at its dissolution. In the case of dissolution,provision shall be made for the necessary protection of any children.
+Article 24
+1. Every child shall have, without any discrimination as to race,
+colour, sex, language, religion, national or social origin, property or birth,the right to such measures of protection as are required by his status as aminor, on the part of his family, society and the State.
+2. Every child shall be registered immediately after birth and shall
+have a name.
+3. Every child has the right to acquire a nationality.
+41
+Article 25
+Every citizen shall have the right and the opportunity, without any
+of the distinctions mentioned in article 2 and without unreasonable
+restrictions:
+(a) To take part in the conduct of public affairs, directly or
+through freely chosen representatives;
+(b) To vote and to be elected at genuine periodic elections
+which shall be by universal and equal suffrage and shall be held by secretballot, guaranteeing the free expression of the will of the electors;
+(c) To have access, on general terms of equality, to public
+service in his country.
+Article 26
+All persons are equal before the law and are entitled without any
+discrimination to the equal protection of the law. In this respect, the lawshall prohibit any discrimination and guarantee to all persons equal andeffective protection against discrimination on any ground such as race,colour, sex, language, religion, political or other opinion, national or socialorigin, property, birth or other status.
+Article 27
+In those States in which ethnic, religious or linguistic minorities exist,
+persons belonging to such minorities shall not be denied the right, incommunity with the other members of their group, to enjoy their ownculture, to profess and practise their own religion, or to use their ownlanguage.
+PART IV
+Article 28
+1. There shall be established a Human Rights Committee (hereafter
+referred to in the present Covenant as the Committee). It shall consist of18 members and shall carry out the functions hereinafter provided.
+2. The Committee shall be composed of nationals of the States
+parties to the present Covenant who shall be persons of high moralcharacter and recognized competence in the field of human rights,
+42
+consideration being given to the usefulness of the participation of some
+persons having legal experience.
+3. The members of the Committee shall be elected and shall serve
+in their personal capacity.
+Article 29
+1. The members of the Committee shall be elected by secret ballot
+from a list of persons possessing the qualifications prescribed in article 28and nominated for the purpose by the States parties to the presentCovenant.
+2. Each State party to the present Covenant may nominate not
+more than two persons. These persons shall be nationals of thenominating State.
+3. A person shall be eligible for renomination.
+Article 30
+1. The initial election shall be held no later than six months after
+the date of the entry into force of the present Covenant.
+2. At least four months before the date of each election to the
+Committee, other than an election to fill a vacancy declared in accordancewith article 34, the Secretary-General of the United Nations shall addressa written invitation to the States parties to the present Covenant tosubmit their nominations for membership of the Committee within threemonths.
+3. The Secretary-General of the United Nations shall prepare a list
+in alphabetical order of all the persons thus nominated, with an indicationof the States parties which have nominated them, and shall submit it tothe States parties to the present Covenant no later than one monthbefore the date of each election.
+4. Elections of the members of the Committee shall be held at a
+meeting of the States parties to the present Covenant convened by theSecretary-General of the United Nations at the Headquarters of theUnited Nations. At that meeting, for which two thirds of the States partiesto the present Covenant shall constitute a quorum, the persons elected tothe Committee shall be those nominees who obtain the largest numberof votes and an absolute majority of the votes of the representatives ofStates parties present and voting.
+43
+Article 31
+1. The Committee may not include more than one national of the
+same State.
+2. In the election of the Committee, consideration shall be given to
+equitable geographical distribution of membership and to the
+representation of the different forms of civilization and of the principallegal systems.
+Article 32
+1. The members of the Committee shall be elected for a term of
+four years. They shall be eligible for re-election if renominated. However,the terms of nine of the members elected at the first election shall expireat the end of two years; immediately after the first election, the names ofthese nine members shall be chosen by lot by the Chairman of themeeting referred to in article 30, paragraph 4.
+2. Elections at the expiry of office shall be held in accordance with
+the preceding articles of this part of the present Covenant.
+Article 33
+1. If, in the unanimous opinion of the other members, a member
+of the Committee has ceased to carry out his functions for any causeother than absence of a temporary character, the Chairman of theCommittee shall notify the Secretary-General of the United Nations, whoshall then declare the seat of that member to be vacant.
+2. In the event of the death or the resignation of a member of the
+Committee, the Chairman shall immediately notify the Secretary-Generalof the United Nations, who shall declare the seat vacant from the date ofdeath or the date on which the resignation takes effect.
+Article 34
+1. When a vacancy is declared in accordance with article 33 and if
+the term of office of the member to be replaced does not expire withinsix months of the declaration of the vacancy, the Secretary-General of theUnited Nations shall notify each of the States parties to the presentCovenant, which may within two months submit nominations inaccordance with article 29 for the purpose of filling the vacancy.
+2. The Secretary-General of the United Nations shall prepare a list
+in alphabetical order of the persons thus nominated and shall submit it to
+44
+the States parties to the present Covenant. The election to fill the vacancy
+shall then take place in accordance with the relevant provisions of thispart of the present Covenant.
+3. A member of the Committee elected to fill a vacancy declared in
+accordance with article 33 shall hold office for the remainder of the termof the member who vacated the seat on the Committee under theprovisions of that article.
+Article 35
+The members of the Committee shall, with the approval of the
+General Assembly of the United Nations, receive emoluments from UnitedNations resources on such terms and conditions as the General Assemblymay decide, having regard to the importance of the Committee’sresponsibilities.
+Article 36
+The Secretary-General of the United Nations shall provide the
+necessary staff and facilities for the effective performance of the functionsof the Committee under the present Covenant.
+Article 37
+1. The Secretary-General of the United Nations shall convene the
+initial meeting of the Committee at the Headquarters of the UnitedNations.
+2. After its initial meeting, the Committee shall meet at such times
+as shall be provided in its rules of procedure.
+3. The Committee shall normally meet at the Headquarters of the
+United Nations or at the United Nations Office at Geneva.
+Article 38
+Every member of the Committee shall, before taking up his duties,
+make a solemn declaration in open committee that he will perform hisfunctions impartially and conscientiously.
+Article 39
+1. The Committee shall elect its officers for a term of two years.
+They may be re-elected.
+45
+2. The Committee shall establish its own rules of procedure, but
+these rules shall provide, inter alia, that:
+(a) Twelve members shall constitute a quorum;
+(b) Decisions of the Committee shall be made by a majority vote
+of the members present.
+Article 40
+1. The States parties to the present Covenant undertake to submit
+reports on the measures they have adopted which give effect to the rights
+recognized herein and on the progress made in the enjoyment of thoserights:
+(a) Within one year of the entry into force of the present
+Covenant for the States parties concerned;
+(b) Thereafter whenever the Committee so requests.
+2. All reports shall be submitted to the Secretary-General of the
+United Nations, who shall transmit them to the Committee forconsideration. Reports shall indicate the factors and difficulties, if any,affecting the implementation of the present Covenant.
+3. The Secretary-General of the United Nations may, after
+consultation with the Committee, transmit to the specialized agenciesconcerned copies of such parts of the reports as may fall within their fieldof competence.
+4. The Committee shall study the reports submitted by the States
+parties to the present Covenant. It shall transmit its reports, and suchgeneral comments as it may consider appropriate, to the States parties.The Committee may also transmit to the Economic and Social Councilthese comments along with the copies of the reports it has received fromStates parties to the present Covenant.
+5. The States parties to the present Covenant may submit to the
+Committee observations on any comments that may be made inaccordance with paragraph 4 of this article.
+Article 41
+1. A State party to the present Covenant may at any time declare
+under this article that it recognizes the competence of the Committee toreceive and consider communications to the effect that a State partyclaims that another State party is not fulfilling its obligations under the
+46
+present Covenant. Communications under this article may be received
+and considered only if submitted by a State party which has made adeclaration recognizing in regard to itself the competence of theCommittee. No communication shall be received by the Committee if itconcerns a State party which has not made such a declaration.Communications received under this article shall be dealt with inaccordance with the following procedure:
+(a) If a State party to the present Covenant considers that
+another State party is not giving effect to the provisions of the presentCovenant, it may, by written communication, bring the matter to theattention of that State party. Within three months after the receipt of thecommunication the receiving State shall afford the State which sent thecommunication an explanation, or any other statement in writingclarifying the matter which should include, to the extent possible andpertinent, reference to domestic procedures and remedies taken,pending, or available in the matter;
+(b) If the matter is not adjusted to the satisfaction of both
+States parties concerned within six months after the receipt by thereceiving State of the initial communication, either State shall have theright to refer the matter to the Committee, by notice given to theCommittee and to the other State;
+(c) The Committee shall deal with a matter referred to it only
+after it has ascertained that all available domestic remedies have beeninvoked and exhausted in the matter, in conformity with the generallyrecognized principles of international law. This shall not be the rule wherethe application of the remedies is unreasonably prolonged;
+(d) The Committee shall hold closed meetings when examining
+communications under this article;
+(e) Subject to the provisions of subparagraph ( c), the
+Committee shall make available its good offices to the States partiesconcerned with a view to a friendly solution of the matter on the basis ofrespect for human rights and fundamental freedoms as recognized in thepresent Covenant;
+(f) In any matter referred to it, the Committee may call upon
+the States parties concerned, referred to in subparagraph ( b), to supply
+any relevant information;
+(g) The States parties concerned, referred to in subparagraph
+(b), shall have the right to be represented when the matter is being
+47
+considered in the Committee and to make submissions orally and/or in
+writing;
+(h) The Committee shall, within 12 months after the date of
+receipt of notice under subparagraph (b), submit a report:
+(i) If a solution within the terms of subparagraph
+(e) is reached, the Committee shall confine its report to a brief statementof the facts and of the solution reached;
+(ii) If a solution within the terms of subparagraph
+(e) is not reached, the Committee shall confine its report to a briefstatement of the facts; the written submissions and record of the oralsubmissions made by the States parties concerned shall be attached tothe report.
+In every matter, the report shall be communicated to the States
+parties concerned.
+2. The provisions of this article shall come into force when 10
+States parties to the present Covenant have made declarations underparagraph 1 of this article. Such declarations shall be deposited by theStates parties with the Secretary-General of the United Nations, who shalltransmit copies thereof to the other States parties. A declaration may bewithdrawn at any time by notification to the Secretary-General. Such awithdrawal shall not prejudice the consideration of any matter which isthe subject of a communication already transmitted under this article; nofurther communication by any State party shall be received after thenotification of withdrawal of the declaration has been received by theSecretary-General, unless the State party concerned has made a newdeclaration.
+Article 42
+1. (a) If a matter referred to the Committee in accordance with
+article 41 is not resolved to the satisfaction of the States partiesconcerned, the Committee may, with the prior consent of the Statesparties concerned, appoint an ad hoc Conciliation Commission(hereinafter referred to as the Commission). The good offices of theCommission shall be made available to the States parties concerned witha view to an amicable solution of the matter on the basis of respect forthe present Covenant;
+(b) The Commission shall consist of five persons acceptable to
+the States parties concerned. If the States parties concerned fail to reachagreement within three months on all or part of the composition of the
+48
+Commission, the members of the Commission concerning whom no
+agreement has been reached shall be elected by secret ballot by a two-thirds majority vote of the Committee from among its members.
+2. The members of the Commission shall serve in their personal
+capacity. They shall not be nationals of the States parties concerned, or ofa State not party to the present Covenant, or of a State party which hasnot made a declaration under article 41.
+3. The Commission shall elect its own Chairman and adopt its own
+rules of procedure.
+4. The meetings of the Commission shall normally be held at the
+Headquarters of the United Nations or at the United Nations Office atGeneva. However, they may be held at such other convenient places asthe Commission may determine in consultation with the Secretary-General of the United Nations and the States parties concerned.
+5. The secretariat provided in accordance with article 36 shall also
+service the commissions appointed under this article.
+6. The information received and collated by the Committee shall be
+made available to the Commission and the Commission may call upon theStates parties concerned to supply any other relevant information.
+7. When the Commission has fully considered the matter, but in
+any event not later than 12 months after having been seized of thematter, it shall submit to the Chairman of the Committee a report forcommunication to the States parties concerned:
+(a) If the Commission is unable to complete its consideration of
+the matter within 12 months, it shall confine its report to a briefstatement of the status of its consideration of the matter;
+(b) If an amicable solution to the matter on the basis of respect
+for human rights as recognized in the present Covenant is reached, theCommission shall confine its report to a brief statement of the facts andof the solution reached;
+(c) If a solution within the terms of subparagraph ( b) is not
+reached, the Commission’s report shall embody its findings on allquestions of fact relevant to the issues between the States partiesconcerned, and its views on the possibilities of an amicable solution of thematter. This report shall also contain the written submissions and a recordof the oral submissions made by the States parties concerned;
+49
+(d) If the Commission’s report is submitted under subparagraph
+(c), the States parties concerned shall, within three months of the receipt
+of the report, notify the Chairman of the Committee whether or not they
+accept the contents of the report of the Commission.
+8. The provisions of this article are without prejudice to the
+responsibilities of the Committee under article 41.
+9. The States parties concerned shall share equally all the expenses
+of the members of the Commission in accordance with estimates to beprovided by the Secretary-General of the United Nations.
+10. The Secretary-General of the United Nations shall be
+empowered to pay the expenses of the members of the Commission, ifnecessary, before reimbursement by the States parties concerned, inaccordance with paragraph 9 of this article.
+Article 43
+The members of the Committee, and of the ad hoc conciliation
+commissions which may be appointed under article 42, shall be entitledto the facilities, privileges and immunities of experts on mission for theUnited Nations as laid down in the relevant sections of the Convention onthe Privileges and Immunities of the United Nations.
+Article 44
+The provisions for the implementation of the present Covenant shall
+apply without prejudice to the procedures prescribed in the field ofhuman rights by or under the constituent instruments and theconventions of the United Nations and of the specialized agencies andshall not prevent the States parties to the present Covenant from havingrecourse to other procedures for settling a dispute in accordance withgeneral or special international agreements in force between them.
+Article 45
+The Committee shall submit to the General Assembly of the United
+Nations, through the Economic and Social Council, an annual report onits activities.
+50
+PART V
+Article 46
+Nothing in the present Covenant shall be interpreted as impairing
+the provisions of the Charter of the United Nations and of the
+constitutions of the specialized agencies which define the respectiveresponsibilities of the various organs of the United Nations and of thespecialized agencies in regard to the matters dealt with in the presentCovenant.
+Article 47
+Nothing in the present Covenant shall be interpreted as impairing
+the inherent right of all peoples to enjoy and utilize fully and freely theirnatural wealth and resources.
+PART VI
+Article 48
+1. The present Covenant is open for signature by any State
+Member of the United Nations or member of any of its specializedagencies, by any State party to the Statute of the International Court ofJustice, and by any other State which has been invited by the GeneralAssembly of the United Nations to become a party to the presentCovenant.
+2. The present Covenant is subject to ratification. Instruments of
+ratification shall be deposited with the Secretary-General of the UnitedNations.
+3. The present Covenant shall be open to accession by any State
+referred to in paragraph 1 of this article.
+4. Accession shall be effected by the deposit of an instrument of
+accession with the Secretary-General of the United Nations.
+5. The Secretary-General of the United Nations shall inform all
+States which have signed this Covenant or acceded to it of the deposit ofeach instrument of ratification or accession.
+51
+Article 49
+1. The present Covenant shall enter into force three months after
+the date of the deposit with the Secretary-General of the United Nations
+of the thirty-fifth instrument of ratification or instrument of accession.
+2. For each State ratifying the present Covenant or acceding to it
+after the deposit of the thirty-fifth instrument of ratification or instrumentof accession, the present Covenant shall enter into force three monthsafter the date of the deposit of its own instrument of ratification orinstrument of accession.
+Article 50
+The provisions of the present Covenant shall extend to all parts of
+federal States without any limitations or exceptions.
+Article 51
+1. Any State party to the present Covenant may propose an
+amendment and file it with the Secretary-General of the United Nations.The Secretary-General of the United Nations shall thereuponcommunicate any proposed amendments to the States parties to thepresent Covenant with a request that they notify him whether they favoura conference of States parties for the purpose of considering and votingupon the proposals. In the event that at least one third of the Statesparties favours such a conference, the Secretary-General shall convenethe conference under the auspices of the United Nations. Anyamendment adopted by a majority of the States parties present andvoting at the conference shall be submitted to the General Assembly ofthe United Nations for approval.
+2. Amendments shall come into force when they have been
+approved by the General Assembly of the United Nations and accepted bya two-thirds majority of the States parties to the present Covenant inaccordance with their respective constitutional processes.
+3. When amendments come into force, they shall be binding on
+those States parties which have accepted them, other States parties stillbeing bound by the provisions of the present Covenant and any earlieramendment which they have accepted.
+52
+Article 52
+Irrespective of the notifications made under article 48, paragraph 5,
+the Secretary-General of the United Nations shall inform all States
+referred to in paragraph 1 of the same article of the following particulars:
+(a) Signatures, ratifications and accessions under article 48;
+(b) The date of the entry into force of the present Covenant
+under article 49 and the date of the entry into force of any amendments
+under article 51.
+Article 53
+1. The present Covenant, of which the Chinese, English, French,
+Russian and Spanish texts are equally authentic, shall be deposited in thearchives of the United Nations.
+2. The Secretary-General of the United Nations shall transmit
+certified copies of the present Covenant to all States referred to in article 48.
+53
+
+Annex II
+OPTIONAL PROTOCOL TO THE INTERNATIONAL COVENANT ON CIVIL
+AND POLITICAL RIGHTS
+Adopted and opened for signature, ratification and accession by
+General Assembly resolution 2200 A (XXI) of 16 December 1966
+Entry into force: 23 March 1976, in accordance with article 9
+The States parties to the present Protocol,
+Considering that in order further to achieve the purposes of the
+International Covenant on Civil and Political Rights (hereinafter referred to
+as the Covenant) and the implementation of its provisions it would beappropriate to enable the Human Rights Committee set up in Part IV ofthe Covenant (hereinafter referred to as the Committee) to receive andconsider, as provided in the present Protocol, communications fromindividuals claiming to be victims of violations of any of the rights set forthin the Covenant
+Have agreed as follows:
+Article 1
+A State party to the Covenant that becomes a party to the present
+Protocol recognizes the competence of the Committee to receive andconsider communications from individuals subject to its jurisdiction whoclaim to be victims of a violation by that State party of any of the rightsset forth in the Covenant. No communication shall be received by theCommittee if it concerns a State party to the Covenant which is not aparty to the present Protocol.
+Article 2
+Subject to the provisions of article 1, individuals who claim that any
+of their rights enumerated in the Covenant have been violated and whohave exhausted all available domestic remedies may submit a writtencommunication to the Committee for consideration.
+Article 3
+The Committee shall consider inadmissible any communication
+under the present Protocol which is anonymous, or which it considers to
+55
+be an abuse of the right of submission of such communications or to be
+incompatible with the provisions of the Covenant.
+Article 4
+1. Subject to the provisions of article 3, the Committee shall bring
+any communications submitted to it under the present Protocol to theattention of the State party to the present Protocol alleged to be violatingany provision of the Covenant.
+2. Within six months, the receiving State shall submit to the
+Committee written explanations or statements clarifying the matter andthe remedy, if any, that may have been taken by that State.
+Article 5
+1. The Committee shall consider communications received under
+the present Protocol in the light of all written information made availableto it by the individual and by the State party concerned.
+2. The Committee shall not consider any communication from an
+individual unless it has ascertained that:
+(a) The same matter is not being examined under another
+procedure of international investigation or settlement;
+(b) The individual has exhausted all available domestic
+remedies. This shall not be the rule where the application of the remediesis unreasonably prolonged.
+3. The Committee shall hold closed meetings when examining
+communications under the present Protocol.
+4. The Committee shall forward its views to the State party
+concerned and to the individual.
+Article 6
+The Committee shall include in its annual report under article 45 of
+the Covenant a summary of its activities under the present Protocol.
+Article 7
+Pending the achievement of the objectives of resolution 1514 (XV)
+adopted by the General Assembly of the United Nations on 14 December1960 concerning the Declaration on the Granting of Independence to
+56
+Colonial Countries and Peoples, the provisions of the present Protocol
+shall in no way limit the right of petition granted to these peoples by theCharter of the United Nations and other international conventions andinstruments under the United Nations and its specialized agencies.
+Article 8
+1. The present Protocol is open for signature by any State which
+has signed the Covenant.
+2. The present Protocol is subject to ratification by any State which
+has ratified or acceded to the Covenant. Instruments of ratification shallbe deposited with the Secretary-General of the United Nations.
+3. The present Protocol shall be open to accession by any State
+which has ratified or acceded to the Covenant.
+4. Accession shall be effected by the deposit of an instrument of
+accession with the Secretary-General of the United Nations.
+5. The Secretary-General of the United Nations shall inform all
+States which have signed the present Protocol or acceded to it of thedeposit of each instrument of ratification or accession.
+Article 9
+1. Subject to the entry into force of the Covenant, the present
+Protocol shall enter into force three months after the date of the depositwith the Secretary-General of the United Nations of the tenth instrumentof ratification or instrument of accession.
+2. For each State ratifying the present Protocol or acceding to it
+after the deposit of the tenth instrument of ratification or instrument ofaccession, the present Protocol shall enter into force three months afterthe date of the deposit of its own instrument of ratification or instrumentof accession.
+Article 10
+The provisions of the present Protocol shall extend to all parts of
+federal States without any limitations or exceptions.
+Article 11
+1. Any State party to the present Protocol may propose an
+amendment and file it with the Secretary-General of the United Nations.
+57
+The Secretary-General shall thereupon communicate any proposed
+amendments to the States parties to the present Protocol with a requestthat they notify him whether they favour a conference of States partiesfor the purpose of considering and voting upon the proposal. In the eventthat at least one third of the States parties favours such a conference, theSecretary-General shall convene the conference under the auspices of theUnited Nations. Any amendment adopted by a majority of the Statesparties present and voting at the conference shall be submitted to theGeneral Assembly of the United Nations for approval.
+2. Amendments shall come into force when they have been
+approved by the General Assembly of the United Nations and accepted bya two-thirds majority of the States parties to the present Protocol inaccordance with their respective constitutional processes.
+3. When amendments come into force, they shall be binding on
+those States parties which have accepted them, other States parties stillbeing bound by the provisions of the present Protocol and any earlieramendment which they have accepted.
+Article 12
+1. Any State party may denounce the present Protocol at any time
+by written notification addressed to the Secretary-General of the UnitedNations. Denunciation shall take effect three months after the date ofreceipt of the notification by the Secretary-General.
+2. Denunciation shall be without prejudice to the continued
+application of the provisions of the present Protocol to anycommunication submitted under article 2 before the effective date ofdenunciation.
+Article 13
+Irrespective of the notifications made under article 8, paragraph 5,
+of the present Protocol, the Secretary-General of the United Nations shallinform all States referred to in article 48, paragraph 1, of the Covenant ofthe following particulars:
+(a) Signatures, ratifications and accessions under article 8;
+(b) The date of the entry into force of the present Protocol
+under article 9 and the date of the entry into force of any amendments
+under article 11;
+(c) Denunciations under article 12.
+58
+Article 14
+1. The present Protocol, of which the Chinese, English, French,
+Russian and Spanish texts are equally authentic, shall be deposited in the
+archives of the United Nations.
+2. The Secretary-General of the United Nations shall transmit
+certified copies of the present Protocol to all States referred to in article48 of the Covenant.
+59
+61Annex III
+SECOND OPTIONAL PROTOCOL TO THE INTERNATIONAL COVENANT
+ON CIVIL AND POLITICAL RIGHTS, 
+AIMING AT THE ABOLITION OF THE DEATH PENALTY
+Adopted and proclaimed by General Assembly resolution 44/128 of
+15 December 1989
+The States parties to the present Protocol,
+Believing that abolition of the death penalty contributes to
+enhancement of human dignity and progressive development of human
+rights,
+Recalling article 3 of the Universal Declaration of Human Rights,
+adopted on 10 December 1948, and article 6 of the InternationalCovenant on Civil and Political Rights, adopted on 16 December 1966,
+Noting that article 6 of the International Covenant on Civil and
+Political Rights refers to abolition of the death penalty in terms thatstrongly suggest that abolition is desirable,
+Convinced that all measures of abolition of the death penalty should
+be considered as progress in the enjoyment of the right to life,
+Desirous to undertake hereby an international commitment to
+abolish the death penalty,
+Have agreed as follows:
+Article 1
+1. No one within the jurisdiction of a State party to the present
+Protocol shall be executed.
+2. Each State party shall take all necessary measures to abolish the
+death penalty within its jurisdiction.
+Article 2
+1. No reservation is admissible to the present Protocol, except for a
+reservation made at the time of ratification or accession that provides forthe application of the death penalty in time of war pursuant to aconviction for a most serious crime of a military nature committed duringwartime.
+2. The State party making such a reservation shall at the time of
+ratification or accession communicate to the Secretary-General of the
+United Nations the relevant provisions of its national legislation applicableduring wartime.
+3. The State party having made such a reservation shall notify the
+Secretary-General of the United Nations of any beginning or ending of astate of war applicable to its territory.
+Article 3
+The States parties to the present Protocol shall include in the reports
+they submit to the Human Rights Committee, in accordance with article40 of the Covenant, information on the measures that they have adoptedto give effect to the present Protocol.
+Article 4
+With respect to the States parties to the Covenant that have made
+a declaration under article 41, the competence of the Human RightsCommittee to receive and consider communications when a State partyclaims that another State party is not fulfilling its obligations shall extendto the provisions of the present Protocol, unless the State party concernedhas made a statement to the contrary at the moment of ratification oraccession.
+Article 5
+With respect to the States parties to the first Optional Protocol to
+the International Covenant on Civil and Political Rights adopted on 16December 1966, the competence of the Human Rights Committee toreceive and consider communications from individuals subject to itsjurisdiction shall extend to the provisions of the present Protocol, unlessthe State party concerned has made a statement to the contrary at themoment of ratification or accession.
+Article 6
+1. The provisions of the present Protocol shall apply as additional
+provisions to the Covenant.
+2. Without prejudice to the possibility of a reservation under article
+2 of the present Protocol, the right guaranteed in article 1, paragraph 1,of the present Protocol shall not be subject to any derogation underarticle 4 of the Covenant.
+62
+Article 7
+1. The present Protocol is open for signature by any State that has
+signed the Covenant.
+2. The present Protocol is subject to ratification by any State that
+has ratified the Covenant or acceded to it. Instruments of ratification shall
+be deposited with the Secretary-General of the United Nations.
+3. The present Protocol shall be open to accession by any State that
+has ratified the Covenant or acceded to it.
+4. Accession shall be effected by the deposit of an instrument of
+accession with the Secretary-General of the United Nations.
+5. The Secretary-General of the United Nations shall inform all
+States that have signed the present Protocol or acceded to it of thedeposit of each instrument of ratification or accession.
+Article 8
+1. The present Protocol shall enter into force three months after the
+date of the deposit with the Secretary-General of the United Nations ofthe tenth instrument of ratification or accession.
+2. For each State ratifying the present Protocol or acceding to it
+after the deposit of the tenth instrument of ratification or accession, thepresent Protocol shall enter into force three months after the date of thedeposit of its own instrument of ratification or accession.
+Article 9
+The provisions of the present Protocol shall extend to all parts of
+federal States without any limitations or exceptions.
+Article 10
+The Secretary-General of the United Nations shall inform all States
+referred to in article 48, paragraph 1, of the Covenant of the followingparticulars:
+(a) Reservations, communications and notifications under
+article 2 of the present Protocol;
+(b) Statements made under articles 4 or 5 of the present
+Protocol;
+63
+(c) Signatures, ratifications and accessions under article 7 of the
+present Protocol;
+(d) The date of the entry into force of the present Protocol
+under article 8 thereof.
+Article 11
+1. The present Protocol, of which the Arabic, Chinese, English,
+French, Russian and Spanish texts are equally authentic, shall be
+deposited in the archives of the United Nations.
+2. The Secretary-General of the United Nations shall transmit
+certified copies of the present Protocol to all States referred to in article48 of the Covenant.
+64
+Human Rights Fact Sheets: *
+No. 2 The International Bill of Human Rights (Rev.1)
+No. 3 Advisory Services and Technical Cooperation in the Field of
+Human Rights (Rev.1)
+No. 4 Combating Torture (Rev.1)No. 6 Enforced or Involuntary Disappearances (Rev.2)No. 7 Complaint Procedures (Rev.1)No. 9 The Rights of Indigenous Peoples (Rev.1)No. 10 The Rights of the Child (Rev.1)No. 11 Extrajudicial, Summary or Arbitrary Executions (Rev.1)No. 12 The Committee on the Elimination of Racial DiscriminationNo. 13 International Humanitarian Law and Human RightsNo. 14 Contemporary Forms of SlaveryNo. 15 Civil and Political Rights: The Human Rights Committee (Rev.1)No. 16 The Committee on Economic, Social and Cultural Rights
+(Rev.1)
+No. 17 The Committee against TortureNo. 18 Minority Rights (Rev.1)No. 19 National Institutions for the Promotion and Protection of
+Human Rights
+No. 20 Human Rights and RefugeesNo. 21 The Human Right to Adequate HousingNo. 22 Discrimination against Women: The Convention and the
+Committee
+No. 23 Harmful Traditional Practices Affecting the Health of Women
+and Children
+No. 24 The Rights of Migrant WorkersNo. 25 Forced Evictions and Human RightsNo. 26 The Working Group on Arbitrary DetentionNo. 27 Seventeen Frequently Asked Questions about United Nations
+Special Rapporteurs
+No. 28 The Impact of Mercenary Activities on the Right of Peoples to
+Self-determination
+No. 29 Human Rights Defenders: Protecting the Right to Defend
+Human Rights
+65
+* Fact Sheets Nos. 1, 5 and 8 are no longer issued.
+66The Human Rights Fact Sheet series is published by the Office of the
+United Nations High Commissioner for Human Rights, United Nations
+Office at Geneva. It deals with selected questions of human rights that areunder active consideration or are of particular interest.
+Human Rights Fact Sheets are intended to assist an ever-wider
+audience in better understanding basic human rights, what the UnitedNations is doing to promote and protect them, and the internationalmachinery available to help realize those rights. Human Rights Fact Sheetsare free of charge and distributed worldwide. Their reproduction inlanguages other than the official United Nations languages is encouragedprovided that no changes are made to the contents and the Office of theUnited Nations High Commissioner for Human Rights in Geneva isadvised by the reproducing organization and given credit as being thesource of the material.
+Inquiries should be addressed to:
+Office of the United Nations High Commissioner for Human Rights
+United Nations Office at Geneva8-14, Avenue de la Paix1211 Geneva 10Switzerland
+New York Office:
+Office of the United Nations High Commissioner for Human RightsUnited NationsNew York, NY 10017
+United States of America
+Printed at United Nations, Geneva ISSN 1014-5567
+GE.04-43671–May 2005–11,845

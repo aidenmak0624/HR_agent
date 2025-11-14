@@ -1,0 +1,30 @@
+# Core Framework
+Flask==3.0.0
+flask-cors==4.0.0
+python-dotenv==1.0.0
+
+# Agent Framework - PINNED VERSIONS
+langgraph==0.2.16
+langchain==0.2.16
+langchain-google-genai==1.0.10
+langchain-core==0.2.38
+langchain-community==0.2.16
+
+# Vector Database
+chromadb==0.4.22
+sentence-transformers==2.7.0
+
+# ML/AI
+google-generativeai==0.7.2
+numpy==1.26.4
+
+# Utilities
+requests==2.31.0
+
+# Testing
+pytest==7.4.0
+pytest-cov==4.1.0
+
+# Development (optional)
+black==23.7.0
+flake8==6.1.0

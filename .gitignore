@@ -1,0 +1,17 @@
+.env
+.env.local
+.env.*.local
+*.key
+secrets.json
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+chromadb/
+*.db
+*.log
+logs/
+.vscode/
+.idea/
+.DS_Store
+.pytest_cache/

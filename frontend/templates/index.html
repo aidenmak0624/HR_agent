@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Rights Education Platform - AI Agent</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <meta name="description" content="Learn about human rights through AI-powered conversation with autonomous agent">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Human Rights Education Platform</h1>
+            <p>Learn about human rights through AI-powered conversation</p>
+        </header>
+
+        <div id="agent-controls-section" class="agent-controls section">
+            <h3>🤖 Agent Settings</h3>
+            
+            <div class="control-row">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="agent-mode" checked>
+                    <span class="slider"></span>
+                    <span class="toggle-label">Agent Mode (autonomous tool selection)</span>
+                </label>
+                <p class="control-description">
+                    When enabled, the AI agent autonomously decides which tools to use based on your question.
+                </p>
+            </div>
+
+            <div class="control-row">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="debug-mode">
+                    <span class="slider"></span>
+                    <span class="toggle-label">Debug Mode (show reasoning trace)</span>
+                </label>
+                <p class="control-description">
+                    View the agent's step-by-step reasoning process and see which tools it selected.
+                </p>
+            </div>
+            
+            </div>
+
+        <div id="topic-selection" class="section">
+            <h2 style="text-align: center; margin-bottom: 30px;">Choose a Topic</h2>
+            <div id="topics-grid" class="topics-grid">
+                </div>
+        </div>
+
+        <div id="chat-section" class="section hidden">
+            <div class="chat-header">
+                <button id="back-btn" class="btn-secondary">← Back to Topics</button>
+                <h2 id="current-topic">Topic Name</h2>
+                <div class="header-buttons">
+                    <button class="clear-btn" onclick="clearConversation()">🗑️ Clear</button>
+                </div>
+            </div>
+
+            <div id="chat-container" class="chat-container">
+                </div>
+
+            <div class="chat-controls">
+                <div class="difficulty-selector">
+                    <label for="difficulty">Level:</label>
+                    <select id="difficulty" onchange="updateDifficulty(this.value)">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                    <span class="difficulty-hint" id="difficulty-hint">
+                        Balanced detail and accessibility
+                    </span>
+                </div>
+
+                <div class="input-container">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        placeholder="Ask a question about human rights..."
+                        autocomplete="off"
+                        aria-label="Message input"
+                    >
+                    <button id="send-btn" class="btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/agent.js"></script>
+</body>
+</html>
