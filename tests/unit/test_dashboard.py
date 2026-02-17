@@ -156,7 +156,7 @@ class TestHRMetrics:
         assert 0 <= metrics["turnover_rate"] <= 100
         assert metrics["new_hires_this_year"] >= 0
 
-    @patch("src.platform.dashboard.get_data_scope")
+    @patch("src.platform_services.dashboard.get_data_scope")
     def test_hr_metrics_rbac_own_scope(self, mock_scope, dashboard_service):
         """get_hr_metrics respects OWN data scope."""
         from src.core.rbac import DataScope
@@ -168,7 +168,7 @@ class TestHRMetrics:
         assert "restricted" in metrics
         assert metrics["restricted"] is True
 
-    @patch("src.platform.dashboard.get_data_scope")
+    @patch("src.platform_services.dashboard.get_data_scope")
     def test_hr_metrics_rbac_team_scope(self, mock_scope, dashboard_service):
         """get_hr_metrics respects TEAM data scope."""
         from src.core.rbac import DataScope
@@ -379,7 +379,7 @@ class TestExport:
 class TestRBAC:
     """Tests for visibility filtering by role."""
 
-    @patch("src.platform.dashboard.get_data_scope")
+    @patch("src.platform_services.dashboard.get_data_scope")
     def test_hr_metrics_visibility_by_role(self, mock_scope, dashboard_service):
         """Different roles see different metrics."""
         from src.core.rbac import DataScope
