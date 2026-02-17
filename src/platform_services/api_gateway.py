@@ -1661,6 +1661,74 @@ class APIGateway:
                 "agent_type": "hr_agent",
                 "confidence": 0.80,
             },
+            # --- LEAVE ALIASES (common natural-language phrases) ---
+            "request time off": {
+                "answer": "How to Request Time Off at TechNova:\n\n"
+                "1. Go to the **Leave** page in the sidebar\n"
+                "2. Click **New Request**\n"
+                "3. Select leave type (Vacation, Sick, or Personal)\n"
+                "4. Choose your start and end dates\n"
+                "5. Add any notes and submit\n\n"
+                "Your manager will be notified automatically for approval.\n\n"
+                "Advance notice requirements:\n"
+                "• 1-2 days off: 48 hours notice\n"
+                "• 3+ days off: 2 weeks notice\n"
+                "• Extended leave (2+ weeks): 30 days notice\n\n"
+                "PTO Summary: Vacation (15-25 days based on tenure), "
+                "Sick (10 days), Personal (3-5 days).\n"
+                "Contact: leave@technova.com | ext. 2110",
+                "agent_type": "leave_agent",
+                "confidence": 0.92,
+            },
+            "time off": {
+                "answer": "TechNova Time Off Policy:\n\n"
+                "• Vacation: 15 days/year (0-2 yrs), 20 days (2-5 yrs), 25 days (5+ yrs or manager level)\n"
+                "• Sick Leave: 10 days/year (available from Day 1)\n"
+                "• Personal Days: 3 days (employee), 5 days (manager+)\n"
+                "• Mental Health Days: 2 per quarter (separate from sick leave)\n"
+                "• Holidays: 10 company holidays + 2 floating + winter closure (Dec 26-Jan 1)\n"
+                "• Carryover: Up to 5 unused vacation days roll into the next year\n\n"
+                "To request time off, visit the **Leave** page and submit a new request.\n"
+                "Contact: leave@technova.com | ext. 2110",
+                "agent_type": "leave_agent",
+                "confidence": 0.90,
+            },
+            "request leave": {
+                "answer": "How to Request Leave at TechNova:\n\n"
+                "1. Navigate to the **Leave** page from the sidebar\n"
+                "2. Click **New Request** to start a leave request\n"
+                "3. Select the type of leave (Vacation, Sick, Personal)\n"
+                "4. Pick your start and end dates\n"
+                "5. Submit for manager approval\n\n"
+                "Leave balances: Vacation (15-25 days), Sick (10 days), Personal (3-5 days).\n"
+                "For extended leave (FMLA, parental), contact HR directly.\n"
+                "Contact: leave@technova.com | ext. 2110",
+                "agent_type": "leave_agent",
+                "confidence": 0.90,
+            },
+            "day off": {
+                "answer": "TechNova Time Off Policy:\n\n"
+                "• Vacation: 15-25 days/year (based on tenure)\n"
+                "• Sick Leave: 10 days/year\n"
+                "• Personal Days: 3 days (employee), 5 days (manager+)\n"
+                "• Mental Health Days: 2 per quarter\n\n"
+                "To request a day off, go to the **Leave** page and submit a new request.\n"
+                "Your manager will be notified for approval.\n"
+                "Contact: leave@technova.com | ext. 2110",
+                "agent_type": "leave_agent",
+                "confidence": 0.88,
+            },
+            "take leave": {
+                "answer": "To take leave at TechNova:\n\n"
+                "1. Go to the **Leave** page\n"
+                "2. Click **New Request**\n"
+                "3. Select leave type and dates\n"
+                "4. Submit for manager approval\n\n"
+                "Available leave: Vacation (15-25 days), Sick (10 days), Personal (3-5 days).\n"
+                "Contact: leave@technova.com | ext. 2110",
+                "agent_type": "leave_agent",
+                "confidence": 0.88,
+            },
         }
 
         # Find matching response by keyword (longer keywords first for specificity)
