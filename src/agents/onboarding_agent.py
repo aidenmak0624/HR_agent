@@ -16,7 +16,12 @@ from .base_agent import BaseAgent, BaseAgentState
 from ..connectors.hris_interface import HRISConnector, Employee
 from ..core.workflow_engine import WorkflowEngine
 from ..core.rag_pipeline import RAGPipeline
-from ..core.notifications import NotificationService, NotificationChannel, NotificationPriority, NotificationTemplate
+from ..core.notifications import (
+    NotificationService,
+    NotificationChannel,
+    NotificationPriority,
+    NotificationTemplate,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -24,8 +29,10 @@ logger.setLevel(logging.INFO)
 
 # ==================== Enums & Dataclasses ====================
 
+
 class OnboardingPhase(str, Enum):
     """Onboarding workflow phases."""
+
     PRE_START = "pre_start"
     DAY_ONE = "day_one"
     FIRST_WEEK = "first_week"
@@ -35,6 +42,7 @@ class OnboardingPhase(str, Enum):
 
 class TaskStatus(str, Enum):
     """Status of onboarding tasks."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -44,6 +52,7 @@ class TaskStatus(str, Enum):
 @dataclass
 class OnboardingTask:
     """Individual onboarding task with tracking."""
+
     task_id: str
     title: str
     description: str
@@ -68,6 +77,7 @@ class OnboardingTask:
 @dataclass
 class OnboardingChecklist:
     """Full onboarding checklist for a new employee."""
+
     checklist_id: str
     employee_id: str
     employee_name: str
@@ -104,6 +114,7 @@ class OnboardingChecklist:
 @dataclass
 class OnboardingTemplate:
     """Reusable onboarding template for roles/departments."""
+
     template_id: str
     name: str
     department: str
@@ -114,6 +125,7 @@ class OnboardingTemplate:
 
 
 # ==================== Onboarding Agent ====================
+
 
 class OnboardingAgent(BaseAgent):
     """
@@ -233,6 +245,7 @@ class OnboardingAgent(BaseAgent):
 
                 # Create checklist
                 from uuid import uuid4
+
                 checklist_id = f"checklist_{uuid4().hex[:8]}"
                 checklist = OnboardingChecklist(
                     checklist_id=checklist_id,
@@ -247,6 +260,7 @@ class OnboardingAgent(BaseAgent):
                 # Create tasks from template
                 for task_def in template.task_definitions:
                     from uuid import uuid4
+
                     task_id = f"task_{uuid4().hex[:8]}"
 
                     # Calculate due date
@@ -273,7 +287,9 @@ class OnboardingAgent(BaseAgent):
                 # Store checklist
                 self.checklists[checklist_id] = checklist
 
-                logger.info(f"CHECKLIST_GENERATOR: Created {checklist_id} with {len(checklist.tasks)} tasks")
+                logger.info(
+                    f"CHECKLIST_GENERATOR: Created {checklist_id} with {len(checklist.tasks)} tasks"
+                )
 
                 # Send notification to new hire and HR
                 try:
@@ -329,7 +345,9 @@ class OnboardingAgent(BaseAgent):
                 Document collection status
             """
             try:
-                logger.info(f"DOCUMENT_COLLECTOR: Organizing {len(doc_list)} documents for {checklist_id}")
+                logger.info(
+                    f"DOCUMENT_COLLECTOR: Organizing {len(doc_list)} documents for {checklist_id}"
+                )
 
                 checklist = self.checklists.get(checklist_id)
                 if not checklist:
@@ -389,7 +407,9 @@ class OnboardingAgent(BaseAgent):
                 Assignment confirmation
             """
             try:
-                logger.info(f"TASK_ASSIGNER: Assigning {task_id} to {assignee_id} ({assignee_role})")
+                logger.info(
+                    f"TASK_ASSIGNER: Assigning {task_id} to {assignee_id} ({assignee_role})"
+                )
 
                 checklist = self.checklists.get(checklist_id)
                 if not checklist:
@@ -420,7 +440,9 @@ class OnboardingAgent(BaseAgent):
                         context={
                             "task_title": task.title,
                             "employee_name": checklist.employee_name,
-                            "due_date": task.due_date.strftime("%Y-%m-%d") if task.due_date else "TBD",
+                            "due_date": task.due_date.strftime("%Y-%m-%d")
+                            if task.due_date
+                            else "TBD",
                         },
                         priority=NotificationPriority.NORMAL,
                     )
@@ -526,6 +548,7 @@ class OnboardingAgent(BaseAgent):
                 logger.info(f"IT_PROVISIONING: Requesting setup for {employee_name}")
 
                 from uuid import uuid4
+
                 request_id = f"it_req_{uuid4().hex[:8]}"
 
                 request_data = {
@@ -609,6 +632,7 @@ class OnboardingAgent(BaseAgent):
 
                 # Create buddy mentor task
                 from uuid import uuid4
+
                 buddy_task_id = f"task_{uuid4().hex[:8]}"
                 buddy_task = OnboardingTask(
                     task_id=buddy_task_id,
@@ -1005,7 +1029,13 @@ class OnboardingAgent(BaseAgent):
                     "Software: $software_list\n"
                     "System Access: $systems_list"
                 ),
-                variables=["employee_name", "equipment_list", "software_list", "systems_list", "target_date"],
+                variables=[
+                    "employee_name",
+                    "equipment_list",
+                    "software_list",
+                    "systems_list",
+                    "target_date",
+                ],
             ),
             NotificationTemplate(
                 template_id="onboarding_buddy_assigned",

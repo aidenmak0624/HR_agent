@@ -74,15 +74,15 @@ class BambooHRConnector(HRISConnector):
             Configured requests.Session with retry logic
         """
         session = requests.Session()
-        session.auth = (self.api_key, 'x')
-        session.headers.update({'Accept': 'application/json'})
+        session.auth = (self.api_key, "x")
+        session.headers.update({"Accept": "application/json"})
 
         # Configure retry strategy for rate limits and transient errors
         retry_strategy = Retry(
             total=3,
             backoff_factor=1,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["GET", "POST", "PUT", "DELETE"]
+            allowed_methods=["GET", "POST", "PUT", "DELETE"],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("http://", adapter)
@@ -90,12 +90,7 @@ class BambooHRConnector(HRISConnector):
 
         return session
 
-    def _make_request(
-        self,
-        method: str,
-        endpoint: str,
-        **kwargs
-    ) -> Dict[str, Any]:
+    def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
         """
         Make API request with logging and error handling.
 
@@ -125,7 +120,7 @@ class BambooHRConnector(HRISConnector):
 
             # Handle rate limiting
             if response.status_code == 429:
-                retry_after = int(response.headers.get('Retry-After', 60))
+                retry_after = int(response.headers.get("Retry-After", 60))
                 logger.warning(f"Rate limited. Retry after {retry_after}s")
                 raise RateLimitError(f"Rate limit exceeded. Retry after {retry_after}s")
 
@@ -169,9 +164,16 @@ class BambooHRConnector(HRISConnector):
             ConnectionError: If unable to connect
         """
         fields = [
-            "firstName", "lastName", "department", "jobTitle",
-            "supervisor", "hireDate", "status", "workEmail",
-            "mobilePhone", "location"
+            "firstName",
+            "lastName",
+            "department",
+            "jobTitle",
+            "supervisor",
+            "hireDate",
+            "status",
+            "workEmail",
+            "mobilePhone",
+            "location",
         ]
         params = {"fields": ",".join(fields)}
 
@@ -201,7 +203,7 @@ class BambooHRConnector(HRISConnector):
             return []
 
         employees = []
-        for emp_data in data.get('employees', []):
+        for emp_data in data.get("employees", []):
             employee = self._map_employee(emp_data)
             if self._matches_filters(employee, filters):
                 employees.append(employee)
@@ -227,9 +229,7 @@ class BambooHRConnector(HRISConnector):
 
         try:
             data = self._make_request(
-                "GET",
-                f"/employees/{employee_id}/time_off/calculator",
-                params=params
+                "GET", f"/employees/{employee_id}/time_off/calculator", params=params
             )
         except NotFoundError:
             return []
@@ -240,10 +240,10 @@ class BambooHRConnector(HRISConnector):
                 balance = LeaveBalance(
                     employee_id=employee_id,
                     leave_type=self._map_leave_type(leave_type),
-                    total_days=float(balance_data.get('total', 0)),
-                    used_days=float(balance_data.get('used', 0)),
-                    pending_days=float(balance_data.get('pending', 0)),
-                    available_days=float(balance_data.get('available', 0))
+                    total_days=float(balance_data.get("total", 0)),
+                    used_days=float(balance_data.get("used", 0)),
+                    pending_days=float(balance_data.get("pending", 0)),
+                    available_days=float(balance_data.get("available", 0)),
                 )
                 balances.append(balance)
 
@@ -271,26 +271,22 @@ class BambooHRConnector(HRISConnector):
             params["status"] = status
 
         try:
-            data = self._make_request(
-                "GET",
-                "/time_off/requests/",
-                params=params
-            )
+            data = self._make_request("GET", "/time_off/requests/", params=params)
         except NotFoundError:
             return []
 
         requests_list = []
-        for req_data in data.get('requests', []):
+        for req_data in data.get("requests", []):
             request = LeaveRequest(
-                id=str(req_data.get('id')),
+                id=str(req_data.get("id")),
                 employee_id=employee_id,
-                leave_type=self._map_leave_type(req_data.get('type', 'other')),
-                start_date=datetime.fromisoformat(req_data.get('start', '')),
-                end_date=datetime.fromisoformat(req_data.get('end', '')),
-                status=LeaveStatus(req_data.get('status', 'pending').lower()),
-                reason=req_data.get('reason'),
-                approver_id=req_data.get('approverId'),
-                submitted_at=datetime.fromisoformat(req_data.get('created', ''))
+                leave_type=self._map_leave_type(req_data.get("type", "other")),
+                start_date=datetime.fromisoformat(req_data.get("start", "")),
+                end_date=datetime.fromisoformat(req_data.get("end", "")),
+                status=LeaveStatus(req_data.get("status", "pending").lower()),
+                reason=req_data.get("reason"),
+                approver_id=req_data.get("approverId"),
+                submitted_at=datetime.fromisoformat(req_data.get("created", "")),
             )
             requests_list.append(request)
 
@@ -315,19 +311,17 @@ class BambooHRConnector(HRISConnector):
             "type": request.leave_type.value,
             "start": request.start_date.date().isoformat(),
             "end": request.end_date.date().isoformat(),
-            "reason": request.reason or ""
+            "reason": request.reason or "",
         }
 
         data = self._make_request(
-            "POST",
-            f"/employees/{request.employee_id}/time_off/request",
-            json=body
+            "POST", f"/employees/{request.employee_id}/time_off/request", json=body
         )
 
         # Update request with response data
-        request.id = str(data.get('id'))
-        request.submitted_at = datetime.fromisoformat(data.get('created', ''))
-        request.status = LeaveStatus(data.get('status', 'pending').lower())
+        request.id = str(data.get("id"))
+        request.submitted_at = datetime.fromisoformat(data.get("created", ""))
+        request.status = LeaveStatus(data.get("status", "pending").lower())
 
         return request
 
@@ -350,7 +344,7 @@ class BambooHRConnector(HRISConnector):
             return []
 
         # Build employee map
-        employees = {emp['id']: emp for emp in data.get('employees', [])}
+        employees = {emp["id"]: emp for emp in data.get("employees", [])}
 
         # Build hierarchy
         org_nodes = {}
@@ -358,21 +352,22 @@ class BambooHRConnector(HRISConnector):
             org_nodes[emp_id] = OrgNode(
                 employee_id=emp_id,
                 name=f"{emp_data.get('firstName', '')} {emp_data.get('lastName', '')}",
-                title=emp_data.get('jobTitle', ''),
-                department=emp_data.get('department', ''),
-                direct_reports=[]
+                title=emp_data.get("jobTitle", ""),
+                department=emp_data.get("department", ""),
+                direct_reports=[],
             )
 
         # Populate direct reports
         for emp_id, emp_data in employees.items():
-            manager_id = emp_data.get('supervisor')
+            manager_id = emp_data.get("supervisor")
             if manager_id and manager_id in org_nodes:
                 org_nodes[manager_id].direct_reports.append(org_nodes[emp_id])
 
         # Filter by department if specified
         roots = [
-            node for node in org_nodes.values()
-            if not employees.get(node.employee_id, {}).get('supervisor')
+            node
+            for node in org_nodes.values()
+            if not employees.get(node.employee_id, {}).get("supervisor")
         ]
         if department:
             roots = [node for node in roots if node.department == department]
@@ -399,14 +394,14 @@ class BambooHRConnector(HRISConnector):
             return []
 
         plans = []
-        for plan_data in data.get('benefits', []):
+        for plan_data in data.get("benefits", []):
             plan = BenefitsPlan(
-                id=str(plan_data.get('id')),
-                name=plan_data.get('name', ''),
-                plan_type=self._map_plan_type(plan_data.get('type', 'other')),
-                coverage_level=plan_data.get('coverage', 'Employee'),
-                employee_cost=float(plan_data.get('employeeCost', 0)),
-                employer_cost=float(plan_data.get('employerCost', 0))
+                id=str(plan_data.get("id")),
+                name=plan_data.get("name", ""),
+                plan_type=self._map_plan_type(plan_data.get("type", "other")),
+                coverage_level=plan_data.get("coverage", "Employee"),
+                employee_cost=float(plan_data.get("employeeCost", 0)),
+                employer_cost=float(plan_data.get("employerCost", 0)),
             )
             plans.append(plan)
 
@@ -441,22 +436,22 @@ class BambooHRConnector(HRISConnector):
         Returns:
             Employee object
         """
-        hire_date_str = data.get('hireDate', '')
+        hire_date_str = data.get("hireDate", "")
         hire_date = datetime.fromisoformat(hire_date_str) if hire_date_str else datetime.now()
 
         return Employee(
-            id=str(data.get('id')),
-            hris_id=str(data.get('id')),
-            first_name=data.get('firstName', ''),
-            last_name=data.get('lastName', ''),
-            email=data.get('workEmail', ''),
-            department=data.get('department', ''),
-            job_title=data.get('jobTitle', ''),
-            manager_id=data.get('supervisor'),
+            id=str(data.get("id")),
+            hris_id=str(data.get("id")),
+            first_name=data.get("firstName", ""),
+            last_name=data.get("lastName", ""),
+            email=data.get("workEmail", ""),
+            department=data.get("department", ""),
+            job_title=data.get("jobTitle", ""),
+            manager_id=data.get("supervisor"),
             hire_date=hire_date,
-            status=EmployeeStatus(data.get('status', 'active').lower()),
-            location=data.get('location', ''),
-            phone=data.get('mobilePhone')
+            status=EmployeeStatus(data.get("status", "active").lower()),
+            location=data.get("location", ""),
+            phone=data.get("mobilePhone"),
         )
 
     def _map_leave_type(self, leave_type_str: str) -> LeaveType:
@@ -470,14 +465,14 @@ class BambooHRConnector(HRISConnector):
             LeaveType enum value
         """
         mapping = {
-            'pto': LeaveType.PTO,
-            'vacation': LeaveType.PTO,
-            'paid_time_off': LeaveType.PTO,
-            'sick': LeaveType.SICK,
-            'sick_leave': LeaveType.SICK,
-            'personal': LeaveType.PERSONAL,
-            'personal_day': LeaveType.PERSONAL,
-            'unpaid': LeaveType.UNPAID,
+            "pto": LeaveType.PTO,
+            "vacation": LeaveType.PTO,
+            "paid_time_off": LeaveType.PTO,
+            "sick": LeaveType.SICK,
+            "sick_leave": LeaveType.SICK,
+            "personal": LeaveType.PERSONAL,
+            "personal_day": LeaveType.PERSONAL,
+            "unpaid": LeaveType.UNPAID,
         }
         return mapping.get(leave_type_str.lower(), LeaveType.OTHER)
 
@@ -492,16 +487,16 @@ class BambooHRConnector(HRISConnector):
             PlanType enum value
         """
         mapping = {
-            'health': PlanType.HEALTH,
-            'health_insurance': PlanType.HEALTH,
-            'dental': PlanType.DENTAL,
-            'dental_insurance': PlanType.DENTAL,
-            'vision': PlanType.VISION,
-            'vision_insurance': PlanType.VISION,
-            '401k': PlanType.FOUR_01K,
-            'retirement': PlanType.FOUR_01K,
-            'life': PlanType.LIFE_INSURANCE,
-            'life_insurance': PlanType.LIFE_INSURANCE,
+            "health": PlanType.HEALTH,
+            "health_insurance": PlanType.HEALTH,
+            "dental": PlanType.DENTAL,
+            "dental_insurance": PlanType.DENTAL,
+            "vision": PlanType.VISION,
+            "vision_insurance": PlanType.VISION,
+            "401k": PlanType.FOUR_01K,
+            "retirement": PlanType.FOUR_01K,
+            "life": PlanType.LIFE_INSURANCE,
+            "life_insurance": PlanType.LIFE_INSURANCE,
         }
         return mapping.get(plan_type_str.lower(), PlanType.OTHER)
 
@@ -517,12 +512,12 @@ class BambooHRConnector(HRISConnector):
             True if employee matches all filters
         """
         for key, value in filters.items():
-            if key == 'department' and employee.department != value:
+            if key == "department" and employee.department != value:
                 return False
-            elif key == 'status' and employee.status.value != value:
+            elif key == "status" and employee.status.value != value:
                 return False
-            elif key == 'location' and employee.location != value:
+            elif key == "location" and employee.location != value:
                 return False
-            elif key == 'job_title' and employee.job_title != value:
+            elif key == "job_title" and employee.job_title != value:
                 return False
         return True

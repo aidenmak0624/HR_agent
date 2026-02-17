@@ -19,8 +19,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class PermissionType(str, Enum):
     """Permission types for role-based access control."""
+
     USER_READ = "user:read"
     USER_CREATE = "user:create"
     USER_UPDATE = "user:update"
@@ -38,6 +40,7 @@ class PermissionType(str, Enum):
 
 class AuditAction(str, Enum):
     """Audit trail action types."""
+
     USER_CREATED = "user_created"
     USER_UPDATED = "user_updated"
     USER_DELETED = "user_deleted"
@@ -55,15 +58,13 @@ class AuditAction(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class AdminConfig(BaseModel):
     """Admin system configuration."""
+
     max_users: int = Field(default=1000, description="Maximum number of users")
-    audit_log_retention_days: int = Field(
-        default=365, description="Days to retain audit logs"
-    )
-    session_timeout_minutes: int = Field(
-        default=60, description="Session timeout in minutes"
-    )
+    audit_log_retention_days: int = Field(default=365, description="Days to retain audit logs")
+    session_timeout_minutes: int = Field(default=60, description="Session timeout in minutes")
     password_policy: Dict[str, Any] = Field(
         default_factory=lambda: {
             "min_length": 12,
@@ -71,13 +72,13 @@ class AdminConfig(BaseModel):
             "require_numbers": True,
             "require_special_chars": True,
             "max_age_days": 90,
-            "history_count": 5
+            "history_count": 5,
         },
-        description="Password policy configuration"
+        description="Password policy configuration",
     )
     allowed_roles: List[str] = Field(
         default_factory=lambda: ["admin", "manager", "employee", "viewer"],
-        description="List of allowed role names"
+        description="List of allowed role names",
     )
 
     model_config = ConfigDict(frozen=False)
@@ -85,6 +86,7 @@ class AdminConfig(BaseModel):
 
 class UserRecord(BaseModel):
     """User record in the system."""
+
     user_id: UUID = Field(default_factory=uuid4, description="Unique user ID")
     username: str = Field(..., min_length=3, max_length=255, description="Username")
     email: str = Field(..., description="User email address")
@@ -101,6 +103,7 @@ class UserRecord(BaseModel):
 
 class RoleDefinition(BaseModel):
     """Role definition with permissions."""
+
     role_id: UUID = Field(default_factory=uuid4, description="Unique role ID")
     name: str = Field(..., min_length=2, max_length=255, description="Role name")
     description: str = Field(..., description="Role description")
@@ -114,6 +117,7 @@ class RoleDefinition(BaseModel):
 
 class AuditLogEntry(BaseModel):
     """Audit log entry."""
+
     entry_id: UUID = Field(default_factory=uuid4, description="Unique entry ID")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Event timestamp")
     user_id: Optional[str] = Field(None, description="User who performed the action")
@@ -128,11 +132,14 @@ class AuditLogEntry(BaseModel):
 
 class SystemConfig(BaseModel):
     """System configuration entry."""
+
     config_id: UUID = Field(default_factory=uuid4, description="Unique config ID")
     key: str = Field(..., description="Configuration key")
     value: Any = Field(..., description="Configuration value")
     category: str = Field(..., description="Configuration category")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Last update timestamp"
+    )
     updated_by: Optional[str] = Field(None, description="User who updated the config")
     is_sensitive: bool = Field(default=False, description="Whether value is sensitive")
 
@@ -141,6 +148,7 @@ class SystemConfig(BaseModel):
 
 class PaginationMeta(BaseModel):
     """Pagination metadata."""
+
     page: int = Field(..., description="Current page number")
     per_page: int = Field(..., description="Items per page")
     total: int = Field(..., description="Total items")
@@ -152,6 +160,7 @@ class PaginationMeta(BaseModel):
 # ============================================================================
 # Admin Service
 # ============================================================================
+
 
 class AdminService:
     """
@@ -190,28 +199,23 @@ class AdminService:
                 {
                     "name": "admin",
                     "description": "System administrator with full access",
-                    "permissions": [p.value for p in PermissionType]
+                    "permissions": [p.value for p in PermissionType],
                 },
                 {
                     "name": "manager",
                     "description": "Department manager with user management",
-                    "permissions": [
-                        "user:read",
-                        "user:update",
-                        "audit:read",
-                        "system:stats"
-                    ]
+                    "permissions": ["user:read", "user:update", "audit:read", "system:stats"],
                 },
                 {
                     "name": "employee",
                     "description": "Standard employee",
-                    "permissions": ["user:read", "system:stats"]
+                    "permissions": ["user:read", "system:stats"],
                 },
                 {
                     "name": "viewer",
                     "description": "Read-only access",
-                    "permissions": ["user:read", "audit:read"]
-                }
+                    "permissions": ["user:read", "audit:read"],
+                },
             ]
 
             for role_data in system_roles:
@@ -220,7 +224,7 @@ class AdminService:
                     description=role_data["description"],
                     permissions=role_data["permissions"],
                     is_system_role=True,
-                    created_by="SYSTEM"
+                    created_by="SYSTEM",
                 )
                 self._roles[role.role_id] = role
 
@@ -235,7 +239,7 @@ class AdminService:
         resource: str,
         details: Optional[Dict[str, Any]] = None,
         ip_address: Optional[str] = None,
-        status: str = "success"
+        status: str = "success",
     ) -> None:
         """
         Log an audit trail entry.
@@ -255,31 +259,22 @@ class AdminService:
                 resource=resource,
                 details=details or {},
                 ip_address=ip_address,
-                status=status
+                status=status,
             )
             self._audit_logs.append(entry)
 
             # Trim old logs based on retention policy
-            cutoff_date = datetime.utcnow() - timedelta(
-                days=self.config.audit_log_retention_days
-            )
-            self._audit_logs = [
-                log for log in self._audit_logs
-                if log.timestamp >= cutoff_date
-            ]
+            cutoff_date = datetime.utcnow() - timedelta(days=self.config.audit_log_retention_days)
+            self._audit_logs = [log for log in self._audit_logs if log.timestamp >= cutoff_date]
 
             logger.info(
-                "Audit logged: %s on %s by %s (status: %s)",
-                action, resource, user_id, status
+                "Audit logged: %s on %s by %s (status: %s)", action, resource, user_id, status
             )
         except Exception as e:
             logger.error("Failed to log audit: %s", str(e))
 
     def list_users(
-        self,
-        filters: Optional[Dict[str, Any]] = None,
-        page: int = 1,
-        per_page: int = 20
+        self, filters: Optional[Dict[str, Any]] = None, page: int = 1, per_page: int = 20
     ) -> Dict[str, Any]:
         """
         List users with optional filters and pagination.
@@ -315,8 +310,8 @@ class AdminService:
                     page=page,
                     per_page=per_page,
                     total=total,
-                    total_pages=(total + per_page - 1) // per_page
-                )
+                    total_pages=(total + per_page - 1) // per_page,
+                ),
             }
         except Exception as e:
             logger.error("Failed to list users: %s", str(e))
@@ -351,7 +346,7 @@ class AdminService:
         email: str,
         role: str,
         department: str,
-        created_by: Optional[str] = None
+        created_by: Optional[str] = None,
     ) -> UserRecord:
         """
         Create a new user.
@@ -382,12 +377,7 @@ class AdminService:
                 if user.email == email:
                     raise ValueError(f"Email {email} already exists")
 
-            user = UserRecord(
-                username=username,
-                email=email,
-                role=role,
-                department=department
-            )
+            user = UserRecord(username=username, email=email, role=role, department=department)
 
             self._users[user.user_id] = user
 
@@ -399,8 +389,8 @@ class AdminService:
                     "username": username,
                     "email": email,
                     "role": role,
-                    "department": department
-                }
+                    "department": department,
+                },
             )
 
             logger.info("User created: %s (%s)", username, user.user_id)
@@ -410,10 +400,7 @@ class AdminService:
             raise
 
     def update_user(
-        self,
-        user_id: UUID,
-        updates: Dict[str, Any],
-        updated_by: Optional[str] = None
+        self, user_id: UUID, updates: Dict[str, Any], updated_by: Optional[str] = None
     ) -> UserRecord:
         """
         Update user information.
@@ -450,7 +437,7 @@ class AdminService:
                 user_id=updated_by or "SYSTEM",
                 action="user_updated",
                 resource=f"user:{user_id}",
-                details=changeset
+                details=changeset,
             )
 
             logger.info("User updated: %s with changes: %s", user_id, changeset)
@@ -459,11 +446,7 @@ class AdminService:
             logger.error("Failed to update user: %s", str(e))
             raise
 
-    def deactivate_user(
-        self,
-        user_id: UUID,
-        deactivated_by: Optional[str] = None
-    ) -> UserRecord:
+    def deactivate_user(self, user_id: UUID, deactivated_by: Optional[str] = None) -> UserRecord:
         """
         Deactivate a user.
 
@@ -488,7 +471,7 @@ class AdminService:
                 user_id=deactivated_by or "SYSTEM",
                 action="user_deactivated",
                 resource=f"user:{user_id}",
-                details={"reason": "manual_deactivation"}
+                details={"reason": "manual_deactivation"},
             )
 
             logger.info("User deactivated: %s", user_id)
@@ -497,11 +480,7 @@ class AdminService:
             logger.error("Failed to deactivate user: %s", str(e))
             raise
 
-    def activate_user(
-        self,
-        user_id: UUID,
-        activated_by: Optional[str] = None
-    ) -> UserRecord:
+    def activate_user(self, user_id: UUID, activated_by: Optional[str] = None) -> UserRecord:
         """
         Activate a user.
 
@@ -526,7 +505,7 @@ class AdminService:
                 user_id=activated_by or "SYSTEM",
                 action="user_activated",
                 resource=f"user:{user_id}",
-                details={"reason": "manual_activation"}
+                details={"reason": "manual_activation"},
             )
 
             logger.info("User activated: %s", user_id)
@@ -551,11 +530,7 @@ class AdminService:
             raise
 
     def create_role(
-        self,
-        name: str,
-        description: str,
-        permissions: List[str],
-        created_by: Optional[str] = None
+        self, name: str, description: str, permissions: List[str], created_by: Optional[str] = None
     ) -> RoleDefinition:
         """
         Create a new role.
@@ -583,7 +558,7 @@ class AdminService:
                 description=description,
                 permissions=permissions,
                 is_system_role=False,
-                created_by=created_by or "SYSTEM"
+                created_by=created_by or "SYSTEM",
             )
 
             self._roles[role.role_id] = role
@@ -592,11 +567,7 @@ class AdminService:
                 user_id=created_by or "SYSTEM",
                 action="role_created",
                 resource=f"role:{role.role_id}",
-                details={
-                    "name": name,
-                    "description": description,
-                    "permissions": permissions
-                }
+                details={"name": name, "description": description, "permissions": permissions},
             )
 
             logger.info("Role created: %s (%s)", name, role.role_id)
@@ -606,10 +577,7 @@ class AdminService:
             raise
 
     def update_role(
-        self,
-        role_id: UUID,
-        updates: Dict[str, Any],
-        updated_by: Optional[str] = None
+        self, role_id: UUID, updates: Dict[str, Any], updated_by: Optional[str] = None
     ) -> RoleDefinition:
         """
         Update a role.
@@ -646,7 +614,7 @@ class AdminService:
                 user_id=updated_by or "SYSTEM",
                 action="role_updated",
                 resource=f"role:{role_id}",
-                details=changeset
+                details=changeset,
             )
 
             logger.info("Role updated: %s with changes: %s", role_id, changeset)
@@ -684,7 +652,7 @@ class AdminService:
                 user_id=deleted_by or "SYSTEM",
                 action="role_deleted",
                 resource=f"role:{role_id}",
-                details={"name": role.name}
+                details={"name": role.name},
             )
 
             logger.info("Role deleted: %s", role_id)
@@ -699,7 +667,7 @@ class AdminService:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         page: int = 1,
-        per_page: int = 50
+        per_page: int = 50,
     ) -> Dict[str, Any]:
         """
         Get audit logs with filtering and pagination.
@@ -748,18 +716,15 @@ class AdminService:
                     page=page,
                     per_page=per_page,
                     total=total,
-                    total_pages=(total + per_page - 1) // per_page
-                )
+                    total_pages=(total + per_page - 1) // per_page,
+                ),
             }
         except Exception as e:
             logger.error("Failed to get audit logs: %s", str(e))
             raise
 
     def export_audit_logs(
-        self,
-        start_date: datetime,
-        end_date: datetime,
-        format: str = "json"
+        self, start_date: datetime, end_date: datetime, format: str = "json"
     ) -> Dict[str, Any]:
         """
         Export audit logs in specified format.
@@ -779,29 +744,28 @@ class AdminService:
             if format not in ["json", "csv"]:
                 raise ValueError(f"Unsupported format: {format}")
 
-            logs = [
-                l for l in self._audit_logs
-                if start_date <= l.timestamp <= end_date
-            ]
+            logs = [l for l in self._audit_logs if start_date <= l.timestamp <= end_date]
 
             if format == "json":
                 data = [l.model_dump() for l in logs]
             else:  # csv
                 data = []
                 for log in logs:
-                    data.append({
-                        "timestamp": log.timestamp.isoformat(),
-                        "user_id": log.user_id,
-                        "action": log.action,
-                        "resource": log.resource,
-                        "status": log.status
-                    })
+                    data.append(
+                        {
+                            "timestamp": log.timestamp.isoformat(),
+                            "user_id": log.user_id,
+                            "action": log.action,
+                            "resource": log.resource,
+                            "status": log.status,
+                        }
+                    )
 
             self._log_audit(
                 user_id="SYSTEM",
                 action="audit_exported",
                 resource="audit_logs",
-                details={"format": format, "log_count": len(logs)}
+                details={"format": format, "log_count": len(logs)},
             )
 
             logger.info("Audit logs exported: %d entries in %s format", len(logs), format)
@@ -809,7 +773,7 @@ class AdminService:
                 "data": data,
                 "format": format,
                 "count": len(logs),
-                "exported_at": datetime.utcnow().isoformat()
+                "exported_at": datetime.utcnow().isoformat(),
             }
         except Exception as e:
             logger.error("Failed to export audit logs: %s", str(e))
@@ -838,10 +802,7 @@ class AdminService:
             raise
 
     def update_system_config(
-        self,
-        key: str,
-        value: Any,
-        updated_by: Optional[str] = None
+        self, key: str, value: Any, updated_by: Optional[str] = None
     ) -> SystemConfig:
         """
         Update system configuration.
@@ -867,7 +828,7 @@ class AdminService:
                 value=value,
                 category="system",
                 updated_by=updated_by or "SYSTEM",
-                is_sensitive=False
+                is_sensitive=False,
             )
 
             self._system_config[key] = config
@@ -876,7 +837,7 @@ class AdminService:
                 user_id=updated_by or "SYSTEM",
                 action="config_changed",
                 resource=f"config:{key}",
-                details={"new_value": str(value)[:100]}  # Truncate for logging
+                details={"new_value": str(value)[:100]},  # Truncate for logging
             )
 
             logger.info("System config updated: %s", key)
@@ -909,8 +870,8 @@ class AdminService:
                     "users": "operational",
                     "roles": "operational",
                     "audit": "operational",
-                    "config": "operational"
-                }
+                    "config": "operational",
+                },
             }
 
             logger.info("System stats retrieved")

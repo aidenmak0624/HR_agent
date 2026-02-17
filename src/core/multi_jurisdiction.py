@@ -20,8 +20,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class Jurisdiction(str, Enum):
     """Supported jurisdictions for compliance."""
+
     US_FEDERAL = "us_federal"
     US_CALIFORNIA = "us_california"
     US_NEW_YORK = "us_new_york"
@@ -35,6 +37,7 @@ class Jurisdiction(str, Enum):
 
 class ComplianceStatus(str, Enum):
     """Status of compliance check."""
+
     COMPLIANT = "compliant"
     NON_COMPLIANT = "non_compliant"
     PARTIAL = "partial"
@@ -45,42 +48,40 @@ class ComplianceStatus(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class ComplianceRequirement(BaseModel):
     """Specific compliance requirement for a jurisdiction."""
-    requirement_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique requirement ID")
+
+    requirement_id: str = Field(
+        default_factory=lambda: str(uuid4()), description="Unique requirement ID"
+    )
     jurisdiction: Jurisdiction = Field(..., description="Jurisdiction this applies to")
     category: str = Field(..., description="Category of requirement")
     description: str = Field(..., description="Description of requirement")
     mandatory: bool = Field(default=True, description="Whether requirement is mandatory")
     deadline_days: Optional[int] = Field(None, description="Deadline in days if applicable")
-    penalties: Optional[List[str]] = Field(None, description="Potential penalties for non-compliance")
+    penalties: Optional[List[str]] = Field(
+        None, description="Potential penalties for non-compliance"
+    )
 
     model_config = ConfigDict(use_enum_values=False)
 
 
 class JurisdictionConfig(BaseModel):
     """Configuration for a jurisdiction."""
+
     jurisdiction: Jurisdiction = Field(..., description="Jurisdiction")
     enabled: bool = Field(default=True, description="Whether compliance checks are enabled")
     data_residency_required: bool = Field(
-        default=False,
-        description="Whether data must reside in jurisdiction"
+        default=False, description="Whether data must reside in jurisdiction"
     )
-    breach_notification_hours: int = Field(
-        default=72,
-        description="Hours to notify of breach"
-    )
-    consent_type: str = Field(
-        default="opt-in",
-        description="Consent model: opt-in or opt-out"
-    )
+    breach_notification_hours: int = Field(default=72, description="Hours to notify of breach")
+    consent_type: str = Field(default="opt-in", description="Consent model: opt-in or opt-out")
     dpo_required: bool = Field(
-        default=False,
-        description="Whether Data Protection Officer required"
+        default=False, description="Whether Data Protection Officer required"
     )
     cross_border_transfer_mechanism: str = Field(
-        default="standard_contractual_clauses",
-        description="Mechanism for cross-border transfers"
+        default="standard_contractual_clauses", description="Mechanism for cross-border transfers"
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -88,6 +89,7 @@ class JurisdictionConfig(BaseModel):
 
 class ComplianceCheckResult(BaseModel):
     """Result of a compliance check."""
+
     check_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique check ID")
     jurisdiction: Jurisdiction = Field(..., description="Jurisdiction checked")
     requirement: str = Field(..., description="Requirement checked")
@@ -95,8 +97,7 @@ class ComplianceCheckResult(BaseModel):
     findings: List[str] = Field(default_factory=list, description="Specific findings")
     recommendations: List[str] = Field(default_factory=list, description="Recommendations")
     checked_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        description="When check was performed"
+        default_factory=datetime.utcnow, description="When check was performed"
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -104,22 +105,21 @@ class ComplianceCheckResult(BaseModel):
 
 class MultiJurisdictionConfig(BaseModel):
     """Configuration for multi-jurisdiction engine."""
+
     enabled: bool = Field(default=True, description="Whether multi-jurisdiction checking enabled")
     active_jurisdictions: List[Jurisdiction] = Field(
         default_factory=lambda: [Jurisdiction.US_FEDERAL, Jurisdiction.EU_GDPR],
-        description="Active jurisdictions to check"
+        description="Active jurisdictions to check",
     )
     default_jurisdiction: Jurisdiction = Field(
-        default=Jurisdiction.US_FEDERAL,
-        description="Default jurisdiction"
+        default=Jurisdiction.US_FEDERAL, description="Default jurisdiction"
     )
     conflict_resolution: str = Field(
         default="most_restrictive",
-        description="Strategy: most_restrictive or jurisdiction_specific"
+        description="Strategy: most_restrictive or jurisdiction_specific",
     )
     audit_all_checks: bool = Field(
-        default=True,
-        description="Whether to audit all compliance checks"
+        default=True, description="Whether to audit all compliance checks"
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -128,6 +128,7 @@ class MultiJurisdictionConfig(BaseModel):
 # ============================================================================
 # Multi-Jurisdiction Compliance Engine
 # ============================================================================
+
 
 class MultiJurisdictionEngine:
     """
@@ -143,7 +144,7 @@ class MultiJurisdictionEngine:
         config: Optional[MultiJurisdictionConfig] = None,
         gdpr_service: Optional[Any] = None,
         ccpa_service: Optional[Any] = None,
-        audit_logger: Optional[Any] = None
+        audit_logger: Optional[Any] = None,
     ):
         """
         Initialize multi-jurisdiction compliance engine.
@@ -169,8 +170,10 @@ class MultiJurisdictionEngine:
         # Initialize default jurisdiction configs
         self._init_default_configs()
 
-        logger.info("MultiJurisdictionEngine initialized with %d active jurisdictions",
-                   len(self.config.active_jurisdictions))
+        logger.info(
+            "MultiJurisdictionEngine initialized with %d active jurisdictions",
+            len(self.config.active_jurisdictions),
+        )
 
     def _init_default_configs(self) -> None:
         """Initialize default jurisdiction configurations."""
@@ -179,12 +182,12 @@ class MultiJurisdictionEngine:
                 Jurisdiction.US_FEDERAL: JurisdictionConfig(
                     jurisdiction=Jurisdiction.US_FEDERAL,
                     breach_notification_hours=72,
-                    consent_type="opt-out"
+                    consent_type="opt-out",
                 ),
                 Jurisdiction.US_CALIFORNIA: JurisdictionConfig(
                     jurisdiction=Jurisdiction.US_CALIFORNIA,
                     breach_notification_hours=48,
-                    consent_type="opt-out"
+                    consent_type="opt-out",
                 ),
                 Jurisdiction.EU_GDPR: JurisdictionConfig(
                     jurisdiction=Jurisdiction.EU_GDPR,
@@ -192,29 +195,29 @@ class MultiJurisdictionEngine:
                     breach_notification_hours=72,
                     consent_type="opt-in",
                     dpo_required=True,
-                    cross_border_transfer_mechanism="standard_contractual_clauses"
+                    cross_border_transfer_mechanism="standard_contractual_clauses",
                 ),
                 Jurisdiction.UK_GDPR: JurisdictionConfig(
                     jurisdiction=Jurisdiction.UK_GDPR,
                     data_residency_required=False,
                     breach_notification_hours=72,
                     consent_type="opt-in",
-                    dpo_required=True
+                    dpo_required=True,
                 ),
                 Jurisdiction.CANADA_PIPEDA: JurisdictionConfig(
                     jurisdiction=Jurisdiction.CANADA_PIPEDA,
                     breach_notification_hours=168,
-                    consent_type="opt-in"
+                    consent_type="opt-in",
                 ),
                 Jurisdiction.AUSTRALIA_APPS: JurisdictionConfig(
                     jurisdiction=Jurisdiction.AUSTRALIA_APPS,
                     breach_notification_hours=168,
-                    consent_type="opt-in"
+                    consent_type="opt-in",
                 ),
                 Jurisdiction.BRAZIL_LGPD: JurisdictionConfig(
                     jurisdiction=Jurisdiction.BRAZIL_LGPD,
                     breach_notification_hours=72,
-                    consent_type="opt-in"
+                    consent_type="opt-in",
                 ),
             }
 
@@ -235,7 +238,7 @@ class MultiJurisdictionEngine:
                     description="Explicit informed consent required for data processing",
                     mandatory=True,
                     deadline_days=None,
-                    penalties=["Up to 4% of annual revenue"]
+                    penalties=["Up to 4% of annual revenue"],
                 ),
                 ComplianceRequirement(
                     jurisdiction=Jurisdiction.EU_GDPR,
@@ -243,7 +246,7 @@ class MultiJurisdictionEngine:
                     description="Data Subject Access Request response within 30 days",
                     mandatory=True,
                     deadline_days=30,
-                    penalties=["Up to 4% of annual revenue"]
+                    penalties=["Up to 4% of annual revenue"],
                 ),
                 ComplianceRequirement(
                     jurisdiction=Jurisdiction.EU_GDPR,
@@ -251,7 +254,7 @@ class MultiJurisdictionEngine:
                     description="Breach notification within 72 hours",
                     mandatory=True,
                     deadline_days=0,
-                    penalties=["Up to 4% of annual revenue"]
+                    penalties=["Up to 4% of annual revenue"],
                 ),
             ]
 
@@ -263,7 +266,7 @@ class MultiJurisdictionEngine:
                     description="Disclosure of data collection practices",
                     mandatory=True,
                     deadline_days=None,
-                    penalties=["$2,500 per violation, $7,500 per intentional violation"]
+                    penalties=["$2,500 per violation, $7,500 per intentional violation"],
                 ),
                 ComplianceRequirement(
                     jurisdiction=Jurisdiction.US_CALIFORNIA,
@@ -271,7 +274,7 @@ class MultiJurisdictionEngine:
                     description="Respond to consumer requests within 45 days",
                     mandatory=True,
                     deadline_days=45,
-                    penalties=["$2,500 per violation"]
+                    penalties=["$2,500 per violation"],
                 ),
                 ComplianceRequirement(
                     jurisdiction=Jurisdiction.US_CALIFORNIA,
@@ -279,7 +282,7 @@ class MultiJurisdictionEngine:
                     description="Honor opt-out of sale of personal information",
                     mandatory=True,
                     deadline_days=None,
-                    penalties=["$2,500 per violation"]
+                    penalties=["$2,500 per violation"],
                 ),
             ]
 
@@ -291,7 +294,7 @@ class MultiJurisdictionEngine:
                     description="Meaningful consent for collection and use",
                     mandatory=True,
                     deadline_days=None,
-                    penalties=["Compliance order, damages to affected individuals"]
+                    penalties=["Compliance order, damages to affected individuals"],
                 ),
                 ComplianceRequirement(
                     jurisdiction=Jurisdiction.CANADA_PIPEDA,
@@ -299,7 +302,7 @@ class MultiJurisdictionEngine:
                     description="Provide access within 30 days upon request",
                     mandatory=True,
                     deadline_days=30,
-                    penalties=["Compliance order"]
+                    penalties=["Compliance order"],
                 ),
             ]
 
@@ -311,7 +314,7 @@ class MultiJurisdictionEngine:
                     description="Free and informed consent for processing",
                     mandatory=True,
                     deadline_days=None,
-                    penalties=["Up to 2% of revenue (capped at R$50 million per violation)"]
+                    penalties=["Up to 2% of revenue (capped at R$50 million per violation)"],
                 ),
                 ComplianceRequirement(
                     jurisdiction=Jurisdiction.BRAZIL_LGPD,
@@ -319,12 +322,13 @@ class MultiJurisdictionEngine:
                     description="Grant access to personal data",
                     mandatory=True,
                     deadline_days=None,
-                    penalties=["Up to 2% of revenue"]
+                    penalties=["Up to 2% of revenue"],
                 ),
             ]
 
-            logger.info("Default requirements initialized for %d jurisdictions",
-                       len(self._requirements))
+            logger.info(
+                "Default requirements initialized for %d jurisdictions", len(self._requirements)
+            )
         except Exception as e:
             logger.error("Failed to initialize default requirements: %s", str(e))
             raise
@@ -334,7 +338,7 @@ class MultiJurisdictionEngine:
         action: str,
         jurisdiction: Optional[Jurisdiction] = None,
         details: Optional[Dict[str, Any]] = None,
-        legal_basis: Optional[str] = None
+        legal_basis: Optional[str] = None,
     ) -> None:
         """
         Log an action to audit trail.
@@ -354,8 +358,11 @@ class MultiJurisdictionEngine:
                 "legal_basis": legal_basis,
             }
             self._audit_trail.append(entry)
-            logger.info("Multi-jurisdiction audit: %s for %s",
-                       action, jurisdiction.value if jurisdiction else "all")
+            logger.info(
+                "Multi-jurisdiction audit: %s for %s",
+                action,
+                jurisdiction.value if jurisdiction else "all",
+            )
         except Exception as e:
             logger.error("Failed to log audit trail: %s", str(e))
 
@@ -422,8 +429,11 @@ class MultiJurisdictionEngine:
 
             self._log_audit_trail(
                 action="jurisdictions_determined",
-                details={"employee_id": employee_data.get("id"), "jurisdictions": [j.value for j in applicable]},
-                legal_basis="Multi-Jurisdiction Analysis"
+                details={
+                    "employee_id": employee_data.get("id"),
+                    "jurisdictions": [j.value for j in applicable],
+                },
+                legal_basis="Multi-Jurisdiction Analysis",
             )
 
             logger.info("Determined %d jurisdictions for employee", len(applicable))
@@ -433,9 +443,7 @@ class MultiJurisdictionEngine:
             raise
 
     def check_compliance(
-        self,
-        data: Dict[str, Any],
-        jurisdictions: Optional[List[Jurisdiction]] = None
+        self, data: Dict[str, Any], jurisdictions: Optional[List[Jurisdiction]] = None
     ) -> List[ComplianceCheckResult]:
         """
         Check compliance across jurisdictions.
@@ -471,7 +479,7 @@ class MultiJurisdictionEngine:
                         requirement=requirement.category,
                         status=self._check_requirement(data, requirement),
                         findings=self._get_findings(data, requirement),
-                        recommendations=self._get_recommendations(requirement)
+                        recommendations=self._get_recommendations(requirement),
                     )
 
                     results.append(result)
@@ -481,21 +489,25 @@ class MultiJurisdictionEngine:
                         self._log_audit_trail(
                             action="compliance_check_performed",
                             jurisdiction=jurisdiction,
-                            details={"requirement": requirement.category, "status": result.status.value},
-                            legal_basis="Compliance Verification"
+                            details={
+                                "requirement": requirement.category,
+                                "status": result.status.value,
+                            },
+                            legal_basis="Compliance Verification",
                         )
 
-            logger.info("Compliance check completed: %d results across %d jurisdictions",
-                       len(results), len(jurisdictions))
+            logger.info(
+                "Compliance check completed: %d results across %d jurisdictions",
+                len(results),
+                len(jurisdictions),
+            )
             return results
         except Exception as e:
             logger.error("Failed to check compliance: %s", str(e))
             raise
 
     def _check_requirement(
-        self,
-        data: Dict[str, Any],
-        requirement: ComplianceRequirement
+        self, data: Dict[str, Any], requirement: ComplianceRequirement
     ) -> ComplianceStatus:
         """
         Check a single requirement for compliance.
@@ -542,11 +554,7 @@ class MultiJurisdictionEngine:
             logger.error("Failed to check requirement: %s", str(e))
             return ComplianceStatus.NON_COMPLIANT
 
-    def _get_findings(
-        self,
-        data: Dict[str, Any],
-        requirement: ComplianceRequirement
-    ) -> List[str]:
+    def _get_findings(self, data: Dict[str, Any], requirement: ComplianceRequirement) -> List[str]:
         """Get specific findings for a requirement."""
         findings = []
 
@@ -599,16 +607,18 @@ class MultiJurisdictionEngine:
             requirements = self._requirements.get(jurisdiction, [])
             custom = self._custom_requirements.get(jurisdiction, [])
 
-            logger.info("Retrieved %d requirements for %s",
-                       len(requirements) + len(custom), jurisdiction.value)
+            logger.info(
+                "Retrieved %d requirements for %s",
+                len(requirements) + len(custom),
+                jurisdiction.value,
+            )
             return requirements + custom
         except Exception as e:
             logger.error("Failed to get requirements: %s", str(e))
             raise
 
     def resolve_conflicts(
-        self,
-        results: List[ComplianceCheckResult]
+        self, results: List[ComplianceCheckResult]
     ) -> List[ComplianceCheckResult]:
         """
         Resolve conflicts across jurisdictions.
@@ -635,8 +645,9 @@ class MultiJurisdictionEngine:
                         by_category[cat] = result
                     else:
                         # Higher status value = more restrictive
-                        if self._status_priority(result.status) > \
-                           self._status_priority(by_category[cat].status):
+                        if self._status_priority(result.status) > self._status_priority(
+                            by_category[cat].status
+                        ):
                             by_category[cat] = result
 
                 resolved = list(by_category.values())
@@ -647,11 +658,14 @@ class MultiJurisdictionEngine:
             self._log_audit_trail(
                 action="conflicts_resolved",
                 details={"strategy": self.config.conflict_resolution, "count": len(resolved)},
-                legal_basis="Conflict Resolution"
+                legal_basis="Conflict Resolution",
             )
 
-            logger.info("Resolved %d conflicts using %s strategy",
-                       len(results) - len(resolved), self.config.conflict_resolution)
+            logger.info(
+                "Resolved %d conflicts using %s strategy",
+                len(results) - len(resolved),
+                self.config.conflict_resolution,
+            )
             return resolved
         except Exception as e:
             logger.error("Failed to resolve conflicts: %s", str(e))
@@ -668,8 +682,7 @@ class MultiJurisdictionEngine:
         return priority_map.get(status, 0)
 
     def get_breach_notification_deadline(
-        self,
-        jurisdictions: Optional[List[Jurisdiction]] = None
+        self, jurisdictions: Optional[List[Jurisdiction]] = None
     ) -> Dict[str, Any]:
         """
         Get shortest breach notification deadline across jurisdictions.
@@ -690,7 +703,7 @@ class MultiJurisdictionEngine:
             if not jurisdictions:
                 raise ValueError("No jurisdictions to check")
 
-            min_hours = float('inf')
+            min_hours = float("inf")
             min_jurisdiction = None
 
             for jurisdiction in jurisdictions:
@@ -701,12 +714,15 @@ class MultiJurisdictionEngine:
                         min_jurisdiction = jurisdiction
 
             result = {
-                "shortest_deadline_hours": min_hours if min_hours != float('inf') else 72,
-                "shortest_deadline_jurisdiction": min_jurisdiction.value if min_jurisdiction else None,
+                "shortest_deadline_hours": min_hours if min_hours != float("inf") else 72,
+                "shortest_deadline_jurisdiction": min_jurisdiction.value
+                if min_jurisdiction
+                else None,
                 "by_jurisdiction": {
                     j.value: self._jurisdiction_configs[j].breach_notification_hours
-                    for j in jurisdictions if j in self._jurisdiction_configs
-                }
+                    for j in jurisdictions
+                    if j in self._jurisdiction_configs
+                },
             }
 
             logger.info("Breach notification deadline: %d hours", result["shortest_deadline_hours"])
@@ -719,7 +735,7 @@ class MultiJurisdictionEngine:
         self,
         source_jurisdiction: Jurisdiction,
         target_jurisdiction: Jurisdiction,
-        data_categories: Optional[List[str]] = None
+        data_categories: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Check cross-border data transfer compliance.
@@ -746,8 +762,9 @@ class MultiJurisdictionEngine:
             target_config = self._jurisdiction_configs[target_jurisdiction]
 
             # Check if transfer is restricted
-            is_restricted = source_config.data_residency_required and \
-                           source_jurisdiction != target_jurisdiction
+            is_restricted = (
+                source_config.data_residency_required and source_jurisdiction != target_jurisdiction
+            )
 
             result = {
                 "source_jurisdiction": source_jurisdiction.value,
@@ -756,26 +773,28 @@ class MultiJurisdictionEngine:
                 "mechanism": source_config.cross_border_transfer_mechanism,
                 "requires_standard_clauses": source_jurisdiction == Jurisdiction.EU_GDPR,
                 "requires_privacy_shield": False,  # Invalidated, use SCCs
-                "data_categories": data_categories or []
+                "data_categories": data_categories or [],
             }
 
             self._log_audit_trail(
                 action="cross_border_transfer_checked",
                 details=result,
-                legal_basis="Cross-Border Transfer Compliance"
+                legal_basis="Cross-Border Transfer Compliance",
             )
 
-            logger.info("Cross-border transfer check: %s → %s (allowed: %s)",
-                       source_jurisdiction.value, target_jurisdiction.value,
-                       result["transfer_allowed"])
+            logger.info(
+                "Cross-border transfer check: %s → %s (allowed: %s)",
+                source_jurisdiction.value,
+                target_jurisdiction.value,
+                result["transfer_allowed"],
+            )
             return result
         except Exception as e:
             logger.error("Failed to check cross-border transfer: %s", str(e))
             raise
 
     def get_consent_requirements(
-        self,
-        jurisdictions: Optional[List[Jurisdiction]] = None
+        self, jurisdictions: Optional[List[Jurisdiction]] = None
     ) -> Dict[str, Any]:
         """
         Get consent requirements across jurisdictions.
@@ -804,7 +823,7 @@ class MultiJurisdictionEngine:
                     consent_reqs[jurisdiction.value] = {
                         "type": config.consent_type,
                         "explicit_required": config.consent_type == "opt-in",
-                        "prior_to_processing": config.consent_type == "opt-in"
+                        "prior_to_processing": config.consent_type == "opt-in",
                     }
 
             result = {
@@ -812,7 +831,7 @@ class MultiJurisdictionEngine:
                 "most_restrictive": "opt-in",  # Most jurisdictions require opt-in
                 "requires_explicit_consent": any(
                     c.get("explicit_required") for c in consent_reqs.values()
-                )
+                ),
             }
 
             logger.info("Consent requirements retrieved for %d jurisdictions", len(jurisdictions))
@@ -822,8 +841,7 @@ class MultiJurisdictionEngine:
             raise
 
     def generate_compliance_report(
-        self,
-        jurisdictions: Optional[List[Jurisdiction]] = None
+        self, jurisdictions: Optional[List[Jurisdiction]] = None
     ) -> Dict[str, Any]:
         """
         Generate multi-jurisdiction compliance report.
@@ -847,7 +865,7 @@ class MultiJurisdictionEngine:
                 "summary": {},
                 "by_jurisdiction": {},
                 "critical_findings": [],
-                "recommendations": []
+                "recommendations": [],
             }
 
             # Analyze results
@@ -857,20 +875,25 @@ class MultiJurisdictionEngine:
 
             for jurisdiction in jurisdictions:
                 j_results = [
-                    r for r in self._check_results.values()
-                    if r.jurisdiction == jurisdiction
+                    r for r in self._check_results.values() if r.jurisdiction == jurisdiction
                 ]
 
                 if j_results:
                     compliant = sum(1 for r in j_results if r.status == ComplianceStatus.COMPLIANT)
-                    non_compliant = sum(1 for r in j_results if r.status == ComplianceStatus.NON_COMPLIANT)
+                    non_compliant = sum(
+                        1 for r in j_results if r.status == ComplianceStatus.NON_COMPLIANT
+                    )
 
                     report["by_jurisdiction"][jurisdiction.value] = {
                         "total_checks": len(j_results),
                         "compliant": compliant,
                         "non_compliant": non_compliant,
-                        "partial": sum(1 for r in j_results if r.status == ComplianceStatus.PARTIAL),
-                        "not_applicable": sum(1 for r in j_results if r.status == ComplianceStatus.NOT_APPLICABLE)
+                        "partial": sum(
+                            1 for r in j_results if r.status == ComplianceStatus.PARTIAL
+                        ),
+                        "not_applicable": sum(
+                            1 for r in j_results if r.status == ComplianceStatus.NOT_APPLICABLE
+                        ),
                     }
 
                     total_checks += len(j_results)
@@ -880,36 +903,40 @@ class MultiJurisdictionEngine:
                     # Add critical findings
                     for result in j_results:
                         if result.status == ComplianceStatus.NON_COMPLIANT:
-                            report["critical_findings"].append({
-                                "jurisdiction": jurisdiction.value,
-                                "requirement": result.requirement,
-                                "findings": result.findings
-                            })
+                            report["critical_findings"].append(
+                                {
+                                    "jurisdiction": jurisdiction.value,
+                                    "requirement": result.requirement,
+                                    "findings": result.findings,
+                                }
+                            )
 
             report["summary"] = {
                 "total_checks": total_checks,
                 "compliant": compliant_count,
                 "non_compliant": non_compliant_count,
-                "compliance_rate": round(compliant_count / total_checks * 100, 1) if total_checks > 0 else 0
+                "compliance_rate": round(compliant_count / total_checks * 100, 1)
+                if total_checks > 0
+                else 0,
             }
 
             self._log_audit_trail(
                 action="compliance_report_generated",
                 details=report["summary"],
-                legal_basis="Compliance Reporting"
+                legal_basis="Compliance Reporting",
             )
 
-            logger.info("Compliance report generated: %d%% compliance rate",
-                       report["summary"]["compliance_rate"])
+            logger.info(
+                "Compliance report generated: %d%% compliance rate",
+                report["summary"]["compliance_rate"],
+            )
             return report
         except Exception as e:
             logger.error("Failed to generate compliance report: %s", str(e))
             raise
 
     def add_custom_requirement(
-        self,
-        jurisdiction: Jurisdiction,
-        requirement: ComplianceRequirement
+        self, jurisdiction: Jurisdiction, requirement: ComplianceRequirement
     ) -> ComplianceRequirement:
         """
         Add a custom compliance requirement for a jurisdiction.
@@ -937,11 +964,12 @@ class MultiJurisdictionEngine:
                 action="custom_requirement_added",
                 jurisdiction=jurisdiction,
                 details={"category": requirement.category, "mandatory": requirement.mandatory},
-                legal_basis="Custom Requirement"
+                legal_basis="Custom Requirement",
             )
 
-            logger.info("Custom requirement added for %s: %s",
-                       jurisdiction.value, requirement.category)
+            logger.info(
+                "Custom requirement added for %s: %s", jurisdiction.value, requirement.category
+            )
             return requirement
         except Exception as e:
             logger.error("Failed to add custom requirement: %s", str(e))

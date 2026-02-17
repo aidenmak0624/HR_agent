@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class LeaveType(str, Enum):
     """Leave request type categories."""
+
     VACATION = "vacation"
     SICK = "sick"
     PERSONAL = "personal"
@@ -36,6 +37,7 @@ class LeaveType(str, Enum):
 
 class LeaveRequestStatus(str, Enum):
     """Leave request lifecycle status."""
+
     DRAFT = "draft"
     SUBMITTED = "submitted"
     PENDING_APPROVAL = "pending_approval"
@@ -47,6 +49,7 @@ class LeaveRequestStatus(str, Enum):
 @dataclass
 class LeaveBalance:
     """Employee leave balance tracking."""
+
     employee_id: str
     leave_type: LeaveType
     total_available: float  # Days available
@@ -238,7 +241,7 @@ Always:
             import re
 
             # Extract JSON-like content from query
-            match = re.search(r'\{[^{}]*\}', query)
+            match = re.search(r"\{[^{}]*\}", query)
             if not match:
                 return {
                     "success": False,
@@ -263,9 +266,7 @@ Always:
 
             # Check leave balance
             balance_info = self._check_balance_internal(
-                leave_req.employee_id,
-                leave_req.leave_type,
-                leave_req.days_requested
+                leave_req.employee_id, leave_req.leave_type, leave_req.days_requested
             )
 
             if not balance_info["sufficient"]:
@@ -340,7 +341,7 @@ Always:
             import re
             import json
 
-            match = re.search(r'\{[^{}]*\}', query)
+            match = re.search(r"\{[^{}]*\}", query)
             if not match:
                 return {"success": False, "error": "Invalid format. Expected JSON with employee_id"}
 
@@ -367,7 +368,7 @@ Always:
                         "remaining": balance.remaining,
                     }
                     for leave_type, balance in balances.items()
-                }
+                },
             }
 
             return result
@@ -392,7 +393,7 @@ Always:
             import re
             import json
 
-            match = re.search(r'\{[^{}]*\}', query)
+            match = re.search(r"\{[^{}]*\}", query)
             if not match:
                 return {"success": False, "error": "Invalid format"}
 
@@ -404,13 +405,15 @@ Always:
             # Return team calendar
             for req in self.leave_requests.values():
                 if req.status in [LeaveRequestStatus.APPROVED, LeaveRequestStatus.PENDING_APPROVAL]:
-                    calendar_data.append({
-                        "employee_id": req.employee_id,
-                        "leave_type": req.leave_type.value,
-                        "start_date": req.start_date.isoformat(),
-                        "end_date": req.end_date.isoformat(),
-                        "status": req.status.value,
-                    })
+                    calendar_data.append(
+                        {
+                            "employee_id": req.employee_id,
+                            "leave_type": req.leave_type.value,
+                            "start_date": req.start_date.isoformat(),
+                            "end_date": req.end_date.isoformat(),
+                            "status": req.status.value,
+                        }
+                    )
 
             return {
                 "success": True,
@@ -439,7 +442,7 @@ Always:
             import re
             import json
 
-            match = re.search(r'\{[^{}]*\}', query)
+            match = re.search(r"\{[^{}]*\}", query)
             if not match:
                 return {"success": False, "error": "Invalid format"}
 
@@ -493,7 +496,7 @@ Always:
             import re
             import json
 
-            match = re.search(r'\{[^{}]*\}', query)
+            match = re.search(r"\{[^{}]*\}", query)
             if not match:
                 return {"success": False, "error": "Invalid format"}
 
@@ -512,7 +515,10 @@ Always:
             leave_req = self.leave_requests[request_id]
 
             if leave_req.status != LeaveRequestStatus.PENDING_APPROVAL:
-                return {"success": False, "error": f"Cannot approve request in {leave_req.status.value} status"}
+                return {
+                    "success": False,
+                    "error": f"Cannot approve request in {leave_req.status.value} status",
+                }
 
             # Update workflow
             workflow_id = leave_req.metadata.get("workflow_id")
@@ -565,7 +571,7 @@ Always:
             import re
             import json
 
-            match = re.search(r'\{[^{}]*\}', query)
+            match = re.search(r"\{[^{}]*\}", query)
             if not match:
                 return {"success": False, "error": "Invalid format"}
 
@@ -604,7 +610,7 @@ Always:
             LeaveType.BEREAVEMENT: 5.0,
             LeaveType.JURY_DUTY: 0.0,
             LeaveType.MILITARY: 0.0,
-            LeaveType.UNPAID: float('inf'),
+            LeaveType.UNPAID: float("inf"),
         }
 
         self.leave_balances[employee_id] = {
@@ -644,11 +650,15 @@ Always:
         for other_req in self.leave_requests.values():
             if (
                 other_req.employee_id == leave_req.employee_id
-                and other_req.status in [LeaveRequestStatus.APPROVED, LeaveRequestStatus.PENDING_APPROVAL]
+                and other_req.status
+                in [LeaveRequestStatus.APPROVED, LeaveRequestStatus.PENDING_APPROVAL]
                 and other_req.request_id != leave_req.request_id
             ):
                 # Check date overlap
-                if not (leave_req.end_date < other_req.start_date or leave_req.start_date > other_req.end_date):
+                if not (
+                    leave_req.end_date < other_req.start_date
+                    or leave_req.start_date > other_req.end_date
+                ):
                     conflicts.append(f"Overlaps with {other_req.request_id}")
 
         return conflicts

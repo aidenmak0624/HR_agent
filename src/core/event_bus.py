@@ -31,15 +31,21 @@ POLICY_UPDATED = "policy.updated"
 GOAL_COMPLETED = "goal.completed"
 
 ALL_EVENT_TYPES = [
-    LEAVE_SUBMITTED, LEAVE_APPROVED, LEAVE_REJECTED,
-    EMPLOYEE_ONBOARDED, REVIEW_COMPLETED, BENEFITS_ENROLLED,
-    POLICY_UPDATED, GOAL_COMPLETED,
+    LEAVE_SUBMITTED,
+    LEAVE_APPROVED,
+    LEAVE_REJECTED,
+    EMPLOYEE_ONBOARDED,
+    REVIEW_COMPLETED,
+    BENEFITS_ENROLLED,
+    POLICY_UPDATED,
+    GOAL_COMPLETED,
 ]
 
 
 @dataclass
 class Event:
     """An event published on the event bus."""
+
     type: str
     source: str
     payload: Dict[str, Any] = field(default_factory=dict)
@@ -92,7 +98,9 @@ class EventBus:
         try:
             # Store in memory log
             self._event_log.append(event)
-            logger.info(f"EventBus: published '{event.type}' from {event.source} [corr:{event.correlation_id}]")
+            logger.info(
+                f"EventBus: published '{event.type}' from {event.source} [corr:{event.correlation_id}]"
+            )
 
             # Persist to DB
             self._persist_event(event)
@@ -117,6 +125,7 @@ class EventBus:
         """Persist event to EventLog table."""
         try:
             from src.core.database import EventLog, SessionLocal
+
             if SessionLocal is None:
                 return
             session = SessionLocal()

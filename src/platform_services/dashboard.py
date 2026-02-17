@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class MetricType(str, Enum):
     """Metric calculation types."""
+
     COUNT = "count"
     AVERAGE = "average"
     SUM = "sum"
@@ -28,6 +29,7 @@ class MetricType(str, Enum):
 
 class ChartType(str, Enum):
     """Chart visualization types."""
+
     BAR = "bar"
     LINE = "line"
     PIE = "pie"
@@ -40,7 +42,7 @@ class ChartType(str, Enum):
 class DashboardWidget:
     """Dashboard widget definition."""
 
-    widget_id: str = field(default_factory=lambda: str(__import__('uuid').uuid4()))
+    widget_id: str = field(default_factory=lambda: str(__import__("uuid").uuid4()))
     title: str = ""
     widget_type: str = "metric"  # metric, chart, table, kpi
     metric_type: Optional[MetricType] = None
@@ -67,7 +69,7 @@ class DashboardWidget:
 class Dashboard:
     """Dashboard instance with widgets."""
 
-    dashboard_id: str = field(default_factory=lambda: str(__import__('uuid').uuid4()))
+    dashboard_id: str = field(default_factory=lambda: str(__import__("uuid").uuid4()))
     name: str = ""
     description: str = ""
     owner_id: str = ""
@@ -321,7 +323,8 @@ class DashboardService:
             "dashboard_id": dashboard_id,
             "dashboard_name": dashboard.name,
             "exported_at": datetime.utcnow().isoformat(),
-            "date_range": date_range or {
+            "date_range": date_range
+            or {
                 "start": (datetime.utcnow() - timedelta(days=30)).isoformat(),
                 "end": datetime.utcnow().isoformat(),
             },
@@ -346,18 +349,21 @@ class DashboardService:
 
         # Create CSV with widget data
         import csv
-        with open(output_path, 'w', newline='') as f:
+
+        with open(output_path, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["Widget", "Metric", "Value", "Updated"])
 
             for widget in dashboard.widgets.values():
                 for key, value in widget.data.items():
-                    writer.writerow([
-                        widget.title,
-                        key,
-                        value,
-                        widget.updated_at.isoformat(),
-                    ])
+                    writer.writerow(
+                        [
+                            widget.title,
+                            key,
+                            value,
+                            widget.updated_at.isoformat(),
+                        ]
+                    )
 
         logger.info(f"Exported dashboard to CSV: {output_path}")
         return output_path

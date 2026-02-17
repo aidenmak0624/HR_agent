@@ -363,10 +363,7 @@ class MetricSnapshotRepository(BaseRepository[MetricSnapshotModel]):
                 if department:
                     stmt = stmt.where(MetricSnapshotModel.department == department)
 
-                stmt = (
-                    stmt.order_by(MetricSnapshotModel.recorded_at.asc())
-                    .limit(limit)
-                )
+                stmt = stmt.order_by(MetricSnapshotModel.recorded_at.asc()).limit(limit)
                 return session.execute(stmt).scalars().all()
         except Exception as e:
             logger.error(f"Error getting metric history: {str(e)}")

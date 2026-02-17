@@ -3,15 +3,12 @@
 import pytest
 from src.agent.agent_brain import HRAssistantAgent
 
+
 def test_agent_simple_query():
     """Test agent on simple factual query."""
     agent = HRAssistantAgent(api_key="test_key")
 
-    result = agent.run(
-        query="What is the PTO policy?",
-        topic="benefits",
-        difficulty="quick"
-    )
+    result = agent.run(query="What is the PTO policy?", topic="benefits", difficulty="quick")
 
     assert result["answer"]
     assert len(result["sources"]) > 0
@@ -24,9 +21,7 @@ def test_agent_comparison_query():
     agent = HRAssistantAgent(api_key="test_key")
 
     result = agent.run(
-        query="Compare PPO and HMO health plans",
-        topic="benefits",
-        difficulty="detailed"
+        query="Compare PPO and HMO health plans", topic="benefits", difficulty="detailed"
     )
 
     assert "compare" in result["answer"].lower() or "differ" in result["answer"].lower()
@@ -38,8 +33,7 @@ def test_agent_max_iterations():
     agent = HRAssistantAgent(api_key="test_key")
 
     result = agent.run(
-        query="Complex multi-step query about benefits and employment law",
-        topic="benefits"
+        query="Complex multi-step query about benefits and employment law", topic="benefits"
     )
 
     assert len(result["tools_used"]) <= 5  # max_iterations

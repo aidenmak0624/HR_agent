@@ -23,8 +23,10 @@ logger.setLevel(logging.INFO)
 
 # ==================== Enums & Dataclasses ====================
 
+
 class ReviewCyclePhase(str, Enum):
     """Phases of performance review cycle."""
+
     GOAL_SETTING = "goal_setting"
     MID_YEAR = "mid_year"
     YEAR_END = "year_end"
@@ -34,6 +36,7 @@ class ReviewCyclePhase(str, Enum):
 
 class FeedbackType(str, Enum):
     """Types of feedback in 360 reviews."""
+
     SELF = "self"
     MANAGER = "manager"
     PEER = "peer"
@@ -43,6 +46,7 @@ class FeedbackType(str, Enum):
 
 class RatingLevel(str, Enum):
     """Performance rating scale."""
+
     EXCEPTIONAL = 5
     EXCEEDS = 4
     MEETS = 3
@@ -52,6 +56,7 @@ class RatingLevel(str, Enum):
 
 class PIPStatus(str, Enum):
     """Performance Improvement Plan status."""
+
     CREATED = "created"
     IN_PROGRESS = "in_progress"
     ON_TRACK = "on_track"
@@ -63,6 +68,7 @@ class PIPStatus(str, Enum):
 @dataclass
 class PerformanceGoal:
     """SMART performance goal."""
+
     goal_id: str
     employee_id: str
     title: str
@@ -92,6 +98,7 @@ class PerformanceGoal:
 @dataclass
 class PerformanceFeedback:
     """Individual feedback entry in 360 review."""
+
     feedback_id: str
     review_id: str
     feedback_provider_id: str
@@ -107,6 +114,7 @@ class PerformanceFeedback:
 @dataclass
 class PerformanceReview:
     """Complete performance review record."""
+
     review_id: str
     employee_id: str
     employee_name: str
@@ -136,9 +144,7 @@ class PerformanceReview:
         if total_weight == 0:
             return 0.0
 
-        weighted_achieved = sum(
-            g.weight for g in self.goals if g.progress_percent >= 100
-        )
+        weighted_achieved = sum(g.weight for g in self.goals if g.progress_percent >= 100)
         return (weighted_achieved / total_weight) * 100
 
     def average_feedback_rating(self) -> float:
@@ -153,6 +159,7 @@ class PerformanceReview:
 @dataclass
 class PerformanceImprovementPlan:
     """Performance Improvement Plan (PIP)."""
+
     pip_id: str
     employee_id: str
     manager_id: str
@@ -174,6 +181,7 @@ class PerformanceImprovementPlan:
 @dataclass
 class CalibrationSession:
     """Calibration session for aligning ratings across managers."""
+
     session_id: str
     department: str
     facilitator_id: str
@@ -189,6 +197,7 @@ class CalibrationSession:
 
 
 # ==================== Performance Agent ====================
+
 
 class PerformanceAgent(BaseAgent):
     """
@@ -290,6 +299,7 @@ class PerformanceAgent(BaseAgent):
                 logger.info(f"REVIEW_CYCLE_MANAGER: Creating cycle {cycle_name}")
 
                 from uuid import uuid4
+
                 cycle_id = f"cycle_{uuid4().hex[:8]}"
 
                 # Phase timeline
@@ -369,6 +379,7 @@ class PerformanceAgent(BaseAgent):
                 target_dt = datetime.strptime(target_date, "%Y-%m-%d")
 
                 from uuid import uuid4
+
                 goal_id = f"goal_{uuid4().hex[:8]}"
 
                 goal = PerformanceGoal(
@@ -399,7 +410,9 @@ class PerformanceAgent(BaseAgent):
                     "target_date": target_date,
                     "weight": weight,
                     "is_smart_compliant": is_smart,
-                    "validation_message": "Goal meets SMART criteria" if is_smart else "Review goal for SMART compliance",
+                    "validation_message": "Goal meets SMART criteria"
+                    if is_smart
+                    else "Review goal for SMART compliance",
                     "source": "goal_system",
                 }
 
@@ -439,7 +452,9 @@ class PerformanceAgent(BaseAgent):
                 Feedback submission confirmation
             """
             try:
-                logger.info(f"FEEDBACK_COLLECTOR: Collecting {feedback_type} feedback for {review_id}")
+                logger.info(
+                    f"FEEDBACK_COLLECTOR: Collecting {feedback_type} feedback for {review_id}"
+                )
 
                 review = self.reviews.get(review_id)
                 if not review:
@@ -450,6 +465,7 @@ class PerformanceAgent(BaseAgent):
                     return {"error": "Rating must be between 1 and 5"}
 
                 from uuid import uuid4
+
                 feedback_id = f"feedback_{uuid4().hex[:8]}"
 
                 feedback = PerformanceFeedback(
@@ -481,7 +497,9 @@ class PerformanceAgent(BaseAgent):
                 except Exception as bias_err:
                     logger.warning(f"FEEDBACK_COLLECTOR: Bias scan failed: {bias_err}")
 
-                logger.info(f"FEEDBACK_COLLECTOR: Added feedback {feedback_id} to review {review_id}")
+                logger.info(
+                    f"FEEDBACK_COLLECTOR: Added feedback {feedback_id} to review {review_id}"
+                )
 
                 return {
                     "feedback_id": feedback_id,
@@ -501,7 +519,9 @@ class PerformanceAgent(BaseAgent):
                                 "recommendations": inc.recommendations,
                             }
                             for inc in bias_incidents
-                        ] if bias_incidents else [],
+                        ]
+                        if bias_incidents
+                        else [],
                     },
                     "source": "feedback_system",
                 }
@@ -634,6 +654,7 @@ class PerformanceAgent(BaseAgent):
                     return {"error": "Duration must be 30, 60, or 90 days"}
 
                 from uuid import uuid4
+
                 pip_id = f"pip_{uuid4().hex[:8]}"
 
                 start_date = datetime.utcnow()
@@ -642,8 +663,7 @@ class PerformanceAgent(BaseAgent):
                 # Create check-in dates
                 check_in_interval = duration_days // 3
                 check_in_dates = [
-                    start_date + timedelta(days=check_in_interval * i)
-                    for i in range(1, 3)
+                    start_date + timedelta(days=check_in_interval * i) for i in range(1, 3)
                 ]
 
                 pip = PerformanceImprovementPlan(
@@ -707,6 +727,7 @@ class PerformanceAgent(BaseAgent):
                 logger.info(f"CALIBRATION_HELPER: Setting up calibration for {department}")
 
                 from uuid import uuid4
+
                 session_id = f"calibration_{uuid4().hex[:8]}"
 
                 session = CalibrationSession(

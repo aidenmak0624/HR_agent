@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 # ─── Structured Log Entry ────────────────────────────────────────
 
+
 @dataclass
 class StructuredLogEntry:
     """
@@ -46,6 +47,7 @@ class StructuredLogEntry:
         duration_ms: Duration in milliseconds (if applicable)
         metadata: Additional key-value pairs
     """
+
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     level: str = "INFO"
     correlation_id: str = ""
@@ -72,6 +74,7 @@ class StructuredLogEntry:
 
 # ─── Trace Span ──────────────────────────────────────────────────
 
+
 @dataclass
 class TraceSpan:
     """
@@ -87,6 +90,7 @@ class TraceSpan:
         success: Whether the step succeeded
         metadata: Additional span data (tool name, result type, etc.)
     """
+
     name: str = ""
     start_time: float = field(default_factory=time.time)
     end_time: Optional[float] = None
@@ -111,6 +115,7 @@ class TraceSpan:
 
 
 # ─── Request Trace ───────────────────────────────────────────────
+
 
 class RequestTrace:
     """
@@ -191,7 +196,9 @@ class RequestTrace:
             "correlation_id": self.correlation_id,
             "agent_type": self.agent_type,
             "query": self.query,
-            "total_duration_ms": round(self.total_duration_ms, 2) if self.total_duration_ms else None,
+            "total_duration_ms": round(self.total_duration_ms, 2)
+            if self.total_duration_ms
+            else None,
             "success": self.success,
             "error": self.error,
             "span_count": len(self.spans),
@@ -200,6 +207,7 @@ class RequestTrace:
 
 
 # ─── Metrics Collector ───────────────────────────────────────────
+
 
 class MetricsCollector:
     """
@@ -341,6 +349,7 @@ class MetricsCollector:
 
 # ─── Observability Manager ───────────────────────────────────────
 
+
 class ObservabilityManager:
     """
     Central observability manager combining logging, tracing, and metrics.
@@ -403,12 +412,14 @@ class ObservabilityManager:
 
         self._traces.append(trace)
         if len(self._traces) > self._max_traces:
-            self._traces = self._traces[-self._max_traces:]
+            self._traces = self._traces[-self._max_traces :]
 
         self.metrics.increment_active()
         return trace
 
-    def finish_trace(self, trace: RequestTrace, success: bool = True, error: Optional[str] = None) -> None:
+    def finish_trace(
+        self, trace: RequestTrace, success: bool = True, error: Optional[str] = None
+    ) -> None:
         """
         Finish a trace and record metrics.
 
@@ -471,7 +482,7 @@ class ObservabilityManager:
 
         self._log_entries.append(entry)
         if len(self._log_entries) > self._max_logs:
-            self._log_entries = self._log_entries[-self._max_logs:]
+            self._log_entries = self._log_entries[-self._max_logs :]
 
         # Also emit to Python logger
         log_fn = getattr(logger, level.lower(), logger.info)

@@ -41,8 +41,7 @@ class TestPoolConfig:
     def test_pool_config_defaults(self):
         """Test default values in PoolConfig."""
         config = PoolConfig(
-            pool_type=PoolType.POSTGRESQL,
-            connection_string="postgresql://localhost/test"
+            pool_type=PoolType.POSTGRESQL, connection_string="postgresql://localhost/test"
         )
         assert config.min_connections == 2
         assert config.max_connections == 20
@@ -59,7 +58,7 @@ class TestPoolConfig:
             connection_string="redis://localhost:6379",
             min_connections=5,
             max_connections=50,
-            pool_timeout=60
+            pool_timeout=60,
         )
         assert config.min_connections == 5
         assert config.max_connections == 50
@@ -71,7 +70,7 @@ class TestPoolConfig:
             pool_type=PoolType.HTTP,
             connection_string="http://localhost",
             min_connections=1,
-            max_connections=1
+            max_connections=1,
         )
         assert config.min_connections == 1
         assert config.max_connections == 1
@@ -81,7 +80,7 @@ class TestPoolConfig:
         config = PoolConfig(
             pool_type=PoolType.POSTGRESQL,
             connection_string="postgresql://localhost/test",
-            pool_recycle=7200
+            pool_recycle=7200,
         )
         assert config.pool_recycle == 7200
 
@@ -108,7 +107,7 @@ class TestPoolStats:
             active_connections=5,
             idle_connections=10,
             total_created=100,
-            avg_wait_time=5.5
+            avg_wait_time=5.5,
         )
         assert stats.active_connections == 5
         assert stats.idle_connections == 10
@@ -117,18 +116,12 @@ class TestPoolStats:
 
     def test_pool_stats_active_connections(self):
         """Test active connections field."""
-        stats = PoolStats(
-            pool_type=PoolType.HTTP,
-            active_connections=15
-        )
+        stats = PoolStats(pool_type=PoolType.HTTP, active_connections=15)
         assert stats.active_connections == 15
 
     def test_pool_stats_avg_wait_time(self):
         """Test average wait time field."""
-        stats = PoolStats(
-            pool_type=PoolType.POSTGRESQL,
-            avg_wait_time=2.3
-        )
+        stats = PoolStats(pool_type=PoolType.POSTGRESQL, avg_wait_time=2.3)
         assert stats.avg_wait_time == 2.3
 
 
@@ -146,9 +139,7 @@ class TestConnectionHealth:
     def test_connection_health_custom_values(self):
         """Test custom values in ConnectionHealth."""
         health = ConnectionHealth(
-            is_healthy=False,
-            latency_ms=10.5,
-            error_message="Connection timeout"
+            is_healthy=False, latency_ms=10.5, error_message="Connection timeout"
         )
         assert health.is_healthy is False
         assert health.latency_ms == 10.5
@@ -169,33 +160,23 @@ class TestConnectionPoolManagerInit:
         """Test manager creates with multiple configs."""
         configs = [
             PoolConfig(
-                pool_type=PoolType.POSTGRESQL,
-                connection_string="postgresql://localhost/test"
+                pool_type=PoolType.POSTGRESQL, connection_string="postgresql://localhost/test"
             ),
-            PoolConfig(
-                pool_type=PoolType.REDIS,
-                connection_string="redis://localhost:6379"
-            )
+            PoolConfig(pool_type=PoolType.REDIS, connection_string="redis://localhost:6379"),
         ]
         manager = ConnectionPoolManager(configs)
         assert manager is not None
 
     def test_manager_stores_configs(self):
         """Test manager stores configurations."""
-        configs = [
-            PoolConfig(
-                pool_type=PoolType.HTTP,
-                connection_string="http://localhost"
-            )
-        ]
+        configs = [PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")]
         manager = ConnectionPoolManager(configs)
         assert PoolType.HTTP in manager._pools
 
     def test_manager_empty_pools(self):
         """Test manager initializes with empty pool dict."""
         config = PoolConfig(
-            pool_type=PoolType.POSTGRESQL,
-            connection_string="postgresql://localhost/test"
+            pool_type=PoolType.POSTGRESQL, connection_string="postgresql://localhost/test"
         )
         manager = ConnectionPoolManager([config])
         assert manager._initialized_pools.get(PoolType.POSTGRESQL) is False
@@ -206,10 +187,7 @@ class TestInitializePool:
 
     def test_initialize_http_pool(self):
         """Test initializing HTTP pool."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         result = manager.initialize_pool(PoolType.HTTP)
         assert result is True
@@ -217,10 +195,7 @@ class TestInitializePool:
 
     def test_initialize_pool_already_initialized(self):
         """Test initializing already initialized pool."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
         result = manager.initialize_pool(PoolType.HTTP)
@@ -228,10 +203,7 @@ class TestInitializePool:
 
     def test_initialize_invalid_pool_type(self):
         """Test initializing invalid pool type."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         result = manager.initialize_pool(PoolType.POSTGRESQL)
         assert result is False
@@ -239,9 +211,7 @@ class TestInitializePool:
     def test_initialize_pool_sets_idle_connections(self):
         """Test pool initialization sets idle connections."""
         config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost",
-            min_connections=3
+            pool_type=PoolType.HTTP, connection_string="http://localhost", min_connections=3
         )
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
@@ -254,10 +224,7 @@ class TestGetConnection:
 
     def test_get_connection_returns_connection(self):
         """Test getting connection returns a connection object."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -267,10 +234,7 @@ class TestGetConnection:
 
     def test_get_connection_tracks_active(self):
         """Test getting connection increments active counter."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -281,10 +245,7 @@ class TestGetConnection:
 
     def test_get_connection_not_initialized(self):
         """Test getting connection from non-initialized pool raises error."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
 
         with pytest.raises(RuntimeError):
@@ -297,10 +258,7 @@ class TestReleaseConnection:
 
     def test_release_connection_success(self):
         """Test releasing connection successfully."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -312,10 +270,7 @@ class TestReleaseConnection:
 
     def test_release_connection_decrements_active(self):
         """Test releasing connection decrements active counter."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -327,10 +282,7 @@ class TestReleaseConnection:
 
     def test_release_invalid_pool_type(self):
         """Test releasing to invalid pool type."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
 
         result = manager.release_connection(PoolType.POSTGRESQL, {})
@@ -342,12 +294,7 @@ class TestHealthCheck:
 
     def test_health_check_all_pools(self):
         """Test health check on all pools."""
-        configs = [
-            PoolConfig(
-                pool_type=PoolType.HTTP,
-                connection_string="http://localhost"
-            )
-        ]
+        configs = [PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")]
         manager = ConnectionPoolManager(configs)
         manager.initialize_pool(PoolType.HTTP)
 
@@ -357,10 +304,7 @@ class TestHealthCheck:
 
     def test_health_check_specific_pool(self):
         """Test health check on specific pool."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -370,10 +314,7 @@ class TestHealthCheck:
 
     def test_health_check_returns_health_dict(self):
         """Test health check returns proper dict structure."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -387,10 +328,7 @@ class TestGetPoolStats:
 
     def test_get_pool_stats_returns_stats(self):
         """Test getting stats returns PoolStats object."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -400,10 +338,7 @@ class TestGetPoolStats:
 
     def test_get_pool_stats_specific_pool(self):
         """Test getting stats for specific pool."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -413,12 +348,7 @@ class TestGetPoolStats:
 
     def test_get_pool_stats_all_pools(self):
         """Test getting stats for all pools."""
-        configs = [
-            PoolConfig(
-                pool_type=PoolType.HTTP,
-                connection_string="http://localhost"
-            )
-        ]
+        configs = [PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")]
         manager = ConnectionPoolManager(configs)
         manager.initialize_pool(PoolType.HTTP)
 
@@ -432,9 +362,7 @@ class TestResizePool:
     def test_resize_pool_successfully(self):
         """Test resizing pool successfully."""
         config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost",
-            max_connections=20
+            pool_type=PoolType.HTTP, connection_string="http://localhost", max_connections=20
         )
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
@@ -445,10 +373,7 @@ class TestResizePool:
 
     def test_resize_pool_invalid_size(self):
         """Test resizing with invalid size."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -457,10 +382,7 @@ class TestResizePool:
 
     def test_resize_pool_not_found(self):
         """Test resizing non-existent pool."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
 
         result = manager.resize_pool(PoolType.POSTGRESQL, 10)
@@ -473,9 +395,7 @@ class TestDrainPool:
     def test_drain_pool_connections(self):
         """Test draining connections from pool."""
         config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost",
-            min_connections=3
+            pool_type=PoolType.HTTP, connection_string="http://localhost", min_connections=3
         )
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
@@ -486,9 +406,7 @@ class TestDrainPool:
     def test_drain_pool_returns_count(self):
         """Test drain returns number of drained connections."""
         config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost",
-            min_connections=5
+            pool_type=PoolType.HTTP, connection_string="http://localhost", min_connections=5
         )
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
@@ -498,10 +416,7 @@ class TestDrainPool:
 
     def test_drain_empty_pool(self):
         """Test draining empty pool."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -514,12 +429,7 @@ class TestShutdown:
 
     def test_shutdown_all_pools(self):
         """Test shutting down all pools."""
-        configs = [
-            PoolConfig(
-                pool_type=PoolType.HTTP,
-                connection_string="http://localhost"
-            )
-        ]
+        configs = [PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")]
         manager = ConnectionPoolManager(configs)
         manager.initialize_pool(PoolType.HTTP)
 
@@ -528,10 +438,7 @@ class TestShutdown:
 
     def test_shutdown_returns_bool(self):
         """Test shutdown returns boolean."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -540,10 +447,7 @@ class TestShutdown:
 
     def test_shutdown_cleans_state(self):
         """Test shutdown cleans pool state."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -557,9 +461,7 @@ class TestGetOptimalPoolSize:
     def test_get_optimal_pool_size_calculates_recommendation(self):
         """Test calculating pool size recommendation."""
         config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost",
-            max_connections=20
+            pool_type=PoolType.HTTP, connection_string="http://localhost", max_connections=20
         )
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
@@ -570,10 +472,7 @@ class TestGetOptimalPoolSize:
 
     def test_get_optimal_pool_size_zero_usage(self):
         """Test recommendation with zero usage."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -582,10 +481,7 @@ class TestGetOptimalPoolSize:
 
     def test_get_optimal_pool_size_includes_peak(self):
         """Test recommendation includes peak connections."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -598,10 +494,7 @@ class TestGetStatus:
 
     def test_get_status_returns_overall_status(self):
         """Test getting overall status."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -612,10 +505,7 @@ class TestGetStatus:
 
     def test_get_status_healthy_pools(self):
         """Test status for healthy pools."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 
@@ -632,10 +522,7 @@ class TestGetStatus:
 
     def test_get_status_counts_pools(self):
         """Test status includes pool counts."""
-        config = PoolConfig(
-            pool_type=PoolType.HTTP,
-            connection_string="http://localhost"
-        )
+        config = PoolConfig(pool_type=PoolType.HTTP, connection_string="http://localhost")
         manager = ConnectionPoolManager([config])
         manager.initialize_pool(PoolType.HTTP)
 

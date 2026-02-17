@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentType(str, Enum):
     """Types of HR documents."""
+
     OFFER_LETTER = "offer_letter"
     EMPLOYMENT_CONTRACT = "employment_contract"
     TERMINATION_LETTER = "termination_letter"
@@ -152,7 +153,8 @@ class DocumentGenerator:
             )
 
             import re
-            variables = re.findall(r'\{\{\s*(\w+)\s*\}\}', template.content)
+
+            variables = re.findall(r"\{\{\s*(\w+)\s*\}\}", template.content)
             template.variables = list(set(variables))
 
             self.templates[template.template_id] = template
@@ -183,11 +185,14 @@ class DocumentGenerator:
         )
 
         import re
-        variables = re.findall(r'\{\{\s*(\w+)\s*\}\}', content)
+
+        variables = re.findall(r"\{\{\s*(\w+)\s*\}\}", content)
         template.variables = list(set(variables))
 
         self.templates[template.template_id] = template
-        self._log_audit("template_created", {"template_id": template.template_id, "type": document_type.value})
+        self._log_audit(
+            "template_created", {"template_id": template.template_id, "type": document_type.value}
+        )
 
         logger.info(f"Created template: {template.template_id}")
         return template.template_id
@@ -196,7 +201,9 @@ class DocumentGenerator:
         """Get template by ID."""
         return self.templates.get(template_id)
 
-    def list_templates(self, document_type: Optional[DocumentType] = None) -> List[DocumentTemplate]:
+    def list_templates(
+        self, document_type: Optional[DocumentType] = None
+    ) -> List[DocumentTemplate]:
         """List all templates."""
         templates = list(self.templates.values())
         if document_type:
@@ -219,7 +226,8 @@ class DocumentGenerator:
                 Template(content)
                 template.content = content
                 import re
-                variables = re.findall(r'\{\{\s*(\w+)\s*\}\}', content)
+
+                variables = re.findall(r"\{\{\s*(\w+)\s*\}\}", content)
                 template.variables = list(set(variables))
             except TemplateError as e:
                 raise ValueError(f"Invalid template syntax: {e}")
@@ -230,7 +238,9 @@ class DocumentGenerator:
         template.updated_at = datetime.utcnow()
         template.version += 1
 
-        self._log_audit("template_updated", {"template_id": template_id, "version": template.version})
+        self._log_audit(
+            "template_updated", {"template_id": template_id, "version": template.version}
+        )
         logger.info(f"Updated template: {template_id}")
         return True
 
@@ -287,7 +297,7 @@ class DocumentGenerator:
                 "document_id": doc.document_id,
                 "template_id": template_id,
                 "type": template.document_type.value,
-            }
+            },
         )
 
         logger.info(f"Generated document: {doc.document_id}")
@@ -324,8 +334,7 @@ class DocumentGenerator:
         doc.approved_by = approved_by
 
         self._log_audit(
-            "document_approved",
-            {"document_id": document_id, "approved_by": approved_by}
+            "document_approved", {"document_id": document_id, "approved_by": approved_by}
         )
 
         logger.info(f"Approved document: {document_id}")
@@ -380,7 +389,9 @@ class DocumentGenerator:
         """Export document as DOCX (Word)."""
         return self.export_document_pdf(document_id, output_path)
 
-    def list_documents(self, document_type: Optional[DocumentType] = None) -> List[GeneratedDocument]:
+    def list_documents(
+        self, document_type: Optional[DocumentType] = None
+    ) -> List[GeneratedDocument]:
         """List all generated documents."""
         docs = list(self.generated_documents.values())
         if document_type:
@@ -426,6 +437,5 @@ class DocumentGenerator:
     def get_audit_trail_for_document(self, document_id: str) -> List[Dict[str, Any]]:
         """Get audit trail for specific document."""
         return [
-            e for e in self.audit_trail
-            if e.get("details", {}).get("document_id") == document_id
+            e for e in self.audit_trail if e.get("details", {}).get("document_id") == document_id
         ]

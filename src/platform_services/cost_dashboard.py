@@ -29,9 +29,7 @@ class CostCategory(str, Enum):
 class UsageRecord(BaseModel):
     """Usage record for cost tracking."""
 
-    record_id: UUID = Field(
-        default_factory=uuid4, description="Unique record identifier"
-    )
+    record_id: UUID = Field(default_factory=uuid4, description="Unique record identifier")
     user_id: str = Field(description="User ID")
     department: str = Field(description="Department name")
     category: CostCategory = Field(description="Cost category")
@@ -39,9 +37,7 @@ class UsageRecord(BaseModel):
     estimated_cost: float = Field(description="Estimated cost in dollars")
     model_name: str = Field(description="LLM model name")
     query_id: Optional[str] = Field(default=None, description="Associated query ID")
-    timestamp: datetime = Field(
-        default_factory=datetime.now, description="Record timestamp"
-    )
+    timestamp: datetime = Field(default_factory=datetime.now, description="Record timestamp")
 
     model_config = ConfigDict(frozen=False)
 
@@ -52,12 +48,8 @@ class BudgetConfig(BaseModel):
     department_budgets: Dict[str, float] = Field(
         default_factory=dict, description="Department budgets in dollars"
     )
-    user_daily_limit: int = Field(
-        default=100000, description="Daily token limit per user"
-    )
-    alert_threshold_percent: int = Field(
-        default=80, description="Alert threshold percentage"
-    )
+    user_daily_limit: int = Field(default=100000, description="Daily token limit per user")
+    alert_threshold_percent: int = Field(default=80, description="Alert threshold percentage")
     billing_cycle_days: int = Field(default=30, description="Billing cycle duration")
     cost_per_1k_tokens: Dict[str, float] = Field(
         default_factory=lambda: {
@@ -85,12 +77,8 @@ class CostSummary(BaseModel):
     by_department: Dict[str, float] = Field(
         default_factory=dict, description="Cost breakdown by department"
     )
-    by_user: Dict[str, float] = Field(
-        default_factory=dict, description="Cost breakdown by user"
-    )
-    by_model: Dict[str, float] = Field(
-        default_factory=dict, description="Cost breakdown by model"
-    )
+    by_user: Dict[str, float] = Field(default_factory=dict, description="Cost breakdown by user")
+    by_model: Dict[str, float] = Field(default_factory=dict, description="Cost breakdown by model")
 
     model_config = ConfigDict(frozen=False)
 
@@ -205,15 +193,11 @@ class CostDashboardService:
             if end_date is None:
                 end_date = datetime.now()
             if start_date is None:
-                start_date = end_date - timedelta(
-                    days=self.config.billing_cycle_days
-                )
+                start_date = end_date - timedelta(days=self.config.billing_cycle_days)
 
             # Filter records by date range
             filtered_records = [
-                r
-                for r in self.usage_records
-                if start_date <= r.timestamp <= end_date
+                r for r in self.usage_records if start_date <= r.timestamp <= end_date
             ]
 
             # Aggregate data
@@ -249,9 +233,7 @@ class CostDashboardService:
             )
             raise
 
-    def get_user_usage(
-        self, user_id: str, period_days: int = 30
-    ) -> Dict[str, Any]:
+    def get_user_usage(self, user_id: str, period_days: int = 30) -> Dict[str, Any]:
         """
         Get usage details for a specific user.
 
@@ -300,9 +282,7 @@ class CostDashboardService:
             )
             raise
 
-    def get_department_usage(
-        self, department: str, period_days: int = 30
-    ) -> Dict[str, Any]:
+    def get_department_usage(self, department: str, period_days: int = 30) -> Dict[str, Any]:
         """
         Get usage details for a department.
 
@@ -320,8 +300,7 @@ class CostDashboardService:
             dept_records = [
                 r
                 for r in self.usage_records
-                if r.department == department
-                and start_date <= r.timestamp <= end_date
+                if r.department == department and start_date <= r.timestamp <= end_date
             ]
 
             total_tokens = sum(r.tokens_used for r in dept_records)
@@ -340,9 +319,7 @@ class CostDashboardService:
                 "total_tokens": total_tokens,
                 "total_cost": round(total_cost, 4),
                 "budget": budget,
-                "budget_used_percent": (
-                    round((total_cost / budget * 100), 2) if budget > 0 else 0
-                ),
+                "budget_used_percent": (round((total_cost / budget * 100), 2) if budget > 0 else 0),
                 "unique_users": unique_users,
                 "by_category": dict(by_category),
             }
@@ -374,8 +351,9 @@ class CostDashboardService:
                 user_usage = self.get_user_usage(user_id, period_days=1)
                 daily_tokens = user_usage["total_tokens"]
                 token_limit = self.config.user_daily_limit
-                usage_percent = round(
-                    (daily_tokens / token_limit * 100), 2) if token_limit > 0 else 0
+                usage_percent = (
+                    round((daily_tokens / token_limit * 100), 2) if token_limit > 0 else 0
+                )
 
                 return {
                     "type": "user",
@@ -414,9 +392,7 @@ class CostDashboardService:
             )
             raise
 
-    def get_top_consumers(
-        self, limit: int = 10, period_days: int = 30
-    ) -> List[Dict[str, Any]]:
+    def get_top_consumers(self, limit: int = 10, period_days: int = 30) -> List[Dict[str, Any]]:
         """
         Get top token consumers.
 
@@ -432,9 +408,7 @@ class CostDashboardService:
             start_date = end_date - timedelta(days=period_days)
 
             filtered_records = [
-                r
-                for r in self.usage_records
-                if start_date <= r.timestamp <= end_date
+                r for r in self.usage_records if start_date <= r.timestamp <= end_date
             ]
 
             user_costs = defaultdict(float)
@@ -450,9 +424,9 @@ class CostDashboardService:
                     "total_cost": round(cost, 4),
                     "total_tokens": user_tokens[user_id],
                 }
-                for user_id, cost in sorted(
-                    user_costs.items(), key=lambda x: x[1], reverse=True
-                )[:limit]
+                for user_id, cost in sorted(user_costs.items(), key=lambda x: x[1], reverse=True)[
+                    :limit
+                ]
             ]
 
             return consumers
@@ -464,9 +438,7 @@ class CostDashboardService:
             )
             raise
 
-    def get_cost_forecast(
-        self, days_ahead: int = 30
-    ) -> Dict[str, Any]:
+    def get_cost_forecast(self, days_ahead: int = 30) -> Dict[str, Any]:
         """
         Forecast future costs based on recent trends.
 
@@ -482,9 +454,7 @@ class CostDashboardService:
             start_date = end_date - timedelta(days=7)
 
             recent_records = [
-                r
-                for r in self.usage_records
-                if start_date <= r.timestamp <= end_date
+                r for r in self.usage_records if start_date <= r.timestamp <= end_date
             ]
 
             if not recent_records:
@@ -510,14 +480,14 @@ class CostDashboardService:
                     else 0
                 )
                 early_avg = (
-                    sum(r.estimated_cost for r in early_half) / len(early_half)
-                    if early_half
-                    else 0
+                    sum(r.estimated_cost for r in early_half) / len(early_half) if early_half else 0
                 )
                 trend = (
                     "increasing"
                     if recent_avg > early_avg
-                    else "decreasing" if recent_avg < early_avg else "stable"
+                    else "decreasing"
+                    if recent_avg < early_avg
+                    else "stable"
                 )
             else:
                 trend = "stable"
@@ -539,9 +509,7 @@ class CostDashboardService:
             )
             raise
 
-    def set_department_budget(
-        self, department: str, budget_amount: float
-    ) -> Dict[str, Any]:
+    def set_department_budget(self, department: str, budget_amount: float) -> Dict[str, Any]:
         """
         Set or update department budget.
 
@@ -599,7 +567,11 @@ class CostDashboardService:
                     user_daily_usage[record.user_id] += record.tokens_used
 
             for user_id, tokens in user_daily_usage.items():
-                percent = (tokens / self.config.user_daily_limit * 100) if self.config.user_daily_limit > 0 else 0
+                percent = (
+                    (tokens / self.config.user_daily_limit * 100)
+                    if self.config.user_daily_limit > 0
+                    else 0
+                )
                 if percent >= self.config.alert_threshold_percent:
                     alerts.append(
                         {
@@ -612,9 +584,7 @@ class CostDashboardService:
                     )
 
             # Check department budgets
-            start_date = end_date - timedelta(
-                days=self.config.billing_cycle_days
-            )
+            start_date = end_date - timedelta(days=self.config.billing_cycle_days)
             dept_costs = defaultdict(float)
             for record in self.usage_records:
                 if start_date <= record.timestamp <= end_date:
@@ -623,15 +593,13 @@ class CostDashboardService:
             for dept, cost in dept_costs.items():
                 budget = self.config.department_budgets.get(dept, 0)
                 if budget > 0:
-                    percent = (cost / budget * 100)
+                    percent = cost / budget * 100
                     if percent >= self.config.alert_threshold_percent:
                         alerts.append(
                             {
                                 "type": "department_budget",
                                 "department": dept,
-                                "severity": (
-                                    "critical" if percent >= 100 else "warning"
-                                ),
+                                "severity": ("critical" if percent >= 100 else "warning"),
                                 "usage_percent": round(percent, 2),
                                 "timestamp": datetime.now(),
                             }
@@ -669,12 +637,8 @@ class CostDashboardService:
                     "total_cost": round(model_costs[model], 4),
                     "total_tokens": model_tokens[model],
                     "query_count": model_queries[model],
-                    "avg_cost_per_query": round(
-                        model_costs[model] / model_queries[model], 6
-                    ),
-                    "cost_per_1k_tokens": self.config.cost_per_1k_tokens.get(
-                        model, 0.001
-                    ),
+                    "avg_cost_per_query": round(model_costs[model] / model_queries[model], 6),
+                    "cost_per_1k_tokens": self.config.cost_per_1k_tokens.get(model, 0.001),
                 }
 
             return {
@@ -730,12 +694,8 @@ class CostDashboardService:
                 "summary": {
                     "total_tokens": summary.total_tokens,
                     "total_cost": round(summary.total_cost, 4),
-                    "by_category": {
-                        k: round(v, 4) for k, v in summary.by_category.items()
-                    },
-                    "by_department": {
-                        k: round(v, 4) for k, v in summary.by_department.items()
-                    },
+                    "by_category": {k: round(v, 4) for k, v in summary.by_category.items()},
+                    "by_department": {k: round(v, 4) for k, v in summary.by_department.items()},
                 },
                 "top_consumers": top_consumers,
                 "model_analysis": model_comparison,

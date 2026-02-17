@@ -19,7 +19,7 @@ logger.setLevel(logging.INFO)
 
 class UserContext(TypedDict, total=False):
     """User context information for authorization and personalization."""
-    
+
     user_id: str
     role: str  # "employee", "manager", "hr_generalist", "hr_admin"
     department: str
@@ -30,7 +30,7 @@ class UserContext(TypedDict, total=False):
 class BaseAgentState(TypedDict, total=False):
     """
     State passed between LangGraph nodes in BaseAgent workflow.
-    
+
     Fields represent:
     - Input: query, user_context
     - Planning: plan, current_step
@@ -38,26 +38,26 @@ class BaseAgentState(TypedDict, total=False):
     - Reflection: confidence_score, force_next_tool, iterations
     - Output: final_answer, sources_used, reasoning_trace
     """
-    
+
     # --- Input ---
     query: str
     topic: Optional[str]
     user_context: UserContext
-    
+
     # --- Planning ---
     plan: List[str]
     current_step: int
-    
+
     # --- Execution ---
     tool_calls: List[Dict[str, Any]]
     tool_results: Dict[str, Any]
-    
+
     # --- Reflection & Control ---
     confidence_score: float
     force_next_tool: Optional[str]
     iterations: int
     max_iterations: int
-    
+
     # --- Output ---
     final_answer: str
     sources_used: List[str]
@@ -67,20 +67,20 @@ class BaseAgentState(TypedDict, total=False):
 class BaseAgent(ABC):
     """
     Abstract base class for specialist agents in HR multi-agent platform.
-    
+
     Uses LangGraph StateGraph pattern with 5 main nodes:
     1. _plan_node: Create execution plan from query
     2. _decide_tool_node: Select next tool from plan
     3. _execute_tool_node: Run selected tool
     4. _reflect_node: Assess quality and decide iteration
     5. _finish_node: Synthesize final answer
-    
+
     Subclasses must implement:
     - get_tools() -> Dict[str, Any]: Return available tools
     - get_system_prompt() -> str: Return system context
     - get_agent_type() -> str: Return agent identifier
     """
-    
+
     def __init__(self, llm: Any = None):
         """
         Initialize base agent.
@@ -91,46 +91,46 @@ class BaseAgent(ABC):
         """
         self.llm = llm
         self.graph = self._build_graph()
-    
+
     # ==================== Abstract Methods ====================
-    
+
     @abstractmethod
     def get_tools(self) -> Dict[str, Any]:
         """
         Get tools available to this agent.
-        
+
         Returns:
             Dict mapping tool name (str) to tool instance (Any).
             Example: {"rag_search": RAGSearchTool(), "web_search": WebSearchTool()}
         """
         pass
-    
+
     @abstractmethod
     def get_system_prompt(self) -> str:
         """
         Get system prompt for this agent's LLM.
-        
+
         Returns:
             System prompt describing the agent's role and capabilities.
         """
         pass
-    
+
     @abstractmethod
     def get_agent_type(self) -> str:
         """
         Get unique identifier for this agent type.
-        
+
         Returns:
             Agent type string (e.g., "policy_agent", "leave_agent").
         """
         pass
-    
+
     # ==================== Graph Building ====================
-    
+
     def _build_graph(self) -> Any:
         """
         Build LangGraph StateGraph with planning, execution, reflection pattern.
-        
+
         Graph structure:
         - Entry: planner
         - planner -> decide_tool
@@ -138,53 +138,53 @@ class BaseAgent(ABC):
         - execute_tool -> reflect
         - reflect -> {decide_tool | finish} [conditional]
         - finish -> END
-        
+
         Returns:
             Compiled StateGraph.
         """
         workflow = StateGraph(BaseAgentState)
-        
+
         # Add nodes
         workflow.add_node("planner", self._plan_node)
         workflow.add_node("decide_tool", self._decide_tool_node)
         workflow.add_node("execute_tool", self._execute_tool_node)
         workflow.add_node("reflect", self._reflect_node)
         workflow.add_node("finish", self._finish_node)
-        
+
         # Set entry point
         workflow.set_entry_point("planner")
-        
+
         # Fixed edges
         workflow.add_edge("planner", "decide_tool")
         workflow.add_edge("execute_tool", "reflect")
         workflow.add_edge("finish", END)
-        
+
         # Conditional edges
         workflow.add_conditional_edges(
             "decide_tool",
             self._should_continue,
             {"execute": "execute_tool", "finish": "finish"},
         )
-        
+
         workflow.add_conditional_edges(
             "reflect",
             self._should_iterate,
             {"continue": "decide_tool", "finish": "finish"},
         )
-        
+
         return workflow.compile()
-    
+
     # ==================== Node Implementations ====================
-    
+
     def _plan_node(self, state: BaseAgentState) -> BaseAgentState:
         """
         Create execution plan from query.
-        
+
         Uses LLM to analyze query and create 1-4 step plan.
-        
+
         Args:
             state: Current agent state
-            
+
         Returns:
             State with plan, current_step=0, reasoning_trace updated
         """
@@ -251,34 +251,32 @@ Return ONLY JSON:
             logger.error(f"Planning failed: {e}")
             state["plan"] = ["Use primary tool to answer query"]
             state["current_step"] = 0
-            state.setdefault("reasoning_trace", []).append(
-                f"PLAN: Fallback due to error: {e}"
-            )
+            state.setdefault("reasoning_trace", []).append(f"PLAN: Fallback due to error: {e}")
 
         return state
-    
+
     def _decide_tool_node(self, state: BaseAgentState) -> BaseAgentState:
         """
         Select next tool based on plan or forced tool.
-        
+
         Args:
             state: Current agent state
-            
+
         Returns:
             State with force_next_tool or next_tool selected
         """
         logger.info(f"DECIDE: step {state.get('current_step')}/{len(state.get('plan', []))}")
-        
+
         # Use forced tool if set
         if state.get("force_next_tool"):
             state["next_tool"] = state.get("force_next_tool")
             logger.info(f"DECIDE: Using forced tool: {state['next_tool']}")
             return state
-        
+
         # Extract tool from plan
         current_step = state.get("current_step", 0)
         plan = state.get("plan", [])
-        
+
         if current_step < len(plan):
             step = plan[current_step]
             tool_name = self._extract_tool_from_step(step)
@@ -287,9 +285,9 @@ Return ONLY JSON:
         else:
             logger.info(f"DECIDE: Plan complete, no tool selected")
             state["next_tool"] = None
-        
+
         return state
-    
+
     def _execute_tool_node(self, state: BaseAgentState) -> BaseAgentState:
         """
         Execute the selected tool.
@@ -313,9 +311,7 @@ Return ONLY JSON:
         tools = self.get_tools()
         if tool_name not in tools:
             logger.warning(f"EXECUTE: Tool '{tool_name}' not available")
-            state.setdefault("reasoning_trace", []).append(
-                f"EXECUTE: Tool '{tool_name}' not found"
-            )
+            state.setdefault("reasoning_trace", []).append(f"EXECUTE: Tool '{tool_name}' not found")
             # Always advance step to prevent infinite loops
             state["current_step"] = state.get("current_step", 0) + 1
             state["iterations"] = state.get("iterations", 0) + 1
@@ -332,11 +328,13 @@ Return ONLY JSON:
                 result = tool.invoke(query)
             state["tool_results"][tool_name] = result
 
-            state["tool_calls"].append({
-                "tool": tool_name,
-                "query": query,
-                "success": True,
-            })
+            state["tool_calls"].append(
+                {
+                    "tool": tool_name,
+                    "query": query,
+                    "success": True,
+                }
+            )
 
             state["current_step"] = state.get("current_step", 0) + 1
             state["iterations"] = state.get("iterations", 0) + 1
@@ -346,30 +344,32 @@ Return ONLY JSON:
         except Exception as e:
             logger.error(f"EXECUTE: {tool_name} failed: {e}")
             state["tool_results"][tool_name] = {"error": str(e)}
-            state["tool_calls"].append({
-                "tool": tool_name,
-                "query": query,
-                "success": False,
-                "error": str(e),
-            })
+            state["tool_calls"].append(
+                {
+                    "tool": tool_name,
+                    "query": query,
+                    "success": False,
+                    "error": str(e),
+                }
+            )
             # Always advance step AND iterations to prevent infinite loops
             state["current_step"] = state.get("current_step", 0) + 1
             state["iterations"] = state.get("iterations", 0) + 1
 
         return state
-    
+
     def _reflect_node(self, state: BaseAgentState) -> BaseAgentState:
         """
         Assess quality of current information and decide iteration strategy.
-        
+
         May decide to:
         - Continue to next tool
         - Force a fallback tool
         - Finish (sufficient information)
-        
+
         Args:
             state: Current agent state
-            
+
         Returns:
             State with confidence_score, force_next_tool, reasoning_trace updated
         """
@@ -381,8 +381,7 @@ Return ONLY JSON:
         # Graceful fallback when LLM is not available
         if self.llm is None:
             has_results = any(
-                isinstance(v, dict) and "error" not in v
-                for v in tool_results.values()
+                isinstance(v, dict) and "error" not in v for v in tool_results.values()
             )
             state["confidence_score"] = 0.6 if has_results else 0.3
             state.setdefault("reasoning_trace", []).append(
@@ -430,23 +429,21 @@ Return ONLY JSON:
         except Exception as e:
             logger.error(f"REFLECT: Assessment failed: {e}")
             state["confidence_score"] = 0.5
-            state.setdefault("reasoning_trace", []).append(
-                f"REFLECT: fallback due to {e}"
-            )
-        
+            state.setdefault("reasoning_trace", []).append(f"REFLECT: fallback due to {e}")
+
         # Clear forced tool to prevent loops
         if "force_next_tool" in state:
             state["force_next_tool"] = None
-        
+
         return state
-    
+
     def _finish_node(self, state: BaseAgentState) -> BaseAgentState:
         """
         Synthesize final answer from accumulated tool results.
-        
+
         Args:
             state: Current agent state
-            
+
         Returns:
             State with final_answer, sources_used set
         """
@@ -465,9 +462,7 @@ Return ONLY JSON:
                         summary_parts.append(f"{tool_name}: {result['error']}")
                     else:
                         summary_parts.append(f"{tool_name}: {json.dumps(result)[:200]}")
-                state["final_answer"] = (
-                    f"Results for '{query}':\n" + "\n".join(summary_parts)
-                )
+                state["final_answer"] = f"Results for '{query}':\n" + "\n".join(summary_parts)
             else:
                 state["final_answer"] = (
                     f"I was unable to find information for: {query}. "
@@ -496,21 +491,21 @@ Provide a direct, concise answer based on the gathered information."""
         except Exception as e:
             logger.error(f"FINISH: Synthesis failed: {e}")
             state["final_answer"] = f"Unable to generate answer: {e}"
-        
+
         # Extract sources from tool results
         state["sources_used"] = self._extract_sources(tool_results)
-        
+
         return state
-    
+
     # ==================== Conditional Edges ====================
-    
+
     def _should_continue(self, state: BaseAgentState) -> Literal["execute", "finish"]:
         """
         Decide whether to execute next tool or finish.
-        
+
         Args:
             state: Current agent state
-            
+
         Returns:
             "execute" if more plan steps remain and max iterations not reached,
             "finish" otherwise
@@ -519,26 +514,28 @@ Provide a direct, concise answer based on the gathered information."""
         plan_length = len(state.get("plan", []))
         iterations = state.get("iterations", 0)
         max_iter = state.get("max_iterations", 5)
-        
-        logger.info(f"SHOULD_CONTINUE: step={current_step}/{plan_length}, iter={iterations}/{max_iter}")
-        
+
+        logger.info(
+            f"SHOULD_CONTINUE: step={current_step}/{plan_length}, iter={iterations}/{max_iter}"
+        )
+
         if current_step >= plan_length:
             logger.info("SHOULD_CONTINUE: Plan complete → finish")
             return "finish"
         if iterations >= max_iter:
             logger.info("SHOULD_CONTINUE: Max iterations → finish")
             return "finish"
-        
+
         logger.info("SHOULD_CONTINUE: → execute next step")
         return "execute"
-    
+
     def _should_iterate(self, state: BaseAgentState) -> Literal["continue", "finish"]:
         """
         Decide whether to iterate or finish after reflection.
-        
+
         Args:
             state: Current agent state
-            
+
         Returns:
             "continue" if more steps remain or forced tool set,
             "finish" otherwise
@@ -547,62 +544,64 @@ Provide a direct, concise answer based on the gathered information."""
         plan_length = len(state.get("plan", []))
         iterations = state.get("iterations", 0)
         max_iter = state.get("max_iterations", 5)
-        
-        logger.info(f"SHOULD_ITERATE: step={current_step}/{plan_length}, iter={iterations}/{max_iter}")
-        
+
+        logger.info(
+            f"SHOULD_ITERATE: step={current_step}/{plan_length}, iter={iterations}/{max_iter}"
+        )
+
         # Hard stop at max iterations
         if iterations >= max_iter:
             logger.info("SHOULD_ITERATE: Max iterations reached → finish")
             return "finish"
-        
+
         # Check for forced tool (from quality check)
         if state.get("force_next_tool"):
             logger.info(f"SHOULD_ITERATE: Forced tool set → continue")
             return "continue"
-        
+
         # Check if plan incomplete
         if current_step < plan_length:
             logger.info(f"SHOULD_ITERATE: Plan incomplete → continue")
             return "continue"
-        
+
         logger.info("SHOULD_ITERATE: Plan complete → finish")
         return "finish"
-    
+
     # ==================== Helper Methods ====================
-    
+
     def _extract_tool_from_step(self, step: str) -> str:
         """
         Extract tool name from plan step string.
-        
+
         Example:
             "Use rag_search to find policies" -> "rag_search"
-        
+
         Args:
             step: Plan step string
-            
+
         Returns:
             Tool name (string), or first tool if none found
         """
         tools = self.get_tools()
         step_lower = step.lower()
-        
+
         # Check longest tool names first to avoid substring matching issues
         sorted_tools = sorted(tools.keys(), key=len, reverse=True)
-        
+
         for tool_name in sorted_tools:
             if tool_name.lower() in step_lower:
                 logger.info(f"EXTRACT: Found '{tool_name}' in step")
                 return tool_name
-        
+
         # Default to first tool
         default = list(tools.keys())[0] if tools else "default_tool"
         logger.warning(f"EXTRACT: No tool found in step, using {default}")
         return default
-    
+
     def _format_tool_descriptions(self) -> str:
         """
         Format tool descriptions for LLM prompt.
-        
+
         Returns:
             Formatted string of tool names and descriptions
         """
@@ -611,14 +610,14 @@ Provide a direct, concise answer based on the gathered information."""
             desc = getattr(tool, "description", name)
             lines.append(f"- {name}: {desc}")
         return "\n".join(lines)
-    
+
     def _extract_sources(self, tool_results: Dict[str, Any]) -> List[str]:
         """
         Extract source references from tool results.
-        
+
         Args:
             tool_results: Dict of tool_name -> result
-            
+
         Returns:
             List of source strings
         """
@@ -630,31 +629,31 @@ Provide a direct, concise answer based on the gathered information."""
                 if "source" in result:
                     sources.append(result["source"])
         return list({str(s) for s in sources})
-    
+
     @staticmethod
     def _parse_json_response(text: str) -> Dict[str, Any]:
         """
         Parse JSON from LLM response text.
-        
+
         Handles responses with surrounding text by extracting JSON block.
-        
+
         Args:
             text: Response text from LLM
-            
+
         Returns:
             Parsed JSON dict
-            
+
         Raises:
             ValueError: If no valid JSON found
         """
         import re
-        
+
         # First try direct parse
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             pass
-        
+
         # Try to extract JSON block
         match = re.search(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", text)
         if match:
@@ -662,11 +661,11 @@ Provide a direct, concise answer based on the gathered information."""
                 return json.loads(match.group(0))
             except json.JSONDecodeError:
                 pass
-        
+
         raise ValueError(f"No valid JSON found in response: {text[:100]}")
-    
+
     # ==================== Public Interface ====================
-    
+
     def run(
         self,
         query: str,
@@ -676,15 +675,15 @@ Provide a direct, concise answer based on the gathered information."""
     ) -> Dict[str, Any]:
         """
         Run agent to answer query.
-        
+
         Main entry point for executing agent workflow.
-        
+
         Args:
             query: User question/request
             user_context: User info (id, role, department, etc.)
             topic: Optional topic/context for the query
             max_iterations: Max tool execution loops (default 5)
-            
+
         Returns:
             Dict with keys:
             - answer: Final synthesized answer
@@ -700,7 +699,7 @@ Provide a direct, concise answer based on the gathered information."""
                 "role": "employee",
                 "department": "unknown",
             }
-        
+
         initial_state: BaseAgentState = {
             "query": query,
             "topic": topic or self.get_agent_type(),
@@ -717,13 +716,14 @@ Provide a direct, concise answer based on the gathered information."""
             "sources_used": [],
             "reasoning_trace": [],
         }
-        
+
         logger.info(f"RUN: Starting {self.get_agent_type()} for query: {query[:50]}...")
 
         # Build LangGraph config with optional tracing callbacks
         config: Dict[str, Any] = {}
         try:
             from src.core.tracing import LangSmithTracer
+
             callback = LangSmithTracer.create_callback(
                 agent_name=self.get_agent_type(),
                 correlation_id=user_context.get("user_id"),

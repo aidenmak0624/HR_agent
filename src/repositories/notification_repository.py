@@ -119,7 +119,9 @@ class NotificationRepository(BaseRepository[NotificationModel]):
 
         try:
             with self._get_session() as session:
-                stmt = select(NotificationModel).where(NotificationModel.recipient_id == recipient_id)
+                stmt = select(NotificationModel).where(
+                    NotificationModel.recipient_id == recipient_id
+                )
 
                 if status:
                     stmt = stmt.where(NotificationModel.status == status)
@@ -211,6 +213,7 @@ class NotificationRepository(BaseRepository[NotificationModel]):
         try:
             with self._get_session() as session:
                 from sqlalchemy import func
+
                 stmt = select(func.count(NotificationModel.id)).where(
                     (NotificationModel.recipient_id == recipient_id)
                     & (NotificationModel.status == "sent")

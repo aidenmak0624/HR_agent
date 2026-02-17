@@ -253,12 +253,8 @@ class TestLangSmithTracerSetup:
 
     def test_idempotent_setup(self):
         """Calling setup twice is safe (only first call takes effect)."""
-        LangSmithTracer.setup_tracing(
-            enabled=True, api_key="key1", project="proj1"
-        )
-        LangSmithTracer.setup_tracing(
-            enabled=True, api_key="key2", project="proj2"
-        )
+        LangSmithTracer.setup_tracing(enabled=True, api_key="key1", project="proj1")
+        LangSmithTracer.setup_tracing(enabled=True, api_key="key2", project="proj2")
         # First call wins
         assert os.environ["LANGCHAIN_API_KEY"] == "key1"
         assert os.environ["LANGCHAIN_PROJECT"] == "proj1"

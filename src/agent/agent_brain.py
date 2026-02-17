@@ -1,4 +1,3 @@
-
 # src/agent/agent_brain.py
 
 import os
@@ -16,10 +15,12 @@ from src.agent.tools.fact_checker import FactVerifierTool
 from src.agent.tools.comparator import ComparatorTool
 from src.agent.tools.planner import EducationalPlannerTool
 from src.agent.tools.web_search_tool import WebSearchTool
+
 # google.generativeai kept for RAG system compatibility
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 def _infer_content_type(query: str) -> str:
     """Infer educational content type from query."""
@@ -31,22 +32,23 @@ def _infer_content_type(query: str) -> str:
     else:
         return "lesson_plan"  # default
 
+
 def _extract_comparison_items(query: str) -> tuple:
     """
     Extract two items to compare from a comparison query.
-    
+
     Examples:
         "Compare freedom of speech and freedom of expression"
         → ("freedom of speech", "freedom of expression")
-        
+
         "What's the difference between UDHR and ICCPR?"
         → ("UDHR", "ICCPR")
     """
     query_lower = query.lower()
-    
+
     # Try different comparison patterns
     separators = [" and ", " vs ", " versus ", " vs. ", " compared to ", " with "]
-    
+
     for sep in separators:
         if sep in query_lower:
             # Split on the separator
@@ -54,23 +56,29 @@ def _extract_comparison_items(query: str) -> tuple:
             if len(parts) == 2:
                 item_a = parts[0].strip()
                 item_b = parts[1].strip()
-                
+
                 # Clean up common question words from the start
-                remove_words = ["compare", "difference between", "what's the", "what is the", 
-                               "how does", "how is"]
+                remove_words = [
+                    "compare",
+                    "difference between",
+                    "what's the",
+                    "what is the",
+                    "how does",
+                    "how is",
+                ]
                 for word in remove_words:
                     if item_a.startswith(word):
-                        item_a = item_a[len(word):].strip()
+                        item_a = item_a[len(word) :].strip()
                     if item_b.startswith(word):
-                        item_b = item_b[len(word):].strip()
-                
+                        item_b = item_b[len(word) :].strip()
+
                 # Remove trailing punctuation
                 item_a = item_a.rstrip("?,!.")
                 item_b = item_b.rstrip("?,!.")
-                
+
                 if item_a and item_b:  # Make sure we have both items
                     return (item_a, item_b)
-    
+
     # Fallback: split the query in half (comparator tool's LLM will handle it)
     words = query.split()
     mid = len(words) // 2
@@ -112,19 +120,19 @@ class HRAssistantAgent:
 
         # Entry point
         workflow.set_entry_point("planner")
-        
+
         # Fixed edges - NO DIRECT EDGES FROM decide_tool!
         workflow.add_edge("planner", "decide_tool")
         workflow.add_edge("execute_tool", "reflect")  # ✅ Execute always goes to reflect
         workflow.add_edge("finish", END)
-        
+
         # Conditional edges
         workflow.add_conditional_edges(
             "decide_tool",
             self._should_continue,
             {"execute": "execute_tool", "finish": "finish"},  # ✅ Only these two paths
         )
-        
+
         workflow.add_conditional_edges(
             "reflect",
             self._should_iterate,
@@ -136,7 +144,7 @@ class HRAssistantAgent:
     # ---------- NODES ----------
     def _plan_node(self, state: AgentState) -> AgentState:
         logger.info("PLAN: Analyzing query: %s", state.get("query"))
-        
+
         planning_prompt = f"""You are an HR policy and employment expert. Analyze the query and create a MINIMAL plan.
 
     USER QUERY: {state.get('query','')}
@@ -183,12 +191,15 @@ class HRAssistantAgent:
     }}"""
 
         messages = [
-            SystemMessage(content="You are a planning expert for HR policy questions. Create MINIMAL, efficient plans."),
+            SystemMessage(
+                content="You are a planning expert for HR policy questions. Create MINIMAL, efficient plans."
+            ),
             HumanMessage(content=planning_prompt),
         ]
 
         def _parse_plan_response(resp_text: str):
             import re, json
+
             if not resp_text:
                 raise ValueError("empty response")
             try:
@@ -206,7 +217,7 @@ class HRAssistantAgent:
             response = self.llm.invoke(messages)
             raw = getattr(response, "content", str(response))
             logger.debug("PLAN raw response: %s", raw)
-            
+
             try:
                 plan_data = _parse_plan_response(raw)
             except Exception:
@@ -218,29 +229,29 @@ class HRAssistantAgent:
 
             # Get the plan
             state["plan"] = plan_data.get("plan", ["Use rag_search to find information"])
-            
+
             # ✅ Cap at 4 steps but warn if plan is too long
             if len(state["plan"]) > 4:
                 logger.warning(f"Plan has {len(state['plan'])} steps; capping at 4")
                 state["plan"] = state["plan"][:4]
-            
+
             state["query_type"] = plan_data.get("query_type", "simple_search")
             state["primary_tool"] = plan_data.get("primary_tool", "rag_search")
             state["current_step"] = 0
-            
+
             # Add reasoning to trace
             reasoning = plan_data.get("reasoning", "No reasoning provided")
             state.setdefault("reasoning_trace", []).append(
                 f"PLAN: {reasoning} | Type: {state['query_type']} | Steps: {len(state['plan'])}"
             )
-            
+
             logger.info(
-                "Plan created: %d steps (type=%s, primary=%s)", 
-                len(state["plan"]), 
+                "Plan created: %d steps (type=%s, primary=%s)",
+                len(state["plan"]),
                 state["query_type"],
-                state["primary_tool"]
+                state["primary_tool"],
             )
-            
+
         except Exception as e:
             logger.error("Planning failed: %s", e)
             state.setdefault("reasoning_trace", []).append(
@@ -250,45 +261,46 @@ class HRAssistantAgent:
             state["query_type"] = "simple_search"
             state["primary_tool"] = "rag_search"
             state["current_step"] = 0
-            
+
         return state
 
-# Fixed Functions for agent_brain.py
+    # Fixed Functions for agent_brain.py
 
     # ========== FIX #1: Tool Name Extraction ==========
     def _extract_tool_from_plan_step(self, step: str) -> str:
         """
         Extract tool name from plan step like 'Use comparator to compare X'
-        
+
         IMPORTANT: Check in order of specificity (longest names first) to avoid
-        substring matching issues (e.g., "web_search" contains "search" which 
+        substring matching issues (e.g., "web_search" contains "search" which
         would incorrectly match "rag_search" if checked first)
         """
         step_lower = step.lower()
-        
+
         # ✅ Ordered by specificity - longer/more specific names first
         tools_list = [
             "educational_planner",  # Most specific
             "fact_verifier",
-            "comparator", 
-            "web_search",           # Check before rag_search!
-            "rag_search"            # Generic "search" - check last
+            "comparator",
+            "web_search",  # Check before rag_search!
+            "rag_search",  # Generic "search" - check last
         ]
-        
+
         for tool in tools_list:
             if tool in step_lower:
                 logger.info(f"EXTRACT: Found '{tool}' in step: '{step[:50]}...'")
                 return tool
-        
+
         logger.warning(f"EXTRACT: No tool found in step '{step[:50]}...', defaulting to rag_search")
         return "rag_search"  # default fallback
-
 
     # ========== FIX #2: Enhanced Decide Tool with Better Logging ==========
     def _decide_tool_node(self, state: AgentState) -> AgentState:
         logger.info("=" * 60)
         logger.info("DECIDE: Entering decision node")
-        logger.info(f"DECIDE: current_step={state.get('current_step')}/{len(state.get('plan', []))}")
+        logger.info(
+            f"DECIDE: current_step={state.get('current_step')}/{len(state.get('plan', []))}"
+        )
         logger.info(f"DECIDE: force_next_tool={state.get('force_next_tool')}")
         logger.info(f"DECIDE: plan={state.get('plan')}")
         logger.info("=" * 60)
@@ -297,25 +309,23 @@ class HRAssistantAgent:
         if "force_next_tool" in state and state.get("force_next_tool") is not None:
             forced_tool = state.get("force_next_tool")
             logger.info(f"DECIDE: 🔒 FORCED TOOL: {forced_tool}")
-            
+
             # Generate appropriate input for the forced tool
             if forced_tool == "web_search":
-                tool_input = {
-                    "query": state.get("query", "")
-                }
+                tool_input = {"query": state.get("query", "")}
             elif forced_tool == "rag_search":
                 tool_input = {
                     "query": state.get("query", ""),
                     "topic": state.get("topic", "benefits"),
-                    "top_k": 6
+                    "top_k": 6,
                 }
             elif forced_tool == "educational_planner":
                 tool_input = {
                     "content_type": _infer_content_type(state.get("query", "")),
                     "topic": state.get("topic", "benefits"),
-                    "level": state.get("difficulty", "intermediate")
+                    "level": state.get("difficulty", "intermediate"),
                 }
-            
+
             elif forced_tool == "comparator":
                 query = state.get("query", "")
                 item_a, item_b = _extract_comparison_items(query)
@@ -323,26 +333,30 @@ class HRAssistantAgent:
                     "item_a": item_a,
                     "item_b": item_b,
                     "topic": state.get("topic", "benefits"),
-                    "comparison_type": "general"
+                    "comparison_type": "general",
                 }
-            
+
             elif forced_tool == "fact_verifier":
                 tool_input = {
                     "claim": state.get("query", ""),
-                    "topic": state.get("topic", "benefits")
+                    "topic": state.get("topic", "benefits"),
                 }
-            
+
             state["current_tool"] = forced_tool
-            state.setdefault("tool_calls", []).append({
-                "tool": forced_tool,
-                "tool_input": tool_input,
-                "reasoning": "Forced by quality threshold check"
-            })
+            state.setdefault("tool_calls", []).append(
+                {
+                    "tool": forced_tool,
+                    "tool_input": tool_input,
+                    "reasoning": "Forced by quality threshold check",
+                }
+            )
             state.setdefault("reasoning_trace", []).append(
                 f"FORCED TOOL: Using {forced_tool} due to quality check"
             )
             del state["force_next_tool"]
-            logger.info(f"DECIDE: ✅ Forced tool setup complete. Tool calls: {len(state.get('tool_calls', []))}")
+            logger.info(
+                f"DECIDE: ✅ Forced tool setup complete. Tool calls: {len(state.get('tool_calls', []))}"
+            )
             return state
 
         # Check if plan is complete
@@ -354,28 +368,26 @@ class HRAssistantAgent:
         # Get current plan step
         current_plan_step = state["plan"][state["current_step"]]
         logger.info(f"DECIDE: 📋 Current plan step [{state['current_step']}]: '{current_plan_step}'")
-        
+
         # Extract suggested tool from plan
         suggested_tool = self._extract_tool_from_plan_step(current_plan_step)
         logger.info(f"DECIDE: 🔍 Extracted tool from plan: '{suggested_tool}'")
-        
+
         # If suggested tool is NOT rag_search, use it directly (don't ask LLM)
         if suggested_tool != "rag_search":
             logger.info(f"DECIDE: 🎯 Using plan-suggested tool '{suggested_tool}' directly")
-            
+
             # ✅ Generate appropriate input for each tool based on its signature
             if suggested_tool == "web_search":
-                tool_input = {
-                    "query": state.get("query", "")
-                }
-            
+                tool_input = {"query": state.get("query", "")}
+
             elif suggested_tool == "educational_planner":
                 tool_input = {
                     "content_type": _infer_content_type(state.get("query", "")),
                     "topic": state.get("topic", "benefits"),
-                    "level": state.get("difficulty", "intermediate")
+                    "level": state.get("difficulty", "intermediate"),
                 }
-            
+
             elif suggested_tool == "comparator":
                 # Extract two items to compare from query
                 query = state.get("query", "")
@@ -384,38 +396,42 @@ class HRAssistantAgent:
                     "item_a": item_a,
                     "item_b": item_b,
                     "topic": state.get("topic", "benefits"),
-                    "comparison_type": "general"
+                    "comparison_type": "general",
                 }
-            
+
             elif suggested_tool == "fact_verifier":
                 tool_input = {
                     "claim": state.get("query", ""),
-                    "topic": state.get("topic", "benefits")
+                    "topic": state.get("topic", "benefits"),
                 }
-            
+
             else:
                 # Fallback for any other tools
                 tool_input = {"query": state.get("query", "")}
-            
+
             logger.info(f"DECIDE: 📦 Prepared tool_input: {tool_input}")
-            
+
             state["current_tool"] = suggested_tool
-            state.setdefault("tool_calls", []).append({
-                "tool": suggested_tool,
-                "tool_input": tool_input,
-                "reasoning": f"Plan step explicitly suggests {suggested_tool}"
-            })
+            state.setdefault("tool_calls", []).append(
+                {
+                    "tool": suggested_tool,
+                    "tool_input": tool_input,
+                    "reasoning": f"Plan step explicitly suggests {suggested_tool}",
+                }
+            )
             state.setdefault("reasoning_trace", []).append(
                 f"DECISION: Using plan-suggested tool {suggested_tool}"
             )
-            
-            logger.info(f"DECIDE: ✅ Tool setup complete. Total tool_calls: {len(state['tool_calls'])}")
+
+            logger.info(
+                f"DECIDE: ✅ Tool setup complete. Total tool_calls: {len(state['tool_calls'])}"
+            )
             logger.info(f"DECIDE: current_tool set to: '{state['current_tool']}'")
             return state
 
         # Only reach here for rag_search vs web_search decisions
         logger.info("DECIDE: 🤔 Asking LLM to choose between rag_search and web_search")
-        
+
         recent_results = self._get_recent_results(state)
         decision_prompt = f"""
     You are executing this step: "{current_plan_step}"
@@ -432,65 +448,66 @@ class HRAssistantAgent:
     "tool_input": {{"query": "..."}},
     "reasoning": "short why"
     }}"""
-        
+
         messages = [
             SystemMessage(content="You are a tool selection expert."),
             HumanMessage(content=decision_prompt),
         ]
-        
+
         try:
             response = self.llm.invoke(messages)
             decision = json.loads(response.content)
             tool = decision.get("tool", "rag_search")
-            tool_input = decision.get("tool_input", {"query": state.get("query","")})
+            tool_input = decision.get("tool_input", {"query": state.get("query", "")})
             reasoning = decision.get("reasoning", "")
-            
+
             logger.info(f"DECIDE: 🤖 LLM chose: {tool} | Reasoning: {reasoning}")
-            
+
             state["current_tool"] = tool
-            state.setdefault("tool_calls", []).append({
-                "tool": tool,
-                "tool_input": tool_input,
-                "reasoning": reasoning
-            })
+            state.setdefault("tool_calls", []).append(
+                {"tool": tool, "tool_input": tool_input, "reasoning": reasoning}
+            )
             state.setdefault("reasoning_trace", []).append(f"DECISION: {reasoning}")
-            
-            logger.info(f"DECIDE: ✅ Tool setup complete. Total tool_calls: {len(state['tool_calls'])}")
-            
+
+            logger.info(
+                f"DECIDE: ✅ Tool setup complete. Total tool_calls: {len(state['tool_calls'])}"
+            )
+
         except Exception as e:
             logger.error(f"DECIDE: ❌ LLM decision failed: {e}")
             state["current_tool"] = "rag_search"
-            state.setdefault("tool_calls", []).append({
-                "tool": "rag_search",
-                "tool_input": {"query": state.get("query","")},
-                "reasoning": "fallback due to error"
-            })
-        
-        return state
+            state.setdefault("tool_calls", []).append(
+                {
+                    "tool": "rag_search",
+                    "tool_input": {"query": state.get("query", "")},
+                    "reasoning": "fallback due to error",
+                }
+            )
 
+        return state
 
     # ========== FIX #3: Enhanced Execute Tool with Validation ==========
     def _execute_tool_node(self, state: AgentState) -> AgentState:
         logger.info("=" * 60)
         logger.info("EXECUTE: Entering execution node")
-        
+
         # ✅ Validate tool_calls exists
         if not state.get("tool_calls"):
             logger.error("EXECUTE: ❌ No tool_calls found in state! Cannot execute.")
             logger.error(f"EXECUTE: State keys: {list(state.keys())}")
             return state
-        
+
         last_call = state["tool_calls"][-1]
         tool_name = last_call.get("tool", "rag_search")
         tool_input = last_call.get("tool_input", {})
         reasoning = last_call.get("reasoning", "")
-        
+
         logger.info(f"EXECUTE: 🔧 Tool: {tool_name}")
         logger.info(f"EXECUTE: 📦 Input: {tool_input}")
         logger.info(f"EXECUTE: 💭 Reasoning: {reasoning}")
-        
+
         state["current_tool"] = tool_name
-        
+
         # Execute the tool
         if tool_name in self.tools:
             try:
@@ -508,49 +525,57 @@ class HRAssistantAgent:
             logger.error(f"EXECUTE: ❌ Tool '{tool_name}' not found in available tools")
             logger.error(f"EXECUTE: Available tools: {list(self.tools.keys())}")
             result = {"error": f"Tool '{tool_name}' not found"}
-        
+
         # Store result
         state.setdefault("tool_results", {})[tool_name] = result
         logger.info(f"EXECUTE: 💾 Stored result for {tool_name}")
-        
+
         # Increment counters
         # ✅ Only increment step if this wasn't a forced tool
         if reasoning != "Forced by quality threshold check":
             old_step = state.get("current_step", 0)
             state["current_step"] = old_step + 1
-            logger.info(f"EXECUTE: 📈 Incremented current_step: {old_step} → {state['current_step']}")
+            logger.info(
+                f"EXECUTE: 📈 Incremented current_step: {old_step} → {state['current_step']}"
+            )
         else:
             logger.info(f"EXECUTE: ⏸️ NOT incrementing current_step (forced tool)")
-        
+
         old_iter = state.get("iterations", 0)
         state["iterations"] = old_iter + 1
         logger.info(f"EXECUTE: 📈 Incremented iterations: {old_iter} → {state['iterations']}")
         logger.info("=" * 60)
-        
+
         return state
-    
+
     def _reflect_node(self, state: AgentState) -> AgentState:
         logger.info("REFLECT: Starting reflection (iterations=%d)", state.get("iterations", 0))
-        tool_results = state.get('tool_results', {})
-        last_tool = list(tool_results.keys())[-1] if tool_results else ''
+        tool_results = state.get("tool_results", {})
+        last_tool = list(tool_results.keys())[-1] if tool_results else ""
 
-        logger.info(f"REFLECT: last_tool='{last_tool}', tool_results keys={list(tool_results.keys())}")
+        logger.info(
+            f"REFLECT: last_tool='{last_tool}', tool_results keys={list(tool_results.keys())}"
+        )
 
-        if last_tool == 'rag_search' and 'rag_search' in tool_results:
-            rag_result = tool_results['rag_search']
-            is_sufficient = rag_result.get('is_sufficient', True)
-            confidence = rag_result.get('confidence', 0.7)
+        if last_tool == "rag_search" and "rag_search" in tool_results:
+            rag_result = tool_results["rag_search"]
+            is_sufficient = rag_result.get("is_sufficient", True)
+            confidence = rag_result.get("confidence", 0.7)
 
-            web_search_used = 'web_search' in tool_results
-            iterations = state.get('iterations', 0)
-            max_iterations = state.get('max_iterations', 5)
+            web_search_used = "web_search" in tool_results
+            iterations = state.get("iterations", 0)
+            max_iterations = state.get("max_iterations", 5)
             logger.info(
                 f"REFLECT: RAG check — is_sufficient={is_sufficient}, "
                 f"web_search_used={web_search_used}, "
                 f"iterations={iterations}/{max_iterations}"
             )
 
-            if not is_sufficient and 'web_search' not in tool_results and state.get('iterations', 0) < state.get('max_iterations', 5):
+            if (
+                not is_sufficient
+                and "web_search" not in tool_results
+                and state.get("iterations", 0) < state.get("max_iterations", 5)
+            ):
                 state["needs_more_info"] = True
                 state["confidence_score"] = confidence
                 state.setdefault("reasoning_trace", []).append(
@@ -559,7 +584,7 @@ class HRAssistantAgent:
                 state["force_next_tool"] = "web_search"
                 logger.info("REFLECT: ✅ Forcing web_search")
                 return state
-            
+
             logger.info(f"REFLECT: Not forcing — is_sufficient={is_sufficient}")
 
         logger.info("REFLECT: Using standard reflection (not forcing tool)")
@@ -642,45 +667,54 @@ Guidelines:
         plan_length = len(state.get("plan", []))
         iterations = state.get("iterations", 0)
         max_iter = state.get("max_iterations", 5)
-        
-        logger.info(f"SHOULD_CONTINUE: step={current_step}/{plan_length}, iter={iterations}/{max_iter}")
-        
+
+        logger.info(
+            f"SHOULD_CONTINUE: step={current_step}/{plan_length}, iter={iterations}/{max_iter}"
+        )
+
         if current_step >= plan_length:
             logger.info("SHOULD_CONTINUE: Finishing (plan complete)")
             return "finish"
         if iterations >= max_iter:
             logger.info("SHOULD_CONTINUE: Finishing (max iterations)")
             return "finish"
-        
+
         logger.info("SHOULD_CONTINUE: Executing")
         return "execute"
 
     def _should_iterate(self, state: AgentState) -> Literal["continue", "finish"]:
-            # Hard stop at max iterations
-            if state.get("iterations", 0) >= state.get("max_iterations", 5):
-                logger.info(f"ITERATE: Hit max iterations ({state['iterations']}/{state['max_iterations']}); finishing")
-                return "finish"
-
-            # ✅ Check for both presence AND non-None value
-            if state.get("force_next_tool") and state.get("force_next_tool") is not None:
-                logger.info(f"ITERATE: force_next_tool='{state['force_next_tool']}'; continuing")
-                return "continue"
-
-            # 🎯 FIX: Check if the plan is unfinished. If current_step < plan_length, continue.
-            current_step = state.get("current_step", 0)
-            plan_length = len(state.get("plan", []))
-            
-            if current_step < plan_length:
-                logger.info(f"ITERATE: Plan is not complete (step {current_step} < {plan_length}); continuing")
-                return "continue"
-                
-            # Original condition for needs_more_info (usually after RAG, before web_search)
-            if state.get("needs_more_info", False) and state.get("iterations", 0) < state.get("max_iterations", 5):
-                logger.info(f"ITERATE: needs_more_info=True; continuing")
-                return "continue"
-        
-            logger.info("ITERATE: Finishing")
+        # Hard stop at max iterations
+        if state.get("iterations", 0) >= state.get("max_iterations", 5):
+            logger.info(
+                f"ITERATE: Hit max iterations ({state['iterations']}/{state['max_iterations']}); finishing"
+            )
             return "finish"
+
+        # ✅ Check for both presence AND non-None value
+        if state.get("force_next_tool") and state.get("force_next_tool") is not None:
+            logger.info(f"ITERATE: force_next_tool='{state['force_next_tool']}'; continuing")
+            return "continue"
+
+        # 🎯 FIX: Check if the plan is unfinished. If current_step < plan_length, continue.
+        current_step = state.get("current_step", 0)
+        plan_length = len(state.get("plan", []))
+
+        if current_step < plan_length:
+            logger.info(
+                f"ITERATE: Plan is not complete (step {current_step} < {plan_length}); continuing"
+            )
+            return "continue"
+
+        # Original condition for needs_more_info (usually after RAG, before web_search)
+        if state.get("needs_more_info", False) and state.get("iterations", 0) < state.get(
+            "max_iterations", 5
+        ):
+            logger.info(f"ITERATE: needs_more_info=True; continuing")
+            return "continue"
+
+        logger.info("ITERATE: Finishing")
+        return "finish"
+
     # ---------- HELPERS ----------
     def _format_tool_descriptions(self) -> str:
         lines = []
@@ -712,7 +746,13 @@ Guidelines:
     def _extract_tool_from_plan_step(self, step: str) -> str:
         """Extract tool name from plan step like 'Use comparator to compare X'"""
         step_lower = step.lower()
-        tools_list = ["rag_search", "web_search", "fact_verifier", "comparator", "educational_planner"]
+        tools_list = [
+            "rag_search",
+            "web_search",
+            "fact_verifier",
+            "comparator",
+            "educational_planner",
+        ]
         for tool in tools_list:
             if tool in step_lower:
                 return tool
@@ -745,4 +785,3 @@ Guidelines:
             "confidence": final_state.get("confidence_score", 0.0),
             "tools_used": [c["tool"] for c in final_state.get("tool_calls", [])],
         }
-

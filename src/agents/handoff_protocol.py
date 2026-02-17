@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class HandoffReason(str, Enum):
     """Reasons for initiating handoff."""
+
     EXPERTISE_REQUIRED = "expertise_required"
     ESCALATION = "escalation"
     WORKFLOW_CONTINUATION = "workflow_continuation"
@@ -35,8 +37,10 @@ class HandoffReason(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class HandoffState(BaseModel):
     """Record of a handoff between agents."""
+
     handoff_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique handoff ID")
     source_agent: str = Field(..., description="Source agent type")
     target_agent: str = Field(..., description="Target agent type")
@@ -44,9 +48,11 @@ class HandoffState(BaseModel):
     context: Dict[str, Any] = Field(default_factory=dict, description="Handoff context data")
     status: str = Field(
         default="initiated",
-        description="Handoff status (initiated/accepted/rejected/completed/failed)"
+        description="Handoff status (initiated/accepted/rejected/completed/failed)",
     )
-    initiated_at: datetime = Field(default_factory=datetime.utcnow, description="Initiation timestamp")
+    initiated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Initiation timestamp"
+    )
     completed_at: Optional[datetime] = Field(None, description="Completion timestamp")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
@@ -55,13 +61,18 @@ class HandoffState(BaseModel):
 
 class SharedAgentState(BaseModel):
     """Shared state across agent handoffs in a session."""
+
     state_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique state ID")
     session_id: str = Field(..., description="Session ID")
     current_agent: str = Field(..., description="Currently active agent")
     previous_agents: List[str] = Field(default_factory=list, description="Previously active agents")
     shared_context: Dict[str, Any] = Field(default_factory=dict, description="Shared context data")
-    accumulated_facts: List[str] = Field(default_factory=list, description="Accumulated facts/findings")
-    pending_actions: List[Dict[str, Any]] = Field(default_factory=list, description="Pending actions")
+    accumulated_facts: List[str] = Field(
+        default_factory=list, description="Accumulated facts/findings"
+    )
+    pending_actions: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Pending actions"
+    )
     handoff_history: List[HandoffState] = Field(default_factory=list, description="Handoff history")
 
     model_config = ConfigDict(use_enum_values=False)
@@ -69,6 +80,7 @@ class SharedAgentState(BaseModel):
 
 class HandoffConfig(BaseModel):
     """Configuration for handoff protocol."""
+
     max_handoffs_per_session: int = Field(5, description="Max handoffs allowed per session")
     handoff_timeout_seconds: int = Field(30, description="Timeout for handoff acceptance")
     require_acceptance: bool = Field(True, description="Require target agent acceptance")
@@ -81,7 +93,7 @@ class HandoffConfig(BaseModel):
             "policy_agent": ["leave_agent", "compensation_agent", "benefits_agent"],
             "general_agent": ["leave_agent", "compensation_agent", "benefits_agent"],
         },
-        description="Allowed agent pairs for handoff"
+        description="Allowed agent pairs for handoff",
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -90,6 +102,7 @@ class HandoffConfig(BaseModel):
 # ============================================================================
 # Handoff Protocol
 # ============================================================================
+
 
 class HandoffProtocol:
     """
@@ -117,11 +130,11 @@ class HandoffProtocol:
         self.handoff_records: Dict[str, HandoffState] = {}
         self.pending_handoffs: Dict[str, HandoffState] = {}  # handoff_id -> HandoffState
         self.stats = {
-            'total_handoffs': 0,
-            'accepted_handoffs': 0,
-            'rejected_handoffs': 0,
-            'failed_handoffs': 0,
-            'active_sessions': 0,
+            "total_handoffs": 0,
+            "accepted_handoffs": 0,
+            "rejected_handoffs": 0,
+            "failed_handoffs": 0,
+            "active_sessions": 0,
         }
 
         logger.info("HandoffProtocol initialized")
@@ -153,9 +166,7 @@ class HandoffProtocol:
         try:
             # Validate handoff pair
             if not self.can_handoff(source_agent, target_agent):
-                raise ValueError(
-                    f"Handoff from {source_agent} to {target_agent} is not allowed"
-                )
+                raise ValueError(f"Handoff from {source_agent} to {target_agent} is not allowed")
 
             # Get or create shared state
             if session_id not in self.shared_states:
@@ -164,15 +175,12 @@ class HandoffProtocol:
                     current_agent=source_agent,
                 )
                 self.shared_states[session_id] = shared_state
-                self.stats['active_sessions'] += 1
+                self.stats["active_sessions"] += 1
             else:
                 shared_state = self.shared_states[session_id]
 
             # Check handoff limit
-            handoff_count = len([
-                h for h in self.handoff_records.values()
-                if h.status != "failed"
-            ])
+            handoff_count = len([h for h in self.handoff_records.values() if h.status != "failed"])
             if handoff_count >= self.config.max_handoffs_per_session:
                 raise ValueError(
                     f"Session {session_id} has exceeded max handoffs "
@@ -191,7 +199,7 @@ class HandoffProtocol:
             # Store handoff
             self.handoff_records[handoff.handoff_id] = handoff
             self.pending_handoffs[handoff.handoff_id] = handoff
-            self.stats['total_handoffs'] += 1
+            self.stats["total_handoffs"] += 1
 
             logger.info(
                 f"Initiated handoff {handoff.handoff_id}: "
@@ -229,7 +237,7 @@ class HandoffProtocol:
             if handoff_id in self.pending_handoffs:
                 del self.pending_handoffs[handoff_id]
 
-            self.stats['accepted_handoffs'] += 1
+            self.stats["accepted_handoffs"] += 1
 
             logger.info(f"Accepted handoff: {handoff_id}")
             return handoff
@@ -259,13 +267,13 @@ class HandoffProtocol:
                 raise ValueError(f"Cannot reject handoff in {handoff.status} state")
 
             handoff.status = "rejected"
-            handoff.metadata['rejection_reason'] = reason
+            handoff.metadata["rejection_reason"] = reason
 
             # Remove from pending
             if handoff_id in self.pending_handoffs:
                 del self.pending_handoffs[handoff_id]
 
-            self.stats['rejected_handoffs'] += 1
+            self.stats["rejected_handoffs"] += 1
 
             logger.info(f"Rejected handoff: {handoff_id} - {reason}")
             return handoff
@@ -274,7 +282,9 @@ class HandoffProtocol:
             logger.error(f"Error rejecting handoff: {e}")
             raise ValueError(f"Failed to reject handoff: {e}")
 
-    def complete_handoff(self, handoff_id: str, result: Optional[Dict[str, Any]] = None) -> HandoffState:
+    def complete_handoff(
+        self, handoff_id: str, result: Optional[Dict[str, Any]] = None
+    ) -> HandoffState:
         """
         Mark a handoff as completed with optional result data.
 
@@ -297,7 +307,7 @@ class HandoffProtocol:
             handoff.status = "completed"
             handoff.completed_at = datetime.utcnow()
             if result:
-                handoff.metadata['result'] = result
+                handoff.metadata["result"] = result
 
             # Remove from pending
             if handoff_id in self.pending_handoffs:
@@ -397,11 +407,11 @@ class HandoffProtocol:
             ValueError: If action format invalid
         """
         try:
-            if 'type' not in action:
+            if "type" not in action:
                 raise ValueError("Action must have 'type' field")
 
             shared_state = self.get_shared_state(session_id)
-            action['added_at'] = datetime.utcnow().isoformat()
+            action["added_at"] = datetime.utcnow().isoformat()
             shared_state.pending_actions.append(action)
 
             logger.debug(f"Added pending action to session {session_id}: {action['type']}")
@@ -449,9 +459,7 @@ class HandoffProtocol:
             is_allowed = target_agent in allowed_targets
 
             if not is_allowed:
-                logger.debug(
-                    f"Handoff {source_agent} -> {target_agent} not in allowed pairs"
-                )
+                logger.debug(f"Handoff {source_agent} -> {target_agent} not in allowed pairs")
 
             return is_allowed
 
@@ -469,10 +477,10 @@ class HandoffProtocol:
         try:
             stats = {
                 **self.stats,
-                'pending_handoffs': len(self.pending_handoffs),
-                'total_recorded_handoffs': len(self.handoff_records),
-                'active_sessions': len(self.shared_states),
-                'timestamp': datetime.utcnow().isoformat(),
+                "pending_handoffs": len(self.pending_handoffs),
+                "total_recorded_handoffs": len(self.handoff_records),
+                "active_sessions": len(self.shared_states),
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             logger.debug(f"Handoff protocol stats: {stats}")

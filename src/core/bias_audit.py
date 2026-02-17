@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class ProtectedCategory(str, Enum):
     """Protected categories under employment law (EEO compliance)."""
+
     GENDER = "gender"
     RACE = "race"
     AGE = "age"
@@ -29,16 +30,18 @@ class ProtectedCategory(str, Enum):
 
 class BiasSeverity(str, Enum):
     """Severity levels for detected bias incidents."""
-    LOW = "low"              # Language concern, minimal impact
-    MEDIUM = "medium"        # Clear pattern, moderate concern
-    HIGH = "high"            # Systematic bias, significant legal risk
-    CRITICAL = "critical"    # Explicit discrimination, immediate action needed
+
+    LOW = "low"  # Language concern, minimal impact
+    MEDIUM = "medium"  # Clear pattern, moderate concern
+    HIGH = "high"  # Systematic bias, significant legal risk
+    CRITICAL = "critical"  # Explicit discrimination, immediate action needed
 
 
 @dataclass
 class BiasIncident:
     """Record of detected bias incident."""
-    incident_id: str = field(default_factory=lambda: str(__import__('uuid').uuid4()))
+
+    incident_id: str = field(default_factory=lambda: str(__import__("uuid").uuid4()))
     category: ProtectedCategory = ProtectedCategory.GENDER
     severity: BiasSeverity = BiasSeverity.LOW
     description: str = ""
@@ -62,67 +65,108 @@ class BiasAuditor:
     BIAS_LEXICON: Dict[ProtectedCategory, Dict[str, List[str]]] = {
         ProtectedCategory.GENDER: {
             "terms": [
-                "aggressive", "bossy", "pushy", "emotional", "bitchy",
-                "hysterical", "shrill", "demanding", "difficult woman",
-                "not a team player", "not confident", "stay-at-home mom",
+                "aggressive",
+                "bossy",
+                "pushy",
+                "emotional",
+                "bitchy",
+                "hysterical",
+                "shrill",
+                "demanding",
+                "difficult woman",
+                "not a team player",
+                "not confident",
+                "stay-at-home mom",
             ],
             "patterns": [
                 r"(he|she)\s+(is\s+)?(too\s+)?(emotional|hormonal|sensitive)",
                 r"(man|woman|girl|boy)\s+(doesn't|can't)\s+\w+",
-            ]
+            ],
         },
         ProtectedCategory.RACE: {
             "terms": [
-                "articulate", "well-spoken", "professional", "urban",
-                "inner-city", "diverse", "quota", "special hire",
-                "affirmative action", "urban market",
+                "articulate",
+                "well-spoken",
+                "professional",
+                "urban",
+                "inner-city",
+                "diverse",
+                "quota",
+                "special hire",
+                "affirmative action",
+                "urban market",
             ],
             "patterns": [
                 r"(cultural fit|team fit)\s+concern",
                 r"(minority|ethnic|race)\s+(candidate|person)",
-            ]
+            ],
         },
         ProtectedCategory.AGE: {
             "terms": [
-                "digital native", "old school", "not tech-savvy",
-                "overqualified", "underqualified", "energetic", "dynamic",
-                "fresh perspective", "set in ways", "legacy system",
+                "digital native",
+                "old school",
+                "not tech-savvy",
+                "overqualified",
+                "underqualified",
+                "energetic",
+                "dynamic",
+                "fresh perspective",
+                "set in ways",
+                "legacy system",
             ],
             "patterns": [
                 r"(too\s+)?(young|old)\s+(to|for)",
                 r"(generation\s+)?(z|y|x|millennial|boomer)",
-            ]
+            ],
         },
         ProtectedCategory.DISABILITY: {
             "terms": [
-                "crippled", "retarded", "slow", "lazy", "drug addict",
-                "crazy", "mental", "defective", "burden", "liability",
+                "crippled",
+                "retarded",
+                "slow",
+                "lazy",
+                "drug addict",
+                "crazy",
+                "mental",
+                "defective",
+                "burden",
+                "liability",
             ],
             "patterns": [
                 r"(can't|unable)\s+\w+\s+(due to|because of|with)\s+(disability|condition)",
                 r"(special accommodations|special treatment)",
-            ]
+            ],
         },
         ProtectedCategory.VETERAN_STATUS: {
             "terms": [
-                "militant", "aggressive", "PTSD", "uncontrollable",
-                "loose cannon", "ticking time bomb", "damaged",
+                "militant",
+                "aggressive",
+                "PTSD",
+                "uncontrollable",
+                "loose cannon",
+                "ticking time bomb",
+                "damaged",
             ],
             "patterns": [
                 r"(military|armed forces|veteran)\s+(training|background)",
                 r"(war|combat)\s+(trauma|stress)",
-            ]
+            ],
         },
         ProtectedCategory.RELIGION: {
             "terms": [
-                "religious extremist", "zealot", "fundamentalist",
-                "uncivilized", "primitive", "backwards", "un-American",
+                "religious extremist",
+                "zealot",
+                "fundamentalist",
+                "uncivilized",
+                "primitive",
+                "backwards",
+                "un-American",
             ],
             "patterns": [
                 r"(faith|religion|belief|prayer)\s+(concern|issue|problem)",
                 r"(christian|jewish|muslim|hindu|atheist)\s+(values|practices)",
-            ]
-        }
+            ],
+        },
     }
 
     # Stereotype patterns
@@ -158,7 +202,7 @@ class BiasAuditor:
         ProtectedCategory.RELIGION: [
             r"religious.*intolerant",
             r"atheist.*immoral",
-        ]
+        ],
     }
 
     # Exclusionary language patterns
@@ -166,7 +210,8 @@ class BiasAuditor:
         "gendered_pronouns": [
             r"he (must|should|will)",
             r"she (must|should|will)",
-            r"guys", r"ladies",
+            r"guys",
+            r"ladies",
         ],
         "ability_assumptions": [
             r"must be able to.*work.*overtime",
@@ -182,7 +227,7 @@ class BiasAuditor:
             r"graduate of.*university",
             r"extensive experience.*required",
             r"(bachelor|master)\s+degree.*required",
-        ]
+        ],
     }
 
     def __init__(self) -> None:
@@ -203,8 +248,7 @@ class BiasAuditor:
 
             if category in self.STEREOTYPE_PATTERNS:
                 self.compiled_patterns[f"{category.value}_stereotypes"] = [
-                    re.compile(p, re.IGNORECASE)
-                    for p in self.STEREOTYPE_PATTERNS[category]
+                    re.compile(p, re.IGNORECASE) for p in self.STEREOTYPE_PATTERNS[category]
                 ]
 
         for category, patterns in self.EXCLUSIONARY_PATTERNS.items():
@@ -257,9 +301,7 @@ class BiasAuditor:
             self.incidents.append(incident)
 
         if incidents:
-            logger.warning(
-                f"Detected {len(incidents)} bias incidents in {agent_type} response"
-            )
+            logger.warning(f"Detected {len(incidents)} bias incidents in {agent_type} response")
 
         return incidents
 
@@ -346,10 +388,7 @@ class BiasAuditor:
             start_date = end_date - timedelta(days=30)
 
         # Filter incidents by date range
-        filtered = [
-            i for i in self.incidents
-            if start_date <= i.timestamp <= end_date
-        ]
+        filtered = [i for i in self.incidents if start_date <= i.timestamp <= end_date]
 
         # Count by category and severity
         category_counts: Dict[str, int] = {}
@@ -406,16 +445,10 @@ class BiasAuditor:
         incidents = self.incidents
 
         if severity_filter:
-            incidents = [
-                i for i in incidents
-                if i.severity == severity_filter
-            ]
+            incidents = [i for i in incidents if i.severity == severity_filter]
 
         if category_filter:
-            incidents = [
-                i for i in incidents
-                if i.category == category_filter
-            ]
+            incidents = [i for i in incidents if i.category == category_filter]
 
         return incidents
 
@@ -561,12 +594,10 @@ class BiasAuditor:
         incidents = []
 
         male_salaries = [
-            p.get("base_salary", 0) for p in group
-            if p.get("gender", "").lower() == "m"
+            p.get("base_salary", 0) for p in group if p.get("gender", "").lower() == "m"
         ]
         female_salaries = [
-            p.get("base_salary", 0) for p in group
-            if p.get("gender", "").lower() == "f"
+            p.get("base_salary", 0) for p in group if p.get("gender", "").lower() == "f"
         ]
 
         if male_salaries and female_salaries:
@@ -578,8 +609,10 @@ class BiasAuditor:
 
                 if gap_pct > 5:  # More than 5% gap
                     severity = (
-                        BiasSeverity.CRITICAL if gap_pct > 15
-                        else BiasSeverity.HIGH if gap_pct > 10
+                        BiasSeverity.CRITICAL
+                        if gap_pct > 15
+                        else BiasSeverity.HIGH
+                        if gap_pct > 10
                         else BiasSeverity.MEDIUM
                     )
                     incidents.append(
@@ -635,8 +668,10 @@ class BiasAuditor:
 
                     if gap_pct > 5:
                         severity = (
-                            BiasSeverity.CRITICAL if gap_pct > 15
-                            else BiasSeverity.HIGH if gap_pct > 10
+                            BiasSeverity.CRITICAL
+                            if gap_pct > 15
+                            else BiasSeverity.HIGH
+                            if gap_pct > 10
                             else BiasSeverity.MEDIUM
                         )
                         incidents.append(
@@ -756,7 +791,9 @@ class BiasAuditor:
 
         critical_count = sum(1 for i in incidents if i.severity == BiasSeverity.CRITICAL)
         if critical_count > 0:
-            findings.insert(0, f"CRITICAL: {critical_count} critical incidents requiring immediate action")
+            findings.insert(
+                0, f"CRITICAL: {critical_count} critical incidents requiring immediate action"
+            )
 
         return findings
 

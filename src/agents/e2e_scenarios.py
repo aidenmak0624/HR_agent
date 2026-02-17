@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class ScenarioStatus(str, Enum):
     """Scenario execution status."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     PASSED = "passed"
@@ -457,11 +458,11 @@ class E2EScenarioRunner:
 
         for step in scenario.steps:
             step_start = datetime.utcnow()
-            
+
             try:
                 # Simulate step execution
                 step.status = ScenarioStatus.IN_PROGRESS
-                
+
                 # In real scenario, would execute against actual agents
                 step.actual_result = f"Executed: {step.action}"
                 step.status = ScenarioStatus.PASSED
@@ -476,7 +477,7 @@ class E2EScenarioRunner:
                 step.duration_ms = (datetime.utcnow() - step_start).total_seconds() * 1000
 
         total_duration = (datetime.utcnow() - execution_start).total_seconds() * 1000
-        
+
         result = {
             "scenario_id": scenario_id,
             "scenario_name": scenario.name,
@@ -490,7 +491,9 @@ class E2EScenarioRunner:
         }
 
         self.execution_results.append(result)
-        logger.info(f"Scenario {scenario_id}: {result['status']} ({passed_steps}/{len(scenario.steps)})")
+        logger.info(
+            f"Scenario {scenario_id}: {result['status']} ({passed_steps}/{len(scenario.steps)})"
+        )
 
         return result
 

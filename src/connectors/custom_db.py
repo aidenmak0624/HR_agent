@@ -84,7 +84,7 @@ class CustomDBConnector(HRISConnector):
                 pool_size=10,
                 max_overflow=20,
                 echo=False,
-                connect_args={"timeout": 10}
+                connect_args={"timeout": 10},
             )
 
             # Register connection event for read-only transactions
@@ -127,8 +127,8 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectionError: If unable to connect to database
         """
-        table = self.schema_mapping.get('employee_table')
-        id_col = self.schema_mapping.get('id_column')
+        table = self.schema_mapping.get("employee_table")
+        id_col = self.schema_mapping.get("id_column")
 
         if not table or not id_col:
             raise ConnectorError("schema_mapping missing employee_table or id_column")
@@ -137,10 +137,7 @@ class CustomDBConnector(HRISConnector):
 
         try:
             with self.engine.connect() as conn:
-                result = conn.execute(
-                    text(query),
-                    {"emp_id": employee_id}
-                )
+                result = conn.execute(text(query), {"emp_id": employee_id})
                 row = result.fetchone()
 
                 if not row:
@@ -165,7 +162,7 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectionError: If unable to connect to database
         """
-        table = self.schema_mapping.get('employee_table')
+        table = self.schema_mapping.get("employee_table")
         if not table:
             raise ConnectorError("schema_mapping missing employee_table")
 
@@ -173,25 +170,25 @@ class CustomDBConnector(HRISConnector):
         where_conditions = []
         params = {}
 
-        if filters.get('department'):
-            dept_col = self.schema_mapping.get('department_column', 'department')
+        if filters.get("department"):
+            dept_col = self.schema_mapping.get("department_column", "department")
             where_conditions.append(f"{dept_col} = :department")
-            params['department'] = filters['department']
+            params["department"] = filters["department"]
 
-        if filters.get('status'):
-            status_col = self.schema_mapping.get('status_column', 'status')
+        if filters.get("status"):
+            status_col = self.schema_mapping.get("status_column", "status")
             where_conditions.append(f"{status_col} = :status")
-            params['status'] = filters['status']
+            params["status"] = filters["status"]
 
-        if filters.get('location'):
-            loc_col = self.schema_mapping.get('location_column', 'location')
+        if filters.get("location"):
+            loc_col = self.schema_mapping.get("location_column", "location")
             where_conditions.append(f"{loc_col} = :location")
-            params['location'] = filters['location']
+            params["location"] = filters["location"]
 
-        if filters.get('job_title'):
-            title_col = self.schema_mapping.get('job_title_column', 'job_title')
+        if filters.get("job_title"):
+            title_col = self.schema_mapping.get("job_title_column", "job_title")
             where_conditions.append(f"{title_col} = :job_title")
-            params['job_title'] = filters['job_title']
+            params["job_title"] = filters["job_title"]
 
         where_clause = " AND ".join(where_conditions) if where_conditions else "1=1"
         query = f"SELECT * FROM {table} WHERE {where_clause}"
@@ -224,7 +221,7 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectionError: If unable to connect to database
         """
-        table = self.schema_mapping.get('leave_balance_table')
+        table = self.schema_mapping.get("leave_balance_table")
         if not table:
             logger.warning("leave_balance_table not in schema_mapping")
             return []
@@ -248,7 +245,7 @@ class CustomDBConnector(HRISConnector):
                         total_days=float(row[3] or 0) if len(row) > 3 else 0.0,
                         used_days=float(row[4] or 0) if len(row) > 4 else 0.0,
                         pending_days=float(row[5] or 0) if len(row) > 5 else 0.0,
-                        available_days=float(row[6] or 0) if len(row) > 6 else 0.0
+                        available_days=float(row[6] or 0) if len(row) > 6 else 0.0,
                     )
                     balances.append(balance)
 
@@ -277,7 +274,7 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectionError: If unable to connect to database
         """
-        table = self.schema_mapping.get('leave_requests_table')
+        table = self.schema_mapping.get("leave_requests_table")
         if not table:
             logger.warning("leave_requests_table not in schema_mapping")
             return []
@@ -308,7 +305,7 @@ class CustomDBConnector(HRISConnector):
                             status=LeaveStatus(row[5].lower()),  # status
                             reason=row[6] if len(row) > 6 else None,  # reason
                             approver_id=row[7] if len(row) > 7 else None,  # approver_id
-                            submitted_at=row[8] if len(row) > 8 else datetime.now()  # submitted_at
+                            submitted_at=row[8] if len(row) > 8 else datetime.now(),  # submitted_at
                         )
                         requests_list.append(request)
                     except (ValueError, IndexError) as e:
@@ -333,9 +330,7 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectorError: Always, as connector is read-only
         """
-        raise ConnectorError(
-            "CustomDBConnector is read-only. Cannot submit leave requests."
-        )
+        raise ConnectorError("CustomDBConnector is read-only. Cannot submit leave requests.")
 
     def get_org_chart(self, department: Optional[str] = None) -> List[OrgNode]:
         """
@@ -350,13 +345,13 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectionError: If unable to connect to database
         """
-        table = self.schema_mapping.get('employee_table')
-        id_col = self.schema_mapping.get('id_column')
-        manager_col = self.schema_mapping.get('manager_id_column', 'manager_id')
-        first_name_col = self.schema_mapping.get('first_name_column', 'first_name')
-        last_name_col = self.schema_mapping.get('last_name_column', 'last_name')
-        title_col = self.schema_mapping.get('job_title_column', 'job_title')
-        dept_col = self.schema_mapping.get('department_column', 'department')
+        table = self.schema_mapping.get("employee_table")
+        id_col = self.schema_mapping.get("id_column")
+        manager_col = self.schema_mapping.get("manager_id_column", "manager_id")
+        first_name_col = self.schema_mapping.get("first_name_column", "first_name")
+        last_name_col = self.schema_mapping.get("last_name_column", "last_name")
+        title_col = self.schema_mapping.get("job_title_column", "job_title")
+        dept_col = self.schema_mapping.get("department_column", "department")
 
         if not table or not id_col:
             raise ConnectorError("schema_mapping missing employee_table or id_column")
@@ -405,9 +400,9 @@ class CustomDBConnector(HRISConnector):
                     node = OrgNode(
                         employee_id=emp_id,
                         name=f"{row[1]} {row[2]}",
-                        title=row[3] or '',
-                        department=row[4] or '',
-                        direct_reports=[]
+                        title=row[3] or "",
+                        department=row[4] or "",
+                        direct_reports=[],
                     )
                     node_map[emp_id] = node
 
@@ -421,7 +416,8 @@ class CustomDBConnector(HRISConnector):
 
                 # Get roots and apply department filter if needed
                 roots = [
-                    node for node in node_map.values()
+                    node
+                    for node in node_map.values()
                     if not any(node in parent.direct_reports for parent in node_map.values())
                 ]
 
@@ -447,7 +443,7 @@ class CustomDBConnector(HRISConnector):
         Raises:
             ConnectionError: If unable to connect to database
         """
-        table = self.schema_mapping.get('benefits_table')
+        table = self.schema_mapping.get("benefits_table")
         if not table:
             logger.warning("benefits_table not in schema_mapping")
             return []
@@ -467,11 +463,11 @@ class CustomDBConnector(HRISConnector):
                     try:
                         plan = BenefitsPlan(
                             id=str(row[0]),  # id
-                            name=row[1] or '',  # name
+                            name=row[1] or "",  # name
                             plan_type=PlanType(row[2].lower()),  # plan_type
-                            coverage_level=row[3] or 'Employee',  # coverage_level
+                            coverage_level=row[3] or "Employee",  # coverage_level
                             employee_cost=float(row[4] or 0),  # employee_cost
-                            employer_cost=float(row[5] or 0)  # employer_cost
+                            employer_cost=float(row[5] or 0),  # employer_cost
                         )
                         plans.append(plan)
                     except (ValueError, IndexError) as e:
@@ -525,20 +521,20 @@ class CustomDBConnector(HRISConnector):
         # Get column mapping, use reasonable defaults
         row_dict = dict(row._mapping)
 
-        id_col = self.schema_mapping.get('id_column', 'id')
-        first_col = self.schema_mapping.get('first_name_column', 'first_name')
-        last_col = self.schema_mapping.get('last_name_column', 'last_name')
-        email_col = self.schema_mapping.get('email_column', 'email')
-        dept_col = self.schema_mapping.get('department_column', 'department')
-        title_col = self.schema_mapping.get('job_title_column', 'job_title')
-        manager_col = self.schema_mapping.get('manager_id_column', 'manager_id')
-        hire_col = self.schema_mapping.get('hire_date_column', 'hire_date')
-        status_col = self.schema_mapping.get('status_column', 'status')
-        loc_col = self.schema_mapping.get('location_column', 'location')
-        phone_col = self.schema_mapping.get('phone_column', 'phone')
+        id_col = self.schema_mapping.get("id_column", "id")
+        first_col = self.schema_mapping.get("first_name_column", "first_name")
+        last_col = self.schema_mapping.get("last_name_column", "last_name")
+        email_col = self.schema_mapping.get("email_column", "email")
+        dept_col = self.schema_mapping.get("department_column", "department")
+        title_col = self.schema_mapping.get("job_title_column", "job_title")
+        manager_col = self.schema_mapping.get("manager_id_column", "manager_id")
+        hire_col = self.schema_mapping.get("hire_date_column", "hire_date")
+        status_col = self.schema_mapping.get("status_column", "status")
+        loc_col = self.schema_mapping.get("location_column", "location")
+        phone_col = self.schema_mapping.get("phone_column", "phone")
 
         # Extract values with fallbacks
-        emp_id = str(row_dict.get(id_col, ''))
+        emp_id = str(row_dict.get(id_col, ""))
         hire_date = row_dict.get(hire_col)
         if not isinstance(hire_date, datetime):
             hire_date = datetime.now()
@@ -546,14 +542,14 @@ class CustomDBConnector(HRISConnector):
         return Employee(
             id=emp_id,
             hris_id=emp_id,
-            first_name=row_dict.get(first_col, ''),
-            last_name=row_dict.get(last_col, ''),
-            email=row_dict.get(email_col, ''),
-            department=row_dict.get(dept_col, ''),
-            job_title=row_dict.get(title_col, ''),
+            first_name=row_dict.get(first_col, ""),
+            last_name=row_dict.get(last_col, ""),
+            email=row_dict.get(email_col, ""),
+            department=row_dict.get(dept_col, ""),
+            job_title=row_dict.get(title_col, ""),
             manager_id=row_dict.get(manager_col),
             hire_date=hire_date,
-            status=EmployeeStatus(row_dict.get(status_col, 'active').lower()),
-            location=row_dict.get(loc_col, ''),
-            phone=row_dict.get(phone_col)
+            status=EmployeeStatus(row_dict.get(status_col, "active").lower()),
+            location=row_dict.get(loc_col, ""),
+            phone=row_dict.get(phone_col),
         )

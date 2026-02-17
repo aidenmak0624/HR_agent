@@ -24,22 +24,25 @@ logger = logging.getLogger(__name__)
 
 class WorkflowState(str, Enum):
     """Workflow lifecycle states."""
-    DRAFT = "draft"                      # Initial state, not submitted
+
+    DRAFT = "draft"  # Initial state, not submitted
     PENDING_APPROVAL = "pending_approval"  # Awaiting approval decision
-    APPROVED = "approved"                  # All steps approved/completed
-    REJECTED = "rejected"                  # Rejected at some step
-    ESCALATED = "escalated"               # Escalated to higher approver
-    CANCELLED = "cancelled"               # Cancelled by initiator or admin
+    APPROVED = "approved"  # All steps approved/completed
+    REJECTED = "rejected"  # Rejected at some step
+    ESCALATED = "escalated"  # Escalated to higher approver
+    CANCELLED = "cancelled"  # Cancelled by initiator or admin
 
 
 class ApprovalMode(str, Enum):
     """Approval workflow modes."""
+
     SEQUENTIAL = "sequential"  # All steps in order, each must approve
-    PARALLEL = "parallel"      # Any one approver can approve step
+    PARALLEL = "parallel"  # Any one approver can approve step
 
 
 class BiasSeverity(str, Enum):
     """Severity levels for approval decisions."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -48,6 +51,7 @@ class BiasSeverity(str, Enum):
 @dataclass
 class WorkflowStep:
     """Configuration for a single approval step."""
+
     approver_role: str  # Role required to approve (e.g., "hr_admin")
     step_id: str = field(default_factory=lambda: str(uuid4()))
     approver_id: Optional[str] = None  # Specific user (None = any with role)
@@ -61,6 +65,7 @@ class WorkflowStep:
 @dataclass
 class WorkflowDecision:
     """Record of a step decision."""
+
     instance_id: str = ""  # Workflow instance ID
     step_idx: int = 0
     approver_id: str = ""
@@ -72,6 +77,7 @@ class WorkflowDecision:
 
 class ApprovalWorkflow(BaseModel):
     """Full approval workflow instance."""
+
     workflow_id: str = Field(default_factory=lambda: str(uuid4()))
     entity_type: str  # Entity being approved (e.g., "compensation_change")
     entity_id: str  # ID of entity
@@ -90,6 +96,7 @@ class ApprovalWorkflow(BaseModel):
 
 class WorkflowTemplate(BaseModel):
     """Reusable workflow template."""
+
     template_id: str = Field(default_factory=lambda: str(uuid4()))
     name: str  # e.g., "Compensation Change Approval"
     entity_type: str
@@ -264,9 +271,7 @@ class WorkflowEngine:
         """
         workflow = self._get_workflow(workflow_id)
         if workflow.state != WorkflowState.DRAFT:
-            raise ValueError(
-                f"Cannot submit workflow in {workflow.state} state"
-            )
+            raise ValueError(f"Cannot submit workflow in {workflow.state} state")
 
         workflow.state = WorkflowState.PENDING_APPROVAL
         workflow.updated_at = datetime.utcnow()
@@ -306,9 +311,7 @@ class WorkflowEngine:
         workflow = self._get_workflow(workflow_id)
 
         if workflow.state != WorkflowState.PENDING_APPROVAL:
-            raise ValueError(
-                f"Cannot approve workflow in {workflow.state} state"
-            )
+            raise ValueError(f"Cannot approve workflow in {workflow.state} state")
 
         if workflow.current_step >= len(workflow.steps):
             raise ValueError("No pending steps in workflow")
@@ -316,12 +319,8 @@ class WorkflowEngine:
         current_step = workflow.steps[workflow.current_step]
 
         # Validate approver has required role
-        if not check_permission(
-            approver_role.lower(), "workflow", "approve"
-        ):
-            raise ValueError(
-                f"Approver role '{approver_role}' lacks approval permission"
-            )
+        if not check_permission(approver_role.lower(), "workflow", "approve"):
+            raise ValueError(f"Approver role '{approver_role}' lacks approval permission")
 
         # Record decision
         decision = WorkflowDecision(
@@ -396,9 +395,7 @@ class WorkflowEngine:
         workflow = self._get_workflow(workflow_id)
 
         if workflow.state != WorkflowState.PENDING_APPROVAL:
-            raise ValueError(
-                f"Cannot reject workflow in {workflow.state} state"
-            )
+            raise ValueError(f"Cannot reject workflow in {workflow.state} state")
 
         if workflow.current_step >= len(workflow.steps):
             raise ValueError("No pending steps to reject")
@@ -461,9 +458,7 @@ class WorkflowEngine:
         workflow = self._get_workflow(workflow_id)
 
         if workflow.state != WorkflowState.PENDING_APPROVAL:
-            raise ValueError(
-                f"Cannot escalate workflow in {workflow.state} state"
-            )
+            raise ValueError(f"Cannot escalate workflow in {workflow.state} state")
 
         if workflow.current_step >= len(workflow.steps):
             raise ValueError("No pending steps to escalate")
@@ -528,9 +523,7 @@ class WorkflowEngine:
 
         # Only creator or HR admin can cancel
         if user_id != workflow.created_by and user_role != "hr_admin":
-            raise ValueError(
-                f"User {user_id} lacks permission to cancel workflow"
-            )
+            raise ValueError(f"User {user_id} lacks permission to cancel workflow")
 
         if workflow.state == WorkflowState.CANCELLED:
             raise ValueError("Workflow already cancelled")
@@ -569,10 +562,7 @@ class WorkflowEngine:
             current_step = workflow.steps[workflow.current_step]
 
             # Check if this user can approve (role match or specific ID match)
-            if (
-                current_step.approver_id == approver_id
-                or current_step.approver_id is None
-            ):
+            if current_step.approver_id == approver_id or current_step.approver_id is None:
                 pending.append(workflow)
 
         return pending
@@ -614,16 +604,10 @@ class WorkflowEngine:
         Returns:
             List of workflows
         """
-        workflows = [
-            w for w in self.workflows.values()
-            if w.created_by == user_id
-        ]
+        workflows = [w for w in self.workflows.values() if w.created_by == user_id]
 
         if state_filter:
-            workflows = [
-                w for w in workflows
-                if w.state == state_filter
-            ]
+            workflows = [w for w in workflows if w.state == state_filter]
 
         return workflows
 

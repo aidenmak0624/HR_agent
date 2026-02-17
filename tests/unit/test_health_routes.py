@@ -20,6 +20,7 @@ from src.api.health_routes import (
 # HealthStatus Enum Tests
 # ============================================================================
 
+
 class TestHealthStatus:
     """Tests for HealthStatus enum."""
 
@@ -44,15 +45,13 @@ class TestHealthStatus:
 # ComponentHealth Tests
 # ============================================================================
 
+
 class TestComponentHealth:
     """Tests for ComponentHealth model."""
 
     def test_component_health_defaults(self):
         """Test ComponentHealth with default values."""
-        component = ComponentHealth(
-            name="database",
-            status=HealthStatus.HEALTHY
-        )
+        component = ComponentHealth(name="database", status=HealthStatus.HEALTHY)
 
         assert component.name == "database"
         assert component.status == HealthStatus.HEALTHY
@@ -67,7 +66,7 @@ class TestComponentHealth:
             status=HealthStatus.DEGRADED,
             latency_ms=150.5,
             message="Connection slow",
-            metadata={"host": "redis-server"}
+            metadata={"host": "redis-server"},
         )
 
         assert component.name == "redis"
@@ -78,15 +77,9 @@ class TestComponentHealth:
 
     def test_component_health_status_field(self):
         """Test ComponentHealth status field."""
-        healthy = ComponentHealth(
-            name="app",
-            status=HealthStatus.HEALTHY
-        )
+        healthy = ComponentHealth(name="app", status=HealthStatus.HEALTHY)
 
-        unhealthy = ComponentHealth(
-            name="app",
-            status=HealthStatus.UNHEALTHY
-        )
+        unhealthy = ComponentHealth(name="app", status=HealthStatus.UNHEALTHY)
 
         assert healthy.status == HealthStatus.HEALTHY
         assert unhealthy.status == HealthStatus.UNHEALTHY
@@ -95,6 +88,7 @@ class TestComponentHealth:
 # ============================================================================
 # HealthCheckConfig Tests
 # ============================================================================
+
 
 class TestHealthCheckConfig:
     """Tests for HealthCheckConfig model."""
@@ -116,7 +110,7 @@ class TestHealthCheckConfig:
             check_timeout_seconds=10,
             db_check_enabled=False,
             redis_check_enabled=False,
-            detailed_checks=True
+            detailed_checks=True,
         )
 
         assert config.check_timeout_seconds == 10
@@ -127,9 +121,7 @@ class TestHealthCheckConfig:
     def test_health_check_config_toggles(self):
         """Test HealthCheckConfig toggle fields."""
         config = HealthCheckConfig(
-            db_check_enabled=False,
-            redis_check_enabled=True,
-            llm_check_enabled=False
+            db_check_enabled=False, redis_check_enabled=True, llm_check_enabled=False
         )
 
         assert config.db_check_enabled is False
@@ -141,16 +133,14 @@ class TestHealthCheckConfig:
 # HealthCheckResult Tests
 # ============================================================================
 
+
 class TestHealthCheckResult:
     """Tests for HealthCheckResult model."""
 
     def test_health_check_result_defaults(self):
         """Test HealthCheckResult with default values."""
         result = HealthCheckResult(
-            status=HealthStatus.HEALTHY,
-            uptime_seconds=100.0,
-            components={},
-            checks_performed=1
+            status=HealthStatus.HEALTHY, uptime_seconds=100.0, components={}, checks_performed=1
         )
 
         assert result.status == HealthStatus.HEALTHY
@@ -161,19 +151,14 @@ class TestHealthCheckResult:
 
     def test_health_check_result_custom_values(self):
         """Test HealthCheckResult with custom values."""
-        components = {
-            "database": ComponentHealth(
-                name="database",
-                status=HealthStatus.HEALTHY
-            )
-        }
+        components = {"database": ComponentHealth(name="database", status=HealthStatus.HEALTHY)}
 
         result = HealthCheckResult(
             status=HealthStatus.DEGRADED,
             version="2.0.0",
             uptime_seconds=500.5,
             components=components,
-            checks_performed=2
+            checks_performed=2,
         )
 
         assert result.status == HealthStatus.DEGRADED
@@ -182,23 +167,14 @@ class TestHealthCheckResult:
 
     def test_health_check_result_components_dict(self):
         """Test HealthCheckResult components dictionary."""
-        app_health = ComponentHealth(
-            name="application",
-            status=HealthStatus.HEALTHY
-        )
-        db_health = ComponentHealth(
-            name="database",
-            status=HealthStatus.HEALTHY
-        )
+        app_health = ComponentHealth(name="application", status=HealthStatus.HEALTHY)
+        db_health = ComponentHealth(name="database", status=HealthStatus.HEALTHY)
 
         result = HealthCheckResult(
             status=HealthStatus.HEALTHY,
             uptime_seconds=100.0,
-            components={
-                "app": app_health,
-                "db": db_health
-            },
-            checks_performed=2
+            components={"app": app_health, "db": db_health},
+            checks_performed=2,
         )
 
         assert "app" in result.components
@@ -209,6 +185,7 @@ class TestHealthCheckResult:
 # ============================================================================
 # HealthCheckService Init Tests
 # ============================================================================
+
 
 class TestHealthCheckServiceInit:
     """Tests for HealthCheckService initialization."""
@@ -232,13 +209,14 @@ class TestHealthCheckServiceInit:
         """Test HealthCheckService initializes component tracking."""
         service = HealthCheckService()
 
-        assert hasattr(service, '_check_cache')
-        assert hasattr(service, '_checks_executed')
+        assert hasattr(service, "_check_cache")
+        assert hasattr(service, "_checks_executed")
 
 
 # ============================================================================
 # Check Liveness Tests
 # ============================================================================
+
 
 class TestCheckLiveness:
     """Tests for HealthCheckService.check_liveness()."""
@@ -273,6 +251,7 @@ class TestCheckLiveness:
 # Check Readiness Tests
 # ============================================================================
 
+
 class TestCheckReadiness:
     """Tests for HealthCheckService.check_readiness()."""
 
@@ -289,10 +268,9 @@ class TestCheckReadiness:
         config = HealthCheckConfig(detailed_checks=True, llm_check_enabled=False)
         service = HealthCheckService(config=config)
 
-        with patch.object(service, 'check_disk_space') as mock_disk:
+        with patch.object(service, "check_disk_space") as mock_disk:
             mock_disk.return_value = ComponentHealth(
-                name="disk_space",
-                status=HealthStatus.DEGRADED
+                name="disk_space", status=HealthStatus.DEGRADED
             )
             result = service.check_readiness()
 
@@ -302,10 +280,9 @@ class TestCheckReadiness:
         """Test check_readiness with unhealthy components."""
         service = HealthCheckService()
 
-        with patch.object(service, 'check_component') as mock_check:
+        with patch.object(service, "check_component") as mock_check:
             mock_check.return_value = ComponentHealth(
-                name="application",
-                status=HealthStatus.UNHEALTHY
+                name="application", status=HealthStatus.UNHEALTHY
             )
             result = service.check_readiness()
 
@@ -315,6 +292,7 @@ class TestCheckReadiness:
 # ============================================================================
 # Check Database Tests
 # ============================================================================
+
 
 class TestCheckDatabase:
     """Tests for HealthCheckService.check_database()."""
@@ -331,7 +309,7 @@ class TestCheckDatabase:
         """Test check_database handles unhealthy state."""
         service = HealthCheckService()
 
-        with patch('os.getenv') as mock_env:
+        with patch("os.getenv") as mock_env:
             mock_env.side_effect = lambda x, default=None: default
 
             result = service.check_database()
@@ -351,6 +329,7 @@ class TestCheckDatabase:
 # Check Redis Tests
 # ============================================================================
 
+
 class TestCheckRedis:
     """Tests for HealthCheckService.check_redis()."""
 
@@ -366,7 +345,7 @@ class TestCheckRedis:
         """Test check_redis handles unhealthy state."""
         service = HealthCheckService()
 
-        with patch('os.getenv') as mock_env:
+        with patch("os.getenv") as mock_env:
             mock_env.side_effect = lambda x, default=None: default
 
             result = service.check_redis()
@@ -386,6 +365,7 @@ class TestCheckRedis:
 # Check LLM Provider Tests
 # ============================================================================
 
+
 class TestCheckLLMProvider:
     """Tests for HealthCheckService.check_llm_provider()."""
 
@@ -393,7 +373,8 @@ class TestCheckLLMProvider:
         """Test check_llm_provider returns healthy."""
         service = HealthCheckService()
 
-        with patch('os.getenv') as mock_env:
+        with patch("os.getenv") as mock_env:
+
             def getenv_side_effect(key, default=None):
                 if key == "LLM_API_KEY":
                     return "test_key"
@@ -408,7 +389,7 @@ class TestCheckLLMProvider:
         """Test check_llm_provider unhealthy without API key."""
         service = HealthCheckService()
 
-        with patch('os.getenv') as mock_env:
+        with patch("os.getenv") as mock_env:
             mock_env.return_value = None
             result = service.check_llm_provider()
 
@@ -427,44 +408,33 @@ class TestCheckLLMProvider:
 # Check Disk Space Tests
 # ============================================================================
 
+
 class TestCheckDiskSpace:
     """Tests for HealthCheckService.check_disk_space()."""
 
-    @patch('psutil.disk_usage')
+    @patch("psutil.disk_usage")
     def test_check_disk_space_healthy(self, mock_disk):
         """Test check_disk_space returns healthy."""
-        mock_disk.return_value = MagicMock(
-            percent=50,
-            free=500 * 1024 ** 3,
-            total=1000 * 1024 ** 3
-        )
+        mock_disk.return_value = MagicMock(percent=50, free=500 * 1024**3, total=1000 * 1024**3)
         service = HealthCheckService()
         result = service.check_disk_space()
 
         assert result.name == "disk_space"
         assert result.status == HealthStatus.HEALTHY
 
-    @patch('psutil.disk_usage')
+    @patch("psutil.disk_usage")
     def test_check_disk_space_warning(self, mock_disk):
         """Test check_disk_space warning state."""
-        mock_disk.return_value = MagicMock(
-            percent=80,
-            free=100 * 1024 ** 3,
-            total=500 * 1024 ** 3
-        )
+        mock_disk.return_value = MagicMock(percent=80, free=100 * 1024**3, total=500 * 1024**3)
         service = HealthCheckService()
         result = service.check_disk_space()
 
         assert result.status == HealthStatus.DEGRADED
 
-    @patch('psutil.disk_usage')
+    @patch("psutil.disk_usage")
     def test_check_disk_space_critical(self, mock_disk):
         """Test check_disk_space critical state."""
-        mock_disk.return_value = MagicMock(
-            percent=95,
-            free=25 * 1024 ** 3,
-            total=500 * 1024 ** 3
-        )
+        mock_disk.return_value = MagicMock(percent=95, free=25 * 1024**3, total=500 * 1024**3)
         service = HealthCheckService()
         result = service.check_disk_space()
 
@@ -475,43 +445,34 @@ class TestCheckDiskSpace:
 # Check Memory Tests
 # ============================================================================
 
+
 class TestCheckMemory:
     """Tests for HealthCheckService.check_memory()."""
 
-    @patch('psutil.virtual_memory')
+    @patch("psutil.virtual_memory")
     def test_check_memory_healthy(self, mock_mem):
         """Test check_memory returns healthy."""
-        mock_mem.return_value = MagicMock(
-            percent=50,
-            available=4 * 1024 ** 3,
-            total=8 * 1024 ** 3
-        )
+        mock_mem.return_value = MagicMock(percent=50, available=4 * 1024**3, total=8 * 1024**3)
         service = HealthCheckService()
         result = service.check_memory()
 
         assert result.name == "memory"
         assert result.status == HealthStatus.HEALTHY
 
-    @patch('psutil.virtual_memory')
+    @patch("psutil.virtual_memory")
     def test_check_memory_warning(self, mock_mem):
         """Test check_memory warning state."""
-        mock_mem.return_value = MagicMock(
-            percent=80,
-            available=1 * 1024 ** 3,
-            total=8 * 1024 ** 3
-        )
+        mock_mem.return_value = MagicMock(percent=80, available=1 * 1024**3, total=8 * 1024**3)
         service = HealthCheckService()
         result = service.check_memory()
 
         assert result.status == HealthStatus.DEGRADED
 
-    @patch('psutil.virtual_memory')
+    @patch("psutil.virtual_memory")
     def test_check_memory_critical(self, mock_mem):
         """Test check_memory critical state."""
         mock_mem.return_value = MagicMock(
-            percent=95,
-            available=0.5 * 1024 ** 3,
-            total=8 * 1024 ** 3
+            percent=95, available=0.5 * 1024**3, total=8 * 1024**3
         )
         service = HealthCheckService()
         result = service.check_memory()
@@ -522,6 +483,7 @@ class TestCheckMemory:
 # ============================================================================
 # Get Detailed Health Tests
 # ============================================================================
+
 
 class TestGetDetailedHealth:
     """Tests for HealthCheckService.get_detailed_health()."""
@@ -542,7 +504,7 @@ class TestGetDetailedHealth:
         assert result.status in [
             HealthStatus.HEALTHY,
             HealthStatus.DEGRADED,
-            HealthStatus.UNHEALTHY
+            HealthStatus.UNHEALTHY,
         ]
 
     def test_get_detailed_health_timing(self):
@@ -559,6 +521,7 @@ class TestGetDetailedHealth:
 # ============================================================================
 # Get Version Info Tests
 # ============================================================================
+
 
 class TestGetVersionInfo:
     """Tests for HealthCheckService.get_version_info()."""
@@ -592,6 +555,7 @@ class TestGetVersionInfo:
 # ============================================================================
 # Uptime Tests
 # ============================================================================
+
 
 class TestGetUptime:
     """Tests for HealthCheckService uptime calculation."""

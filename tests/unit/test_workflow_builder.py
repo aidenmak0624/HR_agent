@@ -23,8 +23,7 @@ class TestWorkflowCreation:
     def test_create_workflow(self, workflow_builder):
         """create_workflow creates new workflow."""
         workflow_id = workflow_builder.create_workflow(
-            name="Leave Request Workflow",
-            description="Process for handling leave requests"
+            name="Leave Request Workflow", description="Process for handling leave requests"
         )
 
         assert workflow_id in workflow_builder.workflows
@@ -83,7 +82,7 @@ class TestNodeOperations:
             workflow_id=workflow_id,
             node_type=NodeType.ACTION,
             title="Process Payment",
-            config={"action": "process_payment"}
+            config={"action": "process_payment"},
         )
 
         assert node_id in workflow_builder.workflows[workflow_id].nodes
@@ -98,7 +97,7 @@ class TestNodeOperations:
             workflow_id=workflow_id,
             node_type=NodeType.APPROVAL,
             title="Manager Approval",
-            config={"role": "manager", "timeout_hours": 48}
+            config={"role": "manager", "timeout_hours": 48},
         )
 
         node = workflow_builder.workflows[workflow_id].nodes[node_id]
@@ -113,7 +112,7 @@ class TestNodeOperations:
             workflow_id=workflow_id,
             node_type=NodeType.NOTIFICATION,
             title="Send Email",
-            config={"template": "leave_approved"}
+            config={"template": "leave_approved"},
         )
 
         node = workflow_builder.workflows[workflow_id].nodes[node_id]
@@ -123,18 +122,14 @@ class TestNodeOperations:
         """add_node raises for nonexistent workflow."""
         with pytest.raises(ValueError, match="Workflow not found"):
             workflow_builder.add_node(
-                workflow_id="nonexistent",
-                node_type=NodeType.ACTION,
-                title="Test"
+                workflow_id="nonexistent", node_type=NodeType.ACTION, title="Test"
             )
 
     def test_remove_node(self, workflow_builder):
         """remove_node removes node from workflow."""
         workflow_id = workflow_builder.create_workflow("Test")
         node_id = workflow_builder.add_node(
-            workflow_id=workflow_id,
-            node_type=NodeType.ACTION,
-            title="Test Node"
+            workflow_id=workflow_id, node_type=NodeType.ACTION, title="Test Node"
         )
 
         result = workflow_builder.remove_node(workflow_id, node_id)
@@ -190,8 +185,7 @@ class TestEdgeOperations:
         node2_id = workflow_builder.add_node(workflow_id, NodeType.ACTION, "Action")
 
         edge_id = workflow_builder.add_edge(
-            workflow_id, node1_id, node2_id,
-            condition="status == 'approved'"
+            workflow_id, node1_id, node2_id, condition="status == 'approved'"
         )
 
         edge = workflow_builder.workflows[workflow_id].edges[edge_id]

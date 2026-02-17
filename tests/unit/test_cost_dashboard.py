@@ -560,7 +560,7 @@ class TestGetCostForecast:
                 tokens_used=1000,
                 estimated_cost=0.03,
                 model_name="gpt-4",
-                timestamp=now - timedelta(days=6-i),
+                timestamp=now - timedelta(days=6 - i),
             )
             service.usage_records.append(record)
         forecast = service.get_cost_forecast(days_ahead=30)
@@ -579,7 +579,7 @@ class TestGetCostForecast:
                 tokens_used=1000,
                 estimated_cost=0.03,
                 model_name="gpt-4",
-                timestamp=now - timedelta(days=6-i),
+                timestamp=now - timedelta(days=6 - i),
             )
             service.usage_records.append(record)
         forecast = service.get_cost_forecast(days_ahead=30)

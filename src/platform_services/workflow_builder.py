@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class NodeType(str, Enum):
     """Workflow node types."""
+
     START = "start"
     END = "end"
     APPROVAL = "approval"
@@ -136,7 +137,7 @@ class WorkflowBuilder:
         """Create leave approval workflow template."""
         workflow = WorkflowDefinition(
             name="Leave Request Approval",
-            description="Standard workflow for leave request submission and approval"
+            description="Standard workflow for leave request submission and approval",
         )
 
         # Nodes
@@ -144,22 +145,22 @@ class WorkflowBuilder:
         validate = WorkflowNode(
             node_type=NodeType.ACTION,
             title="Validate Leave Request",
-            config={"action": "validate_leave", "agent": "leave_request"}
+            config={"action": "validate_leave", "agent": "leave_request"},
         )
         manager_approval = WorkflowNode(
             node_type=NodeType.APPROVAL,
             title="Manager Approval",
-            config={"role": "manager", "timeout_hours": 48}
+            config={"role": "manager", "timeout_hours": 48},
         )
         hr_approval = WorkflowNode(
             node_type=NodeType.APPROVAL,
             title="HR Approval",
-            config={"role": "hr_generalist", "timeout_hours": 24}
+            config={"role": "hr_generalist", "timeout_hours": 24},
         )
         notify = WorkflowNode(
             node_type=NodeType.NOTIFICATION,
             title="Notify Employee",
-            config={"message_type": "leave_approved"}
+            config={"message_type": "leave_approved"},
         )
         end = WorkflowNode(node_type=NodeType.END, title="Complete")
 
@@ -187,35 +188,27 @@ class WorkflowBuilder:
     def _create_onboarding_template(self) -> WorkflowDefinition:
         """Create employee onboarding workflow template."""
         workflow = WorkflowDefinition(
-            name="Employee Onboarding",
-            description="Complete onboarding process for new employees"
+            name="Employee Onboarding", description="Complete onboarding process for new employees"
         )
 
         start = WorkflowNode(node_type=NodeType.START, title="Start")
         collect_info = WorkflowNode(
             node_type=NodeType.ACTION,
             title="Collect Employee Info",
-            config={"agent": "employee_info"}
+            config={"agent": "employee_info"},
         )
         it_setup = WorkflowNode(
-            node_type=NodeType.ACTION,
-            title="IT Setup",
-            config={"action": "provision_account"}
+            node_type=NodeType.ACTION, title="IT Setup", config={"action": "provision_account"}
         )
         benefits = WorkflowNode(
-            node_type=NodeType.ACTION,
-            title="Benefits Enrollment",
-            config={"agent": "benefits"}
+            node_type=NodeType.ACTION, title="Benefits Enrollment", config={"agent": "benefits"}
         )
         training = WorkflowNode(
             node_type=NodeType.ACTION,
             title="Assign Training",
-            config={"action": "create_training_plan"}
+            config={"action": "create_training_plan"},
         )
-        welcome = WorkflowNode(
-            node_type=NodeType.NOTIFICATION,
-            title="Send Welcome Email"
-        )
+        welcome = WorkflowNode(node_type=NodeType.NOTIFICATION, title="Send Welcome Email")
         end = WorkflowNode(node_type=NodeType.END, title="Onboarding Complete")
 
         workflow.nodes = {
@@ -243,33 +236,19 @@ class WorkflowBuilder:
     def _create_performance_review_template(self) -> WorkflowDefinition:
         """Create performance review workflow template."""
         workflow = WorkflowDefinition(
-            name="Performance Review Cycle",
-            description="Annual performance review process"
+            name="Performance Review Cycle", description="Annual performance review process"
         )
 
         start = WorkflowNode(node_type=NodeType.START, title="Start")
-        notify_managers = WorkflowNode(
-            node_type=NodeType.NOTIFICATION,
-            title="Notify Managers"
-        )
+        notify_managers = WorkflowNode(node_type=NodeType.NOTIFICATION, title="Notify Managers")
         manager_review = WorkflowNode(
-            node_type=NodeType.ACTION,
-            title="Manager Review",
-            config={"action": "create_review"}
+            node_type=NodeType.ACTION, title="Manager Review", config={"action": "create_review"}
         )
-        self_review = WorkflowNode(
-            node_type=NodeType.ACTION,
-            title="Employee Self-Review"
-        )
+        self_review = WorkflowNode(node_type=NodeType.ACTION, title="Employee Self-Review")
         hr_review = WorkflowNode(
-            node_type=NodeType.APPROVAL,
-            title="HR Review",
-            config={"role": "hr_generalist"}
+            node_type=NodeType.APPROVAL, title="HR Review", config={"role": "hr_generalist"}
         )
-        archive = WorkflowNode(
-            node_type=NodeType.ACTION,
-            title="Archive Reviews"
-        )
+        archive = WorkflowNode(node_type=NodeType.ACTION, title="Archive Reviews")
         end = WorkflowNode(node_type=NodeType.END, title="Complete")
 
         workflow.nodes = {
@@ -308,8 +287,7 @@ class WorkflowBuilder:
 
         template = self.templates[template_name]
         workflow = WorkflowDefinition(
-            name=f"{template.name} (Copy)",
-            description=template.description
+            name=f"{template.name} (Copy)", description=template.description
         )
 
         # Deep copy nodes and edges
@@ -342,11 +320,7 @@ class WorkflowBuilder:
         if not workflow:
             raise ValueError(f"Workflow not found: {workflow_id}")
 
-        node = WorkflowNode(
-            node_type=node_type,
-            title=title,
-            config=config or {}
-        )
+        node = WorkflowNode(node_type=node_type, title=title, config=config or {})
 
         workflow.nodes[node.node_id] = node
         workflow.updated_at = datetime.utcnow()
@@ -366,9 +340,7 @@ class WorkflowBuilder:
             raise ValueError(f"Workflow not found: {workflow_id}")
 
         edge = WorkflowEdge(
-            source_node_id=source_node_id,
-            target_node_id=target_node_id,
-            condition=condition
+            source_node_id=source_node_id, target_node_id=target_node_id, condition=condition
         )
 
         workflow.edges[edge.edge_id] = edge
@@ -388,7 +360,8 @@ class WorkflowBuilder:
         # Remove node and related edges
         del workflow.nodes[node_id]
         related_edges = [
-            e for e in workflow.edges.values()
+            e
+            for e in workflow.edges.values()
             if e.source_node_id == node_id or e.target_node_id == node_id
         ]
         for edge in related_edges:
@@ -438,7 +411,10 @@ class WorkflowBuilder:
             connected_nodes.add(edge.target_node_id)
 
         for node_id in workflow.nodes:
-            if node_id not in connected_nodes and workflow.nodes[node_id].node_type != NodeType.START:
+            if (
+                node_id not in connected_nodes
+                and workflow.nodes[node_id].node_type != NodeType.START
+            ):
                 warnings.append(f"Node {node_id} is not connected")
 
         return {
@@ -489,7 +465,9 @@ class WorkflowBuilder:
                 break
 
             # Find next node
-            outgoing_edges = [e for e in workflow.edges.values() if e.source_node_id == current_node_id]
+            outgoing_edges = [
+                e for e in workflow.edges.values() if e.source_node_id == current_node_id
+            ]
             if outgoing_edges:
                 current_node_id = outgoing_edges[0].target_node_id
             else:

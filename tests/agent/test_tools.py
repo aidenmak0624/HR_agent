@@ -13,11 +13,7 @@ def test_rag_tool():
     """Test RAG search tool."""
     tool = RAGSearchTool()
 
-    result = tool.run(
-        query="What is the PTO policy?",
-        topic="benefits",
-        top_k=5
-    )
+    result = tool.run(query="What is the PTO policy?", topic="benefits", top_k=5)
 
     assert "answer" in result
     assert "sources" in result
@@ -29,10 +25,7 @@ def test_fact_verifier_tool():
     """Test fact verification tool."""
     tool = FactVerifierTool()
 
-    result = tool.run(
-        claim="TechNova matches 5% on 401k contributions",
-        topic="benefits"
-    )
+    result = tool.run(claim="TechNova matches 5% on 401k contributions", topic="benefits")
 
     assert "verified" in result
     assert "confidence" in result
@@ -44,10 +37,7 @@ def test_comparator_tool():
     """Test comparison tool."""
     tool = ComparatorTool()
 
-    result = tool.run(
-        aspect="health insurance plans",
-        topic="benefits"
-    )
+    result = tool.run(aspect="health insurance plans", topic="benefits")
 
     assert "comparison" in result
     assert "similarities" in result
@@ -63,7 +53,7 @@ def test_educational_planner_lesson():
         content_type="lesson_plan",
         topic="employee_handbook",
         level="high_school",
-        details={"duration": "45 minutes"}
+        details={"duration": "45 minutes"},
     )
 
     assert "content" in result
@@ -77,10 +67,7 @@ def test_educational_planner_quiz():
     tool = EducationalPlannerTool()
 
     result = tool.run(
-        content_type="quiz",
-        topic="benefits",
-        level="high_school",
-        details={"num_questions": 10}
+        content_type="quiz", topic="benefits", level="high_school", details={"num_questions": 10}
     )
 
     assert "content" in result

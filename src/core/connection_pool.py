@@ -15,12 +15,14 @@ from pydantic import BaseModel, Field, ConfigDict
 try:
     import psycopg2
     from psycopg2 import pool
+
     PSYCOPG2_AVAILABLE = True
 except ImportError:
     PSYCOPG2_AVAILABLE = False
 
 try:
     import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
@@ -30,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 class PoolType(str, Enum):
     """Connection pool type enumeration."""
+
     POSTGRESQL = "postgresql"
     REDIS = "redis"
     HTTP = "http"
@@ -37,15 +40,20 @@ class PoolType(str, Enum):
 
 class PoolConfig(BaseModel):
     """Configuration for connection pool."""
+
     pool_type: PoolType = Field(..., description="Type of pool")
     min_connections: int = Field(default=2, ge=1, description="Minimum pool size")
     max_connections: int = Field(default=20, ge=1, description="Maximum pool size")
     max_overflow: int = Field(default=10, ge=0, description="Maximum overflow connections")
     pool_timeout: int = Field(default=30, ge=1, description="Connection timeout in seconds")
-    pool_recycle: int = Field(default=3600, ge=60, description="Connection recycle interval in seconds")
+    pool_recycle: int = Field(
+        default=3600, ge=60, description="Connection recycle interval in seconds"
+    )
     echo: bool = Field(default=False, description="Enable connection echo logging")
     connection_string: str = Field(..., description="Connection string/URL")
-    health_check_interval: int = Field(default=60, ge=10, description="Health check interval in seconds")
+    health_check_interval: int = Field(
+        default=60, ge=10, description="Health check interval in seconds"
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -58,7 +66,7 @@ class PoolConfig(BaseModel):
                 "pool_recycle": 3600,
                 "echo": False,
                 "connection_string": "postgresql://user:pass@localhost/dbname",
-                "health_check_interval": 60
+                "health_check_interval": 60,
             }
         }
     )
@@ -66,6 +74,7 @@ class PoolConfig(BaseModel):
 
 class PoolStats(BaseModel):
     """Statistics for a connection pool."""
+
     pool_type: PoolType = Field(..., description="Pool type")
     active_connections: int = Field(default=0, ge=0, description="Currently active connections")
     idle_connections: int = Field(default=0, ge=0, description="Idle connections")
@@ -87,7 +96,7 @@ class PoolStats(BaseModel):
                 "total_errors": 2,
                 "avg_wait_time": 5.5,
                 "peak_connections": 15,
-                "uptime_seconds": 3600.0
+                "uptime_seconds": 3600.0,
             }
         }
     )
@@ -95,9 +104,12 @@ class PoolStats(BaseModel):
 
 class ConnectionHealth(BaseModel):
     """Health status of a connection."""
+
     is_healthy: bool = Field(..., description="Connection health status")
     latency_ms: float = Field(default=0.0, ge=0.0, description="Latency in milliseconds")
-    last_check: datetime = Field(default_factory=datetime.utcnow, description="Last health check time")
+    last_check: datetime = Field(
+        default_factory=datetime.utcnow, description="Last health check time"
+    )
     error_message: Optional[str] = Field(default=None, description="Error message if unhealthy")
 
     model_config = ConfigDict(
@@ -106,7 +118,7 @@ class ConnectionHealth(BaseModel):
                 "is_healthy": True,
                 "latency_ms": 2.5,
                 "last_check": "2025-02-06T10:30:00Z",
-                "error_message": None
+                "error_message": None,
             }
         }
     )
@@ -114,6 +126,7 @@ class ConnectionHealth(BaseModel):
 
 class _PoolInstance:
     """Internal pool instance wrapper."""
+
     def __init__(self, pool_type: PoolType, config: PoolConfig):
         self.pool_type = pool_type
         self.config = config
@@ -186,9 +199,7 @@ class ConnectionPoolManager:
                     logger.warning("psycopg2 not available, PostgreSQL pool cannot be initialized")
                     return False
                 pool_instance.pool = psycopg2.pool.SimpleConnectionPool(
-                    config.min_connections,
-                    config.max_connections,
-                    config.connection_string
+                    config.min_connections, config.max_connections, config.connection_string
                 )
             elif pool_type == PoolType.REDIS:
                 if not REDIS_AVAILABLE:
@@ -198,7 +209,7 @@ class ConnectionPoolManager:
                     config.connection_string,
                     max_connections=config.max_connections,
                     socket_keepalive=True,
-                    health_check_interval=config.health_check_interval
+                    health_check_interval=config.health_check_interval,
                 )
             elif pool_type == PoolType.HTTP:
                 # HTTP pool is managed differently (no actual pool object)
@@ -263,7 +274,9 @@ class ConnectionPoolManager:
             conn_id = id(connection)
             pool_instance._connection_timestamps[conn_id] = time.time()
 
-            logger.debug(f"Acquired {pool_type} connection (active: {pool_instance.active_connections})")
+            logger.debug(
+                f"Acquired {pool_type} connection (active: {pool_instance.active_connections})"
+            )
 
             yield connection
 
@@ -308,14 +321,18 @@ class ConnectionPoolManager:
             pool_instance.active_connections = max(0, pool_instance.active_connections - 1)
             pool_instance.idle_connections += 1
 
-            logger.debug(f"Released {pool_type} connection (active: {pool_instance.active_connections})")
+            logger.debug(
+                f"Released {pool_type} connection (active: {pool_instance.active_connections})"
+            )
             return True
 
         except Exception as e:
             logger.error(f"Error releasing {pool_type} connection: {str(e)}")
             return False
 
-    def health_check(self, pool_type: Optional[PoolType] = None) -> Dict[PoolType, ConnectionHealth]:
+    def health_check(
+        self, pool_type: Optional[PoolType] = None
+    ) -> Dict[PoolType, ConnectionHealth]:
         """Check health of pool(s).
 
         Args:
@@ -330,8 +347,7 @@ class ConnectionPoolManager:
         for ptype in pools_to_check:
             if ptype not in self._pools:
                 health_status[ptype] = ConnectionHealth(
-                    is_healthy=False,
-                    error_message=f"Pool type {ptype} not configured"
+                    is_healthy=False, error_message=f"Pool type {ptype} not configured"
                 )
                 continue
 
@@ -381,16 +397,13 @@ class ConnectionPoolManager:
                     is_healthy=is_healthy,
                     latency_ms=latency,
                     last_check=pool_instance.last_health_check,
-                    error_message=error_msg
+                    error_message=error_msg,
                 )
 
             except Exception as e:
                 logger.error(f"Health check failed for {ptype}: {str(e)}")
                 pool_instance.total_errors += 1
-                health_status[ptype] = ConnectionHealth(
-                    is_healthy=False,
-                    error_message=str(e)
-                )
+                health_status[ptype] = ConnectionHealth(is_healthy=False, error_message=str(e))
 
         return health_status
 
@@ -421,7 +434,7 @@ class ConnectionPoolManager:
                 total_errors=pool_instance.total_errors,
                 avg_wait_time=pool_instance.get_avg_wait_time(),
                 peak_connections=pool_instance.peak_connections,
-                uptime_seconds=pool_instance.get_uptime_seconds()
+                uptime_seconds=pool_instance.get_uptime_seconds(),
             )
 
         return stats
@@ -454,7 +467,7 @@ class ConnectionPoolManager:
                 pool_instance.pool = psycopg2.pool.SimpleConnectionPool(
                     pool_instance.config.min_connections,
                     new_max,
-                    pool_instance.config.connection_string
+                    pool_instance.config.connection_string,
                 )
                 # Close old pool connections
                 old_pool.closeall()
@@ -607,9 +620,13 @@ class ConnectionPoolManager:
                 "avg_wait_time_ms": avg_wait,
                 "recommended_max": max(
                     pool_instance.config.min_connections,
-                    int(stats.peak_connections * 1.2)  # 20% buffer above peak
+                    int(stats.peak_connections * 1.2),  # 20% buffer above peak
                 ),
-                "action": "increase" if peak_ratio > 0.8 else "maintain" if peak_ratio > 0.5 else "decrease"
+                "action": "increase"
+                if peak_ratio > 0.8
+                else "maintain"
+                if peak_ratio > 0.5
+                else "decrease",
             }
 
             return recommendation
@@ -631,7 +648,7 @@ class ConnectionPoolManager:
             status = {
                 "timestamp": datetime.utcnow().isoformat(),
                 "pools": {},
-                "overall_healthy": True
+                "overall_healthy": True,
             }
 
             for pool_type in self._pools.keys():
@@ -647,7 +664,7 @@ class ConnectionPoolManager:
                         "peak_connections": stats.peak_connections,
                         "error_rate": stats.total_errors / max(1, stats.total_created),
                         "avg_wait_time_ms": stats.avg_wait_time,
-                        "uptime_seconds": stats.uptime_seconds
+                        "uptime_seconds": stats.uptime_seconds,
                     }
 
                     if not health.is_healthy:

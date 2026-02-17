@@ -22,8 +22,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class DocumentStatus(str, Enum):
     """Document status states."""
+
     DRAFT = "draft"
     PENDING_REVIEW = "pending_review"
     APPROVED = "approved"
@@ -36,8 +38,10 @@ class DocumentStatus(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class DocumentVersion(BaseModel):
     """Single version of a document."""
+
     version_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique version ID")
     document_id: str = Field(..., description="Parent document ID")
     version_number: str = Field(..., description="Version number (e.g., '1.0', '1.1')")
@@ -54,13 +58,16 @@ class DocumentVersion(BaseModel):
 
 class Document(BaseModel):
     """Document with version history."""
+
     document_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique document ID")
     title: str = Field(..., description="Document title")
     category: str = Field(..., description="Document category (e.g., 'compensation', 'pto')")
     current_version: str = Field(default="1.0", description="Current version number")
     versions: List[DocumentVersion] = Field(default_factory=list, description="All versions")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Last update timestamp"
+    )
     owner: str = Field(..., description="Document owner ID")
     tags: List[str] = Field(default_factory=list, description="Document tags")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
@@ -70,9 +77,12 @@ class Document(BaseModel):
 
 class DocumentConfig(BaseModel):
     """Configuration for document versioning service."""
+
     max_versions_retained: int = Field(50, description="Maximum versions to retain per document")
     require_approval: bool = Field(True, description="Require approval before publishing")
-    auto_archive_days: int = Field(365, description="Days before auto-archiving deprecated documents")
+    auto_archive_days: int = Field(
+        365, description="Days before auto-archiving deprecated documents"
+    )
     allowed_categories: List[str] = Field(
         default_factory=lambda: [
             "compensation",
@@ -82,7 +92,7 @@ class DocumentConfig(BaseModel):
             "hr_policies",
             "org_structure",
         ],
-        description="Allowed document categories"
+        description="Allowed document categories",
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -91,6 +101,7 @@ class DocumentConfig(BaseModel):
 # ============================================================================
 # Document Versioning Service
 # ============================================================================
+
 
 class DocumentVersioningService:
     """
@@ -165,10 +176,15 @@ class DocumentVersioningService:
             self.versions[version.version_id] = version
 
             logger.info(f"Created document: {document.document_id} (v{version.version_number})")
-            self._audit_log("document_created", document.document_id, author, {
-                'title': title,
-                'category': category,
-            })
+            self._audit_log(
+                "document_created",
+                document.document_id,
+                author,
+                {
+                    "title": title,
+                    "category": category,
+                },
+            )
 
             return document
 
@@ -204,7 +220,7 @@ class DocumentVersioningService:
             # Calculate next version number
             last_version = document.versions[-1] if document.versions else None
             if last_version:
-                major, minor = map(int, last_version.version_number.split('.'))
+                major, minor = map(int, last_version.version_number.split("."))
                 next_version = f"{major}.{minor + 1}"
             else:
                 next_version = "1.0"
@@ -223,10 +239,15 @@ class DocumentVersioningService:
             self.versions[version.version_id] = version
 
             logger.info(f"Created version {next_version} for document {document_id}")
-            self._audit_log("version_created", document_id, author, {
-                'version_number': next_version,
-                'change_summary': change_summary,
-            })
+            self._audit_log(
+                "version_created",
+                document_id,
+                author,
+                {
+                    "version_number": next_version,
+                    "change_summary": change_summary,
+                },
+            )
 
             return version
 
@@ -298,9 +319,14 @@ class DocumentVersioningService:
 
             version.status = DocumentStatus.PENDING_REVIEW
             logger.info(f"Submitted version {version_number} for review")
-            self._audit_log("version_submitted", document_id, version.author, {
-                'version_number': version_number,
-            })
+            self._audit_log(
+                "version_submitted",
+                document_id,
+                version.author,
+                {
+                    "version_number": version_number,
+                },
+            )
 
             return version
 
@@ -341,9 +367,14 @@ class DocumentVersioningService:
             version.approved_at = datetime.utcnow()
 
             logger.info(f"Approved version {version_number} of document {document_id}")
-            self._audit_log("version_approved", document_id, approver, {
-                'version_number': version_number,
-            })
+            self._audit_log(
+                "version_approved",
+                document_id,
+                approver,
+                {
+                    "version_number": version_number,
+                },
+            )
 
             return version
 
@@ -388,9 +419,14 @@ class DocumentVersioningService:
             document.updated_at = datetime.utcnow()
 
             logger.info(f"Published version {version_number} of document {document_id}")
-            self._audit_log("version_published", document_id, version.author, {
-                'version_number': version_number,
-            })
+            self._audit_log(
+                "version_published",
+                document_id,
+                version.author,
+                {
+                    "version_number": version_number,
+                },
+            )
 
             return version
 
@@ -463,12 +499,12 @@ class DocumentVersioningService:
             diff_lines = list(differ)
 
             result = {
-                'version_a': version_a,
-                'version_b': version_b,
-                'differences_found': len(diff_lines) > 0,
-                'diff': ''.join(diff_lines),
-                'added_lines': sum(1 for line in diff_lines if line.startswith('+')),
-                'removed_lines': sum(1 for line in diff_lines if line.startswith('-')),
+                "version_a": version_a,
+                "version_b": version_b,
+                "differences_found": len(diff_lines) > 0,
+                "diff": "".join(diff_lines),
+                "added_lines": sum(1 for line in diff_lines if line.startswith("+")),
+                "removed_lines": sum(1 for line in diff_lines if line.startswith("-")),
             }
 
             logger.info(f"Compared versions {version_a} and {version_b}")
@@ -512,10 +548,15 @@ class DocumentVersioningService:
             )
 
             logger.info(f"Rolled back document {document_id} to version {version_number}")
-            self._audit_log("version_rollback", document_id, "system", {
-                'rolled_back_to': version_number,
-                'new_version': new_version.version_number,
-            })
+            self._audit_log(
+                "version_rollback",
+                document_id,
+                "system",
+                {
+                    "rolled_back_to": version_number,
+                    "new_version": new_version.version_number,
+                },
+            )
 
             return new_version
 
@@ -556,7 +597,9 @@ class DocumentVersioningService:
 
                 # Apply status filter
                 if status:
-                    current_version = self.get_version(document.document_id, document.current_version)
+                    current_version = self.get_version(
+                        document.document_id, document.current_version
+                    )
                     if not current_version or current_version.status != status:
                         continue
 
@@ -595,7 +638,9 @@ class DocumentVersioningService:
         """
         try:
             document = self._get_document(document_id)
-            logger.info(f"Retrieved history for document {document_id} with {len(document.versions)} versions")
+            logger.info(
+                f"Retrieved history for document {document_id} with {len(document.versions)} versions"
+            )
             return document.versions
 
         except Exception as e:
@@ -629,7 +674,8 @@ class DocumentVersioningService:
 
             # Sort by creation date and keep most recent
             sortable = [
-                (v, i) for i, v in enumerate(document.versions)
+                (v, i)
+                for i, v in enumerate(document.versions)
                 if v.version_id not in versions_to_keep
             ]
             sortable.sort(key=lambda x: x[0].created_at, reverse=True)
@@ -648,9 +694,14 @@ class DocumentVersioningService:
                     removed_count += 1
 
             logger.info(f"Cleaned up {removed_count} versions from document {document_id}")
-            self._audit_log("cleanup_versions", document_id, "system", {
-                'removed_count': removed_count,
-            })
+            self._audit_log(
+                "cleanup_versions",
+                document_id,
+                "system",
+                {
+                    "removed_count": removed_count,
+                },
+            )
 
             return removed_count
 
@@ -694,13 +745,15 @@ class DocumentVersioningService:
         """
         if self.audit_logger:
             try:
-                self.audit_logger.log({
-                    'event_type': event_type,
-                    'document_id': document_id,
-                    'actor': actor,
-                    'timestamp': datetime.utcnow().isoformat(),
-                    'details': details,
-                })
+                self.audit_logger.log(
+                    {
+                        "event_type": event_type,
+                        "document_id": document_id,
+                        "actor": actor,
+                        "timestamp": datetime.utcnow().isoformat(),
+                        "details": details,
+                    }
+                )
             except Exception as e:
                 logger.warning(f"Failed to write audit log: {e}")
         else:

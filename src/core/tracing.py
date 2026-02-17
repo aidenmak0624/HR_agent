@@ -80,9 +80,7 @@ class AgentTraceCallback:
 
     def on_llm_end(self, response: Any, **kwargs: Any) -> None:
         """Log when an LLM call completes."""
-        generations = (
-            len(response.generations) if hasattr(response, "generations") else 0
-        )
+        generations = len(response.generations) if hasattr(response, "generations") else 0
         event = {
             "type": "llm_end",
             "step": self._step_count,
@@ -92,8 +90,7 @@ class AgentTraceCallback:
         }
         self.events.append(event)
         logger.debug(
-            f"[TRACE:{self.trace_id}] [{self.agent_name}] LLM end "
-            f"generations={generations}"
+            f"[TRACE:{self.trace_id}] [{self.agent_name}] LLM end " f"generations={generations}"
         )
 
     def on_llm_error(self, error: Exception, **kwargs: Any) -> None:
@@ -106,9 +103,7 @@ class AgentTraceCallback:
             "timestamp": datetime.utcnow().isoformat(),
         }
         self.events.append(event)
-        logger.warning(
-            f"[TRACE:{self.trace_id}] [{self.agent_name}] LLM error: {error}"
-        )
+        logger.warning(f"[TRACE:{self.trace_id}] [{self.agent_name}] LLM error: {error}")
 
     # ==================== TOOL CALLBACKS ====================
 
@@ -130,9 +125,7 @@ class AgentTraceCallback:
             "timestamp": datetime.utcnow().isoformat(),
         }
         self.events.append(event)
-        logger.debug(
-            f"[TRACE:{self.trace_id}] [{self.agent_name}] Tool start: {tool_name}"
-        )
+        logger.debug(f"[TRACE:{self.trace_id}] [{self.agent_name}] Tool start: {tool_name}")
 
     def on_tool_end(self, output: str, **kwargs: Any) -> None:
         """Log when a tool execution completes."""
@@ -159,9 +152,7 @@ class AgentTraceCallback:
             "timestamp": datetime.utcnow().isoformat(),
         }
         self.events.append(event)
-        logger.warning(
-            f"[TRACE:{self.trace_id}] [{self.agent_name}] Tool error: {error}"
-        )
+        logger.warning(f"[TRACE:{self.trace_id}] [{self.agent_name}] Tool error: {error}")
 
     # ==================== CHAIN CALLBACKS ====================
 
@@ -185,9 +176,7 @@ class AgentTraceCallback:
             "timestamp": datetime.utcnow().isoformat(),
         }
         self.events.append(event)
-        logger.debug(
-            f"[TRACE:{self.trace_id}] [{self.agent_name}] Node start: {chain_name}"
-        )
+        logger.debug(f"[TRACE:{self.trace_id}] [{self.agent_name}] Node start: {chain_name}")
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         """Log when a chain (graph node) completes."""
@@ -209,9 +198,7 @@ class AgentTraceCallback:
             "timestamp": datetime.utcnow().isoformat(),
         }
         self.events.append(event)
-        logger.warning(
-            f"[TRACE:{self.trace_id}] [{self.agent_name}] Chain error: {error}"
-        )
+        logger.warning(f"[TRACE:{self.trace_id}] [{self.agent_name}] Chain error: {error}")
 
     # ==================== SUMMARY ====================
 

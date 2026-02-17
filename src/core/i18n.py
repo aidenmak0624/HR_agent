@@ -61,15 +61,9 @@ class I18nConfig(BaseModel):
         description="List of supported language codes",
     )
     auto_detect: bool = Field(default=True, description="Auto-detect input language")
-    translation_model: str = Field(
-        default="gpt-4o-mini", description="Model for translation"
-    )
-    cache_translations: bool = Field(
-        default=True, description="Cache translation results"
-    )
-    max_cache_size: int = Field(
-        default=1000, description="Maximum cache size"
-    )
+    translation_model: str = Field(default="gpt-4o-mini", description="Model for translation")
+    cache_translations: bool = Field(default=True, description="Cache translation results")
+    max_cache_size: int = Field(default=1000, description="Maximum cache size")
 
     model_config = ConfigDict(frozen=False)
 
@@ -82,33 +76,19 @@ class LanguageDetector:
         "en": [
             r"\b(the|and|or|is|are|was|were|be|being|been|have|has|do|does|did|will|would|should|could|may|might)\b"
         ],
-        "es": [
-            r"\b(el|la|los|las|y|o|es|son|de|que|en|un|una|unos|unas|se|le|me|te|nos|os|les)\b"
-        ],
+        "es": [r"\b(el|la|los|las|y|o|es|son|de|que|en|un|una|unos|unas|se|le|me|te|nos|os|les)\b"],
         "fr": [
             r"\b(le|la|les|et|ou|est|sont|de|que|en|un|une|des|se|me|te|nous|vous|leur|ils|elles)\b"
         ],
         "de": [
             r"\b(der|die|das|den|des|dem|und|oder|ist|sind|von|in|zu|ein|eine|einen|einem|eines|einen|einer)\b"
         ],
-        "pt": [
-            r"\b(o|a|os|as|e|ou|é|são|de|que|em|um|uma|uns|umas|se|me|te|nos|vos|lhe|lhes)\b"
-        ],
-        "ja": [
-            r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]"
-        ],
-        "zh": [
-            r"[\u4E00-\u9FFF]"
-        ],
-        "ko": [
-            r"[\uAC00-\uD7AF]"
-        ],
-        "ar": [
-            r"[\u0600-\u06FF]"
-        ],
-        "hi": [
-            r"[\u0900-\u097F]"
-        ],
+        "pt": [r"\b(o|a|os|as|e|ou|é|são|de|que|em|um|uma|uns|umas|se|me|te|nos|vos|lhe|lhes)\b"],
+        "ja": [r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]"],
+        "zh": [r"[\u4E00-\u9FFF]"],
+        "ko": [r"[\uAC00-\uD7AF]"],
+        "ar": [r"[\u0600-\u06FF]"],
+        "hi": [r"[\u0900-\u097F]"],
     }
 
     # Language names mapping
@@ -332,9 +312,7 @@ class TranslationService:
         self.translations_count += 1
 
         # Mock translation - in production this would call an LLM API
-        translated_text = self._mock_translate(
-            text, source_language, target_language
-        )
+        translated_text = self._mock_translate(text, source_language, target_language)
 
         result = TranslationResult(
             original_text=text,
@@ -359,9 +337,7 @@ class TranslationService:
 
         return result
 
-    def _mock_translate(
-        self, text: str, source: str, target: str
-    ) -> str:
+    def _mock_translate(self, text: str, source: str, target: str) -> str:
         """
         Mock translation (for non-production use).
 
@@ -376,9 +352,7 @@ class TranslationService:
         # Simple mock: append language indicator
         return f"[{target.upper()}] {text}"
 
-    def _build_translation_prompt(
-        self, text: str, source: str, target: str
-    ) -> str:
+    def _build_translation_prompt(self, text: str, source: str, target: str) -> str:
         """
         Build LLM prompt for translation.
 
@@ -390,12 +364,8 @@ class TranslationService:
         Returns:
             Translation prompt
         """
-        source_name = LanguageDetector.LANGUAGE_NAMES.get(source, {}).get(
-            "name", source
-        )
-        target_name = LanguageDetector.LANGUAGE_NAMES.get(target, {}).get(
-            "name", target
-        )
+        source_name = LanguageDetector.LANGUAGE_NAMES.get(source, {}).get("name", source)
+        target_name = LanguageDetector.LANGUAGE_NAMES.get(target, {}).get("name", target)
 
         return f"""Translate the following text from {source_name} to {target_name}.
 Only provide the translation, without any explanations.
@@ -430,9 +400,7 @@ Translation:"""
         """
         return self.cache.get(key)
 
-    def _set_cached(
-        self, key: str, result: TranslationResult
-    ) -> None:
+    def _set_cached(self, key: str, result: TranslationResult) -> None:
         """
         Cache translation result with LRU eviction.
 
@@ -458,9 +426,7 @@ Translation:"""
             Dictionary with statistics
         """
         total_cache_requests = self.cache_hits + self.cache_misses
-        hit_rate = (
-            self.cache_hits / total_cache_requests if total_cache_requests > 0 else 0
-        )
+        hit_rate = self.cache_hits / total_cache_requests if total_cache_requests > 0 else 0
 
         return {
             "translations_count": self.translations_count,
@@ -498,9 +464,7 @@ class I18nMiddleware:
             },
         )
 
-    def process_input(
-        self, text: str, preferred_language: Optional[str] = None
-    ) -> Dict:
+    def process_input(self, text: str, preferred_language: Optional[str] = None) -> Dict:
         """
         Process input and detect/handle language.
 
@@ -520,8 +484,7 @@ class I18nMiddleware:
             confidence = 1.0
 
         needs_translation = (
-            preferred_language is not None
-            and preferred_language != detected_language
+            preferred_language is not None and preferred_language != detected_language
         )
 
         return {
@@ -532,9 +495,7 @@ class I18nMiddleware:
             "preferred_language": preferred_language,
         }
 
-    def process_output(
-        self, text: str, target_language: str
-    ) -> TranslationResult:
+    def process_output(self, text: str, target_language: str) -> TranslationResult:
         """
         Process output and translate if needed.
 
@@ -551,9 +512,7 @@ class I18nMiddleware:
 
         # Translate if needed
         if source_language != target_language:
-            return self.translator.translate(
-                text, target_language, source_language
-            )
+            return self.translator.translate(text, target_language, source_language)
 
         return TranslationResult(
             original_text=text,
@@ -576,11 +535,13 @@ class I18nMiddleware:
         for lang_code in self.config.supported_languages:
             if lang_code in LanguageDetector.LANGUAGE_NAMES:
                 lang_info = LanguageDetector.LANGUAGE_NAMES[lang_code]
-                languages.append({
-                    "code": lang_code,
-                    "name": lang_info["name"],
-                    "native_name": lang_info["native"],
-                })
+                languages.append(
+                    {
+                        "code": lang_code,
+                        "name": lang_info["name"],
+                        "native_name": lang_info["native"],
+                    }
+                )
 
         return languages
 

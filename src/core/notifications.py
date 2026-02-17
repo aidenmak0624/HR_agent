@@ -19,8 +19,10 @@ logger = logging.getLogger(__name__)
 
 # ===== ENUMS =====
 
+
 class NotificationChannel(str, Enum):
     """Notification delivery channels."""
+
     IN_APP = "in_app"
     EMAIL = "email"
     WEBHOOK = "webhook"
@@ -29,6 +31,7 @@ class NotificationChannel(str, Enum):
 
 class NotificationStatus(str, Enum):
     """Notification delivery status."""
+
     PENDING = "pending"
     SENT = "sent"
     FAILED = "failed"
@@ -37,6 +40,7 @@ class NotificationStatus(str, Enum):
 
 class NotificationPriority(str, Enum):
     """Notification priority levels."""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -45,8 +49,10 @@ class NotificationPriority(str, Enum):
 
 # ===== PYDANTIC MODELS =====
 
+
 class NotificationTemplate(BaseModel):
     """Template for notification messages."""
+
     template_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str  # Human-readable name
     channel: NotificationChannel
@@ -60,6 +66,7 @@ class NotificationTemplate(BaseModel):
 
 class Notification(BaseModel):
     """Notification instance."""
+
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     recipient_id: str
     channel: NotificationChannel
@@ -77,11 +84,12 @@ class Notification(BaseModel):
 
 class NotificationPreference(BaseModel):
     """User notification preferences."""
+
     employee_id: str
     channel: NotificationChannel
     enabled: bool = True
     quiet_hours_start: Optional[str] = None  # HH:MM format
-    quiet_hours_end: Optional[str] = None    # HH:MM format
+    quiet_hours_end: Optional[str] = None  # HH:MM format
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -89,6 +97,7 @@ class NotificationPreference(BaseModel):
 
 
 # ===== MAIN SERVICE CLASS =====
+
 
 class NotificationService:
     """
@@ -111,59 +120,59 @@ class NotificationService:
         """Initialize default notification templates."""
         default_templates = [
             NotificationTemplate(
-                template_id='workflow_submitted',
-                name='Workflow Submitted',
+                template_id="workflow_submitted",
+                name="Workflow Submitted",
                 channel=NotificationChannel.IN_APP,
-                subject_template='Workflow Submitted: $entity_type',
+                subject_template="Workflow Submitted: $entity_type",
                 body_template=(
-                    'Your $entity_type workflow has been submitted for approval. '
-                    'It is now pending review by $approver_role.'
+                    "Your $entity_type workflow has been submitted for approval. "
+                    "It is now pending review by $approver_role."
                 ),
-                variables=['entity_type', 'approver_role']
+                variables=["entity_type", "approver_role"],
             ),
             NotificationTemplate(
-                template_id='workflow_approved',
-                name='Workflow Approved',
+                template_id="workflow_approved",
+                name="Workflow Approved",
                 channel=NotificationChannel.IN_APP,
-                subject_template='Workflow Approved: $entity_type',
+                subject_template="Workflow Approved: $entity_type",
                 body_template=(
-                    'Your $entity_type workflow has been approved. '
-                    'The requested changes are being processed.'
+                    "Your $entity_type workflow has been approved. "
+                    "The requested changes are being processed."
                 ),
-                variables=['entity_type']
+                variables=["entity_type"],
             ),
             NotificationTemplate(
-                template_id='workflow_rejected',
-                name='Workflow Rejected',
+                template_id="workflow_rejected",
+                name="Workflow Rejected",
                 channel=NotificationChannel.IN_APP,
-                subject_template='Workflow Rejected: $entity_type',
+                subject_template="Workflow Rejected: $entity_type",
                 body_template=(
-                    'Your $entity_type workflow was rejected. '
-                    'Reason: $rejection_reason. Please contact $contact_email for details.'
+                    "Your $entity_type workflow was rejected. "
+                    "Reason: $rejection_reason. Please contact $contact_email for details."
                 ),
-                variables=['entity_type', 'rejection_reason', 'contact_email']
+                variables=["entity_type", "rejection_reason", "contact_email"],
             ),
             NotificationTemplate(
-                template_id='leave_approved',
-                name='Leave Request Approved',
+                template_id="leave_approved",
+                name="Leave Request Approved",
                 channel=NotificationChannel.IN_APP,
-                subject_template='Leave Request Approved',
+                subject_template="Leave Request Approved",
                 body_template=(
-                    'Your leave request for $leave_type from $start_date to $end_date '
-                    'has been approved by $approver_name.'
+                    "Your leave request for $leave_type from $start_date to $end_date "
+                    "has been approved by $approver_name."
                 ),
-                variables=['leave_type', 'start_date', 'end_date', 'approver_name']
+                variables=["leave_type", "start_date", "end_date", "approver_name"],
             ),
             NotificationTemplate(
-                template_id='policy_reminder',
-                name='Policy Reminder',
+                template_id="policy_reminder",
+                name="Policy Reminder",
                 channel=NotificationChannel.IN_APP,
-                subject_template='Important Policy Reminder: $policy_name',
+                subject_template="Important Policy Reminder: $policy_name",
                 body_template=(
-                    'This is a reminder about our $policy_name policy. '
-                    'Please review it at your earliest convenience: $policy_url'
+                    "This is a reminder about our $policy_name policy. "
+                    "Please review it at your earliest convenience: $policy_url"
                 ),
-                variables=['policy_name', 'policy_url']
+                variables=["policy_name", "policy_url"],
             ),
         ]
 
@@ -178,7 +187,7 @@ class NotificationService:
         template_id: str,
         context: Dict[str, Any],
         priority: NotificationPriority = NotificationPriority.NORMAL,
-        channel: Optional[NotificationChannel] = None
+        channel: Optional[NotificationChannel] = None,
     ) -> Notification:
         """
         Send a notification to a recipient.
@@ -212,14 +221,13 @@ class NotificationService:
             subject=subject,
             body=body,
             priority=priority,
-            metadata={'template_id': template_id, **context}
+            metadata={"template_id": template_id, **context},
         )
 
         # Check quiet hours
         if not self._check_quiet_hours(recipient_id, use_channel):
             logger.info(
-                f"Notification {notification.id} queued due to quiet hours "
-                f"for {recipient_id}"
+                f"Notification {notification.id} queued due to quiet hours " f"for {recipient_id}"
             )
 
         # Dispatch
@@ -235,8 +243,7 @@ class NotificationService:
         self.notifications[notification.id] = notification
 
         logger.info(
-            f"Notification {notification.id} sent to {recipient_id} "
-            f"via {use_channel.value}"
+            f"Notification {notification.id} sent to {recipient_id} " f"via {use_channel.value}"
         )
 
         return notification
@@ -246,7 +253,7 @@ class NotificationService:
         recipient_ids: List[str],
         template_id: str,
         context: Dict[str, Any],
-        priority: NotificationPriority = NotificationPriority.NORMAL
+        priority: NotificationPriority = NotificationPriority.NORMAL,
     ) -> List[Notification]:
         """
         Send notification to multiple recipients.
@@ -267,7 +274,7 @@ class NotificationService:
                 recipient_id=recipient_id,
                 template_id=template_id,
                 context=context,
-                priority=priority
+                priority=priority,
             )
             notifications.append(notification)
 
@@ -276,10 +283,7 @@ class NotificationService:
         return notifications
 
     def get_notifications(
-        self,
-        recipient_id: str,
-        status_filter: Optional[NotificationStatus] = None,
-        limit: int = 50
+        self, recipient_id: str, status_filter: Optional[NotificationStatus] = None, limit: int = 50
     ) -> List[Notification]:
         """
         Get notifications for a recipient.
@@ -292,16 +296,10 @@ class NotificationService:
         Returns:
             List of notifications
         """
-        notifications = [
-            n for n in self.notifications.values()
-            if n.recipient_id == recipient_id
-        ]
+        notifications = [n for n in self.notifications.values() if n.recipient_id == recipient_id]
 
         if status_filter:
-            notifications = [
-                n for n in notifications
-                if n.status == status_filter
-            ]
+            notifications = [n for n in notifications if n.status == status_filter]
 
         # Sort by created_at, newest first
         notifications.sort(key=lambda n: n.created_at, reverse=True)
@@ -330,10 +328,7 @@ class NotificationService:
 
         return notification
 
-    def register_template(
-        self,
-        template: NotificationTemplate
-    ) -> str:
+    def register_template(self, template: NotificationTemplate) -> str:
         """
         Register a new notification template.
 
@@ -354,7 +349,7 @@ class NotificationService:
         channel: NotificationChannel,
         enabled: bool,
         quiet_hours_start: Optional[str] = None,
-        quiet_hours_end: Optional[str] = None
+        quiet_hours_end: Optional[str] = None,
     ) -> NotificationPreference:
         """
         Set notification preference for employee.
@@ -374,34 +369,25 @@ class NotificationService:
             channel=channel,
             enabled=enabled,
             quiet_hours_start=quiet_hours_start,
-            quiet_hours_end=quiet_hours_end
+            quiet_hours_end=quiet_hours_end,
         )
 
         if employee_id not in self.preferences:
             self.preferences[employee_id] = []
 
         # Update existing preference or add new
-        existing = [
-            p for p in self.preferences[employee_id]
-            if p.channel == channel
-        ]
+        existing = [p for p in self.preferences[employee_id] if p.channel == channel]
 
         if existing:
             self.preferences[employee_id].remove(existing[0])
 
         self.preferences[employee_id].append(preference)
 
-        logger.info(
-            f"Preference set for {employee_id} on {channel.value}: "
-            f"enabled={enabled}"
-        )
+        logger.info(f"Preference set for {employee_id} on {channel.value}: " f"enabled={enabled}")
 
         return preference
 
-    def get_preferences(
-        self,
-        employee_id: str
-    ) -> List[NotificationPreference]:
+    def get_preferences(self, employee_id: str) -> List[NotificationPreference]:
         """
         Get all notification preferences for employee.
 
@@ -413,11 +399,7 @@ class NotificationService:
         """
         return self.preferences.get(employee_id, [])
 
-    def register_event_listener(
-        self,
-        event_type: str,
-        template_id: str
-    ) -> None:
+    def register_event_listener(self, event_type: str, template_id: str) -> None:
         """
         Register event listener mapping.
 
@@ -426,16 +408,14 @@ class NotificationService:
             template_id: Template to use for this event
         """
         self.event_listeners[event_type] = template_id
-        logger.debug(
-            f"Event listener registered: {event_type} -> {template_id}"
-        )
+        logger.debug(f"Event listener registered: {event_type} -> {template_id}")
 
     def trigger_event(
         self,
         event_type: str,
         recipient_id: str,
         context: Dict[str, Any],
-        priority: NotificationPriority = NotificationPriority.NORMAL
+        priority: NotificationPriority = NotificationPriority.NORMAL,
     ) -> Optional[Notification]:
         """
         Trigger notification based on event type.
@@ -456,18 +436,13 @@ class NotificationService:
         template_id = self.event_listeners[event_type]
 
         return self.send_notification(
-            recipient_id=recipient_id,
-            template_id=template_id,
-            context=context,
-            priority=priority
+            recipient_id=recipient_id, template_id=template_id, context=context, priority=priority
         )
 
     # ===== PRIVATE HELPER METHODS =====
 
     def _render_template(
-        self,
-        template: NotificationTemplate,
-        context: Dict[str, Any]
+        self, template: NotificationTemplate, context: Dict[str, Any]
     ) -> tuple[str, str]:
         """
         Render template with context variables.
@@ -493,11 +468,7 @@ class NotificationService:
             # Return with unsubstituted variables
             return template.subject_template, template.body_template
 
-    def _check_quiet_hours(
-        self,
-        employee_id: str,
-        channel: NotificationChannel
-    ) -> bool:
+    def _check_quiet_hours(self, employee_id: str, channel: NotificationChannel) -> bool:
         """
         Check if employee is within quiet hours.
 
@@ -529,10 +500,7 @@ class NotificationService:
 
         return True
 
-    def _dispatch_notification(
-        self,
-        notification: Notification
-    ) -> bool:
+    def _dispatch_notification(self, notification: Notification) -> bool:
         """
         Dispatch notification via appropriate channel.
 
@@ -573,6 +541,7 @@ class NotificationService:
         """
         try:
             from ..core.database import SessionLocal
+
             if SessionLocal is not None:
                 try:
                     from sqlalchemy import text
@@ -581,19 +550,24 @@ class NotificationService:
                     session = SessionLocal()
                     try:
                         session.execute(
-                            text("""
+                            text(
+                                """
                                 INSERT INTO in_app_notifications
                                 (id, recipient_id, subject, body, priority, is_read, created_at, metadata)
                                 VALUES (:id, :recipient_id, :subject, :body, :priority, :is_read, :created_at, :metadata)
-                            """),
+                            """
+                            ),
                             {
                                 "id": notification.id,
                                 "recipient_id": notification.recipient_id,
                                 "subject": notification.subject,
                                 "body": notification.body,
-                                "priority": notification.priority.value if notification.priority else "medium",
+                                "priority": notification.priority.value
+                                if notification.priority
+                                else "medium",
                                 "is_read": False,
-                                "created_at": notification.created_at or __import__("datetime").datetime.utcnow(),
+                                "created_at": notification.created_at
+                                or __import__("datetime").datetime.utcnow(),
                                 "metadata": _json.dumps(notification.metadata or {}),
                             },
                         )
@@ -614,15 +588,17 @@ class NotificationService:
 
             # In-memory fallback (development / no DB)
             self._in_app_store = getattr(self, "_in_app_store", [])
-            self._in_app_store.append({
-                "id": notification.id,
-                "recipient_id": notification.recipient_id,
-                "subject": notification.subject,
-                "body": notification.body,
-                "priority": notification.priority.value if notification.priority else "medium",
-                "is_read": False,
-                "created_at": str(notification.created_at),
-            })
+            self._in_app_store.append(
+                {
+                    "id": notification.id,
+                    "recipient_id": notification.recipient_id,
+                    "subject": notification.subject,
+                    "body": notification.body,
+                    "priority": notification.priority.value if notification.priority else "medium",
+                    "is_read": False,
+                    "created_at": str(notification.created_at),
+                }
+            )
             logger.info(
                 f"IN-APP Notification stored in-memory for {notification.recipient_id}: "
                 f"{notification.subject}"
@@ -646,6 +622,7 @@ class NotificationService:
             True if successful
         """
         import os
+
         smtp_host = os.environ.get("SMTP_HOST")
         smtp_from = os.environ.get("SMTP_FROM", "hr-platform@company.com")
 
@@ -673,9 +650,7 @@ class NotificationService:
                         server.login(smtp_user, smtp_pass)
                     server.sendmail(smtp_from, notification.recipient_id, msg.as_string())
 
-                logger.info(
-                    f"EMAIL sent to {notification.recipient_id}: {notification.subject}"
-                )
+                logger.info(f"EMAIL sent to {notification.recipient_id}: {notification.subject}")
                 return True
             except Exception as e:
                 logger.error(f"EMAIL dispatch failed: {e}")
@@ -703,6 +678,7 @@ class NotificationService:
         """
         import os
         import json
+
         webhook_urls = os.environ.get("WEBHOOK_URLS", "")
 
         if webhook_urls:
@@ -710,16 +686,24 @@ class NotificationService:
                 import urllib.request
                 import urllib.error
 
-                payload = json.dumps({
-                    "event": "notification",
-                    "recipient": notification.recipient_id,
-                    "subject": notification.subject,
-                    "body": notification.body,
-                    "priority": notification.priority.value if notification.priority else "medium",
-                    "channels": [c.value for c in notification.channels] if notification.channels else [],
-                    "metadata": notification.metadata or {},
-                    "timestamp": notification.created_at.isoformat() if notification.created_at else None,
-                }).encode("utf-8")
+                payload = json.dumps(
+                    {
+                        "event": "notification",
+                        "recipient": notification.recipient_id,
+                        "subject": notification.subject,
+                        "body": notification.body,
+                        "priority": notification.priority.value
+                        if notification.priority
+                        else "medium",
+                        "channels": [c.value for c in notification.channels]
+                        if notification.channels
+                        else [],
+                        "metadata": notification.metadata or {},
+                        "timestamp": notification.created_at.isoformat()
+                        if notification.created_at
+                        else None,
+                    }
+                ).encode("utf-8")
 
                 success = False
                 for url in webhook_urls.split(","):
@@ -771,6 +755,7 @@ class NotificationService:
         """
         import os
         import json
+
         webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
         bot_token = os.environ.get("SLACK_BOT_TOKEN")
 
@@ -815,10 +800,12 @@ class NotificationService:
                     with urllib.request.urlopen(req, timeout=10) as resp:
                         resp.read()
                 elif bot_token:
-                    payload = json.dumps({
-                        "channel": notification.recipient_id,
-                        "blocks": blocks,
-                    }).encode("utf-8")
+                    payload = json.dumps(
+                        {
+                            "channel": notification.recipient_id,
+                            "blocks": blocks,
+                        }
+                    ).encode("utf-8")
                     req = urllib.request.Request(
                         "https://slack.com/api/chat.postMessage",
                         data=payload,
@@ -831,9 +818,7 @@ class NotificationService:
                     with urllib.request.urlopen(req, timeout=10) as resp:
                         resp.read()
 
-                logger.info(
-                    f"SLACK sent to {notification.recipient_id}: {notification.subject}"
-                )
+                logger.info(f"SLACK sent to {notification.recipient_id}: {notification.subject}")
                 return True
             except Exception as e:
                 logger.error(f"SLACK dispatch failed: {e}")

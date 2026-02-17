@@ -397,9 +397,7 @@ class TestCleanupOldBackups:
 
     def test_cleanup_old_backups_removes_old(self, tmp_path):
         """Test cleanup_old_backups removes old backups."""
-        config = BackupConfig(
-            backup_dir=str(tmp_path), retention_days=0  # Everything is old
-        )
+        config = BackupConfig(backup_dir=str(tmp_path), retention_days=0)  # Everything is old
         service = BackupRestoreService(config)
         service.create_backup()
         service.create_backup()
@@ -408,9 +406,7 @@ class TestCleanupOldBackups:
 
     def test_cleanup_old_backups_keeps_recent(self, tmp_path):
         """Test cleanup_old_backups keeps recent backups."""
-        config = BackupConfig(
-            backup_dir=str(tmp_path), retention_days=30
-        )
+        config = BackupConfig(backup_dir=str(tmp_path), retention_days=30)
         service = BackupRestoreService(config)
         backup = service.create_backup()
         count = service.cleanup_old_backups()
@@ -420,9 +416,7 @@ class TestCleanupOldBackups:
 
     def test_cleanup_old_backups_returns_count(self, tmp_path):
         """Test cleanup_old_backups returns count."""
-        config = BackupConfig(
-            backup_dir=str(tmp_path), retention_days=0
-        )
+        config = BackupConfig(backup_dir=str(tmp_path), retention_days=0)
         service = BackupRestoreService(config)
         service.create_backup()
         count = service.cleanup_old_backups()

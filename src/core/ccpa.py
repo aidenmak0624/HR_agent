@@ -20,8 +20,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class CCPADataCategory(str, Enum):
     """CCPA classification of personal information categories."""
+
     PERSONAL_INFO = "personal_info"
     FINANCIAL = "financial"
     BIOMETRIC = "biometric"
@@ -34,6 +36,7 @@ class CCPADataCategory(str, Enum):
 
 class ConsumerRight(str, Enum):
     """Consumer rights under CCPA."""
+
     RIGHT_TO_KNOW = "right_to_know"
     RIGHT_TO_DELETE = "right_to_delete"
     RIGHT_TO_OPT_OUT = "right_to_opt_out"
@@ -44,6 +47,7 @@ class ConsumerRight(str, Enum):
 
 class CCPARequestStatus(str, Enum):
     """Status of a CCPA consumer request."""
+
     PENDING = "pending"
     VERIFICATION_REQUIRED = "verification_required"
     PROCESSING = "processing"
@@ -55,27 +59,26 @@ class CCPARequestStatus(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class CCPARequest(BaseModel):
     """CCPA consumer rights request."""
+
     request_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique request ID")
     consumer_id: str = Field(..., description="Consumer ID")
     right_type: ConsumerRight = Field(..., description="Type of consumer right")
     data_categories: List[CCPADataCategory] = Field(
-        default_factory=list,
-        description="Specific data categories requested"
+        default_factory=list, description="Specific data categories requested"
     )
     status: CCPARequestStatus = Field(
-        default=CCPARequestStatus.PENDING,
-        description="Request status"
+        default=CCPARequestStatus.PENDING, description="Request status"
     )
     submitted_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        description="Submission timestamp"
+        default_factory=datetime.utcnow, description="Submission timestamp"
     )
     completed_at: Optional[datetime] = Field(None, description="Completion timestamp")
     response_deadline: datetime = Field(
         default_factory=lambda: datetime.utcnow() + timedelta(days=45),
-        description="Legal response deadline (45 days)"
+        description="Legal response deadline (45 days)",
     )
     extended: bool = Field(default=False, description="Whether deadline was extended")
     extension_reason: Optional[str] = Field(None, description="Reason for extension")
@@ -85,48 +88,36 @@ class CCPARequest(BaseModel):
 
 class DataInventoryItem(BaseModel):
     """Inventory of personal information collected."""
+
     item_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique item ID")
     category: CCPADataCategory = Field(..., description="Data category")
     source: str = Field(..., description="Source of data collection")
     purpose: str = Field(..., description="Business purpose for collection")
     shared_with_third_parties: bool = Field(
-        default=False,
-        description="Whether shared with third parties"
+        default=False, description="Whether shared with third parties"
     )
-    sale_opt_out: bool = Field(
-        default=False,
-        description="Whether consumer opted out of sale"
-    )
+    sale_opt_out: bool = Field(default=False, description="Whether consumer opted out of sale")
 
     model_config = ConfigDict(use_enum_values=False)
 
 
 class CCPAConfig(BaseModel):
     """CCPA compliance configuration."""
+
     enabled: bool = Field(default=True, description="Whether CCPA compliance is enabled")
     verification_required: bool = Field(
-        default=True,
-        description="Whether consumer verification required"
+        default=True, description="Whether consumer verification required"
     )
-    response_deadline_days: int = Field(
-        default=45,
-        description="Days to respond to requests"
-    )
-    extension_allowed_days: int = Field(
-        default=45,
-        description="Days allowed for extension"
-    )
+    response_deadline_days: int = Field(default=45, description="Days to respond to requests")
+    extension_allowed_days: int = Field(default=45, description="Days allowed for extension")
     min_age_for_consent: int = Field(
-        default=16,
-        description="Minimum age for independent consent (13+ for minors)"
+        default=16, description="Minimum age for independent consent (13+ for minors)"
     )
     data_broker_registration: bool = Field(
-        default=True,
-        description="Whether data broker registration is required"
+        default=True, description="Whether data broker registration is required"
     )
     annual_report_enabled: bool = Field(
-        default=True,
-        description="Whether annual report generation is enabled"
+        default=True, description="Whether annual report generation is enabled"
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -135,6 +126,7 @@ class CCPAConfig(BaseModel):
 # ============================================================================
 # CCPA Compliance Service
 # ============================================================================
+
 
 class CCPAComplianceService:
     """
@@ -170,7 +162,7 @@ class CCPAComplianceService:
         action: str,
         consumer_id: str,
         details: Optional[Dict[str, Any]] = None,
-        legal_basis: Optional[str] = None
+        legal_basis: Optional[str] = None,
     ) -> None:
         """
         Log an action to audit trail for compliance tracking.
@@ -191,10 +183,7 @@ class CCPAComplianceService:
             }
             self._audit_trail.append(entry)
             logger.info(
-                "CCPA audit: %s for consumer %s (basis: %s)",
-                action,
-                consumer_id,
-                legal_basis
+                "CCPA audit: %s for consumer %s (basis: %s)", action, consumer_id, legal_basis
             )
         except Exception as e:
             logger.error("Failed to log audit trail: %s", str(e))
@@ -203,7 +192,7 @@ class CCPAComplianceService:
         self,
         consumer_id: str,
         right_type: ConsumerRight,
-        data_categories: Optional[List[CCPADataCategory]] = None
+        data_categories: Optional[List[CCPADataCategory]] = None,
     ) -> CCPARequest:
         """
         Submit a CCPA consumer request.
@@ -227,9 +216,8 @@ class CCPAComplianceService:
                 consumer_id=consumer_id,
                 right_type=right_type,
                 data_categories=data_categories or [],
-                response_deadline=datetime.utcnow() + timedelta(
-                    days=self.config.response_deadline_days
-                )
+                response_deadline=datetime.utcnow()
+                + timedelta(days=self.config.response_deadline_days),
             )
 
             self._requests[request.request_id] = request
@@ -240,16 +228,16 @@ class CCPAComplianceService:
                 details={
                     "request_id": request.request_id,
                     "right_type": right_type.value,
-                    "deadline": request.response_deadline.isoformat()
+                    "deadline": request.response_deadline.isoformat(),
                 },
-                legal_basis="CCPA Consumer Right"
+                legal_basis="CCPA Consumer Right",
             )
 
             logger.info(
                 "CCPA request submitted: %s (%s) for consumer %s",
                 request.request_id,
                 right_type.value,
-                consumer_id
+                consumer_id,
             )
             return request
         except Exception as e:
@@ -280,7 +268,7 @@ class CCPAComplianceService:
                 action="ccpa_request_processing",
                 consumer_id=request.consumer_id,
                 details={"request_id": request_id},
-                legal_basis="CCPA Request Processing"
+                legal_basis="CCPA Request Processing",
             )
 
             result = {
@@ -312,7 +300,7 @@ class CCPAComplianceService:
                 action="ccpa_request_completed",
                 consumer_id=request.consumer_id,
                 details={"request_id": request_id},
-                legal_basis="CCPA Request Completion"
+                legal_basis="CCPA Request Completion",
             )
 
             return result
@@ -321,9 +309,7 @@ class CCPAComplianceService:
             raise
 
     def verify_consumer(
-        self,
-        consumer_id: str,
-        verification_data: Optional[Dict[str, str]] = None
+        self, consumer_id: str, verification_data: Optional[Dict[str, str]] = None
     ) -> bool:
         """
         Verify consumer identity for request processing.
@@ -344,7 +330,7 @@ class CCPAComplianceService:
                 self._log_audit_trail(
                     action="consumer_verification_skipped",
                     consumer_id=consumer_id,
-                    legal_basis="Verification Not Required"
+                    legal_basis="Verification Not Required",
                 )
                 return True
 
@@ -356,7 +342,7 @@ class CCPAComplianceService:
                     action="consumer_verified",
                     consumer_id=consumer_id,
                     details={"verification_method": "email"},
-                    legal_basis="Consumer Verification"
+                    legal_basis="Consumer Verification",
                 )
 
                 logger.info("Consumer verified: %s", consumer_id)
@@ -395,14 +381,14 @@ class CCPAComplianceService:
                 "consumer_id": consumer_id,
                 "opt_out_status": "confirmed",
                 "effective_date": datetime.utcnow().isoformat(),
-                "message": "Consumer has opted out of sale of personal information"
+                "message": "Consumer has opted out of sale of personal information",
             }
 
             self._log_audit_trail(
                 action="opt_out_of_sale",
                 consumer_id=consumer_id,
                 details={"status": "confirmed"},
-                legal_basis="CCPA Right to Opt-Out of Sale"
+                legal_basis="CCPA Right to Opt-Out of Sale",
             )
 
             logger.info("Consumer opted out of sale: %s", consumer_id)
@@ -428,7 +414,7 @@ class CCPAComplianceService:
             self._log_audit_trail(
                 action="data_inventory_accessed",
                 consumer_id=consumer_id,
-                legal_basis="Consumer Access Right"
+                legal_basis="Consumer Access Right",
             )
 
             if consumer_id not in self._inventory:
@@ -454,22 +440,22 @@ class CCPAComplianceService:
             DataInventoryItem(
                 category=CCPADataCategory.PERSONAL_INFO,
                 source="HRIS System",
-                purpose="Employment Administration"
+                purpose="Employment Administration",
             ),
             DataInventoryItem(
                 category=CCPADataCategory.FINANCIAL,
                 source="Payroll System",
-                purpose="Compensation Management"
+                purpose="Compensation Management",
             ),
             DataInventoryItem(
                 category=CCPADataCategory.INTERNET_ACTIVITY,
                 source="Network Activity Logs",
-                purpose="Security and Compliance"
+                purpose="Security and Compliance",
             ),
             DataInventoryItem(
                 category=CCPADataCategory.PROFESSIONAL,
                 source="HRIS System",
-                purpose="Performance Management"
+                purpose="Performance Management",
             ),
         ]
 
@@ -582,7 +568,7 @@ class CCPAComplianceService:
                 action="minor_consent_check",
                 consumer_id=consumer_id,
                 details={"age": age, "minor_status": result["minor_status"]},
-                legal_basis="CCPA Minor Consent Requirement"
+                legal_basis="CCPA Minor Consent Requirement",
             )
 
             logger.info("Minor consent check for consumer %s (age %d)", consumer_id, age)
@@ -608,7 +594,7 @@ class CCPAComplianceService:
             self._log_audit_trail(
                 action="disclosure_generated",
                 consumer_id=consumer_id,
-                legal_basis="CCPA Right to Know"
+                legal_basis="CCPA Right to Know",
             )
 
             inventory = self.get_data_inventory(consumer_id)
@@ -705,9 +691,9 @@ class CCPAComplianceService:
                 details={
                     "request_id": request_id,
                     "reason": reason,
-                    "new_deadline": request.response_deadline.isoformat()
+                    "new_deadline": request.response_deadline.isoformat(),
                 },
-                legal_basis="CCPA Extension"
+                legal_basis="CCPA Extension",
             )
 
             logger.info("Deadline extended for request: %s", request_id)
@@ -764,10 +750,7 @@ class CCPAComplianceService:
         """
         try:
             year_ago = datetime.utcnow() - timedelta(days=365)
-            recent_requests = [
-                r for r in self._requests.values()
-                if r.submitted_at >= year_ago
-            ]
+            recent_requests = [r for r in self._requests.values() if r.submitted_at >= year_ago]
 
             # Count by right type
             by_right = {}
@@ -782,15 +765,10 @@ class CCPAComplianceService:
                 by_status[status] = by_status.get(status, 0) + 1
 
             # Calculate response times
-            completed = [
-                r for r in recent_requests
-                if r.completed_at
-            ]
+            completed = [r for r in recent_requests if r.completed_at]
             avg_response_days = 0
             if completed:
-                total_days = sum(
-                    (r.completed_at - r.submitted_at).days for r in completed
-                )
+                total_days = sum((r.completed_at - r.submitted_at).days for r in completed)
                 avg_response_days = total_days / len(completed)
 
             metrics = {
@@ -808,7 +786,7 @@ class CCPAComplianceService:
                 action="annual_metrics_generated",
                 consumer_id="SYSTEM",
                 details=metrics,
-                legal_basis="CCPA Annual Report"
+                legal_basis="CCPA Annual Report",
             )
 
             logger.info("Annual metrics generated")
@@ -838,13 +816,13 @@ class CCPAComplianceService:
                     "Legal compliance records",
                     "Tax records (7 years)",
                     "Contractual records",
-                ]
+                ],
             }
 
             self._log_audit_trail(
                 action="data_deletion_initiated",
                 consumer_id=consumer_id,
-                legal_basis="CCPA Right to Delete"
+                legal_basis="CCPA Right to Delete",
             )
 
             return result

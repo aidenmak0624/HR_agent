@@ -187,13 +187,16 @@ class WorkflowRepository(BaseRepository[WorkflowModel]):
         """
         try:
             from src.repositories.workflow_repository import WorkflowStepRepository
+
             repo = WorkflowStepRepository()
-            return repo.create({
-                "workflow_id": workflow_id,
-                "step_order": step_order,
-                "approver_role": approver_role,
-                "status": "pending",
-            })
+            return repo.create(
+                {
+                    "workflow_id": workflow_id,
+                    "step_order": step_order,
+                    "approver_role": approver_role,
+                    "status": "pending",
+                }
+            )
         except Exception as e:
             logger.error(f"Error adding step to workflow {workflow_id}: {str(e)}")
             return None
@@ -278,6 +281,7 @@ class WorkflowRepository(BaseRepository[WorkflowModel]):
         """
         try:
             from src.repositories.workflow_repository import WorkflowStepRepository
+
             repo = WorkflowStepRepository()
             return repo.update(
                 step_id,
@@ -336,6 +340,4 @@ class WorkflowStepRepository(BaseRepository[WorkflowStepModel]):
         Returns:
             List of pending WorkflowStepModel instances
         """
-        return self.list(
-            {"workflow_id": workflow_id, "status": "pending"}
-        )
+        return self.list({"workflow_id": workflow_id, "status": "pending"})

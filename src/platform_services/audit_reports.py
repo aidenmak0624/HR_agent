@@ -44,9 +44,7 @@ class ReportPeriod(BaseModel):
     generated_at: datetime = Field(
         default_factory=datetime.now, description="Report generation time"
     )
-    generated_by: str = Field(
-        default="system", description="User or system that generated report"
-    )
+    generated_by: str = Field(default="system", description="User or system that generated report")
 
     model_config = ConfigDict(frozen=False)
 
@@ -54,19 +52,13 @@ class ReportPeriod(BaseModel):
 class AuditFinding(BaseModel):
     """Individual audit finding."""
 
-    finding_id: UUID = Field(
-        default_factory=uuid4, description="Unique finding identifier"
-    )
+    finding_id: UUID = Field(default_factory=uuid4, description="Unique finding identifier")
     severity: str = Field(description="Severity level (info/warning/critical)")
     category: str = Field(description="Finding category")
     description: str = Field(description="Finding description")
-    evidence: List[str] = Field(
-        default_factory=list, description="Supporting evidence"
-    )
+    evidence: List[str] = Field(default_factory=list, description="Supporting evidence")
     recommendation: str = Field(description="Recommended remediation")
-    status: str = Field(
-        default="open", description="Status (open/acknowledged/resolved)"
-    )
+    status: str = Field(default="open", description="Status (open/acknowledged/resolved)")
 
     model_config = ConfigDict(frozen=False)
 
@@ -74,21 +66,13 @@ class AuditFinding(BaseModel):
 class AuditReport(BaseModel):
     """Audit report document."""
 
-    report_id: UUID = Field(
-        default_factory=uuid4, description="Unique report identifier"
-    )
+    report_id: UUID = Field(default_factory=uuid4, description="Unique report identifier")
     report_type: ReportType = Field(description="Report type")
     title: str = Field(description="Report title")
     period: ReportPeriod = Field(description="Report period")
-    findings: List[AuditFinding] = Field(
-        default_factory=list, description="Audit findings"
-    )
-    summary: Dict[str, Any] = Field(
-        default_factory=dict, description="Executive summary"
-    )
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
-    )
+    findings: List[AuditFinding] = Field(default_factory=list, description="Audit findings")
+    summary: Dict[str, Any] = Field(default_factory=dict, description="Executive summary")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     format: ReportFormat = Field(default=ReportFormat.JSON, description="Report format")
 
     model_config = ConfigDict(frozen=False)
@@ -97,21 +81,13 @@ class AuditReport(BaseModel):
 class AuditReportConfig(BaseModel):
     """Audit report configuration."""
 
-    auto_generate: bool = Field(
-        default=False, description="Auto-generate reports"
-    )
+    auto_generate: bool = Field(default=False, description="Auto-generate reports")
     schedule_cron: Optional[str] = Field(
         default=None, description="Cron schedule for auto-generation"
     )
-    retention_days: int = Field(
-        default=730, description="Report retention period in days"
-    )
-    include_pii: bool = Field(
-        default=False, description="Include PII in reports"
-    )
-    max_findings_per_report: int = Field(
-        default=1000, description="Maximum findings per report"
-    )
+    retention_days: int = Field(default=730, description="Report retention period in days")
+    include_pii: bool = Field(default=False, description="Include PII in reports")
+    max_findings_per_report: int = Field(default=1000, description="Maximum findings per report")
 
     model_config = ConfigDict(frozen=False)
 
@@ -284,12 +260,8 @@ class AuditReportService:
                 ),
             ]
 
-            critical_count = sum(
-                1 for f in findings if f.severity == "critical"
-            )
-            warning_count = sum(
-                1 for f in findings if f.severity == "warning"
-            )
+            critical_count = sum(1 for f in findings if f.severity == "critical")
+            warning_count = sum(1 for f in findings if f.severity == "warning")
 
             summary = {
                 "total_findings": len(findings),
@@ -838,12 +810,14 @@ class AuditReportService:
                 raise ValueError("Maximum findings per report exceeded")
 
             report.findings.append(finding)
-            self.findings_log.append({
-                "report_id": str(report_id),
-                "finding_id": str(finding.finding_id),
-                "action": "added",
-                "timestamp": datetime.now().isoformat(),
-            })
+            self.findings_log.append(
+                {
+                    "report_id": str(report_id),
+                    "finding_id": str(finding.finding_id),
+                    "action": "added",
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
 
             logger.info(
                 "Finding added to report",
@@ -889,14 +863,16 @@ class AuditReportService:
             for finding in report.findings:
                 if finding.finding_id == finding_id:
                     finding.status = status
-                    self.findings_log.append({
-                        "report_id": str(report_id),
-                        "finding_id": str(finding_id),
-                        "action": "status_updated",
-                        "new_status": status,
-                        "notes": notes,
-                        "timestamp": datetime.now().isoformat(),
-                    })
+                    self.findings_log.append(
+                        {
+                            "report_id": str(report_id),
+                            "finding_id": str(finding_id),
+                            "action": "status_updated",
+                            "new_status": status,
+                            "notes": notes,
+                            "timestamp": datetime.now().isoformat(),
+                        }
+                    )
 
                     logger.info(
                         "Finding status updated",
@@ -945,23 +921,16 @@ class AuditReportService:
 
             total_findings = sum(len(r.findings) for r in recent_reports)
             critical = sum(
-                sum(1 for f in r.findings if f.severity == "critical")
-                for r in recent_reports
+                sum(1 for f in r.findings if f.severity == "critical") for r in recent_reports
             )
             warning = sum(
-                sum(1 for f in r.findings if f.severity == "warning")
-                for r in recent_reports
+                sum(1 for f in r.findings if f.severity == "warning") for r in recent_reports
             )
             resolved = sum(
-                sum(1 for f in r.findings if f.status == "resolved")
-                for r in recent_reports
+                sum(1 for f in r.findings if f.status == "resolved") for r in recent_reports
             )
 
-            compliance_score = (
-                100 - (critical * 5 + warning * 2)
-                if total_findings > 0
-                else 100
-            )
+            compliance_score = 100 - (critical * 5 + warning * 2) if total_findings > 0 else 100
 
             return {
                 "period_days": period_days,

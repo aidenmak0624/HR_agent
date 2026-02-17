@@ -17,6 +17,7 @@ from src.core.multi_jurisdiction import (
 # Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def multi_jurisdiction_engine():
     """Create a fresh MultiJurisdictionEngine for each test."""
@@ -31,9 +32,9 @@ def multi_jurisdiction_engine_custom():
         active_jurisdictions=[
             Jurisdiction.US_FEDERAL,
             Jurisdiction.EU_GDPR,
-            Jurisdiction.US_CALIFORNIA
+            Jurisdiction.US_CALIFORNIA,
         ],
-        conflict_resolution="most_restrictive"
+        conflict_resolution="most_restrictive",
     )
     return MultiJurisdictionEngine(config=config)
 
@@ -46,7 +47,7 @@ def sample_requirement():
         category="consumer_rights",
         description="Respond to consumer requests within 45 days",
         mandatory=True,
-        deadline_days=45
+        deadline_days=45,
     )
 
 
@@ -58,13 +59,14 @@ def sample_check_result():
         requirement="consent",
         status=ComplianceStatus.COMPLIANT,
         findings=["Explicit consent recorded"],
-        recommendations=["Continue monitoring consent status"]
+        recommendations=["Continue monitoring consent status"],
     )
 
 
 # ============================================================================
 # Test Enums
 # ============================================================================
+
 
 class TestJurisdiction:
     """Tests for Jurisdiction enum."""
@@ -110,6 +112,7 @@ class TestComplianceStatus:
 # Test Models
 # ============================================================================
 
+
 class TestComplianceRequirement:
     """Tests for ComplianceRequirement model."""
 
@@ -118,7 +121,7 @@ class TestComplianceRequirement:
         req = ComplianceRequirement(
             jurisdiction=Jurisdiction.EU_GDPR,
             category="consent",
-            description="Explicit consent required"
+            description="Explicit consent required",
         )
 
         assert req.jurisdiction == Jurisdiction.EU_GDPR
@@ -135,7 +138,7 @@ class TestComplianceRequirement:
             description="Respond to consumer requests",
             mandatory=True,
             deadline_days=45,
-            penalties=["$2,500 per violation"]
+            penalties=["$2,500 per violation"],
         )
 
         assert req.deadline_days == 45
@@ -144,14 +147,12 @@ class TestComplianceRequirement:
     def test_compliance_requirement_uuid(self):
         """ComplianceRequirement generates unique IDs."""
         req1 = ComplianceRequirement(
-            jurisdiction=Jurisdiction.EU_GDPR,
-            category="consent",
-            description="Requirement 1"
+            jurisdiction=Jurisdiction.EU_GDPR, category="consent", description="Requirement 1"
         )
         req2 = ComplianceRequirement(
             jurisdiction=Jurisdiction.US_CALIFORNIA,
             category="disclosure",
-            description="Requirement 2"
+            description="Requirement 2",
         )
 
         assert req1.requirement_id != req2.requirement_id
@@ -162,13 +163,13 @@ class TestComplianceRequirement:
             jurisdiction=Jurisdiction.EU_GDPR,
             category="consent",
             description="Mandatory consent",
-            mandatory=True
+            mandatory=True,
         )
         optional_req = ComplianceRequirement(
             jurisdiction=Jurisdiction.EU_GDPR,
             category="extra",
             description="Optional requirement",
-            mandatory=False
+            mandatory=False,
         )
 
         assert mandatory_req.mandatory is True
@@ -196,7 +197,7 @@ class TestJurisdictionConfig:
             data_residency_required=True,
             breach_notification_hours=24,
             consent_type="opt-in",
-            dpo_required=True
+            dpo_required=True,
         )
 
         assert config.data_residency_required is True
@@ -206,13 +207,9 @@ class TestJurisdictionConfig:
 
     def test_jurisdiction_config_consent_type(self):
         """JurisdictionConfig tracks consent type."""
-        config_optin = JurisdictionConfig(
-            jurisdiction=Jurisdiction.EU_GDPR,
-            consent_type="opt-in"
-        )
+        config_optin = JurisdictionConfig(jurisdiction=Jurisdiction.EU_GDPR, consent_type="opt-in")
         config_optout = JurisdictionConfig(
-            jurisdiction=Jurisdiction.US_FEDERAL,
-            consent_type="opt-out"
+            jurisdiction=Jurisdiction.US_FEDERAL, consent_type="opt-out"
         )
 
         assert config_optin.consent_type == "opt-in"
@@ -220,10 +217,7 @@ class TestJurisdictionConfig:
 
     def test_jurisdiction_config_breach_notification_hours(self):
         """JurisdictionConfig stores breach notification hours."""
-        config = JurisdictionConfig(
-            jurisdiction=Jurisdiction.EU_GDPR,
-            breach_notification_hours=72
-        )
+        config = JurisdictionConfig(jurisdiction=Jurisdiction.EU_GDPR, breach_notification_hours=72)
         assert config.breach_notification_hours == 72
 
 
@@ -235,7 +229,7 @@ class TestComplianceCheckResult:
         result = ComplianceCheckResult(
             jurisdiction=Jurisdiction.EU_GDPR,
             requirement="consent",
-            status=ComplianceStatus.COMPLIANT
+            status=ComplianceStatus.COMPLIANT,
         )
 
         assert result.jurisdiction == Jurisdiction.EU_GDPR
@@ -251,7 +245,7 @@ class TestComplianceCheckResult:
             requirement="consumer_rights",
             status=ComplianceStatus.NON_COMPLIANT,
             findings=["Missing consent records", "No data retention policy"],
-            recommendations=["Implement consent tracking", "Create retention policy"]
+            recommendations=["Implement consent tracking", "Create retention policy"],
         )
 
         assert len(result.findings) == 2
@@ -264,7 +258,7 @@ class TestComplianceCheckResult:
             jurisdiction=Jurisdiction.EU_GDPR,
             requirement="consent",
             status=ComplianceStatus.PARTIAL,
-            findings=findings
+            findings=findings,
         )
 
         assert result.findings == findings
@@ -276,7 +270,7 @@ class TestComplianceCheckResult:
             jurisdiction=Jurisdiction.EU_GDPR,
             requirement="consent",
             status=ComplianceStatus.PARTIAL,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
         assert result.recommendations == recommendations
@@ -303,7 +297,7 @@ class TestMultiJurisdictionConfig:
             enabled=False,
             active_jurisdictions=active,
             default_jurisdiction=Jurisdiction.EU_GDPR,
-            conflict_resolution="jurisdiction_specific"
+            conflict_resolution="jurisdiction_specific",
         )
 
         assert config.enabled is False
@@ -328,15 +322,13 @@ class TestMultiJurisdictionConfig:
 # Test Engine Initialization
 # ============================================================================
 
+
 class TestMultiJurisdictionEngineInit:
     """Tests for MultiJurisdictionEngine initialization."""
 
     def test_creates_engine_with_config(self):
         """MultiJurisdictionEngine creates with provided config."""
-        config = MultiJurisdictionConfig(
-            enabled=True,
-            active_jurisdictions=[Jurisdiction.EU_GDPR]
-        )
+        config = MultiJurisdictionConfig(enabled=True, active_jurisdictions=[Jurisdiction.EU_GDPR])
         engine = MultiJurisdictionEngine(config=config)
 
         assert engine.config == config
@@ -361,16 +353,13 @@ class TestMultiJurisdictionEngineInit:
 # Test Determine Jurisdictions
 # ============================================================================
 
+
 class TestDetermineJurisdictions:
     """Tests for determine_jurisdictions method."""
 
     def test_determine_jurisdictions_us_california(self, multi_jurisdiction_engine):
         """determine_jurisdictions identifies California employee."""
-        employee_data = {
-            "id": "emp_001",
-            "country": "US",
-            "state": "CA"
-        }
+        employee_data = {"id": "emp_001", "country": "US", "state": "CA"}
 
         jurisdictions = multi_jurisdiction_engine.determine_jurisdictions(employee_data)
 
@@ -379,10 +368,7 @@ class TestDetermineJurisdictions:
 
     def test_determine_jurisdictions_eu_employee(self, multi_jurisdiction_engine):
         """determine_jurisdictions identifies EU employee."""
-        employee_data = {
-            "id": "emp_002",
-            "country": "DE"
-        }
+        employee_data = {"id": "emp_002", "country": "DE"}
 
         jurisdictions = multi_jurisdiction_engine.determine_jurisdictions(employee_data)
 
@@ -390,11 +376,7 @@ class TestDetermineJurisdictions:
 
     def test_determine_jurisdictions_multi_jurisdiction(self, multi_jurisdiction_engine):
         """determine_jurisdictions handles multi-jurisdiction case."""
-        employee_data = {
-            "id": "emp_003",
-            "country": "US",
-            "state": "NY"
-        }
+        employee_data = {"id": "emp_003", "country": "US", "state": "NY"}
 
         jurisdictions = multi_jurisdiction_engine.determine_jurisdictions(employee_data)
 
@@ -404,10 +386,7 @@ class TestDetermineJurisdictions:
 
     def test_determine_jurisdictions_unknown_country(self, multi_jurisdiction_engine):
         """determine_jurisdictions uses default for unknown country."""
-        employee_data = {
-            "id": "emp_004",
-            "country": "XX"
-        }
+        employee_data = {"id": "emp_004", "country": "XX"}
 
         jurisdictions = multi_jurisdiction_engine.determine_jurisdictions(employee_data)
 
@@ -415,11 +394,7 @@ class TestDetermineJurisdictions:
 
     def test_determine_jurisdictions_us_new_york(self, multi_jurisdiction_engine):
         """determine_jurisdictions identifies New York employee."""
-        employee_data = {
-            "id": "emp_005",
-            "country": "US",
-            "state": "NY"
-        }
+        employee_data = {"id": "emp_005", "country": "US", "state": "NY"}
 
         jurisdictions = multi_jurisdiction_engine.determine_jurisdictions(employee_data)
 
@@ -430,15 +405,13 @@ class TestDetermineJurisdictions:
 # Test Check Compliance
 # ============================================================================
 
+
 class TestCheckCompliance:
     """Tests for check_compliance method."""
 
     def test_check_compliance_all_compliant(self, multi_jurisdiction_engine):
         """check_compliance returns all compliant results."""
-        data = {
-            "consent_records": {"opt_in": True},
-            "consent_granted": True
-        }
+        data = {"consent_records": {"opt_in": True}, "consent_granted": True}
 
         results = multi_jurisdiction_engine.check_compliance(data)
 
@@ -455,9 +428,7 @@ class TestCheckCompliance:
 
     def test_check_compliance_partial_compliance(self, multi_jurisdiction_engine):
         """check_compliance handles partial compliance."""
-        data = {
-            "dsar_response_time_days": 15
-        }
+        data = {"dsar_response_time_days": 15}
 
         results = multi_jurisdiction_engine.check_compliance(data)
 
@@ -468,10 +439,7 @@ class TestCheckCompliance:
         data = {}
         jurisdictions = [Jurisdiction.EU_GDPR]
 
-        results = multi_jurisdiction_engine.check_compliance(
-            data,
-            jurisdictions=jurisdictions
-        )
+        results = multi_jurisdiction_engine.check_compliance(data, jurisdictions=jurisdictions)
 
         assert len(results) > 0
 
@@ -479,6 +447,7 @@ class TestCheckCompliance:
 # ============================================================================
 # Test Get Requirements
 # ============================================================================
+
 
 class TestGetRequirements:
     """Tests for get_requirements method."""
@@ -508,6 +477,7 @@ class TestGetRequirements:
 # Test Resolve Conflicts
 # ============================================================================
 
+
 class TestResolveConflicts:
     """Tests for resolve_conflicts method."""
 
@@ -517,13 +487,13 @@ class TestResolveConflicts:
             ComplianceCheckResult(
                 jurisdiction=Jurisdiction.US_FEDERAL,
                 requirement="consent",
-                status=ComplianceStatus.COMPLIANT
+                status=ComplianceStatus.COMPLIANT,
             ),
             ComplianceCheckResult(
                 jurisdiction=Jurisdiction.EU_GDPR,
                 requirement="consent",
-                status=ComplianceStatus.NON_COMPLIANT
-            )
+                status=ComplianceStatus.NON_COMPLIANT,
+            ),
         ]
 
         resolved = multi_jurisdiction_engine.resolve_conflicts(results)
@@ -536,13 +506,13 @@ class TestResolveConflicts:
             ComplianceCheckResult(
                 jurisdiction=Jurisdiction.EU_GDPR,
                 requirement="consent",
-                status=ComplianceStatus.COMPLIANT
+                status=ComplianceStatus.COMPLIANT,
             ),
             ComplianceCheckResult(
                 jurisdiction=Jurisdiction.US_CALIFORNIA,
                 requirement="disclosure",
-                status=ComplianceStatus.COMPLIANT
-            )
+                status=ComplianceStatus.COMPLIANT,
+            ),
         ]
 
         resolved = multi_jurisdiction_engine.resolve_conflicts(results)
@@ -558,6 +528,7 @@ class TestResolveConflicts:
 # ============================================================================
 # Test Breach Notification Deadline
 # ============================================================================
+
 
 class TestGetBreachNotificationDeadline:
     """Tests for get_breach_notification_deadline method."""
@@ -587,6 +558,7 @@ class TestGetBreachNotificationDeadline:
 # Test Cross-Border Transfer
 # ============================================================================
 
+
 class TestCheckCrossBorderTransfer:
     """Tests for check_cross_border_transfer method."""
 
@@ -594,7 +566,7 @@ class TestCheckCrossBorderTransfer:
         """check_cross_border_transfer allows unrestricted transfers."""
         result = multi_jurisdiction_engine.check_cross_border_transfer(
             source_jurisdiction=Jurisdiction.US_FEDERAL,
-            target_jurisdiction=Jurisdiction.US_CALIFORNIA
+            target_jurisdiction=Jurisdiction.US_CALIFORNIA,
         )
 
         assert "transfer_allowed" in result
@@ -602,8 +574,7 @@ class TestCheckCrossBorderTransfer:
     def test_check_cross_border_transfer_restricted(self, multi_jurisdiction_engine):
         """check_cross_border_transfer restricts EU transfers."""
         result = multi_jurisdiction_engine.check_cross_border_transfer(
-            source_jurisdiction=Jurisdiction.EU_GDPR,
-            target_jurisdiction=Jurisdiction.US_FEDERAL
+            source_jurisdiction=Jurisdiction.EU_GDPR, target_jurisdiction=Jurisdiction.US_FEDERAL
         )
 
         assert "transfer_allowed" in result
@@ -612,8 +583,7 @@ class TestCheckCrossBorderTransfer:
     def test_check_cross_border_transfer_same_jurisdiction(self, multi_jurisdiction_engine):
         """check_cross_border_transfer allows same jurisdiction transfers."""
         result = multi_jurisdiction_engine.check_cross_border_transfer(
-            source_jurisdiction=Jurisdiction.EU_GDPR,
-            target_jurisdiction=Jurisdiction.EU_GDPR
+            source_jurisdiction=Jurisdiction.EU_GDPR, target_jurisdiction=Jurisdiction.EU_GDPR
         )
 
         assert "transfer_allowed" in result
@@ -622,6 +592,7 @@ class TestCheckCrossBorderTransfer:
 # ============================================================================
 # Test Consent Requirements
 # ============================================================================
+
 
 class TestGetConsentRequirements:
     """Tests for get_consent_requirements method."""
@@ -657,6 +628,7 @@ class TestGetConsentRequirements:
 # Test Generate Compliance Report
 # ============================================================================
 
+
 class TestGenerateComplianceReport:
     """Tests for generate_compliance_report method."""
 
@@ -686,40 +658,38 @@ class TestGenerateComplianceReport:
 # Test Add Custom Requirement
 # ============================================================================
 
+
 class TestAddCustomRequirement:
     """Tests for add_custom_requirement method."""
 
     def test_add_custom_requirement_successful(self, multi_jurisdiction_engine, sample_requirement):
         """add_custom_requirement adds requirement successfully."""
         result = multi_jurisdiction_engine.add_custom_requirement(
-            Jurisdiction.US_CALIFORNIA,
-            sample_requirement
+            Jurisdiction.US_CALIFORNIA, sample_requirement
         )
 
         assert result == sample_requirement
 
-    def test_add_custom_requirement_returns_requirement(self, multi_jurisdiction_engine, sample_requirement):
+    def test_add_custom_requirement_returns_requirement(
+        self, multi_jurisdiction_engine, sample_requirement
+    ):
         """add_custom_requirement returns the added requirement."""
         added = multi_jurisdiction_engine.add_custom_requirement(
-            Jurisdiction.EU_GDPR,
-            sample_requirement
+            Jurisdiction.EU_GDPR, sample_requirement
         )
 
         assert isinstance(added, ComplianceRequirement)
 
-    def test_add_custom_requirement_increments_count(self, multi_jurisdiction_engine, sample_requirement):
+    def test_add_custom_requirement_increments_count(
+        self, multi_jurisdiction_engine, sample_requirement
+    ):
         """add_custom_requirement increments requirement count."""
-        initial_count = len(
-            multi_jurisdiction_engine.get_requirements(Jurisdiction.US_CALIFORNIA)
-        )
+        initial_count = len(multi_jurisdiction_engine.get_requirements(Jurisdiction.US_CALIFORNIA))
 
         multi_jurisdiction_engine.add_custom_requirement(
-            Jurisdiction.US_CALIFORNIA,
-            sample_requirement
+            Jurisdiction.US_CALIFORNIA, sample_requirement
         )
 
-        final_count = len(
-            multi_jurisdiction_engine.get_requirements(Jurisdiction.US_CALIFORNIA)
-        )
+        final_count = len(multi_jurisdiction_engine.get_requirements(Jurisdiction.US_CALIFORNIA))
 
         assert final_count > initial_count

@@ -30,96 +30,691 @@ logger = logging.getLogger(__name__)
 
 ORG_CHART = [
     # ────────────── EXECUTIVE ──────────────
-    ("EXEC-001", "Michael",  "Chang",      "michael.chang@company.com",      "Executive",         "hr_admin",  None,        "2018-01-10"),
-    ("EXEC-002", "Lisa",     "Park",       "lisa.park@company.com",          "Executive",         "hr_admin",  "EXEC-001",  "2018-06-15"),
-
+    (
+        "EXEC-001",
+        "Michael",
+        "Chang",
+        "michael.chang@company.com",
+        "Executive",
+        "hr_admin",
+        None,
+        "2018-01-10",
+    ),
+    (
+        "EXEC-002",
+        "Lisa",
+        "Park",
+        "lisa.park@company.com",
+        "Executive",
+        "hr_admin",
+        "EXEC-001",
+        "2018-06-15",
+    ),
     # ────────────── ENGINEERING (18) ──────────────
-    ("ENG-001",  "Sarah",    "Chen",       "sarah.chen@company.com",         "Engineering",       "manager",   "EXEC-001",  "2019-03-01"),  # VP Engineering
-    ("ENG-002",  "David",    "Kim",        "david.kim@company.com",          "Engineering",       "manager",   "ENG-001",   "2020-01-15"),  # EM - Backend
-    ("ENG-003",  "Maria",    "Santos",     "maria.santos@company.com",       "Engineering",       "manager",   "ENG-001",   "2020-04-01"),  # EM - Frontend
-    ("ENG-004",  "James",    "Wilson",     "james.wilson@company.com",       "Engineering",       "employee",  "ENG-002",   "2020-06-15"),  # Senior BE
-    ("ENG-005",  "Priya",    "Sharma",     "priya.sharma@company.com",       "Engineering",       "employee",  "ENG-002",   "2021-01-10"),  # BE
-    ("ENG-006",  "Alex",     "Nguyen",     "alex.nguyen@company.com",        "Engineering",       "employee",  "ENG-002",   "2021-08-01"),  # BE
-    ("ENG-007",  "Chris",    "Taylor",     "chris.taylor@company.com",       "Engineering",       "employee",  "ENG-002",   "2022-03-15"),  # BE
-    ("ENG-008",  "Fatima",   "Al-Hassan",  "fatima.alhassan@company.com",    "Engineering",       "employee",  "ENG-002",   "2023-06-01"),  # Junior BE
-    ("ENG-009",  "Ryan",     "O'Brien",    "ryan.obrien@company.com",        "Engineering",       "employee",  "ENG-003",   "2020-09-01"),  # Senior FE
-    ("ENG-010",  "Yuki",     "Tanaka",     "yuki.tanaka@company.com",        "Engineering",       "employee",  "ENG-003",   "2021-05-15"),  # FE
-    ("ENG-011",  "Sophie",   "Mueller",    "sophie.mueller@company.com",     "Engineering",       "employee",  "ENG-003",   "2022-01-10"),  # FE
-    ("ENG-012",  "Omar",     "Hassan",     "omar.hassan@company.com",        "Engineering",       "employee",  "ENG-003",   "2023-09-01"),  # Junior FE
-    ("ENG-013",  "Kevin",    "Zhang",      "kevin.zhang@company.com",        "Engineering",       "employee",  "ENG-001",   "2020-07-15"),  # DevOps Lead
-    ("ENG-014",  "Nina",     "Petrova",    "nina.petrova@company.com",       "Engineering",       "employee",  "ENG-013",   "2022-02-01"),  # DevOps
-    ("ENG-015",  "Tom",      "Anderson",   "tom.anderson@company.com",       "Engineering",       "employee",  "ENG-001",   "2021-03-01"),  # QA Lead
-    ("ENG-016",  "Aisha",    "Mohammed",   "aisha.mohammed@company.com",     "Engineering",       "employee",  "ENG-015",   "2022-06-15"),  # QA
-    ("ENG-017",  "Jake",     "Rivera",     "jake.rivera@company.com",        "Engineering",       "employee",  "ENG-015",   "2023-01-10"),  # QA
-    ("ENG-018",  "Mei",      "Lin",        "mei.lin@company.com",            "Engineering",       "employee",  "ENG-002",   "2024-06-01"),  # Intern
-
+    (
+        "ENG-001",
+        "Sarah",
+        "Chen",
+        "sarah.chen@company.com",
+        "Engineering",
+        "manager",
+        "EXEC-001",
+        "2019-03-01",
+    ),  # VP Engineering
+    (
+        "ENG-002",
+        "David",
+        "Kim",
+        "david.kim@company.com",
+        "Engineering",
+        "manager",
+        "ENG-001",
+        "2020-01-15",
+    ),  # EM - Backend
+    (
+        "ENG-003",
+        "Maria",
+        "Santos",
+        "maria.santos@company.com",
+        "Engineering",
+        "manager",
+        "ENG-001",
+        "2020-04-01",
+    ),  # EM - Frontend
+    (
+        "ENG-004",
+        "James",
+        "Wilson",
+        "james.wilson@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2020-06-15",
+    ),  # Senior BE
+    (
+        "ENG-005",
+        "Priya",
+        "Sharma",
+        "priya.sharma@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2021-01-10",
+    ),  # BE
+    (
+        "ENG-006",
+        "Alex",
+        "Nguyen",
+        "alex.nguyen@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2021-08-01",
+    ),  # BE
+    (
+        "ENG-007",
+        "Chris",
+        "Taylor",
+        "chris.taylor@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2022-03-15",
+    ),  # BE
+    (
+        "ENG-008",
+        "Fatima",
+        "Al-Hassan",
+        "fatima.alhassan@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2023-06-01",
+    ),  # Junior BE
+    (
+        "ENG-009",
+        "Ryan",
+        "O'Brien",
+        "ryan.obrien@company.com",
+        "Engineering",
+        "employee",
+        "ENG-003",
+        "2020-09-01",
+    ),  # Senior FE
+    (
+        "ENG-010",
+        "Yuki",
+        "Tanaka",
+        "yuki.tanaka@company.com",
+        "Engineering",
+        "employee",
+        "ENG-003",
+        "2021-05-15",
+    ),  # FE
+    (
+        "ENG-011",
+        "Sophie",
+        "Mueller",
+        "sophie.mueller@company.com",
+        "Engineering",
+        "employee",
+        "ENG-003",
+        "2022-01-10",
+    ),  # FE
+    (
+        "ENG-012",
+        "Omar",
+        "Hassan",
+        "omar.hassan@company.com",
+        "Engineering",
+        "employee",
+        "ENG-003",
+        "2023-09-01",
+    ),  # Junior FE
+    (
+        "ENG-013",
+        "Kevin",
+        "Zhang",
+        "kevin.zhang@company.com",
+        "Engineering",
+        "employee",
+        "ENG-001",
+        "2020-07-15",
+    ),  # DevOps Lead
+    (
+        "ENG-014",
+        "Nina",
+        "Petrova",
+        "nina.petrova@company.com",
+        "Engineering",
+        "employee",
+        "ENG-013",
+        "2022-02-01",
+    ),  # DevOps
+    (
+        "ENG-015",
+        "Tom",
+        "Anderson",
+        "tom.anderson@company.com",
+        "Engineering",
+        "employee",
+        "ENG-001",
+        "2021-03-01",
+    ),  # QA Lead
+    (
+        "ENG-016",
+        "Aisha",
+        "Mohammed",
+        "aisha.mohammed@company.com",
+        "Engineering",
+        "employee",
+        "ENG-015",
+        "2022-06-15",
+    ),  # QA
+    (
+        "ENG-017",
+        "Jake",
+        "Rivera",
+        "jake.rivera@company.com",
+        "Engineering",
+        "employee",
+        "ENG-015",
+        "2023-01-10",
+    ),  # QA
+    (
+        "ENG-018",
+        "Mei",
+        "Lin",
+        "mei.lin@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2024-06-01",
+    ),  # Intern
     # ────────────── PRODUCT (3) ──────────────
-    ("PRD-001",  "Rachel",   "Green",      "rachel.green@company.com",       "Product",           "manager",   "EXEC-001",  "2019-08-01"),  # VP Product
-    ("PRD-002",  "Daniel",   "Foster",     "daniel.foster@company.com",      "Product",           "employee",  "PRD-001",   "2021-02-15"),  # Senior PM
-    ("PRD-003",  "Lauren",   "Mitchell",   "lauren.mitchell@company.com",    "Product",           "employee",  "PRD-001",   "2022-07-01"),  # PM
-
+    (
+        "PRD-001",
+        "Rachel",
+        "Green",
+        "rachel.green@company.com",
+        "Product",
+        "manager",
+        "EXEC-001",
+        "2019-08-01",
+    ),  # VP Product
+    (
+        "PRD-002",
+        "Daniel",
+        "Foster",
+        "daniel.foster@company.com",
+        "Product",
+        "employee",
+        "PRD-001",
+        "2021-02-15",
+    ),  # Senior PM
+    (
+        "PRD-003",
+        "Lauren",
+        "Mitchell",
+        "lauren.mitchell@company.com",
+        "Product",
+        "employee",
+        "PRD-001",
+        "2022-07-01",
+    ),  # PM
     # ────────────── SALES (11) ──────────────
-    ("SLS-001",  "Robert",   "Thompson",   "robert.thompson@company.com",    "Sales",             "manager",   "EXEC-001",  "2019-05-01"),  # VP Sales
-    ("SLS-002",  "Jessica",  "Martinez",   "jessica.martinez@company.com",   "Sales",             "manager",   "SLS-001",   "2020-08-15"),  # Sales Mgr - Enterprise
-    ("SLS-003",  "Brandon",  "Lee",        "brandon.lee@company.com",        "Sales",             "manager",   "SLS-001",   "2021-01-10"),  # SDR Manager
-    ("SLS-004",  "Amanda",   "Clark",      "amanda.clark@company.com",       "Sales",             "employee",  "SLS-002",   "2021-04-01"),  # Enterprise AE
-    ("SLS-005",  "Marcus",   "Brown",      "marcus.brown@company.com",       "Sales",             "employee",  "SLS-002",   "2021-09-15"),  # Mid-Market AE
-    ("SLS-006",  "Tiffany",  "Davis",      "tiffany.davis@company.com",      "Sales",             "employee",  "SLS-002",   "2022-06-01"),  # AE
-    ("SLS-007",  "Nathan",   "Garcia",     "nathan.garcia@company.com",      "Sales",             "employee",  "SLS-003",   "2022-01-15"),  # SDR
-    ("SLS-008",  "Olivia",   "Wright",     "olivia.wright@company.com",      "Sales",             "employee",  "SLS-003",   "2022-08-01"),  # SDR
-    ("SLS-009",  "Derek",    "Johnson",    "derek.johnson@company.com",      "Sales",             "employee",  "SLS-003",   "2023-03-15"),  # SDR
-    ("SLS-010",  "Samantha", "Hall",       "samantha.hall@company.com",      "Sales",             "employee",  "SLS-001",   "2021-11-01"),  # RevOps
-    ("SLS-011",  "Tyler",    "Young",      "tyler.young@company.com",        "Sales",             "employee",  "SLS-002",   "2024-01-15"),  # Junior AE
-
+    (
+        "SLS-001",
+        "Robert",
+        "Thompson",
+        "robert.thompson@company.com",
+        "Sales",
+        "manager",
+        "EXEC-001",
+        "2019-05-01",
+    ),  # VP Sales
+    (
+        "SLS-002",
+        "Jessica",
+        "Martinez",
+        "jessica.martinez@company.com",
+        "Sales",
+        "manager",
+        "SLS-001",
+        "2020-08-15",
+    ),  # Sales Mgr - Enterprise
+    (
+        "SLS-003",
+        "Brandon",
+        "Lee",
+        "brandon.lee@company.com",
+        "Sales",
+        "manager",
+        "SLS-001",
+        "2021-01-10",
+    ),  # SDR Manager
+    (
+        "SLS-004",
+        "Amanda",
+        "Clark",
+        "amanda.clark@company.com",
+        "Sales",
+        "employee",
+        "SLS-002",
+        "2021-04-01",
+    ),  # Enterprise AE
+    (
+        "SLS-005",
+        "Marcus",
+        "Brown",
+        "marcus.brown@company.com",
+        "Sales",
+        "employee",
+        "SLS-002",
+        "2021-09-15",
+    ),  # Mid-Market AE
+    (
+        "SLS-006",
+        "Tiffany",
+        "Davis",
+        "tiffany.davis@company.com",
+        "Sales",
+        "employee",
+        "SLS-002",
+        "2022-06-01",
+    ),  # AE
+    (
+        "SLS-007",
+        "Nathan",
+        "Garcia",
+        "nathan.garcia@company.com",
+        "Sales",
+        "employee",
+        "SLS-003",
+        "2022-01-15",
+    ),  # SDR
+    (
+        "SLS-008",
+        "Olivia",
+        "Wright",
+        "olivia.wright@company.com",
+        "Sales",
+        "employee",
+        "SLS-003",
+        "2022-08-01",
+    ),  # SDR
+    (
+        "SLS-009",
+        "Derek",
+        "Johnson",
+        "derek.johnson@company.com",
+        "Sales",
+        "employee",
+        "SLS-003",
+        "2023-03-15",
+    ),  # SDR
+    (
+        "SLS-010",
+        "Samantha",
+        "Hall",
+        "samantha.hall@company.com",
+        "Sales",
+        "employee",
+        "SLS-001",
+        "2021-11-01",
+    ),  # RevOps
+    (
+        "SLS-011",
+        "Tyler",
+        "Young",
+        "tyler.young@company.com",
+        "Sales",
+        "employee",
+        "SLS-002",
+        "2024-01-15",
+    ),  # Junior AE
     # ────────────── MARKETING (4) ──────────────
-    ("MKT-001",  "Jennifer", "Adams",      "jennifer.adams@company.com",     "Marketing",         "manager",   "EXEC-001",  "2020-02-01"),  # Dir of Marketing
-    ("MKT-002",  "Brian",    "Cooper",     "brian.cooper@company.com",       "Marketing",         "employee",  "MKT-001",   "2021-06-15"),  # Product Mktg Mgr
-    ("MKT-003",  "Ashley",   "Turner",     "ashley.turner@company.com",      "Marketing",         "employee",  "MKT-001",   "2022-03-01"),  # Content/Demand Gen
-    ("MKT-004",  "Ethan",    "Walker",     "ethan.walker@company.com",       "Marketing",         "employee",  "MKT-001",   "2023-07-15"),  # Growth Specialist
-
+    (
+        "MKT-001",
+        "Jennifer",
+        "Adams",
+        "jennifer.adams@company.com",
+        "Marketing",
+        "manager",
+        "EXEC-001",
+        "2020-02-01",
+    ),  # Dir of Marketing
+    (
+        "MKT-002",
+        "Brian",
+        "Cooper",
+        "brian.cooper@company.com",
+        "Marketing",
+        "employee",
+        "MKT-001",
+        "2021-06-15",
+    ),  # Product Mktg Mgr
+    (
+        "MKT-003",
+        "Ashley",
+        "Turner",
+        "ashley.turner@company.com",
+        "Marketing",
+        "employee",
+        "MKT-001",
+        "2022-03-01",
+    ),  # Content/Demand Gen
+    (
+        "MKT-004",
+        "Ethan",
+        "Walker",
+        "ethan.walker@company.com",
+        "Marketing",
+        "employee",
+        "MKT-001",
+        "2023-07-15",
+    ),  # Growth Specialist
     # ────────────── CUSTOMER SUCCESS (7) ──────────────
-    ("CS-001",   "Michelle", "Robinson",   "michelle.robinson@company.com",  "Customer Success",  "manager",   "EXEC-001",  "2020-05-01"),  # Dir of CS
-    ("CS-002",   "Andrew",   "Scott",      "andrew.scott@company.com",       "Customer Success",  "employee",  "CS-001",    "2021-03-15"),  # Senior CSM
-    ("CS-003",   "Diana",    "Phillips",   "diana.phillips@company.com",     "Customer Success",  "employee",  "CS-001",    "2021-10-01"),  # CSM
-    ("CS-004",   "Jason",    "Campbell",   "jason.campbell@company.com",     "Customer Success",  "employee",  "CS-001",    "2022-04-15"),  # CSM
-    ("CS-005",   "Laura",    "Evans",      "laura.evans@company.com",        "Customer Success",  "employee",  "CS-001",    "2022-11-01"),  # Implementation
-    ("CS-006",   "Patrick",  "Reed",       "patrick.reed@company.com",       "Customer Success",  "employee",  "CS-001",    "2023-02-15"),  # Support
-    ("CS-007",   "Monica",   "Stewart",    "monica.stewart@company.com",     "Customer Success",  "employee",  "CS-001",    "2023-08-01"),  # Support
-
+    (
+        "CS-001",
+        "Michelle",
+        "Robinson",
+        "michelle.robinson@company.com",
+        "Customer Success",
+        "manager",
+        "EXEC-001",
+        "2020-05-01",
+    ),  # Dir of CS
+    (
+        "CS-002",
+        "Andrew",
+        "Scott",
+        "andrew.scott@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2021-03-15",
+    ),  # Senior CSM
+    (
+        "CS-003",
+        "Diana",
+        "Phillips",
+        "diana.phillips@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2021-10-01",
+    ),  # CSM
+    (
+        "CS-004",
+        "Jason",
+        "Campbell",
+        "jason.campbell@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2022-04-15",
+    ),  # CSM
+    (
+        "CS-005",
+        "Laura",
+        "Evans",
+        "laura.evans@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2022-11-01",
+    ),  # Implementation
+    (
+        "CS-006",
+        "Patrick",
+        "Reed",
+        "patrick.reed@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2023-02-15",
+    ),  # Support
+    (
+        "CS-007",
+        "Monica",
+        "Stewart",
+        "monica.stewart@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2023-08-01",
+    ),  # Support
     # ────────────── HUMAN RESOURCES (3) ──────────────
-    ("HR-001",   "Emily",    "Rodriguez",  "emily.rodriguez@company.com",    "Human Resources",   "hr_admin",  "EXEC-001",  "2019-01-15"),  # VP People
-    ("HR-002",   "Sandra",   "Morales",    "sandra.morales@company.com",     "Human Resources",   "hr_admin",  "HR-001",    "2021-07-01"),  # HR Manager
-    ("HR-003",   "Kevin",    "Patel",      "kevin.patel@company.com",        "Human Resources",   "employee",  "HR-001",    "2022-09-15"),  # HR Coordinator
-
+    (
+        "HR-001",
+        "Emily",
+        "Rodriguez",
+        "emily.rodriguez@company.com",
+        "Human Resources",
+        "hr_admin",
+        "EXEC-001",
+        "2019-01-15",
+    ),  # VP People
+    (
+        "HR-002",
+        "Sandra",
+        "Morales",
+        "sandra.morales@company.com",
+        "Human Resources",
+        "hr_admin",
+        "HR-001",
+        "2021-07-01",
+    ),  # HR Manager
+    (
+        "HR-003",
+        "Kevin",
+        "Patel",
+        "kevin.patel@company.com",
+        "Human Resources",
+        "employee",
+        "HR-001",
+        "2022-09-15",
+    ),  # HR Coordinator
     # ────────────── FINANCE & OPS (3) ──────────────
-    ("FIN-001",  "Richard",  "Baker",      "richard.baker@company.com",      "Finance",           "manager",   "EXEC-002",  "2019-11-01"),  # CFO/Controller
-    ("FIN-002",  "Catherine","Diaz",       "catherine.diaz@company.com",     "Finance",           "employee",  "FIN-001",   "2021-09-15"),  # Finance Manager
-    ("FIN-003",  "Victor",   "Ruiz",       "victor.ruiz@company.com",        "Finance",           "employee",  "FIN-001",   "2023-04-01"),  # Finance Analyst
-
+    (
+        "FIN-001",
+        "Richard",
+        "Baker",
+        "richard.baker@company.com",
+        "Finance",
+        "manager",
+        "EXEC-002",
+        "2019-11-01",
+    ),  # CFO/Controller
+    (
+        "FIN-002",
+        "Catherine",
+        "Diaz",
+        "catherine.diaz@company.com",
+        "Finance",
+        "employee",
+        "FIN-001",
+        "2021-09-15",
+    ),  # Finance Manager
+    (
+        "FIN-003",
+        "Victor",
+        "Ruiz",
+        "victor.ruiz@company.com",
+        "Finance",
+        "employee",
+        "FIN-001",
+        "2023-04-01",
+    ),  # Finance Analyst
     # ────────────── ADDITIONAL EMPLOYEES (reaching ~70) ──────────────
     # John Smith is in the original seed — we keep him as a known employee
-    ("EMP-001",  "John",     "Smith",      "john.smith@company.com",         "Engineering",       "employee",  "ENG-002",   "2023-01-15"),
+    (
+        "EMP-001",
+        "John",
+        "Smith",
+        "john.smith@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2023-01-15",
+    ),
 ]
 
 # Total: 2 exec + 18 eng + 3 product + 11 sales + 4 mkt + 7 CS + 3 HR + 3 finance + 1 (John) = 52
 # We add 15 more to reach ~67
 
 EXTRA_EMPLOYEES = [
-    ("ENG-019",  "Lucas",    "Fernandez",  "lucas.fernandez@company.com",    "Engineering",       "employee",  "ENG-003",   "2024-01-15"),
-    ("ENG-020",  "Hannah",   "Brooks",     "hannah.brooks@company.com",      "Engineering",       "employee",  "ENG-002",   "2024-02-01"),
-    ("SLS-012",  "Jordan",   "White",      "jordan.white@company.com",       "Sales",             "employee",  "SLS-003",   "2024-03-01"),
-    ("SLS-013",  "Megan",    "Lewis",      "megan.lewis@company.com",        "Sales",             "employee",  "SLS-002",   "2024-04-15"),
-    ("CS-008",   "Connor",   "Murphy",     "connor.murphy@company.com",      "Customer Success",  "employee",  "CS-001",    "2024-02-15"),
-    ("CS-009",   "Isabella", "Flores",     "isabella.flores@company.com",    "Customer Success",  "employee",  "CS-002",    "2024-05-01"),
-    ("MKT-005",  "Dylan",    "Reed",       "dylan.reed@company.com",         "Marketing",         "employee",  "MKT-001",   "2024-06-01"),
-    ("ENG-021",  "Zara",     "Khan",       "zara.khan@company.com",          "Engineering",       "employee",  "ENG-001",   "2021-10-15"),  # Staff Engineer
-    ("PRD-004",  "Steven",   "Howard",     "steven.howard@company.com",      "Product",           "employee",  "PRD-001",   "2024-01-10"),  # Associate PM
-    ("FIN-004",  "Angela",   "Torres",     "angela.torres@company.com",      "Finance",           "employee",  "FIN-001",   "2024-03-15"),  # Ops Coordinator
-    ("ENG-022",  "Raj",      "Patel",      "raj.patel@company.com",          "Engineering",       "employee",  "ENG-003",   "2023-11-01"),
-    ("CS-010",   "Emma",     "Watson",     "emma.watson@company.com",        "Customer Success",  "employee",  "CS-001",    "2024-07-01"),
-    ("SLS-014",  "Carlos",   "Mendez",     "carlos.mendez@company.com",      "Sales",             "employee",  "SLS-003",   "2024-08-01"),
-    ("ENG-023",  "Lily",     "Chen",       "lily.chen@company.com",          "Engineering",       "employee",  "ENG-002",   "2024-09-01"),
-    ("HR-004",   "Grace",    "Kim",        "grace.kim@company.com",          "Human Resources",   "employee",  "HR-001",    "2024-10-01"),
+    (
+        "ENG-019",
+        "Lucas",
+        "Fernandez",
+        "lucas.fernandez@company.com",
+        "Engineering",
+        "employee",
+        "ENG-003",
+        "2024-01-15",
+    ),
+    (
+        "ENG-020",
+        "Hannah",
+        "Brooks",
+        "hannah.brooks@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2024-02-01",
+    ),
+    (
+        "SLS-012",
+        "Jordan",
+        "White",
+        "jordan.white@company.com",
+        "Sales",
+        "employee",
+        "SLS-003",
+        "2024-03-01",
+    ),
+    (
+        "SLS-013",
+        "Megan",
+        "Lewis",
+        "megan.lewis@company.com",
+        "Sales",
+        "employee",
+        "SLS-002",
+        "2024-04-15",
+    ),
+    (
+        "CS-008",
+        "Connor",
+        "Murphy",
+        "connor.murphy@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2024-02-15",
+    ),
+    (
+        "CS-009",
+        "Isabella",
+        "Flores",
+        "isabella.flores@company.com",
+        "Customer Success",
+        "employee",
+        "CS-002",
+        "2024-05-01",
+    ),
+    (
+        "MKT-005",
+        "Dylan",
+        "Reed",
+        "dylan.reed@company.com",
+        "Marketing",
+        "employee",
+        "MKT-001",
+        "2024-06-01",
+    ),
+    (
+        "ENG-021",
+        "Zara",
+        "Khan",
+        "zara.khan@company.com",
+        "Engineering",
+        "employee",
+        "ENG-001",
+        "2021-10-15",
+    ),  # Staff Engineer
+    (
+        "PRD-004",
+        "Steven",
+        "Howard",
+        "steven.howard@company.com",
+        "Product",
+        "employee",
+        "PRD-001",
+        "2024-01-10",
+    ),  # Associate PM
+    (
+        "FIN-004",
+        "Angela",
+        "Torres",
+        "angela.torres@company.com",
+        "Finance",
+        "employee",
+        "FIN-001",
+        "2024-03-15",
+    ),  # Ops Coordinator
+    (
+        "ENG-022",
+        "Raj",
+        "Patel",
+        "raj.patel@company.com",
+        "Engineering",
+        "employee",
+        "ENG-003",
+        "2023-11-01",
+    ),
+    (
+        "CS-010",
+        "Emma",
+        "Watson",
+        "emma.watson@company.com",
+        "Customer Success",
+        "employee",
+        "CS-001",
+        "2024-07-01",
+    ),
+    (
+        "SLS-014",
+        "Carlos",
+        "Mendez",
+        "carlos.mendez@company.com",
+        "Sales",
+        "employee",
+        "SLS-003",
+        "2024-08-01",
+    ),
+    (
+        "ENG-023",
+        "Lily",
+        "Chen",
+        "lily.chen@company.com",
+        "Engineering",
+        "employee",
+        "ENG-002",
+        "2024-09-01",
+    ),
+    (
+        "HR-004",
+        "Grace",
+        "Kim",
+        "grace.kim@company.com",
+        "Human Resources",
+        "employee",
+        "HR-001",
+        "2024-10-01",
+    ),
 ]
 
 ALL_EMPLOYEES = ORG_CHART + EXTRA_EMPLOYEES  # Total ≈ 67
@@ -219,15 +814,17 @@ def seed_expanded_org() -> None:
             su = random.randint(0, max(1, st // 4))
             pu = random.randint(0, max(1, pt // 3))
 
-            session.add(LeaveBalance(
-                employee_id=emp.id,
-                vacation_total=vt,
-                vacation_used=vu,
-                sick_total=st,
-                sick_used=su,
-                personal_total=pt,
-                personal_used=pu,
-            ))
+            session.add(
+                LeaveBalance(
+                    employee_id=emp.id,
+                    vacation_total=vt,
+                    vacation_used=vu,
+                    sick_total=st,
+                    sick_used=su,
+                    personal_total=pt,
+                    personal_used=pu,
+                )
+            )
 
         session.commit()
         count = session.query(Employee).count()

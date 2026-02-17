@@ -21,7 +21,7 @@ class TestBiasAuditorScanResponse:
         incidents = auditor.scan_response(
             agent_type="compensation",
             query="What salary for this candidate?",
-            response="She is too emotional for this role, $50k is appropriate."
+            response="She is too emotional for this role, $50k is appropriate.",
         )
 
         assert len(incidents) > 0
@@ -34,7 +34,7 @@ class TestBiasAuditorScanResponse:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Candidate evaluation",
-            response="Women are too emotional to handle technical roles."
+            response="Women are too emotional to handle technical roles.",
         )
 
         assert len(incidents) > 0
@@ -47,7 +47,7 @@ class TestBiasAuditorScanResponse:
         incidents = auditor.scan_response(
             agent_type="compensation",
             query="What salary?",
-            response="The candidate's compensation is based on job title and performance metrics."
+            response="The candidate's compensation is based on job title and performance metrics.",
         )
 
         assert len(incidents) == 0
@@ -59,7 +59,7 @@ class TestBiasAuditorScanResponse:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Culture fit concern",
-            response="The candidate has a cultural fit concern for the team."
+            response="The candidate has a cultural fit concern for the team.",
         )
 
         assert len(incidents) > 0
@@ -150,9 +150,7 @@ class TestBiasSeverity:
         auditor = BiasAuditor()
 
         incidents = auditor.scan_response(
-            agent_type="hiring",
-            query="Candidate review",
-            response="The candidate seems diverse."
+            agent_type="hiring", query="Candidate review", response="The candidate seems diverse."
         )
 
         # "diverse" is a potentially biased term
@@ -166,7 +164,7 @@ class TestBiasSeverity:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Evaluation",
-            response="She is too emotional and sensitive for management."
+            response="She is too emotional and sensitive for management.",
         )
 
         assert len(incidents) > 0
@@ -179,7 +177,7 @@ class TestBiasSeverity:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Requirements",
-            response="Only guys should apply for this position."
+            response="Only guys should apply for this position.",
         )
 
         assert len(incidents) > 0
@@ -196,7 +194,7 @@ class TestProtectedCategories:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Candidate",
-            response="She is too bossy for a team environment."
+            response="She is too bossy for a team environment.",
         )
 
         assert any(i.category == ProtectedCategory.GENDER for i in incidents)
@@ -208,7 +206,7 @@ class TestProtectedCategories:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Candidate",
-            response="This candidate is well-spoken and articulate for their background."
+            response="This candidate is well-spoken and articulate for their background.",
         )
 
         assert any(i.category == ProtectedCategory.RACE for i in incidents)
@@ -220,7 +218,7 @@ class TestProtectedCategories:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Candidate",
-            response="He's overqualified and seems too old for this startup role."
+            response="He's overqualified and seems too old for this startup role.",
         )
 
         assert any(i.category == ProtectedCategory.AGE for i in incidents)
@@ -232,7 +230,7 @@ class TestProtectedCategories:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Candidate",
-            response="This candidate is crippled and cannot perform the role."
+            response="This candidate is crippled and cannot perform the role.",
         )
 
         assert any(i.category == ProtectedCategory.DISABILITY for i in incidents)
@@ -244,7 +242,7 @@ class TestProtectedCategories:
         incidents = auditor.scan_response(
             agent_type="hiring",
             query="Candidate",
-            response="This candidate is a religious zealot and cannot work here."
+            response="This candidate is a religious zealot and cannot work here.",
         )
 
         assert any(i.category == ProtectedCategory.RELIGION for i in incidents)
@@ -258,9 +256,7 @@ class TestAuditReport:
         auditor = BiasAuditor()
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="This candidate is too emotional."
+            agent_type="hiring", query="Test", response="This candidate is too emotional."
         )
 
         report = auditor.generate_audit_report()
@@ -275,9 +271,7 @@ class TestAuditReport:
         auditor = BiasAuditor()
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="Women are emotional, men are logical."
+            agent_type="hiring", query="Test", response="Women are emotional, men are logical."
         )
 
         report = auditor.generate_audit_report()
@@ -292,15 +286,11 @@ class TestAuditReport:
         auditor = BiasAuditor()
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Test 1",
-            response="Too emotional for management."
+            agent_type="hiring", query="Test 1", response="Too emotional for management."
         )
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Test 2",
-            response="Candidate is well-spoken."
+            agent_type="hiring", query="Test 2", response="Candidate is well-spoken."
         )
 
         report = auditor.generate_audit_report()
@@ -312,20 +302,13 @@ class TestAuditReport:
         """generate_audit_report filters by date range."""
         auditor = BiasAuditor()
 
-        auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="She is too emotional."
-        )
+        auditor.scan_response(agent_type="hiring", query="Test", response="She is too emotional.")
 
         now = datetime.utcnow()
         start = now - timedelta(days=30)
         end = now + timedelta(days=1)
 
-        report = auditor.generate_audit_report(
-            start_date=start,
-            end_date=end
-        )
+        report = auditor.generate_audit_report(start_date=start, end_date=end)
 
         assert report["total_incidents"] >= 1
 
@@ -333,20 +316,13 @@ class TestAuditReport:
         """generate_audit_report excludes incidents outside date range."""
         auditor = BiasAuditor()
 
-        auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="She is too emotional."
-        )
+        auditor.scan_response(agent_type="hiring", query="Test", response="She is too emotional.")
 
         # Use date range from past
         start = datetime.utcnow() - timedelta(days=60)
         end = datetime.utcnow() - timedelta(days=30)
 
-        report = auditor.generate_audit_report(
-            start_date=start,
-            end_date=end
-        )
+        report = auditor.generate_audit_report(start_date=start, end_date=end)
 
         assert report["total_incidents"] == 0
 
@@ -354,11 +330,7 @@ class TestAuditReport:
         """generate_audit_report includes action recommendations."""
         auditor = BiasAuditor()
 
-        auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="Only guys should apply."
-        )
+        auditor.scan_response(agent_type="hiring", query="Test", response="Only guys should apply.")
 
         report = auditor.generate_audit_report()
 
@@ -370,15 +342,11 @@ class TestAuditReport:
         auditor = BiasAuditor()
 
         auditor.scan_response(
-            agent_type="compensation",
-            query="Salary",
-            response="Women should earn less."
+            agent_type="compensation", query="Salary", response="Women should earn less."
         )
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Candidate",
-            response="No disabled people allowed."
+            agent_type="hiring", query="Candidate", response="No disabled people allowed."
         )
 
         report = auditor.generate_audit_report()
@@ -390,9 +358,7 @@ class TestAuditReport:
         auditor = BiasAuditor()
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="Women are emotional and men are logical."
+            agent_type="hiring", query="Test", response="Women are emotional and men are logical."
         )
 
         report = auditor.generate_audit_report()
@@ -410,14 +376,10 @@ class TestGetIncidents:
         auditor = BiasAuditor()
 
         auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="She is too bossy and emotional."
+            agent_type="hiring", query="Test", response="She is too bossy and emotional."
         )
 
-        incidents = auditor.get_incidents(
-            severity_filter=BiasSeverity.HIGH
-        )
+        incidents = auditor.get_incidents(severity_filter=BiasSeverity.HIGH)
 
         assert all(i.severity == BiasSeverity.HIGH for i in incidents)
 
@@ -425,15 +387,9 @@ class TestGetIncidents:
         """get_incidents filters by protected category."""
         auditor = BiasAuditor()
 
-        auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="She is too emotional."
-        )
+        auditor.scan_response(agent_type="hiring", query="Test", response="She is too emotional.")
 
-        incidents = auditor.get_incidents(
-            category_filter=ProtectedCategory.GENDER
-        )
+        incidents = auditor.get_incidents(category_filter=ProtectedCategory.GENDER)
 
         assert all(i.category == ProtectedCategory.GENDER for i in incidents)
 
@@ -441,20 +397,14 @@ class TestGetIncidents:
         """get_incidents applies both severity and category filters."""
         auditor = BiasAuditor()
 
-        auditor.scan_response(
-            agent_type="hiring",
-            query="Test",
-            response="Women are emotional."
-        )
+        auditor.scan_response(agent_type="hiring", query="Test", response="Women are emotional.")
 
         incidents = auditor.get_incidents(
-            severity_filter=BiasSeverity.HIGH,
-            category_filter=ProtectedCategory.GENDER
+            severity_filter=BiasSeverity.HIGH, category_filter=ProtectedCategory.GENDER
         )
 
         assert all(
-            i.severity == BiasSeverity.HIGH and
-            i.category == ProtectedCategory.GENDER
+            i.severity == BiasSeverity.HIGH and i.category == ProtectedCategory.GENDER
             for i in incidents
         )
 
@@ -472,7 +422,7 @@ class TestBiasIncidentProperties:
             query="What about this candidate?",
             response="She is too emotional.",
             evidence="too emotional",
-            recommendations=["Review language", "Train HR team"]
+            recommendations=["Review language", "Train HR team"],
         )
 
         assert incident.category == ProtectedCategory.GENDER
@@ -486,15 +436,9 @@ class TestBiasIncidentProperties:
 
     def test_bias_incident_generates_unique_id(self):
         """BiasIncident generates unique incident IDs."""
-        incident1 = BiasIncident(
-            category=ProtectedCategory.GENDER,
-            severity=BiasSeverity.LOW
-        )
+        incident1 = BiasIncident(category=ProtectedCategory.GENDER, severity=BiasSeverity.LOW)
 
-        incident2 = BiasIncident(
-            category=ProtectedCategory.GENDER,
-            severity=BiasSeverity.LOW
-        )
+        incident2 = BiasIncident(category=ProtectedCategory.GENDER, severity=BiasSeverity.LOW)
 
         assert incident1.incident_id != incident2.incident_id
 
@@ -514,7 +458,7 @@ class TestBiasAuditMiddleware:
         mock_app = Mock()
         mock_app.request.args.get.side_effect = lambda key, default: {
             "agent_type": "hiring",
-            "query": "Evaluate candidate"
+            "query": "Evaluate candidate",
         }.get(key, default)
 
         middleware.app = mock_app
@@ -550,7 +494,7 @@ class TestBiasAuditMiddleware:
         mock_app = Mock()
         mock_app.request.args.get.side_effect = lambda key, default: {
             "agent_type": "hiring",
-            "query": "Job requirements"
+            "query": "Job requirements",
         }.get(key, default)
 
         middleware.app = mock_app

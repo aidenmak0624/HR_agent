@@ -14,37 +14,19 @@ logger = logging.getLogger(__name__)
 class SecurityHeadersConfig(BaseModel):
     """Security headers configuration model."""
 
-    enable_hsts: bool = Field(
-        default=True, description="Enable HTTP Strict Transport Security"
-    )
-    hsts_max_age: int = Field(
-        default=31536000, description="HSTS max-age in seconds (1 year)"
-    )
-    enable_csp: bool = Field(
-        default=True, description="Enable Content Security Policy"
-    )
-    enable_xfo: bool = Field(
-        default=True, description="Enable X-Frame-Options"
-    )
-    xfo_value: str = Field(
-        default="DENY", description="X-Frame-Options value"
-    )
-    enable_xcto: bool = Field(
-        default=True, description="Enable X-Content-Type-Options"
-    )
-    enable_referrer_policy: bool = Field(
-        default=True, description="Enable Referrer-Policy"
-    )
+    enable_hsts: bool = Field(default=True, description="Enable HTTP Strict Transport Security")
+    hsts_max_age: int = Field(default=31536000, description="HSTS max-age in seconds (1 year)")
+    enable_csp: bool = Field(default=True, description="Enable Content Security Policy")
+    enable_xfo: bool = Field(default=True, description="Enable X-Frame-Options")
+    xfo_value: str = Field(default="DENY", description="X-Frame-Options value")
+    enable_xcto: bool = Field(default=True, description="Enable X-Content-Type-Options")
+    enable_referrer_policy: bool = Field(default=True, description="Enable Referrer-Policy")
     referrer_policy: str = Field(
         default="strict-origin-when-cross-origin",
         description="Referrer-Policy value",
     )
-    enable_permissions_policy: bool = Field(
-        default=True, description="Enable Permissions-Policy"
-    )
-    custom_headers: Dict[str, str] = Field(
-        default={}, description="Custom security headers"
-    )
+    enable_permissions_policy: bool = Field(default=True, description="Enable Permissions-Policy")
+    custom_headers: Dict[str, str] = Field(default={}, description="Custom security headers")
 
     model_config = ConfigDict(frozen=False)
 
@@ -157,14 +139,14 @@ class SecurityHeadersMiddleware:
             Permissions-Policy header string
         """
         permissions = [
-            'camera=()',
-            'microphone=()',
-            'geolocation=()',
-            'payment=()',
-            'usb=()',
-            'magnetometer=()',
-            'gyroscope=()',
-            'accelerometer=()',
+            "camera=()",
+            "microphone=()",
+            "geolocation=()",
+            "payment=()",
+            "usb=()",
+            "magnetometer=()",
+            "gyroscope=()",
+            "accelerometer=()",
         ]
 
         return ", ".join(permissions)

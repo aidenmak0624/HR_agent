@@ -26,19 +26,15 @@ def ensure_indexes(engine: Engine) -> None:
             ("idx_employees_manager_id", "employees", "manager_id", ""),
             ("idx_employees_role_level", "employees", "role_level", ""),
             ("idx_employees_status", "employees", "status", ""),
-
             # Leave requests table (if exists)
             ("idx_leave_requests_employee_id", "leave_requests", "employee_id", ""),
             ("idx_leave_requests_status", "leave_requests", "status", ""),
             ("idx_leave_requests_created_at", "leave_requests", "created_at", ""),
-
             # Leave balances table (if exists)
             ("idx_leave_balances_employee_id", "leave_balances", "employee_id", "UNIQUE"),
-
             # Auth sessions table (if exists)
             ("idx_auth_sessions_user_id", "auth_sessions", "user_id", ""),
             ("idx_auth_sessions_expires_at", "auth_sessions", "expires_at", ""),
-
             # Additional useful indexes
             ("idx_employees_hire_date", "employees", "hire_date", ""),
             ("idx_employees_created_at", "employees", "created_at", ""),

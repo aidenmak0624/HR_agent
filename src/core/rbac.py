@@ -157,9 +157,7 @@ def get_data_scope(user_role: str, agent_type: str) -> DataScope:
     scope = DATA_SCOPE_MAPPING.get((agent_type, user_role_level))
 
     if scope is None:
-        raise PermissionDeniedError(
-            f"No data scope defined for {agent_type} and {user_role}"
-        )
+        raise PermissionDeniedError(f"No data scope defined for {agent_type} and {user_role}")
 
     return scope
 
@@ -208,8 +206,7 @@ class RBACEnforcer:
         allowed_actions = [
             action
             for (agent, action), required_role in PERMISSION_MATRIX.items()
-            if agent == agent_type
-            and check_permission(user_role, agent_type, action)
+            if agent == agent_type and check_permission(user_role, agent_type, action)
         ]
 
         return allowed_actions
@@ -274,8 +271,7 @@ class RBACEnforcer:
             PermissionDeniedError: If role is invalid
         """
         return [
-            self.filter_employee_data(item, user_role, requesting_user_id)
-            for item in data_list
+            self.filter_employee_data(item, user_role, requesting_user_id) for item in data_list
         ]
 
     def apply_data_scope_filter(
@@ -308,20 +304,12 @@ class RBACEnforcer:
         scope = get_data_scope(user_role, agent_type)
 
         if scope == DataScope.OWN:
-            return [
-                item
-                for item in data_list
-                if item.get("user_id") == requesting_user_id
-            ]
+            return [item for item in data_list if item.get("user_id") == requesting_user_id]
         elif scope == DataScope.TEAM:
             team_ids = [requesting_user_id] + (team_members or [])
             return [item for item in data_list if item.get("user_id") in team_ids]
         elif scope == DataScope.DEPARTMENT:
-            return [
-                item
-                for item in data_list
-                if item.get("department") == user_department
-            ]
+            return [item for item in data_list if item.get("department") == user_department]
         elif scope == DataScope.ALL:
             return data_list
         else:

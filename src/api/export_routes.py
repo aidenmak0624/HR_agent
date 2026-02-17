@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ExportFormat(str, Enum):
     """Enumeration of export formats."""
+
     JSON = "json"
     CSV = "csv"
     EXCEL = "excel"
@@ -26,6 +27,7 @@ class ExportFormat(str, Enum):
 
 class ExportEntity(str, Enum):
     """Enumeration of exportable entities."""
+
     USERS = "users"
     EMPLOYEES = "employees"
     LEAVE_RECORDS = "leave_records"
@@ -37,6 +39,7 @@ class ExportEntity(str, Enum):
 
 class ExportStatus(str, Enum):
     """Enumeration of export statuses."""
+
     QUEUED = "queued"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -46,6 +49,7 @@ class ExportStatus(str, Enum):
 
 class ExportRequest(BaseModel):
     """Model representing a data export request."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     export_id: UUID
@@ -65,6 +69,7 @@ class ExportRequest(BaseModel):
 
 class ExportConfig(BaseModel):
     """Configuration for export operations."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     max_records_per_export: int = 100000
@@ -149,9 +154,7 @@ class ExportService:
             )
 
             self.export_requests[str(export_id)] = export_request
-            logger.info(
-                f"Created export request {export_id} for {entity.value} in {format.value}"
-            )
+            logger.info(f"Created export request {export_id} for {entity.value} in {format.value}")
             return export_request
         except Exception as e:
             logger.error(f"Failed to create export request: {e}")
@@ -180,9 +183,7 @@ class ExportService:
 
             try:
                 # Generate sample data based on entity type
-                data = self._generate_sample_data(
-                    export_request.entity, export_request.filters
-                )
+                data = self._generate_sample_data(export_request.entity, export_request.filters)
                 record_count = len(data)
 
                 if record_count > self.config.max_records_per_export:
@@ -303,9 +304,7 @@ class ExportService:
                 raise ValueError(f"Export not found: {export_id}")
 
             if export_request.status != ExportStatus.COMPLETED:
-                raise ValueError(
-                    f"Export not ready for download: {export_request.status.value}"
-                )
+                raise ValueError(f"Export not ready for download: {export_request.status.value}")
 
             if not export_request.file_path:
                 raise ValueError("Export file path not available")
@@ -380,9 +379,7 @@ class ExportService:
                     try:
                         os.remove(export_req.file_path)
                     except Exception as e:
-                        logger.warning(
-                            f"Failed to delete export file {export_req.file_path}: {e}"
-                        )
+                        logger.warning(f"Failed to delete export file {export_req.file_path}: {e}")
 
                 del self.export_requests[export_id]
                 removed_count += 1
@@ -424,17 +421,12 @@ class ExportService:
                 status_key = export_req.status.value
                 by_status[status_key] = by_status.get(status_key, 0) + 1
 
-                if (
-                    export_req.completed_at
-                    and export_req.requested_at
-                ):
+                if export_req.completed_at and export_req.requested_at:
                     delta = (export_req.completed_at - export_req.requested_at).total_seconds()
                     processing_times.append(delta)
 
             avg_processing_time = (
-                sum(processing_times) / len(processing_times)
-                if processing_times
-                else 0
+                sum(processing_times) / len(processing_times) if processing_times else 0
             )
 
             return {

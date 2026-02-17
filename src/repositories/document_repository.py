@@ -328,7 +328,9 @@ class GeneratedDocumentRepository(BaseRepository[GeneratedDocumentModel]):
                 "generated_by": document.generated_by,
                 "generated_at": document.created_at.isoformat() if document.created_at else None,
                 "status": document.status,
-                "status_updated_at": document.updated_at.isoformat() if document.updated_at else None,
+                "status_updated_at": document.updated_at.isoformat()
+                if document.updated_at
+                else None,
                 "approved_by": document.approved_by,
                 "variables_used": document.variables_json,
             }

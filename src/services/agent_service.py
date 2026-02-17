@@ -15,6 +15,7 @@ logger.setLevel(logging.INFO)
 
 class UserContext(TypedDict, total=False):
     """User context for agent execution."""
+
     user_id: str
     role: str  # "employee", "manager", "hr_generalist", "hr_admin"
     department: str
@@ -64,6 +65,7 @@ class AgentService:
         # Initialize LangSmith tracing (opt-in via env var)
         try:
             from src.core.tracing import LangSmithTracer
+
             LangSmithTracer.setup_tracing(
                 enabled=getattr(settings, "LANGCHAIN_TRACING_V2", False),
                 api_key=getattr(settings, "LANGCHAIN_API_KEY", ""),
@@ -85,6 +87,7 @@ class AgentService:
         if openai_key and openai_key not in _placeholder_keys:
             try:
                 from langchain_openai import ChatOpenAI
+
                 model = getattr(settings, "LLM_DEFAULT_MODEL", "gpt-4o-mini")
                 self.llm = ChatOpenAI(
                     model=model,
@@ -100,6 +103,7 @@ class AgentService:
         if self.llm is None and google_key and google_key not in _placeholder_keys:
             try:
                 from langchain_google_genai import ChatGoogleGenerativeAI
+
                 fallback_model = getattr(settings, "LLM_FALLBACK_MODEL", "gemini-2.0-flash")
                 self.llm = ChatGoogleGenerativeAI(
                     model=fallback_model,
@@ -124,10 +128,7 @@ class AgentService:
         # Initialize RAG Pipeline
         logger.info("Creating RAGPipeline...")
         try:
-            self.rag_pipeline = RAGPipeline(
-                collection_name="hr_policies",
-                use_chromadb=True
-            )
+            self.rag_pipeline = RAGPipeline(collection_name="hr_policies", use_chromadb=True)
             logger.info("✅ RAGPipeline initialized")
         except Exception as e:
             logger.error(f"❌ RAGPipeline initialization failed: {e}")
@@ -229,11 +230,13 @@ class AgentService:
             elapsed_ms = (datetime.now() - start_time).total_seconds() * 1000
 
             # Merge result with metadata
-            result.update({
-                "request_id": request_id,
-                "execution_time_ms": elapsed_ms,
-                "timestamp": datetime.now().isoformat(),
-            })
+            result.update(
+                {
+                    "request_id": request_id,
+                    "execution_time_ms": elapsed_ms,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
 
             # Log conversation
             self._log_conversation(request_id, query, result, user_context)
@@ -371,13 +374,10 @@ class AgentService:
         # Most used agents
         if self.request_stats["agent_usage"]:
             popular = sorted(
-                self.request_stats["agent_usage"].items(),
-                key=lambda x: x[1],
-                reverse=True
+                self.request_stats["agent_usage"].items(), key=lambda x: x[1], reverse=True
             )
             stats["popular_agents"] = [
-                {"agent": name, "count": count}
-                for name, count in popular[:5]
+                {"agent": name, "count": count} for name, count in popular[:5]
             ]
         else:
             stats["popular_agents"] = []

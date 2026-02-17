@@ -26,7 +26,7 @@ class TestWorkflowCreation:
             entity_type="compensation",
             steps_config=[
                 {"approver_role": "manager", "escalate_after_hours": 48},
-            ]
+            ],
         )
         template_id = engine.register_template(template)
 
@@ -34,7 +34,7 @@ class TestWorkflowCreation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         assert workflow_id is not None
@@ -50,7 +50,7 @@ class TestWorkflowCreation:
             entity_type="compensation",
             steps_config=[
                 {"approver_role": "manager"},
-            ]
+            ],
         )
         template_id = engine.register_template(template)
 
@@ -58,7 +58,7 @@ class TestWorkflowCreation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow = engine.get_workflow(workflow_id)
@@ -75,7 +75,7 @@ class TestWorkflowCreation:
                 {"approver_role": "manager", "escalate_after_hours": 24},
                 {"approver_role": "hr_admin", "escalate_after_hours": 48},
                 {"approver_role": "director", "escalate_after_hours": 72},
-            ]
+            ],
         )
         template_id = engine.register_template(template)
 
@@ -83,7 +83,7 @@ class TestWorkflowCreation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow = engine.get_workflow(workflow_id)
@@ -99,7 +99,7 @@ class TestWorkflowCreation:
                 template_id="invalid_template",
                 entity_type="compensation",
                 entity_id="emp_001",
-                created_by="user_001"
+                created_by="user_001",
             )
 
 
@@ -111,9 +111,7 @@ class TestWorkflowSubmission:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -121,7 +119,7 @@ class TestWorkflowSubmission:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         result = engine.submit_for_approval(workflow_id)
@@ -135,9 +133,7 @@ class TestWorkflowSubmission:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -145,7 +141,7 @@ class TestWorkflowSubmission:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow_before = engine.get_workflow(workflow_id)
@@ -161,9 +157,7 @@ class TestWorkflowSubmission:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -171,7 +165,7 @@ class TestWorkflowSubmission:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         # Submit once
@@ -185,16 +179,14 @@ class TestWorkflowSubmission:
 class TestWorkflowApproval:
     """Tests for workflow approval."""
 
-    @patch('src.core.workflow_engine.check_permission')
+    @patch("src.core.workflow_engine.check_permission")
     def test_approve_step_changes_step_status(self, mock_check_permission):
         """approve_step changes step status to approved."""
         mock_check_permission.return_value = True
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -202,7 +194,7 @@ class TestWorkflowApproval:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -211,23 +203,21 @@ class TestWorkflowApproval:
             workflow_id=workflow_id,
             approver_id="user_002",
             approver_role="manager",
-            comments="Approved"
+            comments="Approved",
         )
 
         assert success is True
         workflow = engine.get_workflow(workflow_id)
         assert workflow.steps[0].status == "approved"
 
-    @patch('src.core.workflow_engine.check_permission')
+    @patch("src.core.workflow_engine.check_permission")
     def test_approve_last_step_completes_workflow(self, mock_check_permission):
         """approve_step on last step changes state to APPROVED."""
         mock_check_permission.return_value = True
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -235,7 +225,7 @@ class TestWorkflowApproval:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -244,13 +234,13 @@ class TestWorkflowApproval:
             workflow_id=workflow_id,
             approver_id="user_002",
             approver_role="manager",
-            comments="Approved"
+            comments="Approved",
         )
 
         workflow = engine.get_workflow(workflow_id)
         assert workflow.state == WorkflowState.APPROVED
 
-    @patch('src.core.workflow_engine.check_permission')
+    @patch("src.core.workflow_engine.check_permission")
     def test_approve_middle_step_advances_workflow(self, mock_check_permission):
         """approve_step in middle advances to next step."""
         mock_check_permission.return_value = True
@@ -259,10 +249,7 @@ class TestWorkflowApproval:
         template = WorkflowTemplate(
             name="Test",
             entity_type="compensation",
-            steps_config=[
-                {"approver_role": "manager"},
-                {"approver_role": "hr_admin"}
-            ]
+            steps_config=[{"approver_role": "manager"}, {"approver_role": "hr_admin"}],
         )
         template_id = engine.register_template(template)
 
@@ -270,31 +257,27 @@ class TestWorkflowApproval:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
 
         engine.approve_step(
-            workflow_id=workflow_id,
-            approver_id="user_002",
-            approver_role="manager"
+            workflow_id=workflow_id, approver_id="user_002", approver_role="manager"
         )
 
         workflow = engine.get_workflow(workflow_id)
         assert workflow.state == WorkflowState.PENDING_APPROVAL
         assert workflow.current_step == 1
 
-    @patch('src.core.workflow_engine.check_permission')
+    @patch("src.core.workflow_engine.check_permission")
     def test_approve_records_decision(self, mock_check_permission):
         """approve_step records decision in workflow."""
         mock_check_permission.return_value = True
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -302,7 +285,7 @@ class TestWorkflowApproval:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -311,7 +294,7 @@ class TestWorkflowApproval:
             workflow_id=workflow_id,
             approver_id="user_002",
             approver_role="manager",
-            comments="Looks good"
+            comments="Looks good",
         )
 
         workflow = engine.get_workflow(workflow_id)
@@ -320,16 +303,14 @@ class TestWorkflowApproval:
         assert workflow.decisions[0].decision == "approved"
         assert workflow.decisions[0].comments == "Looks good"
 
-    @patch('src.core.workflow_engine.check_permission')
+    @patch("src.core.workflow_engine.check_permission")
     def test_approve_invalid_role_raises(self, mock_check_permission):
         """approve_step with invalid role raises ValueError."""
         mock_check_permission.return_value = False
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -337,16 +318,14 @@ class TestWorkflowApproval:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
 
         with pytest.raises(ValueError, match="lacks approval permission"):
             engine.approve_step(
-                workflow_id=workflow_id,
-                approver_id="user_002",
-                approver_role="invalid_role"
+                workflow_id=workflow_id, approver_id="user_002", approver_role="invalid_role"
             )
 
 
@@ -358,9 +337,7 @@ class TestWorkflowRejection:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -368,7 +345,7 @@ class TestWorkflowRejection:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -377,7 +354,7 @@ class TestWorkflowRejection:
             workflow_id=workflow_id,
             approver_id="user_002",
             approver_role="manager",
-            comments="Not approved"
+            comments="Not approved",
         )
 
         assert result is True
@@ -389,9 +366,7 @@ class TestWorkflowRejection:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -399,7 +374,7 @@ class TestWorkflowRejection:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -408,7 +383,7 @@ class TestWorkflowRejection:
             workflow_id=workflow_id,
             approver_id="user_002",
             approver_role="manager",
-            comments="Insufficient justification"
+            comments="Insufficient justification",
         )
 
         workflow = engine.get_workflow(workflow_id)
@@ -421,9 +396,7 @@ class TestWorkflowRejection:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -431,16 +404,12 @@ class TestWorkflowRejection:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
 
-        engine.reject_step(
-            workflow_id=workflow_id,
-            approver_id="user_002",
-            approver_role="manager"
-        )
+        engine.reject_step(workflow_id=workflow_id, approver_id="user_002", approver_role="manager")
 
         workflow = engine.get_workflow(workflow_id)
         assert workflow.steps[0].status == "rejected"
@@ -456,12 +425,7 @@ class TestWorkflowEscalation:
         template = WorkflowTemplate(
             name="Test",
             entity_type="compensation",
-            steps_config=[
-                {
-                    "approver_role": "manager",
-                    "next_level_role": "director"
-                }
-            ]
+            steps_config=[{"approver_role": "manager", "next_level_role": "director"}],
         )
         template_id = engine.register_template(template)
 
@@ -469,15 +433,12 @@ class TestWorkflowEscalation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
 
-        result = engine.escalate_step(
-            workflow_id=workflow_id,
-            reason="Timeout escalation"
-        )
+        result = engine.escalate_step(workflow_id=workflow_id, reason="Timeout escalation")
 
         assert result is True
         workflow = engine.get_workflow(workflow_id)
@@ -490,12 +451,7 @@ class TestWorkflowEscalation:
         template = WorkflowTemplate(
             name="Test",
             entity_type="compensation",
-            steps_config=[
-                {
-                    "approver_role": "manager",
-                    "next_level_role": "director"
-                }
-            ]
+            steps_config=[{"approver_role": "manager", "next_level_role": "director"}],
         )
         template_id = engine.register_template(template)
 
@@ -503,15 +459,12 @@ class TestWorkflowEscalation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
 
-        engine.escalate_step(
-            workflow_id=workflow_id,
-            reason="No response within 24 hours"
-        )
+        engine.escalate_step(workflow_id=workflow_id, reason="No response within 24 hours")
 
         workflow = engine.get_workflow(workflow_id)
         assert workflow.steps[0].status == "escalated"
@@ -524,12 +477,7 @@ class TestWorkflowEscalation:
         template = WorkflowTemplate(
             name="Test",
             entity_type="compensation",
-            steps_config=[
-                {
-                    "approver_role": "manager",
-                    "next_level_role": None
-                }
-            ]
+            steps_config=[{"approver_role": "manager", "next_level_role": None}],
         )
         template_id = engine.register_template(template)
 
@@ -537,7 +485,7 @@ class TestWorkflowEscalation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -554,9 +502,7 @@ class TestWorkflowCancellation:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -564,13 +510,11 @@ class TestWorkflowCancellation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         result = engine.cancel_workflow(
-            workflow_id=workflow_id,
-            user_id="user_001",
-            user_role="employee"
+            workflow_id=workflow_id, user_id="user_001", user_role="employee"
         )
 
         assert result is True
@@ -582,9 +526,7 @@ class TestWorkflowCancellation:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -592,15 +534,13 @@ class TestWorkflowCancellation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
 
         result = engine.cancel_workflow(
-            workflow_id=workflow_id,
-            user_id="user_001",
-            user_role="employee"
+            workflow_id=workflow_id, user_id="user_001", user_role="employee"
         )
 
         assert result is True
@@ -610,9 +550,7 @@ class TestWorkflowCancellation:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -620,13 +558,11 @@ class TestWorkflowCancellation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         result = engine.cancel_workflow(
-            workflow_id=workflow_id,
-            user_id="admin_user",
-            user_role="hr_admin"
+            workflow_id=workflow_id, user_id="admin_user", user_role="hr_admin"
         )
 
         assert result is True
@@ -636,9 +572,7 @@ class TestWorkflowCancellation:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -646,14 +580,12 @@ class TestWorkflowCancellation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         with pytest.raises(ValueError, match="lacks permission"):
             engine.cancel_workflow(
-                workflow_id=workflow_id,
-                user_id="user_002",
-                user_role="employee"
+                workflow_id=workflow_id, user_id="user_002", user_role="employee"
             )
 
     def test_cancel_already_cancelled_raises(self):
@@ -661,9 +593,7 @@ class TestWorkflowCancellation:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -671,34 +601,26 @@ class TestWorkflowCancellation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
-        engine.cancel_workflow(
-            workflow_id=workflow_id,
-            user_id="user_001"
-        )
+        engine.cancel_workflow(workflow_id=workflow_id, user_id="user_001")
 
         with pytest.raises(ValueError, match="already cancelled"):
-            engine.cancel_workflow(
-                workflow_id=workflow_id,
-                user_id="user_001"
-            )
+            engine.cancel_workflow(workflow_id=workflow_id, user_id="user_001")
 
 
 class TestGetPendingWorkflows:
     """Tests for pending workflow retrieval."""
 
-    @patch('src.core.workflow_engine.check_permission')
+    @patch("src.core.workflow_engine.check_permission")
     def test_get_pending_approvals_filters_by_approver(self, mock_check_permission):
         """get_pending_approvals returns workflows for specific approver."""
         mock_check_permission.return_value = True
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -707,14 +629,14 @@ class TestGetPendingWorkflows:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow_id_2 = engine.create_workflow(
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_002",
-            created_by="user_002"
+            created_by="user_002",
         )
 
         engine.submit_for_approval(workflow_id_1)
@@ -722,9 +644,7 @@ class TestGetPendingWorkflows:
 
         # Approve first workflow
         engine.approve_step(
-            workflow_id=workflow_id_1,
-            approver_id="user_003",
-            approver_role="manager"
+            workflow_id=workflow_id_1, approver_id="user_003", approver_role="manager"
         )
 
         # Get pending for a generic approver (no specific ID assigned)
@@ -737,9 +657,7 @@ class TestGetPendingWorkflows:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -747,7 +665,7 @@ class TestGetPendingWorkflows:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         # Don't submit - stays in DRAFT
@@ -766,11 +684,8 @@ class TestApprovalModes:
         template = WorkflowTemplate(
             name="Test",
             entity_type="compensation",
-            steps_config=[
-                {"approver_role": "manager"},
-                {"approver_role": "hr_admin"}
-            ],
-            approval_mode=ApprovalMode.SEQUENTIAL
+            steps_config=[{"approver_role": "manager"}, {"approver_role": "hr_admin"}],
+            approval_mode=ApprovalMode.SEQUENTIAL,
         )
         template_id = engine.register_template(template)
 
@@ -778,7 +693,7 @@ class TestApprovalModes:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow = engine.get_workflow(workflow_id)
@@ -792,7 +707,7 @@ class TestApprovalModes:
             name="Test",
             entity_type="compensation",
             steps_config=[{"approver_role": "manager"}],
-            approval_mode=ApprovalMode.PARALLEL
+            approval_mode=ApprovalMode.PARALLEL,
         )
         template_id = engine.register_template(template)
 
@@ -800,7 +715,7 @@ class TestApprovalModes:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow = engine.get_workflow(workflow_id)
@@ -821,9 +736,9 @@ class TestAutoEscalation:
                 {
                     "approver_role": "manager",
                     "escalate_after_hours": 1,
-                    "next_level_role": "director"
+                    "next_level_role": "director",
                 }
-            ]
+            ],
         )
         template_id = engine.register_template(template)
 
@@ -831,7 +746,7 @@ class TestAutoEscalation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -856,9 +771,9 @@ class TestAutoEscalation:
                 {
                     "approver_role": "manager",
                     "escalate_after_hours": 1,
-                    "next_level_role": "director"
+                    "next_level_role": "director",
                 }
-            ]
+            ],
         )
         template_id = engine.register_template(template)
 
@@ -866,7 +781,7 @@ class TestAutoEscalation:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         # Manually mark as completed
@@ -886,9 +801,7 @@ class TestWorkflowHistory:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -896,7 +809,7 @@ class TestWorkflowHistory:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         engine.submit_for_approval(workflow_id)
@@ -913,7 +826,7 @@ class TestWorkflowHistory:
             event_type="test_event",
             workflow_id="wf_001",
             actor="user_001",
-            details={"key": "value"}
+            details={"key": "value"},
         )
 
         event_dict = event.to_dict()
@@ -932,9 +845,7 @@ class TestGetUserWorkflows:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -943,14 +854,14 @@ class TestGetUserWorkflows:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow_id_2 = engine.create_workflow(
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_002",
-            created_by="user_002"
+            created_by="user_002",
         )
 
         # Get workflows for user_001
@@ -964,9 +875,7 @@ class TestGetUserWorkflows:
         engine = WorkflowEngine()
 
         template = WorkflowTemplate(
-            name="Test",
-            entity_type="compensation",
-            steps_config=[{"approver_role": "manager"}]
+            name="Test", entity_type="compensation", steps_config=[{"approver_role": "manager"}]
         )
         template_id = engine.register_template(template)
 
@@ -974,24 +883,21 @@ class TestGetUserWorkflows:
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_001",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         workflow_id_2 = engine.create_workflow(
             template_id=template_id,
             entity_type="compensation",
             entity_id="emp_002",
-            created_by="user_001"
+            created_by="user_001",
         )
 
         # Submit only first workflow
         engine.submit_for_approval(workflow_id_1)
 
         # Get DRAFT workflows
-        draft_workflows = engine.get_user_workflows(
-            "user_001",
-            state_filter=WorkflowState.DRAFT
-        )
+        draft_workflows = engine.get_user_workflows("user_001", state_filter=WorkflowState.DRAFT)
 
         assert len(draft_workflows) == 1
         assert draft_workflows[0].workflow_id == workflow_id_2

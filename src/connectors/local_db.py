@@ -68,6 +68,7 @@ class LocalDBConnector(HRISConnector):
         """Lazy import of SessionLocal to avoid circular imports at module load."""
         if self._session_factory is None:
             from src.core.database import SessionLocal
+
             self._session_factory = SessionLocal
         if self._session_factory is None:
             raise ConnectionError("Database session not available")
@@ -97,9 +98,7 @@ class LocalDBConnector(HRISConnector):
             query = session.query(DBEmployee).filter_by(status="active")
 
             if "department" in filters:
-                query = query.filter(
-                    DBEmployee.department.ilike(f"%{filters['department']}%")
-                )
+                query = query.filter(DBEmployee.department.ilike(f"%{filters['department']}%"))
             if "name" in filters:
                 name_term = f"%{filters['name']}%"
                 query = query.filter(
@@ -197,7 +196,9 @@ class LocalDBConnector(HRISConnector):
         try:
             new_req = DBLeaveReq(
                 employee_id=int(request.employee_id),
-                leave_type=request.leave_type.value if hasattr(request.leave_type, 'value') else str(request.leave_type),
+                leave_type=request.leave_type.value
+                if hasattr(request.leave_type, "value")
+                else str(request.leave_type),
                 start_date=request.start_date,
                 end_date=request.end_date,
                 reason=request.reason,

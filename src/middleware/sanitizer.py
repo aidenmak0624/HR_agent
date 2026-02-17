@@ -15,15 +15,13 @@ from flask import Flask, request, g
 logger = logging.getLogger(__name__)
 
 # HTML tag regex pattern
-HTML_TAG_PATTERN = re.compile(r'<[^>]+>')
+HTML_TAG_PATTERN = re.compile(r"<[^>]+>")
 
 # Email validation regex
-EMAIL_PATTERN = re.compile(
-    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-)
+EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
 # Fields that allow longer strings
-LONG_STRING_FIELDS = {'reason', 'query', 'description', 'comments', 'feedback', 'notes'}
+LONG_STRING_FIELDS = {"reason", "query", "description", "comments", "feedback", "notes"}
 
 # Default string length limits
 DEFAULT_STRING_LIMIT = 1000
@@ -45,7 +43,7 @@ class InputSanitizer:
         """
         if not isinstance(value, str):
             return value
-        return HTML_TAG_PATTERN.sub('', value)
+        return HTML_TAG_PATTERN.sub("", value)
 
     @staticmethod
     def validate_email(email: str) -> bool:
@@ -99,8 +97,7 @@ class InputSanitizer:
         # Truncate to max length
         if len(value) > max_length:
             logger.warning(
-                f"String truncated for field '{field_name}': "
-                f"{len(value)} -> {max_length} chars"
+                f"String truncated for field '{field_name}': " f"{len(value)} -> {max_length} chars"
             )
             value = value[:max_length]
 
@@ -181,13 +178,13 @@ class RequestSanitizer:
     def _before_request(self) -> None:
         """Sanitize incoming request data."""
         # Only process JSON requests with POST/PUT/PATCH
-        if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):
+        if request.method in ("POST", "PUT", "PATCH", "DELETE"):
             if request.is_json:
                 try:
                     data = request.get_json(silent=True)
                     if data:
                         # Define email fields based on endpoint
-                        email_fields = ['email', 'from_email', 'to_email', 'user_email']
+                        email_fields = ["email", "from_email", "to_email", "user_email"]
 
                         # Sanitize the data
                         sanitized_data = InputSanitizer.sanitize_dict(data, email_fields)

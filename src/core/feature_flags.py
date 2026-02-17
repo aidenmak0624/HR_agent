@@ -19,8 +19,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class FlagType(str, Enum):
     """Feature flag type."""
+
     BOOLEAN = "boolean"
     PERCENTAGE = "percentage"
     USER_LIST = "user_list"
@@ -29,6 +31,7 @@ class FlagType(str, Enum):
 
 class FlagStatus(str, Enum):
     """Feature flag status."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     ARCHIVED = "archived"
@@ -38,8 +41,10 @@ class FlagStatus(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class FeatureFlag(BaseModel):
     """Feature flag definition."""
+
     flag_id: UUID = Field(default_factory=uuid4, description="Unique flag ID")
     name: str = Field(..., min_length=2, max_length=255, description="Flag name")
     description: str = Field(..., description="Flag description")
@@ -60,7 +65,9 @@ class FeatureFlag(BaseModel):
     )
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Last update timestamp"
+    )
     created_by: Optional[str] = Field(None, description="User who created the flag")
 
     model_config = ConfigDict(frozen=False, use_enum_values=False)
@@ -68,29 +75,25 @@ class FeatureFlag(BaseModel):
 
 class FlagEvaluation(BaseModel):
     """Result of evaluating a feature flag."""
+
     flag_name: str = Field(..., description="Flag name")
     user_id: Optional[str] = Field(None, description="User ID evaluated against")
     result: bool = Field(..., description="Evaluation result")
     reason: str = Field(..., description="Reason for evaluation result")
-    evaluated_at: datetime = Field(default_factory=datetime.utcnow, description="Evaluation timestamp")
+    evaluated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Evaluation timestamp"
+    )
 
     model_config = ConfigDict(frozen=False, use_enum_values=False)
 
 
 class FeatureFlagConfig(BaseModel):
     """Feature flag service configuration."""
-    cache_ttl_seconds: int = Field(
-        default=60, description="Cache TTL for flag results"
-    )
-    default_enabled: bool = Field(
-        default=False, description="Default enabled state for new flags"
-    )
-    audit_evaluations: bool = Field(
-        default=False, description="Whether to audit all evaluations"
-    )
-    max_flags: int = Field(
-        default=500, description="Maximum number of flags allowed"
-    )
+
+    cache_ttl_seconds: int = Field(default=60, description="Cache TTL for flag results")
+    default_enabled: bool = Field(default=False, description="Default enabled state for new flags")
+    audit_evaluations: bool = Field(default=False, description="Whether to audit all evaluations")
+    max_flags: int = Field(default=500, description="Maximum number of flags allowed")
 
     model_config = ConfigDict(frozen=False)
 
@@ -98,6 +101,7 @@ class FeatureFlagConfig(BaseModel):
 # ============================================================================
 # Feature Flag Service
 # ============================================================================
+
 
 class FeatureFlagService:
     """
@@ -108,9 +112,7 @@ class FeatureFlagService:
     """
 
     def __init__(
-        self,
-        config: Optional[FeatureFlagConfig] = None,
-        audit_logger: Optional[Any] = None
+        self, config: Optional[FeatureFlagConfig] = None, audit_logger: Optional[Any] = None
     ):
         """
         Initialize feature flag service.
@@ -135,7 +137,7 @@ class FeatureFlagService:
         description: str,
         flag_type: FlagType,
         created_by: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> FeatureFlag:
         """
         Create a new feature flag.
@@ -165,11 +167,13 @@ class FeatureFlagService:
                 description=description,
                 flag_type=flag_type,
                 created_by=created_by or "SYSTEM",
-                **kwargs
+                **kwargs,
             )
 
             # Validate flag type-specific fields
-            if flag_type == FlagType.PERCENTAGE and (flag.percentage is None or not (0 <= flag.percentage <= 100)):
+            if flag_type == FlagType.PERCENTAGE and (
+                flag.percentage is None or not (0 <= flag.percentage <= 100)
+            ):
                 raise ValueError("Percentage flag must have percentage between 0-100")
 
             if flag_type == FlagType.USER_LIST and not flag.allowed_users:
@@ -189,11 +193,7 @@ class FeatureFlagService:
                 action="flag_created",
                 resource=f"flag:{name}",
                 user_id=created_by or "SYSTEM",
-                details={
-                    "name": name,
-                    "type": flag_type.value,
-                    "description": description
-                }
+                details={"name": name, "type": flag_type.value, "description": description},
             )
 
             logger.info("Feature flag created: %s (type: %s)", name, flag_type.value)
@@ -226,10 +226,7 @@ class FeatureFlagService:
             raise
 
     def update_flag(
-        self,
-        name: str,
-        updates: Dict[str, Any],
-        updated_by: Optional[str] = None
+        self, name: str, updates: Dict[str, Any], updated_by: Optional[str] = None
     ) -> FeatureFlag:
         """
         Update a feature flag.
@@ -255,8 +252,14 @@ class FeatureFlagService:
             # Apply updates
             for key, value in updates.items():
                 if key in [
-                    "description", "enabled", "status", "percentage",
-                    "allowed_users", "schedule_start", "schedule_end", "metadata"
+                    "description",
+                    "enabled",
+                    "status",
+                    "percentage",
+                    "allowed_users",
+                    "schedule_start",
+                    "schedule_end",
+                    "metadata",
                 ]:
                     if key == "percentage" and not (0 <= value <= 100):
                         raise ValueError("Percentage must be between 0-100")
@@ -271,7 +274,7 @@ class FeatureFlagService:
                 action="flag_updated",
                 resource=f"flag:{name}",
                 user_id=updated_by or "SYSTEM",
-                details=changeset
+                details=changeset,
             )
 
             logger.info("Feature flag updated: %s with changes: %s", name, changeset)
@@ -308,7 +311,7 @@ class FeatureFlagService:
                 action="flag_deleted",
                 resource=f"flag:{name}",
                 user_id=deleted_by or "SYSTEM",
-                details={"name": name}
+                details={"name": name},
             )
 
             logger.info("Feature flag deleted: %s", name)
@@ -343,7 +346,7 @@ class FeatureFlagService:
                 action="flag_archived",
                 resource=f"flag:{name}",
                 user_id=archived_by or "SYSTEM",
-                details={"name": name}
+                details={"name": name},
             )
 
             logger.info("Feature flag archived: %s", name)
@@ -353,10 +356,7 @@ class FeatureFlagService:
             raise
 
     def is_enabled(
-        self,
-        name: str,
-        user_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        self, name: str, user_id: Optional[str] = None, context: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Check if a feature flag is enabled for a user.
@@ -380,10 +380,7 @@ class FeatureFlagService:
             raise
 
     def evaluate_flag(
-        self,
-        name: str,
-        user_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        self, name: str, user_id: Optional[str] = None, context: Optional[Dict[str, Any]] = None
     ) -> FlagEvaluation:
         """
         Evaluate a feature flag for a user.
@@ -440,8 +437,9 @@ class FeatureFlagService:
                 elif flag.flag_type == FlagType.SCHEDULE:
                     now = datetime.utcnow()
                     result = (
-                        flag.schedule_start and flag.schedule_end and
-                        flag.schedule_start <= now <= flag.schedule_end
+                        flag.schedule_start
+                        and flag.schedule_end
+                        and flag.schedule_start <= now <= flag.schedule_end
                     )
                     reason = f"Schedule-based: {flag.schedule_start} <= {now} <= {flag.schedule_end} = {result}"
                 else:
@@ -449,10 +447,7 @@ class FeatureFlagService:
                     reason = "Unknown flag type"
 
             evaluation = FlagEvaluation(
-                flag_name=name,
-                user_id=user_id,
-                result=result,
-                reason=reason
+                flag_name=name, user_id=user_id, result=result, reason=reason
             )
 
             # Record evaluation
@@ -469,7 +464,7 @@ class FeatureFlagService:
                     action="flag_evaluated",
                     resource=f"flag:{name}",
                     user_id=user_id or "SYSTEM",
-                    details={"result": result, "reason": reason}
+                    details={"result": result, "reason": reason},
                 )
 
             logger.debug("Flag evaluated: %s for user %s = %s", name, user_id, result)
@@ -518,7 +513,9 @@ class FeatureFlagService:
                     is_enabled = self.is_enabled(flag_name, user_id)
                     result[flag_name] = is_enabled
                 except Exception as e:
-                    logger.warning("Failed to evaluate flag %s for user %s: %s", flag_name, user_id, str(e))
+                    logger.warning(
+                        "Failed to evaluate flag %s for user %s: %s", flag_name, user_id, str(e)
+                    )
                     result[flag_name] = False
 
             logger.info("Flags retrieved for user %s: %d flags", user_id, len(result))
@@ -528,9 +525,7 @@ class FeatureFlagService:
             raise
 
     def bulk_evaluate(
-        self,
-        flag_names: List[str],
-        user_id: Optional[str] = None
+        self, flag_names: List[str], user_id: Optional[str] = None
     ) -> Dict[str, bool]:
         """
         Bulk evaluate multiple flags for a user.
@@ -559,11 +554,7 @@ class FeatureFlagService:
             logger.error("Failed to bulk evaluate flags: %s", str(e))
             raise
 
-    def get_evaluation_history(
-        self,
-        flag_name: str,
-        limit: int = 100
-    ) -> List[FlagEvaluation]:
+    def get_evaluation_history(self, flag_name: str, limit: int = 100) -> List[FlagEvaluation]:
         """
         Get evaluation history for a flag.
 
@@ -606,13 +597,17 @@ class FeatureFlagService:
             stats = {
                 "total_flags": len(self._flags),
                 "active_flags": active_flags,
-                "inactive_flags": sum(1 for f in self._flags.values() if f.status == FlagStatus.INACTIVE),
-                "archived_flags": sum(1 for f in self._flags.values() if f.status == FlagStatus.ARCHIVED),
+                "inactive_flags": sum(
+                    1 for f in self._flags.values() if f.status == FlagStatus.INACTIVE
+                ),
+                "archived_flags": sum(
+                    1 for f in self._flags.values() if f.status == FlagStatus.ARCHIVED
+                ),
                 "enabled_flags": enabled_flags,
                 "disabled_flags": len(self._flags) - enabled_flags,
                 "total_evaluations": sum(self._evaluation_count.values()),
                 "flag_evaluation_counts": evaluation_counts,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             logger.info("Flag stats retrieved")
@@ -626,7 +621,7 @@ class FeatureFlagService:
         action: str,
         resource: str,
         user_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
         Log an audit entry.
@@ -643,7 +638,7 @@ class FeatureFlagService:
                     action=action,
                     resource=resource,
                     user_id=user_id or "SYSTEM",
-                    details=details or {}
+                    details=details or {},
                 )
 
             logger.debug("Audit logged: %s on %s", action, resource)

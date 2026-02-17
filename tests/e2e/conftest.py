@@ -14,18 +14,13 @@ logger = logging.getLogger(__name__)
 
 def pytest_configure(config):
     """Configure pytest with custom markers."""
-    config.addinivalue_line(
-        "markers", "e2e: mark test as E2E browser test"
-    )
+    config.addinivalue_line("markers", "e2e: mark test as E2E browser test")
 
 
 @pytest.fixture(scope="session")
 def browser_launch_args():
     """Configuration for browser launch."""
-    return {
-        "headless": True,
-        "args": ["--disable-blink-features=AutomationControlled"]
-    }
+    return {"headless": True, "args": ["--disable-blink-features=AutomationControlled"]}
 
 
 @pytest.fixture(scope="session")
@@ -57,9 +52,7 @@ def browser():
 @pytest.fixture(scope="function")
 def page(browser):
     """Provide a page instance for tests."""
-    context = browser.new_context(
-        viewport={"width": 1280, "height": 720}
-    )
+    context = browser.new_context(viewport={"width": 1280, "height": 720})
     page = context.new_page()
 
     # Set timeout for navigation
@@ -83,7 +76,7 @@ def admin_credentials():
     """Admin user credentials for testing."""
     return {
         "email": os.getenv("TEST_ADMIN_EMAIL", "admin@test.example.com"),
-        "password": os.getenv("TEST_ADMIN_PASSWORD", "testpassword123")
+        "password": os.getenv("TEST_ADMIN_PASSWORD", "testpassword123"),
     }
 
 
@@ -92,7 +85,7 @@ def regular_user_credentials():
     """Regular user credentials for testing."""
     return {
         "email": os.getenv("TEST_USER_EMAIL", "user@test.example.com"),
-        "password": os.getenv("TEST_USER_PASSWORD", "testpassword123")
+        "password": os.getenv("TEST_USER_PASSWORD", "testpassword123"),
     }
 
 

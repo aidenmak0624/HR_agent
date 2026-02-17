@@ -41,12 +41,8 @@ class SLATarget(BaseModel):
     metric: SLAMetric = Field(description="Metric type")
     target_value: float = Field(description="Target value")
     tier: SLATier = Field(description="Service tier")
-    measurement_window_hours: int = Field(
-        default=24, description="Measurement window in hours"
-    )
-    breach_notification: bool = Field(
-        default=True, description="Send notification on breach"
-    )
+    measurement_window_hours: int = Field(default=24, description="Measurement window in hours")
+    breach_notification: bool = Field(default=True, description="Send notification on breach")
 
     model_config = ConfigDict(frozen=False)
 
@@ -54,14 +50,10 @@ class SLATarget(BaseModel):
 class SLAMeasurement(BaseModel):
     """Individual SLA measurement."""
 
-    measurement_id: UUID = Field(
-        default_factory=uuid4, description="Unique measurement identifier"
-    )
+    measurement_id: UUID = Field(default_factory=uuid4, description="Unique measurement identifier")
     metric: SLAMetric = Field(description="Metric type")
     value: float = Field(description="Measured value")
-    timestamp: datetime = Field(
-        default_factory=datetime.now, description="Measurement timestamp"
-    )
+    timestamp: datetime = Field(default_factory=datetime.now, description="Measurement timestamp")
     is_within_target: bool = Field(description="Within target threshold")
     target_value: float = Field(description="Target value")
 
@@ -71,22 +63,14 @@ class SLAMeasurement(BaseModel):
 class SLAIncident(BaseModel):
     """SLA incident record."""
 
-    incident_id: UUID = Field(
-        default_factory=uuid4, description="Unique incident identifier"
-    )
+    incident_id: UUID = Field(default_factory=uuid4, description="Unique incident identifier")
     metric: SLAMetric = Field(description="Affected metric")
     severity: str = Field(description="Severity level (warning/critical)")
     started_at: datetime = Field(description="Incident start time")
-    resolved_at: Optional[datetime] = Field(
-        default=None, description="Incident resolution time"
-    )
-    duration_seconds: Optional[int] = Field(
-        default=None, description="Duration in seconds"
-    )
+    resolved_at: Optional[datetime] = Field(default=None, description="Incident resolution time")
+    duration_seconds: Optional[int] = Field(default=None, description="Duration in seconds")
     impact_description: str = Field(description="Impact description")
-    resolution_notes: Optional[str] = Field(
-        default=None, description="Resolution notes"
-    )
+    resolution_notes: Optional[str] = Field(default=None, description="Resolution notes")
 
     model_config = ConfigDict(frozen=False)
 
@@ -101,9 +85,7 @@ class SLAConfig(BaseModel):
     incident_auto_resolve_minutes: int = Field(
         default=30, description="Auto-resolve incident after minutes"
     )
-    report_generation_enabled: bool = Field(
-        default=True, description="Enable report generation"
-    )
+    report_generation_enabled: bool = Field(default=True, description="Enable report generation")
 
     model_config = ConfigDict(frozen=False)
 
@@ -134,9 +116,7 @@ class SLAMonitorService:
             },
         )
 
-    def record_measurement(
-        self, metric: SLAMetric, value: float
-    ) -> SLAMeasurement:
+    def record_measurement(self, metric: SLAMetric, value: float) -> SLAMeasurement:
         """
         Record an SLA measurement.
 
@@ -223,9 +203,7 @@ class SLAMonitorService:
 
                 if recent:
                     latest = recent[-1]
-                    compliant = sum(
-                        1 for m in recent if m.is_within_target
-                    ) / len(recent)
+                    compliant = sum(1 for m in recent if m.is_within_target) / len(recent)
 
                     status[metric.value] = {
                         "current_value": latest.value,
@@ -254,9 +232,7 @@ class SLAMonitorService:
             )
             raise
 
-    def check_sla_compliance(
-        self, metric: Optional[SLAMetric] = None
-    ) -> Dict[str, Any]:
+    def check_sla_compliance(self, metric: Optional[SLAMetric] = None) -> Dict[str, Any]:
         """
         Check SLA compliance.
 
@@ -279,16 +255,12 @@ class SLAMonitorService:
                 }
 
             # Check all metrics
-            all_compliant = all(
-                s.get("within_target", False) for s in status.values()
-            )
+            all_compliant = all(s.get("within_target", False) for s in status.values())
 
             return {
                 "compliant": all_compliant,
                 "metrics": status,
-                "compliant_count": sum(
-                    1 for s in status.values() if s.get("within_target", False)
-                ),
+                "compliant_count": sum(1 for s in status.values() if s.get("within_target", False)),
                 "total_count": len(status),
             }
 
@@ -316,8 +288,7 @@ class SLAMonitorService:
             uptime_measurements = [
                 m
                 for m in self.measurements
-                if m.metric == SLAMetric.UPTIME
-                and start_date <= m.timestamp <= end_date
+                if m.metric == SLAMetric.UPTIME and start_date <= m.timestamp <= end_date
             ]
 
             if not uptime_measurements:
@@ -347,9 +318,7 @@ class SLAMonitorService:
             )
             raise
 
-    def get_response_time_percentiles(
-        self, period_hours: int = 24
-    ) -> Dict[str, Any]:
+    def get_response_time_percentiles(self, period_hours: int = 24) -> Dict[str, Any]:
         """
         Get response time percentiles.
 
@@ -366,8 +335,7 @@ class SLAMonitorService:
             rt_measurements = [
                 m
                 for m in self.measurements
-                if m.metric == SLAMetric.RESPONSE_TIME
-                and start_date <= m.timestamp <= end_date
+                if m.metric == SLAMetric.RESPONSE_TIME and start_date <= m.timestamp <= end_date
             ]
 
             if not rt_measurements:
@@ -417,8 +385,7 @@ class SLAMonitorService:
             error_measurements = [
                 m
                 for m in self.measurements
-                if m.metric == SLAMetric.ERROR_RATE
-                and start_date <= m.timestamp <= end_date
+                if m.metric == SLAMetric.ERROR_RATE and start_date <= m.timestamp <= end_date
             ]
 
             if not error_measurements:
@@ -429,12 +396,8 @@ class SLAMonitorService:
                 }
 
             # Assume value = error_rate percentage
-            avg_error_rate = statistics.mean(
-                [m.value for m in error_measurements]
-            )
-            error_count = sum(
-                1 for m in error_measurements if not m.is_within_target
-            )
+            avg_error_rate = statistics.mean([m.value for m in error_measurements])
+            error_count = sum(1 for m in error_measurements if not m.is_within_target)
 
             return {
                 "rate": round(avg_error_rate, 4),
@@ -571,11 +534,7 @@ class SLAMonitorService:
             end_date = datetime.now()
             start_date = end_date - timedelta(days=period_days)
 
-            history = [
-                i
-                for i in self.incidents
-                if start_date <= i.started_at <= end_date
-            ]
+            history = [i for i in self.incidents if start_date <= i.started_at <= end_date]
 
             return sorted(history, key=lambda x: x.started_at, reverse=True)
 
@@ -602,9 +561,7 @@ class SLAMonitorService:
 
             # Get metrics for period
             period_measurements = [
-                m
-                for m in self.measurements
-                if start_date <= m.timestamp <= end_date
+                m for m in self.measurements if start_date <= m.timestamp <= end_date
             ]
 
             # Get incidents for period
@@ -622,18 +579,12 @@ class SLAMonitorService:
                     compliance_by_metric[m.metric.value].append(0)
 
             metric_compliance = {
-                k: round(
-                    sum(v) / len(v) * 100 if v else 0, 2
-                )
+                k: round(sum(v) / len(v) * 100 if v else 0, 2)
                 for k, v in compliance_by_metric.items()
             }
 
-            critical_incidents = sum(
-                1 for i in period_incidents if i.severity == "critical"
-            )
-            warning_incidents = sum(
-                1 for i in period_incidents if i.severity == "warning"
-            )
+            critical_incidents = sum(1 for i in period_incidents if i.severity == "critical")
+            warning_incidents = sum(1 for i in period_incidents if i.severity == "warning")
 
             return {
                 "report_period": {
@@ -643,9 +594,7 @@ class SLAMonitorService:
                 },
                 "generated_at": datetime.now().isoformat(),
                 "overall_compliance": round(
-                    statistics.mean(metric_compliance.values())
-                    if metric_compliance
-                    else 0,
+                    statistics.mean(metric_compliance.values()) if metric_compliance else 0,
                     2,
                 ),
                 "metric_compliance": metric_compliance,
@@ -654,9 +603,7 @@ class SLAMonitorService:
                     "total": len(period_incidents),
                     "critical": critical_incidents,
                     "warning": warning_incidents,
-                    "resolved": sum(
-                        1 for i in period_incidents if i.resolved_at is not None
-                    ),
+                    "resolved": sum(1 for i in period_incidents if i.resolved_at is not None),
                 },
                 "current_status": status,
             }
@@ -668,9 +615,7 @@ class SLAMonitorService:
             )
             raise
 
-    def get_sla_trends(
-        self, metric: SLAMetric, period_days: int = 30
-    ) -> Dict[str, Any]:
+    def get_sla_trends(self, metric: SLAMetric, period_days: int = 30) -> Dict[str, Any]:
         """
         Get SLA trends for a metric.
 
@@ -688,8 +633,7 @@ class SLAMonitorService:
             metric_measurements = [
                 m
                 for m in self.measurements
-                if m.metric == metric
-                and start_date <= m.timestamp <= end_date
+                if m.metric == metric and start_date <= m.timestamp <= end_date
             ]
 
             if not metric_measurements:
@@ -706,23 +650,20 @@ class SLAMonitorService:
                 daily_data[day_key].append(m.value)
 
             daily_averages = {
-                day: round(statistics.mean(values), 4)
-                for day, values in sorted(daily_data.items())
+                day: round(statistics.mean(values), 4) for day, values in sorted(daily_data.items())
             }
 
             # Determine trend
             if len(daily_averages) > 1:
                 values_list = list(daily_averages.values())
-                first_half_avg = statistics.mean(
-                    values_list[: len(values_list) // 2]
-                )
-                second_half_avg = statistics.mean(
-                    values_list[len(values_list) // 2 :]
-                )
+                first_half_avg = statistics.mean(values_list[: len(values_list) // 2])
+                second_half_avg = statistics.mean(values_list[len(values_list) // 2 :])
                 trend = (
                     "improving"
                     if second_half_avg > first_half_avg
-                    else "degrading" if second_half_avg < first_half_avg else "stable"
+                    else "degrading"
+                    if second_half_avg < first_half_avg
+                    else "stable"
                 )
             else:
                 trend = "insufficient_data"
@@ -731,9 +672,7 @@ class SLAMonitorService:
                 "metric": metric.value,
                 "period_days": period_days,
                 "daily_averages": daily_averages,
-                "overall_average": round(statistics.mean(
-                    m.value for m in metric_measurements
-                ), 4),
+                "overall_average": round(statistics.mean(m.value for m in metric_measurements), 4),
                 "trend": trend,
                 "measurement_count": len(metric_measurements),
             }

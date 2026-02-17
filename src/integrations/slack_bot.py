@@ -27,7 +27,7 @@ class SlackBotConfig(BaseModel):
     app_token: str = Field(..., description="Slack app-level token (xapp-*)")
     channel_allowlist: List[str] = Field(
         default_factory=lambda: ["hr-assistance", "general"],
-        description="Channels where bot is allowed to respond"
+        description="Channels where bot is allowed to respond",
     )
     max_message_length: int = Field(default=4000, description="Max Slack message length")
     response_timeout: int = Field(default=30, description="Response timeout in seconds")
@@ -88,15 +88,11 @@ class SlackEventHandler:
                 return {"status": "rejected", "reason": "invalid_length"}
 
             logger.info(
-                "Message event from user=%s channel=%s thread=%s",
-                user_id, channel, thread_ts
+                "Message event from user=%s channel=%s thread=%s", user_id, channel, thread_ts
             )
 
             return self._process_query(
-                user_id=user_id,
-                text=text,
-                channel=channel,
-                thread_ts=thread_ts
+                user_id=user_id, text=text, channel=channel, thread_ts=thread_ts
             )
 
         except Exception as e:
@@ -130,16 +126,10 @@ class SlackEventHandler:
                 logger.warning("Empty mention from user %s", user_id)
                 return {"status": "rejected", "reason": "empty_mention"}
 
-            logger.info(
-                "App mention from user=%s channel=%s: %s",
-                user_id, channel, text[:50]
-            )
+            logger.info("App mention from user=%s channel=%s: %s", user_id, channel, text[:50])
 
             return self._process_query(
-                user_id=user_id,
-                text=text,
-                channel=channel,
-                thread_ts=thread_ts
+                user_id=user_id, text=text, channel=channel, thread_ts=thread_ts
             )
 
         except Exception as e:
@@ -167,17 +157,12 @@ class SlackEventHandler:
                 logger.warning("Empty slash command from user %s", user_id)
                 return {
                     "status": "error",
-                    "error": "Please provide a question. Usage: /hr-ask <your question>"
+                    "error": "Please provide a question. Usage: /hr-ask <your question>",
                 }
 
             logger.info("Slash command /hr-ask from user=%s: %s", user_id, text[:50])
 
-            return self._process_query(
-                user_id=user_id,
-                text=text,
-                channel=channel,
-                thread_ts=None
-            )
+            return self._process_query(user_id=user_id, text=text, channel=channel, thread_ts=None)
 
         except Exception as e:
             logger.exception("Error handling slash command: %s", e)
@@ -185,11 +170,7 @@ class SlackEventHandler:
             return {"status": "error", "error": str(e)}
 
     def _process_query(
-        self,
-        user_id: str,
-        text: str,
-        channel: str,
-        thread_ts: Optional[str] = None
+        self, user_id: str, text: str, channel: str, thread_ts: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Process an HR query through the AgentService.
@@ -214,21 +195,18 @@ class SlackEventHandler:
 
             logger.info(
                 "Processing query message_id=%s user=%s context=%s",
-                message_id, user_id, user_context
+                message_id,
+                user_id,
+                user_context,
             )
 
             if not self.agent_service:
                 logger.warning("AgentService not configured, returning placeholder")
-                return {
-                    "status": "error",
-                    "error": "Agent service not available"
-                }
+                return {"status": "error", "error": "Agent service not available"}
 
             # Process through agent service
             result = self.agent_service.process_query(
-                query=text,
-                user_context=user_context,
-                session_id=message_id
+                query=text, user_context=user_context, session_id=message_id
             )
 
             response_time = time.time() - start_time
@@ -236,7 +214,8 @@ class SlackEventHandler:
 
             logger.info(
                 "Query processed successfully in %.2f seconds, confidence=%.2f",
-                response_time, result.get("confidence", 0.0)
+                response_time,
+                result.get("confidence", 0.0),
             )
 
             # Format response for Slack
@@ -254,7 +233,7 @@ class SlackEventHandler:
             return {
                 "status": "error",
                 "error": f"Failed to process query: {str(e)[:100]}",
-                "message_id": message_id
+                "message_id": message_id,
             }
 
     def _format_slack_response(self, result: Dict[str, Any]) -> Dict[str, Any]:
@@ -289,25 +268,18 @@ class SlackEventHandler:
             blocks = []
 
             # Main answer block
-            blocks.append({
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"*HR Assistant Response*\n\n{answer}"
+            blocks.append(
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": f"*HR Assistant Response*\n\n{answer}"},
                 }
-            })
+            )
 
             # Confidence and agent type context
             context_text = f"{confidence_badge} | Agent: {agent_type} | Score: {confidence:.1%}"
-            blocks.append({
-                "type": "context",
-                "elements": [
-                    {
-                        "type": "mrkdwn",
-                        "text": context_text
-                    }
-                ]
-            })
+            blocks.append(
+                {"type": "context", "elements": [{"type": "mrkdwn", "text": context_text}]}
+            )
 
             # Sources block if available
             if sources:
@@ -320,20 +292,11 @@ class SlackEventHandler:
                     else:
                         sources_text += f"{i}. {source}\n"
 
-                blocks.append({
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": sources_text
-                    }
-                })
+                blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": sources_text}})
 
             logger.debug("Formatted Slack response with %d blocks", len(blocks))
 
-            return {
-                "blocks": blocks,
-                "text": answer[:100]  # Fallback text
-            }
+            return {"blocks": blocks, "text": answer[:100]}  # Fallback text
 
         except Exception as e:
             logger.exception("Error formatting Slack response: %s", e)
@@ -343,11 +306,11 @@ class SlackEventHandler:
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": f"Error formatting response: {str(e)[:100]}"
-                        }
+                            "text": f"Error formatting response: {str(e)[:100]}",
+                        },
                     }
                 ],
-                "text": "Error"
+                "text": "Error",
             }
 
     def _get_user_context(self, user_id: str) -> Dict[str, Any]:
@@ -364,12 +327,7 @@ class SlackEventHandler:
         Returns:
             Dict with user_id, source, platform context
         """
-        return {
-            "user_id": user_id,
-            "source": "slack",
-            "platform": "slack",
-            "timezone": "UTC"
-        }
+        return {"user_id": user_id, "source": "slack", "platform": "slack", "timezone": "UTC"}
 
     def _update_metrics(self, response_time: float, is_error: bool = False) -> None:
         """
@@ -386,9 +344,7 @@ class SlackEventHandler:
         # Running average of response time
         old_avg = self.metrics["avg_response_time"]
         count = self.metrics["messages_processed"]
-        self.metrics["avg_response_time"] = (
-            (old_avg * (count - 1) + response_time) / count
-        )
+        self.metrics["avg_response_time"] = (old_avg * (count - 1) + response_time) / count
 
     def get_health(self) -> Dict[str, Any]:
         """
@@ -415,7 +371,7 @@ class SlackEventHandler:
             "errors": self.metrics["errors"],
             "error_rate": f"{error_rate:.1%}",
             "avg_response_time_ms": f"{self.metrics['avg_response_time'] * 1000:.1f}",
-            "uptime_minutes": f"{uptime / 60:.1f}"
+            "uptime_minutes": f"{uptime / 60:.1f}",
         }
 
 
@@ -447,14 +403,8 @@ class SlackBotService:
         """
         try:
             self.running = True
-            logger.info(
-                "SlackBotService starting - bot_token=%s",
-                self.config.bot_token[:20]
-            )
-            logger.info(
-                "Listening to channels: %s",
-                ", ".join(self.config.channel_allowlist)
-            )
+            logger.info("SlackBotService starting - bot_token=%s", self.config.bot_token[:20])
+            logger.info("Listening to channels: %s", ", ".join(self.config.channel_allowlist))
             # In production: app = App(token=self.config.bot_token, ...)
             # app.message(self.event_handler.handle_message)
             # app.event("app_mention", self.event_handler.handle_app_mention)
@@ -490,6 +440,6 @@ class SlackBotService:
             "config": {
                 "max_message_length": self.config.max_message_length,
                 "response_timeout": self.config.response_timeout,
-                "channels": self.config.channel_allowlist
-            }
+                "channels": self.config.channel_allowlist,
+            },
         }

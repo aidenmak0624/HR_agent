@@ -14,6 +14,7 @@ logger.setLevel(logging.INFO)
 
 class LLMProvider(str, Enum):
     """Supported LLM providers."""
+
     GOOGLE = "google"
     OPENAI = "openai"
     FALLBACK = "fallback"
@@ -260,11 +261,7 @@ class LLMService:
             response = llm.invoke(messages)
             elapsed_ms = (time.time() - start_time) * 1000
 
-            response_text = (
-                response.content
-                if hasattr(response, "content")
-                else str(response)
-            )
+            response_text = response.content if hasattr(response, "content") else str(response)
 
             logger.info(
                 f"Provider {provider.value}: {elapsed_ms:.1f}ms, "
@@ -294,10 +291,10 @@ class LLMService:
 
             if provider == LLMProvider.OPENAI:
                 # OpenAI gpt-4o-mini pricing (~$0.15/1M input, ~$0.60/1M output)
-                cost = (tokens_out * 0.0000006)  # ~$0.60 per 1M output tokens
+                cost = tokens_out * 0.0000006  # ~$0.60 per 1M output tokens
             elif provider == LLMProvider.GOOGLE:
                 # Google Gemini fallback pricing (rough estimate)
-                cost = (tokens_out * 0.000001)
+                cost = tokens_out * 0.000001
             else:
                 cost = 0.0
 

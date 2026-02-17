@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class FeedbackType(str, Enum):
     """Enumeration of feedback types."""
+
     RESPONSE_QUALITY = "response_quality"
     ACCURACY = "accuracy"
     HELPFULNESS = "helpfulness"
@@ -28,6 +29,7 @@ class FeedbackType(str, Enum):
 
 class FeedbackSentiment(str, Enum):
     """Enumeration of sentiment values."""
+
     VERY_POSITIVE = "very_positive"
     POSITIVE = "positive"
     NEUTRAL = "neutral"
@@ -37,6 +39,7 @@ class FeedbackSentiment(str, Enum):
 
 class FeedbackEntry(BaseModel):
     """Model representing a feedback entry."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     feedback_id: UUID
@@ -55,6 +58,7 @@ class FeedbackEntry(BaseModel):
 
 class FeedbackSummary(BaseModel):
     """Model representing feedback summary statistics."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     period_start: datetime
@@ -70,6 +74,7 @@ class FeedbackSummary(BaseModel):
 
 class FeedbackConfig(BaseModel):
     """Configuration for feedback operations."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     enabled: bool = True
@@ -215,10 +220,7 @@ class FeedbackService:
             # Apply filters
             if "feedback_type" in filters:
                 feedback_type = filters["feedback_type"]
-                entries = [
-                    e for e in entries
-                    if e.feedback_type == feedback_type
-                ]
+                entries = [e for e in entries if e.feedback_type == feedback_type]
 
             if "rating" in filters:
                 rating = filters["rating"]
@@ -269,10 +271,7 @@ class FeedbackService:
         """
         try:
             cutoff_date = datetime.utcnow() - timedelta(days=period_days)
-            entries = [
-                e for e in self.feedback_entries.values()
-                if e.submitted_at >= cutoff_date
-            ]
+            entries = [e for e in self.feedback_entries.values() if e.submitted_at >= cutoff_date]
 
             if not entries:
                 return FeedbackSummary(
@@ -303,9 +302,7 @@ class FeedbackService:
             for feedback_type in FeedbackType:
                 count = sum(1 for e in entries if e.feedback_type == feedback_type)
                 if count > 0:
-                    avg = sum(
-                        e.rating for e in entries if e.feedback_type == feedback_type
-                    ) / count
+                    avg = sum(e.rating for e in entries if e.feedback_type == feedback_type) / count
                     by_type[feedback_type.value] = avg
 
             # By agent
@@ -316,10 +313,7 @@ class FeedbackService:
                         by_agent[entry.agent_name] = []
                     by_agent[entry.agent_name].append(entry.rating)
 
-            by_agent = {
-                agent: sum(ratings) / len(ratings)
-                for agent, ratings in by_agent.items()
-            }
+            by_agent = {agent: sum(ratings) / len(ratings) for agent, ratings in by_agent.items()}
 
             # By sentiment
             by_sentiment = {}
@@ -333,9 +327,7 @@ class FeedbackService:
             low_rating_entries = [e for e in entries if e.rating <= 2 and e.comment]
             comments = [e.comment for e in low_rating_entries]
             if comments:
-                top_issues = sorted(
-                    set(comments), key=lambda c: len(c), reverse=True
-                )[:10]
+                top_issues = sorted(set(comments), key=lambda c: len(c), reverse=True)[:10]
 
             summary = FeedbackSummary(
                 period_start=cutoff_date,
@@ -369,7 +361,8 @@ class FeedbackService:
         try:
             cutoff_date = datetime.utcnow() - timedelta(days=period_days)
             entries = [
-                e for e in self.feedback_entries.values()
+                e
+                for e in self.feedback_entries.values()
                 if e.submitted_at >= cutoff_date and e.agent_name
             ]
 
@@ -395,8 +388,7 @@ class FeedbackService:
             for agent, stats in agent_stats.items():
                 ratings = stats["ratings"]
                 result[agent] = {
-                    "average_rating": round(
-                        sum(ratings) / len(ratings), 2) if ratings else 0,
+                    "average_rating": round(sum(ratings) / len(ratings), 2) if ratings else 0,
                     "count": stats["count"],
                     "feedback_by_type": stats["feedback_types"],
                     "trend": self._calculate_trend(ratings),
@@ -425,7 +417,8 @@ class FeedbackService:
         try:
             cutoff_date = datetime.utcnow() - timedelta(days=period_days)
             entries = [
-                e for e in self.feedback_entries.values()
+                e
+                for e in self.feedback_entries.values()
                 if e.submitted_at >= cutoff_date and e.rating <= 2
             ]
 
@@ -444,10 +437,7 @@ class FeedbackService:
                 reverse=True,
             )[:limit]
 
-            result = [
-                {"issue": issue, "count": count}
-                for issue, count in sorted_issues
-            ]
+            result = [{"issue": issue, "count": count} for issue, count in sorted_issues]
             logger.info(f"Retrieved {len(result)} trending issues")
             return result
         except Exception as e:
@@ -469,10 +459,7 @@ class FeedbackService:
             List of FeedbackEntry instances
         """
         try:
-            entries = [
-                e for e in self.feedback_entries.values()
-                if e.user_id == user_id
-            ]
+            entries = [e for e in self.feedback_entries.values() if e.user_id == user_id]
             entries.sort(key=lambda e: e.submitted_at, reverse=True)
             result = entries[:limit]
             logger.info(f"Retrieved {len(result)} feedback entries for user {user_id}")
@@ -533,20 +520,16 @@ class FeedbackService:
 
             # Count keyword occurrences
             very_positive_count = sum(
-                len(re.findall(rf"\b{word}\b", text_lower))
-                for word in very_positive_words
+                len(re.findall(rf"\b{word}\b", text_lower)) for word in very_positive_words
             )
             positive_count = sum(
-                len(re.findall(rf"\b{word}\b", text_lower))
-                for word in positive_words
+                len(re.findall(rf"\b{word}\b", text_lower)) for word in positive_words
             )
             negative_count = sum(
-                len(re.findall(rf"\b{word}\b", text_lower))
-                for word in negative_words
+                len(re.findall(rf"\b{word}\b", text_lower)) for word in negative_words
             )
             very_negative_count = sum(
-                len(re.findall(rf"\b{word}\b", text_lower))
-                for word in very_negative_words
+                len(re.findall(rf"\b{word}\b", text_lower)) for word in very_negative_words
             )
 
             # Determine sentiment
@@ -575,10 +558,7 @@ class FeedbackService:
         """
         try:
             cutoff_date = datetime.utcnow() - timedelta(days=period_days)
-            entries = [
-                e for e in self.feedback_entries.values()
-                if e.submitted_at >= cutoff_date
-            ]
+            entries = [e for e in self.feedback_entries.values() if e.submitted_at >= cutoff_date]
 
             if not entries:
                 return {
@@ -626,7 +606,8 @@ class FeedbackService:
         """
         try:
             entries = [
-                e for e in self.feedback_entries.values()
+                e
+                for e in self.feedback_entries.values()
                 if start_date <= e.submitted_at <= end_date
             ]
 
@@ -709,9 +690,7 @@ class FeedbackService:
                 return "stable"
 
             first_half_avg = sum(ratings[: len(ratings) // 2]) / (len(ratings) // 2)
-            second_half_avg = sum(ratings[len(ratings) // 2:]) / (
-                len(ratings) - len(ratings) // 2
-            )
+            second_half_avg = sum(ratings[len(ratings) // 2 :]) / (len(ratings) - len(ratings) // 2)
 
             if second_half_avg > first_half_avg + 0.5:
                 return "improving"

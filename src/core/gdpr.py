@@ -20,8 +20,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class DataCategory(str, Enum):
     """Classification of personal data types."""
+
     PERSONAL = "personal"
     SENSITIVE = "sensitive"
     FINANCIAL = "financial"
@@ -31,6 +33,7 @@ class DataCategory(str, Enum):
 
 class ConsentPurpose(str, Enum):
     """Purposes for which consent is requested."""
+
     HR_PROCESSING = "hr_processing"
     BENEFITS_ADMIN = "benefits_admin"
     PERFORMANCE_REVIEW = "performance_review"
@@ -40,6 +43,7 @@ class ConsentPurpose(str, Enum):
 
 class DSARType(str, Enum):
     """Types of Data Subject Access Requests."""
+
     ACCESS = "access"
     ERASURE = "erasure"
     RECTIFICATION = "rectification"
@@ -48,6 +52,7 @@ class DSARType(str, Enum):
 
 class DSARStatus(str, Enum):
     """Status of a DSAR."""
+
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -56,6 +61,7 @@ class DSARStatus(str, Enum):
 
 class RetentionAction(str, Enum):
     """Action to take on expired retention period."""
+
     ARCHIVE = "archive"
     DELETE = "delete"
 
@@ -64,8 +70,10 @@ class RetentionAction(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class ConsentRecord(BaseModel):
     """Record of employee consent for data processing."""
+
     consent_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique consent ID")
     employee_id: str = Field(..., description="Employee ID")
     purpose: ConsentPurpose = Field(..., description="Purpose of processing")
@@ -78,11 +86,14 @@ class ConsentRecord(BaseModel):
 
 class DSARRequest(BaseModel):
     """Data Subject Access Request."""
+
     request_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique request ID")
     employee_id: str = Field(..., description="Employee ID")
     type: DSARType = Field(..., description="Type of DSAR")
     status: DSARStatus = Field(default=DSARStatus.PENDING, description="Request status")
-    submitted_at: datetime = Field(default_factory=datetime.utcnow, description="Submission timestamp")
+    submitted_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Submission timestamp"
+    )
     due_date: datetime = Field(..., description="Legal deadline (30 days from submission)")
     completed_at: Optional[datetime] = Field(None, description="Completion timestamp")
     data_export_path: Optional[str] = Field(None, description="Path to exported data file")
@@ -92,6 +103,7 @@ class DSARRequest(BaseModel):
 
 class RetentionPolicy(BaseModel):
     """Data retention policy."""
+
     policy_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique policy ID")
     data_category: DataCategory = Field(..., description="Data category this policy applies to")
     retention_days: int = Field(..., description="Days to retain data")
@@ -103,6 +115,7 @@ class RetentionPolicy(BaseModel):
 # ============================================================================
 # GDPR Compliance Service
 # ============================================================================
+
 
 class GDPRComplianceService:
     """
@@ -140,25 +153,21 @@ class GDPRComplianceService:
             "employees.phone": DataCategory.PERSONAL,
             "employees.hire_date": DataCategory.PERSONAL,
             "employees.location": DataCategory.PERSONAL,
-
             # Sensitive employee data
             "employees.ssn": DataCategory.SENSITIVE,
             "employees.government_id": DataCategory.SENSITIVE,
             "employees.birth_date": DataCategory.SENSITIVE,
             "employees.marital_status": DataCategory.SENSITIVE,
             "employees.emergency_contact": DataCategory.SENSITIVE,
-
             # Financial data
             "compensation.salary": DataCategory.FINANCIAL,
             "compensation.bonus": DataCategory.FINANCIAL,
             "compensation.bank_account": DataCategory.FINANCIAL,
             "compensation.tax_id": DataCategory.FINANCIAL,
-
             # Health data
             "benefits.health_plan": DataCategory.HEALTH,
             "benefits.medical_history": DataCategory.HEALTH,
             "benefits.disabilities": DataCategory.HEALTH,
-
             # Biometric data
             "employees.fingerprint": DataCategory.BIOMETRIC,
             "employees.facial_recognition": DataCategory.BIOMETRIC,
@@ -169,7 +178,7 @@ class GDPRComplianceService:
         action: str,
         employee_id: str,
         details: Optional[Dict[str, Any]] = None,
-        legal_basis: Optional[str] = None
+        legal_basis: Optional[str] = None,
     ) -> None:
         """
         Log an action to audit trail for compliance tracking.
@@ -191,10 +200,7 @@ class GDPRComplianceService:
         logger.info(f"Audit trail: {action} for employee {employee_id} (basis: {legal_basis})")
 
     def record_consent(
-        self,
-        employee_id: str,
-        purpose: ConsentPurpose,
-        granted: bool
+        self, employee_id: str, purpose: ConsentPurpose, granted: bool
     ) -> ConsentRecord:
         """
         Record employee consent for data processing.
@@ -223,17 +229,13 @@ class GDPRComplianceService:
             action="consent_recorded",
             employee_id=employee_id,
             details={"purpose": purpose.value, "granted": granted},
-            legal_basis="Consent Management"
+            legal_basis="Consent Management",
         )
 
         logger.info(f"Consent recorded for {employee_id}: {purpose.value} = {granted}")
         return record
 
-    def revoke_consent(
-        self,
-        employee_id: str,
-        purpose: ConsentPurpose
-    ) -> ConsentRecord:
+    def revoke_consent(self, employee_id: str, purpose: ConsentPurpose) -> ConsentRecord:
         """
         Revoke employee consent for a specific purpose.
 
@@ -259,7 +261,7 @@ class GDPRComplianceService:
                     action="consent_revoked",
                     employee_id=employee_id,
                     details={"purpose": purpose.value},
-                    legal_basis="Consent Withdrawal"
+                    legal_basis="Consent Withdrawal",
                 )
 
                 logger.info(f"Consent revoked for {employee_id}: {purpose.value}")
@@ -300,7 +302,7 @@ class GDPRComplianceService:
         self._log_audit_trail(
             action="consent_history_accessed",
             employee_id=employee_id,
-            legal_basis="Data Subject Access Right"
+            legal_basis="Data Subject Access Right",
         )
 
         return self._consents.get(employee_id, [])
@@ -325,7 +327,7 @@ class GDPRComplianceService:
             action=f"dsar_{request.type.value}_submitted",
             employee_id=request.employee_id,
             details={"request_id": request.request_id, "due_date": request.due_date.isoformat()},
-            legal_basis=f"GDPR Article 15-20 ({request.type.value})"
+            legal_basis=f"GDPR Article 15-20 ({request.type.value})",
         )
 
         logger.info(f"Processing DSAR: {request.request_id} ({request.type.value})")
@@ -356,7 +358,7 @@ class GDPRComplianceService:
             action=f"dsar_{request.type.value}_completed",
             employee_id=request.employee_id,
             details={"request_id": request.request_id},
-            legal_basis=f"GDPR Article 15-20 ({request.type.value})"
+            legal_basis=f"GDPR Article 15-20 ({request.type.value})",
         )
 
         return result
@@ -374,7 +376,7 @@ class GDPRComplianceService:
         self._log_audit_trail(
             action="data_subject_access",
             employee_id=employee_id,
-            legal_basis="GDPR Article 15 (Right of Access)"
+            legal_basis="GDPR Article 15 (Right of Access)",
         )
 
         # In a real system, this would query a database
@@ -423,7 +425,7 @@ class GDPRComplianceService:
         self._log_audit_trail(
             action="right_to_erasure_exercised",
             employee_id=employee_id,
-            legal_basis="GDPR Article 17 (Right to Erasure)"
+            legal_basis="GDPR Article 17 (Right to Erasure)",
         )
 
         # Simulate anonymization of personal data
@@ -442,8 +444,8 @@ class GDPRComplianceService:
             ],
             "retained_fields": [
                 "employment_dates",  # Legal requirement for tax/benefits
-                "salary_records",    # Legal requirement for audits
-                "performance_ratings", # Legitimate business interest
+                "salary_records",  # Legal requirement for audits
+                "performance_ratings",  # Legitimate business interest
             ],
             "excluded_from_deletion": [
                 "Historical payroll records (7 years)",
@@ -521,17 +523,16 @@ class GDPRComplianceService:
                 action=f"retention_policy_enforced",
                 employee_id="SYSTEM",
                 details={"policy_id": policy_id, "action": policy.action.value},
-                legal_basis="Data Retention Policy"
+                legal_basis="Data Retention Policy",
             )
 
-        logger.info(f"Retention policies enforced: {result['archived_count']} archived, {result['deleted_count']} deleted")
+        logger.info(
+            f"Retention policies enforced: {result['archived_count']} archived, {result['deleted_count']} deleted"
+        )
         return result
 
     def add_retention_policy(
-        self,
-        data_category: DataCategory,
-        retention_days: int,
-        action: RetentionAction
+        self, data_category: DataCategory, retention_days: int, action: RetentionAction
     ) -> RetentionPolicy:
         """
         Add a data retention policy.
@@ -560,9 +561,7 @@ class GDPRComplianceService:
         return policy
 
     def generate_compliance_report(
-        self,
-        start_date: datetime,
-        end_date: datetime
+        self, start_date: datetime, end_date: datetime
     ) -> Dict[str, Any]:
         """
         Generate GDPR compliance report for a date range.
@@ -576,8 +575,7 @@ class GDPRComplianceService:
         """
         # Filter audit trail to date range
         period_entries = [
-            entry for entry in self._audit_trail
-            if start_date <= entry["timestamp"] <= end_date
+            entry for entry in self._audit_trail if start_date <= entry["timestamp"] <= end_date
         ]
 
         # Count actions by type
@@ -605,7 +603,9 @@ class GDPRComplianceService:
             "actions_by_legal_basis": actions_by_basis,
             "dsar_summary": {
                 "total_requests": len(self._dsars),
-                "completed": sum(1 for r in self._dsars.values() if r.status == DSARStatus.COMPLETED),
+                "completed": sum(
+                    1 for r in self._dsars.values() if r.status == DSARStatus.COMPLETED
+                ),
                 "pending": sum(1 for r in self._dsars.values() if r.status == DSARStatus.PENDING),
                 "average_resolution_time_days": self._calculate_avg_dsar_resolution(),
             },
@@ -631,9 +631,7 @@ class GDPRComplianceService:
         if not completed:
             return 0.0
 
-        total_days = sum(
-            (r.completed_at - r.submitted_at).days for r in completed
-        )
+        total_days = sum((r.completed_at - r.submitted_at).days for r in completed)
         return total_days / len(completed)
 
     def _count_active_consents(self) -> Dict[str, int]:

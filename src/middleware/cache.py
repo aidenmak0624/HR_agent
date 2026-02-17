@@ -173,13 +173,13 @@ def cached(ttl: int = 60) -> Callable:
         @wraps(f)
         def decorated_function(*args, **kwargs) -> Any:
             # Only cache GET requests
-            if request.method != 'GET':
+            if request.method != "GET":
                 return f(*args, **kwargs)
 
             # Build cache key
             path = request.path
-            query_string = request.query_string.decode('utf-8') if request.query_string else ""
-            user_id = g.get('user_context', {}).get('user_id', 'anonymous')
+            query_string = request.query_string.decode("utf-8") if request.query_string else ""
+            user_id = g.get("user_context", {}).get("user_id", "anonymous")
 
             cache_key = _make_cache_key(path, query_string, user_id)
 

@@ -331,9 +331,7 @@ class TestListExports:
         """Test list_exports filters by status."""
         config = ExportConfig(export_dir=str(tmp_path))
         service = ExportService(config)
-        export1 = service.create_export(
-            entity=ExportEntity.USERS, format=ExportFormat.JSON
-        )
+        export1 = service.create_export(entity=ExportEntity.USERS, format=ExportFormat.JSON)
         exports = service.list_exports(status=ExportStatus.QUEUED)
         assert len(exports) >= 1
         for exp in exports:

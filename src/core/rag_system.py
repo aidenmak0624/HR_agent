@@ -21,14 +21,22 @@ import google.generativeai as genai
 class HRKnowledgeBase:
     """HR Knowledge Base RAG system for TechNova Inc."""
 
-    def __init__(self, persist_directory: str = "./chromadb", topics_dir: str = "data/knowledge_base", policies_dir: str = "data/policies", preload_topics: bool = True):
+    def __init__(
+        self,
+        persist_directory: str = "./chromadb",
+        topics_dir: str = "data/knowledge_base",
+        policies_dir: str = "data/policies",
+        preload_topics: bool = True,
+    ):
         print("🔧 Initializing HR Knowledge Base...")
 
         # --- 0) Env & Keys ---
         load_dotenv()
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            raise RuntimeError("GOOGLE_API_KEY not set. Put it in your .env and NEVER hardcode keys in code.")
+            raise RuntimeError(
+                "GOOGLE_API_KEY not set. Put it in your .env and NEVER hardcode keys in code."
+            )
         genai.configure(api_key=api_key)
 
         # --- 1) LLM ---
@@ -46,10 +54,7 @@ class HRKnowledgeBase:
         try:
             self.chroma_client = PersistentClient(
                 path=str(persist_path),
-                settings=Settings(
-                    anonymized_telemetry=False,
-                    allow_reset=True  # Important!
-                )
+                settings=Settings(anonymized_telemetry=False, allow_reset=True),  # Important!
             )
             # Test connection
             self.chroma_client.heartbeat()
@@ -82,11 +87,11 @@ class HRKnowledgeBase:
         if name in self.collections:
             return self.collections[name]
         col = self.chroma_client.get_or_create_collection(
-            name=name,
-            metadata={"hnsw:space": "cosine", "description": f"Documents for {name}"}
+            name=name, metadata={"hnsw:space": "cosine", "description": f"Documents for {name}"}
         )
         self.collections[name] = col
         return col
+
     # ---------- Ingestion ----------
 
     def load_documents_for_topic(self, topic_name: str, min_chunk_len: int = 50):
@@ -103,29 +108,34 @@ class HRKnowledgeBase:
         doc_count, chunk_count = 0, 0
         for txt_file in topic_dir.glob("*.txt"):
             content = txt_file.read_text(encoding="utf-8", errors="ignore")
-            chunks = [p.strip() for p in content.split("\n\n") if p.strip() and len(p.strip()) > min_chunk_len]
+            chunks = [
+                p.strip()
+                for p in content.split("\n\n")
+                if p.strip() and len(p.strip()) > min_chunk_len
+            ]
             if not chunks:
                 continue
 
             # vectorize in batch
-            embeddings = self.embedding_model.encode(chunks, batch_size=32, convert_to_numpy=True).tolist()
+            embeddings = self.embedding_model.encode(
+                chunks, batch_size=32, convert_to_numpy=True
+            ).tolist()
 
             # stable IDs (content hash) to make ingestion idempotent
             import hashlib
+
             def _cid(stem, i, text):
                 h = hashlib.blake2b(text.encode("utf-8"), digest_size=8).hexdigest()
                 return f"{stem}_c{i}_{h}"
 
             ids = [_cid(txt_file.stem, i, ch) for i, ch in enumerate(chunks)]
-            metadatas = [{"source": txt_file.name, "topic": topic_name, "chunk_id": i} for i in range(len(chunks))]
+            metadatas = [
+                {"source": txt_file.name, "topic": topic_name, "chunk_id": i}
+                for i in range(len(chunks))
+            ]
 
             # requires chromadb 0.5.x
-            collection.upsert(
-                documents=chunks,
-                embeddings=embeddings,
-                ids=ids,
-                metadatas=metadatas
-            )
+            collection.upsert(documents=chunks, embeddings=embeddings, ids=ids, metadatas=metadatas)
             doc_count += 1
             chunk_count += len(chunks)
 
@@ -154,28 +164,33 @@ class HRKnowledgeBase:
         doc_count, chunk_count = 0, 0
         for txt_file in self.policies_dir.glob("*.txt"):
             content = txt_file.read_text(encoding="utf-8", errors="ignore")
-            chunks = [p.strip() for p in content.split("\n\n") if p.strip() and len(p.strip()) > min_chunk_len]
+            chunks = [
+                p.strip()
+                for p in content.split("\n\n")
+                if p.strip() and len(p.strip()) > min_chunk_len
+            ]
             if not chunks:
                 continue
 
             # vectorize in batch
-            embeddings = self.embedding_model.encode(chunks, batch_size=32, convert_to_numpy=True).tolist()
+            embeddings = self.embedding_model.encode(
+                chunks, batch_size=32, convert_to_numpy=True
+            ).tolist()
 
             # stable IDs (content hash) to make ingestion idempotent
             import hashlib
+
             def _cid(stem, i, text):
                 h = hashlib.blake2b(text.encode("utf-8"), digest_size=8).hexdigest()
                 return f"{stem}_c{i}_{h}"
 
             ids = [_cid(txt_file.stem, i, ch) for i, ch in enumerate(chunks)]
-            metadatas = [{"source": txt_file.name, "topic": "policies", "chunk_id": i} for i in range(len(chunks))]
+            metadatas = [
+                {"source": txt_file.name, "topic": "policies", "chunk_id": i}
+                for i in range(len(chunks))
+            ]
 
-            collection.upsert(
-                documents=chunks,
-                embeddings=embeddings,
-                ids=ids,
-                metadatas=metadatas
-            )
+            collection.upsert(documents=chunks, embeddings=embeddings, ids=ids, metadatas=metadatas)
             doc_count += 1
             chunk_count += len(chunks)
 
@@ -194,43 +209,43 @@ class HRKnowledgeBase:
         return self.collections[topic].query(
             query_embeddings=[query_emb],
             n_results=n_results,
-            include=["documents", "metadatas", "distances"]  # <-- add scores
+            include=["documents", "metadatas", "distances"],  # <-- add scores
         )
 
     # ---------- Generation ----------
     def _preprocess_context(self, docs: List[str], query: str) -> str:
-    #"""Preprocess retrieved documents for better context"""
-    
-    # Remove very short chunks (likely noise)
+        # """Preprocess retrieved documents for better context"""
+
+        # Remove very short chunks (likely noise)
         meaningful_docs = [d for d in docs if len(d.strip()) > 50]
-        
+
         if not meaningful_docs:
             return "\n\n".join(docs)
-        
+
         # Deduplicate similar chunks
         unique_docs = []
         seen_content = set()
-        
+
         for doc in meaningful_docs:
             # Simple dedup based on first 100 chars
             signature = doc[:100].lower().strip()
             if signature not in seen_content:
                 unique_docs.append(doc)
                 seen_content.add(signature)
-        
+
         # Join with clear separators
         context = "\n\n---\n\n".join(unique_docs)
-        
+
         # Truncate if too long (Gemini has limits)
         max_context_chars = 4000
         if len(context) > max_context_chars:
             context = context[:max_context_chars] + "\n\n[Context truncated for length]"
-    
+
         return context
-    
+
     def _postprocess_answer(self, answer: str) -> str:
         # """Clean and format the AI response"""
-        
+
         # Remove common AI disclaimers that aren't needed
         unwanted_phrases = [
             "As a helpful assistant,",
@@ -238,50 +253,48 @@ class HRKnowledgeBase:
             "Let me help you understand,",
             "Based on my training,",
         ]
-        
+
         for phrase in unwanted_phrases:
             answer = answer.replace(phrase, "")
-        
+
         # Ensure proper spacing after periods
         answer = answer.replace(". ", ".  ")
-        
+
         # Format bold text (if Gemini uses ** for bold)
         # Frontend will handle **text** as bold
-        
+
         # Trim excess whitespace
-        answer = "\n\n".join(
-            line.strip() for line in answer.split("\n") if line.strip()
-        )
-        
+        answer = "\n\n".join(line.strip() for line in answer.split("\n") if line.strip())
+
         return answer.strip()
-    
+
     def generate_answer(self, query: str, topic: str, difficulty: str = "intermediate") -> str:
-        #"""Generate answer with context retrieval and difficulty adaptation"""
-        
+        # """Generate answer with context retrieval and difficulty adaptation"""
+
         print(f"\n❓ Question: {query}\n📂 Topic: {topic}\n📊 Difficulty: {difficulty}")
-        
+
         # Initialize answer variable FIRST
         answer = ""
-        
+
         # Retrieve context
         results = self.retrieve(query, topic, n_results=4)
         if not results or not results.get("documents") or not results["documents"][0]:
             return self._generate_no_context_response(query, topic)
-        
+
         # Process retrieved documents
         docs = results["documents"][0]
         metas = results["metadatas"][0]
-        dists = results.get("distances", [[None]*len(docs)])[0]
-        
+        dists = results.get("distances", [[None] * len(docs)])[0]
+
         # Rank by relevance
         rank = sorted(range(len(docs)), key=lambda i: dists[i] if dists[i] is not None else 1e9)[:3]
         raw_docs = [docs[i] for i in rank]
         context = self._preprocess_context(raw_docs, query)
         sources = [f"{metas[i].get('source','?')} (score={dists[i]:.3f})" for i in rank]
-        
+
         # Build enhanced prompt
         prompt = self._build_enhanced_prompt(query, context, topic, difficulty)
-        
+
         # Generate with error handling
         try:
             resp = self.model.generate_content(prompt)
@@ -289,18 +302,17 @@ class HRKnowledgeBase:
             answer = (getattr(resp, "text", "") or "").strip()
             # THEN postprocess it
             answer = self._postprocess_answer(answer)
-            
+
             if not answer:
                 answer = "I apologize, but I couldn't generate a response. Please try rephrasing your question."
-                
+
         except Exception as e:
             print(f"⚠️ Generation error: {e}")
             answer = "I encountered an error while processing your question. Please try again."
-        
+
         # Add citations
         citation = "\n\n📚 Sources: " + ", ".join(sorted(set(sources)))
         return answer + citation
-
 
     def _build_enhanced_prompt(self, query: str, context: str, topic: str, difficulty: str) -> str:
         """Build prompt with difficulty-level adaptation for HR context"""
@@ -314,7 +326,6 @@ class HRKnowledgeBase:
     - Include one practical example if relevant
     - Keep explanation concise and actionable
     - Ideal for quick reference or time-constrained employees""",
-
             "detailed": """
     - Balance clarity with technical accuracy
     - Use HR and legal terminology when appropriate, with explanations
@@ -322,14 +333,13 @@ class HRKnowledgeBase:
     - Cover relevant scenarios and edge cases
     - Connect concepts to TechNova Inc. context when applicable
     - Ideal for thorough understanding of policies""",
-
             "expert": """
     - Use precise HR, employment law, and compliance terminology
     - Reference specific regulations (FMLA, ADA, FLSA, etc.)
     - Provide comprehensive analysis with nuanced interpretations
     - Include compliance considerations and legal frameworks
     - Address edge cases and special circumstances
-    - Ideal for HR professionals and managers making decisions"""
+    - Ideal for HR professionals and managers making decisions""",
         }
 
         instructions = difficulty_instructions.get(difficulty, difficulty_instructions["detailed"])
@@ -385,7 +395,6 @@ class HRKnowledgeBase:
 
         return prompt
 
-
     def _generate_no_context_response(self, query: str, topic: str) -> str:
         """Handle cases where no relevant context is found"""
         return f"""I couldn't find specific information about "{query}" in the {topic.replace('_', ' ')} documents currently available.
@@ -411,7 +420,6 @@ class HRKnowledgeBase:
 
     I'm here to help with questions about TechNova Inc. HR policies, benefits, and employment compliance."""
 
-
     def _get_example_qas(self, difficulty: str) -> str:
         """Provide example Q&As for few-shot learning in HR context"""
 
@@ -424,7 +432,6 @@ class HRKnowledgeBase:
     **Example 2:**
     Q: Is the 401k match available immediately?
     A: The 401k match becomes available after a 6-month employment period. TechNova Inc. matches 100% of contributions up to 3% of your salary. Contributions before the match date are still allowed.""",
-
             "detailed": """
     **Example:**
     Q: What does FMLA protect and who is eligible?
@@ -443,7 +450,6 @@ class HRKnowledgeBase:
     - Military family leave
 
     **TechNova Inc. Application:** Employees meeting these criteria can take up to 12 weeks unpaid leave in a 12-month period while maintaining health insurance and job protection.""",
-
             "expert": """
     **Example:**
     Q: How do ADA reasonable accommodations interact with attendance policies under FMLA?
@@ -461,11 +467,14 @@ class HRKnowledgeBase:
     4. Track ADA accommodations separately from FMLA usage to maintain legal compliance
     5. Ensure consistent application across similar cases to avoid discrimination claims
 
-    **TechNova Inc. Protocol:** HR must coordinate between FMLA and ADA determinations, ensuring employees receive maximum statutory protection while maintaining defensible documentation."""
+    **TechNova Inc. Protocol:** HR must coordinate between FMLA and ADA determinations, ensuring employees receive maximum statutory protection while maintaining defensible documentation.""",
         }
 
         return examples.get(difficulty, examples["detailed"])
+
+
 # ---------- Quick test ----------
+
 
 def test_rag():
     print("=" * 60)
@@ -487,4 +496,3 @@ def test_rag():
 
 if __name__ == "__main__":
     test_rag()
-

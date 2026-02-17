@@ -92,10 +92,7 @@ class TestQueryEndpoint:
         ):
             g.current_user = {"user_id": "user_123", "role": "employee"}
 
-            response = client.post(
-                "/api/v2/query",
-                json={"query": "What is my leave balance?"}
-            )
+            response = client.post("/api/v2/query", json={"query": "What is my leave balance?"})
 
         assert response.status_code == 200
         data = json.loads(response.data)
@@ -109,10 +106,7 @@ class TestQueryEndpoint:
         ):
             g.current_user = {"user_id": "user_123"}
 
-            response = client.post(
-                "/api/v2/query",
-                json={}
-            )
+            response = client.post("/api/v2/query", json={})
 
         assert response.status_code == 400
         data = json.loads(response.data)
@@ -126,10 +120,7 @@ class TestQueryEndpoint:
         ):
             g.current_user = {"user_id": "user_123"}
 
-            response = client.post(
-                "/api/v2/query",
-                json={"query": "test question"}
-            )
+            response = client.post("/api/v2/query", json={"query": "test question"})
 
         data = json.loads(response.data)
         assert "confidence" in data["data"]
@@ -142,10 +133,7 @@ class TestQueryEndpoint:
         ):
             g.current_user = {"user_id": "user_123"}
 
-            response = client.post(
-                "/api/v2/query",
-                json={"query": "test"}
-            )
+            response = client.post("/api/v2/query", json={"query": "test"})
 
         data = json.loads(response.data)
         assert "execution_time_ms" in data["metadata"]
@@ -157,8 +145,7 @@ class TestAuthEndpoints:
     def test_auth_token_generation(self, client):
         """POST /api/v2/auth/token generates token."""
         response = client.post(
-            "/api/v2/auth/token",
-            json={"user_id": "user_123", "password": "password123"}
+            "/api/v2/auth/token", json={"user_id": "user_123", "password": "password123"}
         )
 
         assert response.status_code == 200
@@ -170,8 +157,7 @@ class TestAuthEndpoints:
     def test_auth_token_includes_metadata(self, client):
         """Auth token response includes token metadata."""
         response = client.post(
-            "/api/v2/auth/token",
-            json={"user_id": "user_123", "password": "password123"}
+            "/api/v2/auth/token", json={"user_id": "user_123", "password": "password123"}
         )
 
         data = json.loads(response.data)
@@ -180,10 +166,7 @@ class TestAuthEndpoints:
 
     def test_auth_token_missing_credentials_returns_400(self, client):
         """Auth token without credentials returns 400."""
-        response = client.post(
-            "/api/v2/auth/token",
-            json={}
-        )
+        response = client.post("/api/v2/auth/token", json={})
 
         assert response.status_code == 400
         data = json.loads(response.data)
@@ -191,10 +174,7 @@ class TestAuthEndpoints:
 
     def test_auth_token_refresh(self, client):
         """POST /api/v2/auth/refresh refreshes token."""
-        response = client.post(
-            "/api/v2/auth/refresh",
-            json={"refresh_token": "refresh_token_123"}
-        )
+        response = client.post("/api/v2/auth/refresh", json={"refresh_token": "refresh_token_123"})
 
         assert response.status_code == 200
         data = json.loads(response.data)
@@ -203,10 +183,7 @@ class TestAuthEndpoints:
 
     def test_auth_refresh_without_token_returns_400(self, client):
         """Refresh without token returns 400."""
-        response = client.post(
-            "/api/v2/auth/refresh",
-            json={}
-        )
+        response = client.post("/api/v2/auth/refresh", json={})
 
         assert response.status_code == 400
 
@@ -224,6 +201,7 @@ class TestRateLimiting:
     def test_rate_limiter_bucket_refill(self):
         """RateLimiterBucket refills tokens over time."""
         from datetime import timedelta
+
         bucket = RateLimiterBucket(capacity=10, tokens=5)
         old_time = datetime.utcnow() - timedelta(seconds=5)
         bucket.last_refill = old_time
@@ -280,13 +258,12 @@ class TestRateLimiting:
         ):
             g.current_user = {"user_id": "rate_test_user"}
 
-            response = client.post(
-                "/api/v2/query",
-                json={"query": "test"}
-            )
+            response = client.post("/api/v2/query", json={"query": "test"})
 
         # Response should indicate rate limit
-        assert response.status_code == 429 or response.status_code == 200  # depends on initial state
+        assert (
+            response.status_code == 429 or response.status_code == 200
+        )  # depends on initial state
 
     def test_rate_limit_get_remaining(self):
         """RateLimiter reports remaining tokens."""
@@ -305,11 +282,7 @@ class TestResponseEnvelope:
 
     def test_response_envelope_success(self):
         """APIResponse formats success response."""
-        response = APIResponse(
-            success=True,
-            data={"key": "value"},
-            metadata={"time_ms": 100}
-        )
+        response = APIResponse(success=True, data={"key": "value"}, metadata={"time_ms": 100})
 
         response_dict = response.to_dict()
         assert response_dict["success"] is True
@@ -319,10 +292,7 @@ class TestResponseEnvelope:
 
     def test_response_envelope_error(self):
         """APIResponse formats error response."""
-        response = APIResponse(
-            success=False,
-            error="Something went wrong"
-        )
+        response = APIResponse(success=False, error="Something went wrong")
 
         response_dict = response.to_dict()
         assert response_dict["success"] is False
@@ -350,10 +320,7 @@ class TestErrorHandling:
         ):
             g.current_user = {"user_id": "user"}
 
-            response = client.post(
-                "/api/v2/query",
-                json={}  # Missing required 'query' field
-            )
+            response = client.post("/api/v2/query", json={})  # Missing required 'query' field
 
         assert response.status_code == 400
         data = json.loads(response.data)
@@ -382,10 +349,7 @@ class TestErrorHandling:
         ):
             g.current_user = {"user_id": user_id}
 
-            response = client.post(
-                "/api/v2/query",
-                json={"query": "test"}
-            )
+            response = client.post("/api/v2/query", json={"query": "test"})
 
         # Should be rate limited
         if response.status_code == 429:
@@ -395,7 +359,7 @@ class TestErrorHandling:
 
     def test_500_server_error_handling(self, client, api_gateway):
         """Server errors are caught and formatted."""
-        with patch.object(api_gateway, '_query', side_effect=Exception("Test error")):
+        with patch.object(api_gateway, "_query", side_effect=Exception("Test error")):
             with client.application.test_request_context(
                 headers={"Authorization": "Bearer test_token"}
             ):
@@ -450,8 +414,8 @@ class TestSpecificEndpoints:
                     "employee_id": "emp_002",
                     "start_date": "2024-02-01",
                     "end_date": "2024-02-05",
-                    "leave_type": "vacation"
-                }
+                    "leave_type": "vacation",
+                },
             )
 
         if response.status_code == 201:
@@ -479,8 +443,7 @@ class TestSpecificEndpoints:
             g.current_user = {"user_id": "user"}
 
             response = client.post(
-                "/api/v2/documents/generate",
-                json={"template_id": "offer_letter"}
+                "/api/v2/documents/generate", json={"template_id": "offer_letter"}
             )
 
         if response.status_code == 201:
@@ -494,20 +457,14 @@ class TestLogging:
     def test_request_logged(self, api_gateway, client):
         """API requests are logged."""
         # Use auth/token endpoint which calls _log_request
-        client.post(
-            "/api/v2/auth/token",
-            json={"user_id": "log_test", "password": "pass123"}
-        )
+        client.post("/api/v2/auth/token", json={"user_id": "log_test", "password": "pass123"})
 
         logs = api_gateway.get_request_log()
         assert len(logs) > 0
 
     def test_request_log_includes_details(self, api_gateway, client):
         """Request logs include method and endpoint."""
-        client.post(
-            "/api/v2/auth/token",
-            json={"user_id": "log_test", "password": "pass123"}
-        )
+        client.post("/api/v2/auth/token", json={"user_id": "log_test", "password": "pass123"})
 
         logs = api_gateway.get_request_log()
         latest = logs[-1]

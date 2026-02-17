@@ -16,22 +16,12 @@ logger = logging.getLogger(__name__)
 class RateLimitConfig(BaseModel):
     """Rate limiting configuration model."""
 
-    requests_per_minute: int = Field(
-        default=60, description="Requests allowed per minute"
-    )
-    requests_per_hour: int = Field(
-        default=1000, description="Requests allowed per hour"
-    )
-    llm_requests_per_minute: int = Field(
-        default=10, description="LLM requests allowed per minute"
-    )
-    burst_multiplier: float = Field(
-        default=1.5, description="Multiplier for burst allowance"
-    )
+    requests_per_minute: int = Field(default=60, description="Requests allowed per minute")
+    requests_per_hour: int = Field(default=1000, description="Requests allowed per hour")
+    llm_requests_per_minute: int = Field(default=10, description="LLM requests allowed per minute")
+    burst_multiplier: float = Field(default=1.5, description="Multiplier for burst allowance")
     enable_redis: bool = Field(default=True, description="Enable Redis backend")
-    redis_url: str = Field(
-        default="redis://localhost:6379/0", description="Redis URL"
-    )
+    redis_url: str = Field(default="redis://localhost:6379/0", description="Redis URL")
     fallback_to_memory: bool = Field(
         default=True, description="Fallback to in-memory if Redis unavailable"
     )
@@ -155,9 +145,7 @@ class RateLimiter:
             },
         )
 
-    def check_rate_limit(
-        self, user_id: str, endpoint: str = "default"
-    ) -> RateLimitResult:
+    def check_rate_limit(self, user_id: str, endpoint: str = "default") -> RateLimitResult:
         """
         Check rate limit for user on endpoint.
 
@@ -191,9 +179,7 @@ class RateLimiter:
         bucket = self._get_or_create_bucket(user_id, endpoint)
         allowed = bucket.consume(1)
 
-        reset_at = datetime.now() + timedelta(
-            seconds=60 / self.config.requests_per_minute
-        )
+        reset_at = datetime.now() + timedelta(seconds=60 / self.config.requests_per_minute)
         remaining = bucket.get_remaining()
 
         if not allowed:
@@ -240,24 +226,17 @@ class RateLimiter:
         if endpoint not in self.buckets[user_id]:
             # Determine capacity and refill rate based on endpoint
             if endpoint == "llm":
-                capacity = int(
-                    self.config.llm_requests_per_minute
-                    * self.config.burst_multiplier
-                )
+                capacity = int(self.config.llm_requests_per_minute * self.config.burst_multiplier)
                 refill_rate = self.config.llm_requests_per_minute / 60.0
             else:
-                capacity = int(
-                    self.config.requests_per_minute * self.config.burst_multiplier
-                )
+                capacity = int(self.config.requests_per_minute * self.config.burst_multiplier)
                 refill_rate = self.config.requests_per_minute / 60.0
 
             self.buckets[user_id][endpoint] = TokenBucket(capacity, refill_rate)
 
         return self.buckets[user_id][endpoint]
 
-    def _check_redis_limit(
-        self, key: str, limit: int, window: int
-    ) -> RateLimitResult:
+    def _check_redis_limit(self, key: str, limit: int, window: int) -> RateLimitResult:
         """
         Check rate limit using Redis.
 
@@ -349,9 +328,7 @@ class RateLimiter:
             "total_blocked": self.total_blocked,
             "active_users": len(self.active_users),
             "block_rate": (
-                self.total_blocked / self.total_requests
-                if self.total_requests > 0
-                else 0
+                self.total_blocked / self.total_requests if self.total_requests > 0 else 0
             ),
             "redis_enabled": self.redis_client is not None,
         }

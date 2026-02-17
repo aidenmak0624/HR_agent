@@ -10,9 +10,9 @@ class TestPIIStripperSSN:
         """SSN is detected and stripped."""
         stripper = PIIStripper()
         text = "SSN is 123-45-6789"
-        
+
         result = stripper.strip(text)
-        
+
         assert "123-45-6789" not in result.sanitized_text
         assert "[SSN_REDACTED]" in result.sanitized_text
         assert "123-45-6789" in result.mapping
@@ -23,9 +23,9 @@ class TestPIIStripperSSN:
         """Multiple SSNs are stripped."""
         stripper = PIIStripper()
         text = "First SSN: 123-45-6789 Second SSN: 987-65-4321"
-        
+
         result = stripper.strip(text)
-        
+
         assert "123-45-6789" not in result.sanitized_text
         assert "987-65-4321" not in result.sanitized_text
         assert "[SSN_REDACTED]" in result.sanitized_text
@@ -39,9 +39,9 @@ class TestPIIStripperEmail:
         """Email is detected and stripped."""
         stripper = PIIStripper()
         text = "email john@company.com"
-        
+
         result = stripper.strip(text)
-        
+
         assert "john@company.com" not in result.sanitized_text
         assert "[EMAIL_REDACTED" in result.sanitized_text
         assert "john@company.com" in result.mapping
@@ -51,9 +51,9 @@ class TestPIIStripperEmail:
         """Multiple emails are stripped with numbered redactions."""
         stripper = PIIStripper()
         text = "Contact john@company.com or jane@company.com"
-        
+
         result = stripper.strip(text)
-        
+
         assert "john@company.com" not in result.sanitized_text
         assert "jane@company.com" not in result.sanitized_text
         assert "[EMAIL_REDACTED_1]" in result.sanitized_text
@@ -67,9 +67,9 @@ class TestPIIStripperPhone:
         """Phone number is detected and stripped."""
         stripper = PIIStripper()
         text = "call 555-123-4567"
-        
+
         result = stripper.strip(text)
-        
+
         assert "555-123-4567" not in result.sanitized_text
         assert "[PHONE_REDACTED]" in result.sanitized_text
         assert "PHONE" in result.pii_types_found
@@ -78,9 +78,9 @@ class TestPIIStripperPhone:
         """Various phone formats are detected."""
         stripper = PIIStripper()
         text = "Call 555-123-4567 or (555) 123-4567"
-        
+
         result = stripper.strip(text)
-        
+
         # Both formats should be stripped
         assert "[PHONE_REDACTED]" in result.sanitized_text
 
@@ -92,9 +92,9 @@ class TestPIIStripperSalary:
         """Salary amounts are detected and stripped."""
         stripper = PIIStripper()
         text = "earns $150,000"
-        
+
         result = stripper.strip(text)
-        
+
         assert "$150,000" not in result.sanitized_text
         assert "[SALARY_REDACTED]" in result.sanitized_text
         assert "SALARY" in result.pii_types_found
@@ -103,9 +103,9 @@ class TestPIIStripperSalary:
         """Salary with cents is detected."""
         stripper = PIIStripper()
         text = "salary is $75,500.50"
-        
+
         result = stripper.strip(text)
-        
+
         assert "$75,500.50" not in result.sanitized_text
         assert "[SALARY_REDACTED]" in result.sanitized_text
 
@@ -117,9 +117,9 @@ class TestPIIStripperEmployeeID:
         """Employee ID is detected and stripped."""
         stripper = PIIStripper()
         text = "Employee EMP-12345 reports"
-        
+
         result = stripper.strip(text)
-        
+
         assert "EMP-12345" not in result.sanitized_text
         assert "[EMPLOYEE_ID_REDACTED]" in result.sanitized_text
         assert "EMPLOYEE_ID" in result.pii_types_found
@@ -132,10 +132,10 @@ class TestPIIRehydration:
         """rehydrate() restores original values from mapping."""
         stripper = PIIStripper()
         original_text = "Contact john@company.com with SSN 123-45-6789"
-        
+
         result = stripper.strip(original_text)
         rehydrated = stripper.rehydrate(result.sanitized_text, result.mapping)
-        
+
         assert "john@company.com" in rehydrated
         assert "123-45-6789" in rehydrated
 
@@ -143,10 +143,10 @@ class TestPIIRehydration:
         """rehydrate() handles multiple PII items."""
         stripper = PIIStripper()
         original = "John's email: john@company.com, SSN: 123-45-6789, salary: $100,000"
-        
+
         result = stripper.strip(original)
         rehydrated = stripper.rehydrate(result.sanitized_text, result.mapping)
-        
+
         assert "john@company.com" in rehydrated
         assert "123-45-6789" in rehydrated
         assert "$100,000" in rehydrated
@@ -163,15 +163,15 @@ class TestMultiplePIIItems:
             "SSN 123-45-6789 earns $150,000 "
             "call 555-123-4567"
         )
-        
+
         result = stripper.strip(text)
-        
+
         assert "EMP-12345" not in result.sanitized_text
         assert "john@company.com" not in result.sanitized_text
         assert "123-45-6789" not in result.sanitized_text
         assert "$150,000" not in result.sanitized_text
         assert "555-123-4567" not in result.sanitized_text
-        
+
         assert result.pii_count >= 5
         assert len(result.mapping) >= 5
 
@@ -183,9 +183,9 @@ class TestNoPIIDetected:
         """Text without PII is unchanged."""
         stripper = PIIStripper()
         text = "This is clean text with no sensitive information"
-        
+
         result = stripper.strip(text)
-        
+
         assert result.sanitized_text == text
         assert result.pii_count == 0
         assert len(result.mapping) == 0
@@ -193,9 +193,9 @@ class TestNoPIIDetected:
     def test_empty_text_returns_empty(self):
         """Empty text returns empty result."""
         stripper = PIIStripper()
-        
+
         result = stripper.strip("")
-        
+
         assert result.sanitized_text == ""
         assert result.pii_count == 0
 
@@ -207,35 +207,35 @@ class TestPIISafetyCheck:
         """Clean text is marked as PII safe."""
         stripper = PIIStripper()
         text = "This is clean text with no PII"
-        
+
         assert stripper.is_pii_safe(text) is True
 
     def test_is_pii_safe_with_ssn(self):
         """Text with SSN is not safe."""
         stripper = PIIStripper()
         text = "Employee SSN: 123-45-6789"
-        
+
         assert stripper.is_pii_safe(text) is False
 
     def test_is_pii_safe_with_email(self):
         """Text with email is not safe."""
         stripper = PIIStripper()
         text = "Contact john@company.com"
-        
+
         assert stripper.is_pii_safe(text) is False
 
     def test_is_pii_safe_with_phone(self):
         """Text with phone is not safe."""
         stripper = PIIStripper()
         text = "Call 555-123-4567"
-        
+
         assert stripper.is_pii_safe(text) is False
 
     def test_is_pii_safe_with_salary(self):
         """Text with salary is not safe."""
         stripper = PIIStripper()
         text = "Salary: $150,000"
-        
+
         assert stripper.is_pii_safe(text) is False
 
 
@@ -248,9 +248,9 @@ class TestPIIResult:
             sanitized_text="clean text",
             mapping={"original": "[REDACTED]"},
             pii_count=1,
-            pii_types_found=["TEST"]
+            pii_types_found=["TEST"],
         )
-        
+
         assert result.sanitized_text == "clean text"
         assert result.mapping == {"original": "[REDACTED]"}
         assert result.pii_count == 1
@@ -259,7 +259,7 @@ class TestPIIResult:
     def test_pii_result_default_mapping(self):
         """PIIResult has default empty mapping."""
         result = PIIResult(sanitized_text="test")
-        
+
         assert result.mapping == {}
         assert result.pii_count == 0
         assert result.pii_types_found == []
@@ -275,9 +275,9 @@ class TestEdgeCases:
             "Employee john@company.com with EMP-001 "
             "and backup jane@company.com has SSN 123-45-6789"
         )
-        
+
         result = stripper.strip(text)
-        
+
         assert "john@company.com" not in result.sanitized_text
         assert "jane@company.com" not in result.sanitized_text
         assert "EMP-001" not in result.sanitized_text
@@ -289,9 +289,9 @@ class TestEdgeCases:
         stripper = PIIStripper()
         # Emails should be case-insensitive
         text = "Contact JOHN@COMPANY.COM"
-        
+
         result = stripper.strip(text)
-        
+
         # Email pattern matching should work
         assert result.pii_count >= 1
 
@@ -299,11 +299,11 @@ class TestEdgeCases:
         """Rehydrating multiple times returns same result."""
         stripper = PIIStripper()
         text = "Email: john@company.com and SSN: 123-45-6789"
-        
+
         result = stripper.strip(text)
-        
+
         rehydrated1 = stripper.rehydrate(result.sanitized_text, result.mapping)
         rehydrated2 = stripper.rehydrate(rehydrated1, result.mapping)
-        
+
         # Second rehydration shouldn't change anything
         assert rehydrated1 == rehydrated2

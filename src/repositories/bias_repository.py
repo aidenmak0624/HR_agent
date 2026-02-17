@@ -42,7 +42,9 @@ class BiasIncidentModel(Base):
     scanned_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self) -> str:
-        return f"<BiasIncidentModel(id={self.id}, category={self.category}, severity={self.severity})>"
+        return (
+            f"<BiasIncidentModel(id={self.id}, category={self.category}, severity={self.severity})>"
+        )
 
 
 class BiasAuditReportModel(Base):
@@ -62,7 +64,9 @@ class BiasAuditReportModel(Base):
     __tablename__ = "bias_audit_reports"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    generated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    generated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
     total_incidents: Mapped[int] = mapped_column(default=0, nullable=False)
     severity_breakdown_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     recommendations_json: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
@@ -115,7 +119,9 @@ class BiasRepository(BaseRepository[BiasIncidentModel]):
             }
             incident = self.create(data)
             if incident:
-                logger.info(f"Logged bias incident: id={incident.id}, category={category}, severity={severity}")
+                logger.info(
+                    f"Logged bias incident: id={incident.id}, category={category}, severity={severity}"
+                )
             return incident
         except Exception as e:
             logger.error(f"Error logging bias incident: {str(e)}")
@@ -220,7 +226,9 @@ class BiasAuditReportRepository(BaseRepository[BiasAuditReportModel]):
             }
             report = self.create(data)
             if report:
-                logger.info(f"Created bias audit report: id={report.id}, incidents={total_incidents}")
+                logger.info(
+                    f"Created bias audit report: id={report.id}, incidents={total_incidents}"
+                )
             return report
         except Exception as e:
             logger.error(f"Error creating bias audit report: {str(e)}")
@@ -257,9 +265,11 @@ class BiasAuditReportRepository(BaseRepository[BiasAuditReportModel]):
         """
         try:
             with self._get_session() as session:
-                stmt = select(BiasAuditReportModel).order_by(
-                    BiasAuditReportModel.generated_at.desc()
-                ).limit(1)
+                stmt = (
+                    select(BiasAuditReportModel)
+                    .order_by(BiasAuditReportModel.generated_at.desc())
+                    .limit(1)
+                )
                 return session.execute(stmt).scalar_one_or_none()
         except Exception as e:
             logger.error(f"Error getting latest bias audit report: {str(e)}")

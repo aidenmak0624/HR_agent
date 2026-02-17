@@ -8,7 +8,7 @@ print("🔍 Checking Flask Setup...\n")
 
 # Check 1: Find main app file
 print("1. Looking for Flask app file...")
-possible_files = ['app.py', 'main.py', 'server.py', 'run.py']
+possible_files = ["app.py", "main.py", "server.py", "run.py"]
 app_file = None
 for f in possible_files:
     if os.path.exists(f):
@@ -31,9 +31,9 @@ else:
 
 # Check 3: Check blueprint registration
 print("\n3. Checking blueprint registration...")
-with open(app_file, 'r') as f:
+with open(app_file, "r") as f:
     content = f.read()
-    if 'agent_routes' in content and 'register_blueprint' in content:
+    if "agent_routes" in content and "register_blueprint" in content:
         print("   ✅ Blueprint appears to be registered")
     else:
         print("   ❌ Blueprint not registered in app.py")
@@ -47,6 +47,7 @@ with open(app_file, 'r') as f:
 print("\n4. Testing imports...")
 try:
     from src.api.routes import agent_routes
+
     print("   ✅ Can import agent_routes")
 except Exception as e:
     print(f"   ❌ Import failed: {e}")

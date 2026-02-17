@@ -25,7 +25,7 @@ class TestTemplateManagement:
             document_type=DocumentType.OFFER_LETTER,
             name="Custom Offer Letter",
             content="Dear {{ employee_name }}, We offer you position {{ position }}",
-            required_variables=["employee_name", "position"]
+            required_variables=["employee_name", "position"],
         )
 
         assert template_id in doc_generator.templates
@@ -40,7 +40,7 @@ class TestTemplateManagement:
                 document_type=DocumentType.OFFER_LETTER,
                 name="Bad Template",
                 content="{{ unclosed_var",
-                required_variables=[]
+                required_variables=[],
             )
 
     def test_get_template(self, doc_generator):
@@ -49,7 +49,7 @@ class TestTemplateManagement:
             document_type=DocumentType.OFFER_LETTER,
             name="Test Template",
             content="Content: {{ var1 }}",
-            required_variables=["var1"]
+            required_variables=["var1"],
         )
 
         template = doc_generator.get_template(template_id)
@@ -85,13 +85,11 @@ class TestTemplateManagement:
             document_type=DocumentType.TERMINATION_LETTER,
             name="Original Name",
             content="Original content: {{ reason }}",
-            required_variables=["reason"]
+            required_variables=["reason"],
         )
 
         doc_generator.update_template(
-            template_id,
-            name="Updated Name",
-            content="Updated content: {{ reason }}"
+            template_id, name="Updated Name", content="Updated content: {{ reason }}"
         )
 
         template = doc_generator.get_template(template_id)
@@ -102,11 +100,7 @@ class TestTemplateManagement:
     def test_update_template_not_found_raises(self, doc_generator):
         """update_template raises for nonexistent template."""
         with pytest.raises(ValueError, match="Template not found"):
-            doc_generator.update_template(
-                "nonexistent",
-                name="New Name",
-                content="New content"
-            )
+            doc_generator.update_template("nonexistent", name="New Name", content="New content")
 
     def test_delete_template(self, doc_generator):
         """delete_template removes template."""
@@ -114,7 +108,7 @@ class TestTemplateManagement:
             document_type=DocumentType.POLICY_DOCUMENT,
             name="To Delete",
             content="This will be deleted",
-            required_variables=[]
+            required_variables=[],
         )
 
         result = doc_generator.delete_template(template_id)
@@ -137,7 +131,7 @@ class TestDocumentGeneration:
             document_type=DocumentType.OFFER_LETTER,
             name="Test Offer",
             content="Dear {{ employee_name }}, We offer {{ position }} at {{ salary }}.",
-            required_variables=["employee_name", "position", "salary"]
+            required_variables=["employee_name", "position", "salary"],
         )
 
         doc_id = doc_generator.generate_document(
@@ -145,10 +139,10 @@ class TestDocumentGeneration:
             context={
                 "employee_name": "John Doe",
                 "position": "Senior Engineer",
-                "salary": "$150,000"
+                "salary": "$150,000",
             },
             generated_by="admin",
-            generated_for="emp-001"
+            generated_for="emp-001",
         )
 
         assert isinstance(doc_id, str)
@@ -164,22 +158,18 @@ class TestDocumentGeneration:
             document_type=DocumentType.OFFER_LETTER,
             name="Test",
             content="Dear {{ employee_name }}, Position: {{ position }}",
-            required_variables=["employee_name", "position"]
+            required_variables=["employee_name", "position"],
         )
 
         with pytest.raises(ValueError, match="Missing required variables"):
             doc_generator.generate_document(
-                template_id=template_id,
-                context={"employee_name": "John"}  # Missing position
+                template_id=template_id, context={"employee_name": "John"}  # Missing position
             )
 
     def test_generate_document_invalid_template(self, doc_generator):
         """generate_document raises for nonexistent template."""
         with pytest.raises(ValueError, match="Template not found"):
-            doc_generator.generate_document(
-                template_id="nonexistent",
-                context={}
-            )
+            doc_generator.generate_document(template_id="nonexistent", context={})
 
     def test_generate_document_status_draft_for_approval(self, doc_generator):
         """generate_document sets status to draft when approval required."""
@@ -188,12 +178,11 @@ class TestDocumentGeneration:
             name="Contract",
             content="Contract for {{ name }}",
             required_variables=["name"],
-            requires_approval=True
+            requires_approval=True,
         )
 
         doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"name": "Jane Smith"}
+            template_id=template_id, context={"name": "Jane Smith"}
         )
 
         document = doc_generator.get_document(doc_id)
@@ -207,12 +196,11 @@ class TestDocumentGeneration:
             name="Policy",
             content="Policy text: {{ policy }}",
             required_variables=["policy"],
-            requires_approval=False
+            requires_approval=False,
         )
 
         doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"policy": "Code of Conduct"}
+            template_id=template_id, context={"policy": "Code of Conduct"}
         )
 
         document = doc_generator.get_document(doc_id)
@@ -224,12 +212,11 @@ class TestDocumentGeneration:
             document_type=DocumentType.OFFER_LETTER,
             name="Offer",
             content="Offer for {{ person }}",
-            required_variables=["person"]
+            required_variables=["person"],
         )
 
         doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"person": "Alice"}
+            template_id=template_id, context={"person": "Alice"}
         )
 
         document = doc_generator.get_document(doc_id)
@@ -243,12 +230,11 @@ class TestDocumentGeneration:
             document_type=DocumentType.TERMINATION_LETTER,
             name="Termination",
             content="Effective {{ date }}, employment terminated.",
-            required_variables=["date"]
+            required_variables=["date"],
         )
 
         doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"date": "2024-02-01"}
+            template_id=template_id, context={"date": "2024-02-01"}
         )
 
         content = doc_generator.get_document_content(doc_id)
@@ -294,8 +280,8 @@ class TestDefaultTemplates:
                 "employee_name": "Bob",
                 "position": "Manager",
                 "start_date": "2024-03-01",
-                "salary": "$120,000"
-            }
+                "salary": "$120,000",
+            },
         )
 
         document = doc_generator.get_document(doc_id)
@@ -312,13 +298,12 @@ class TestVariableValidation:
             document_type=DocumentType.OFFER_LETTER,
             name="Strict",
             content="Employee: {{ emp_name }}, Salary: {{ salary }}",
-            required_variables=["emp_name", "salary"]
+            required_variables=["emp_name", "salary"],
         )
 
         with pytest.raises(ValueError):
             doc_generator.generate_document(
-                template_id=template_id,
-                context={"emp_name": "Test"}  # salary missing
+                template_id=template_id, context={"emp_name": "Test"}  # salary missing
             )
 
     def test_extra_variables_ignored(self, doc_generator):
@@ -327,16 +312,12 @@ class TestVariableValidation:
             document_type=DocumentType.OFFER_LETTER,
             name="Simple",
             content="Welcome {{ name }}!",
-            required_variables=["name"]
+            required_variables=["name"],
         )
 
         doc_id = doc_generator.generate_document(
             template_id=template_id,
-            context={
-                "name": "Test",
-                "extra1": "value1",
-                "extra2": "value2"
-            }
+            context={"name": "Test", "extra1": "value1", "extra2": "value2"},
         )
 
         document = doc_generator.get_document(doc_id)
@@ -348,7 +329,7 @@ class TestVariableValidation:
             document_type=DocumentType.OFFER_LETTER,
             name="Multi-var",
             content="{{ first }} {{ second }} {{ third }}",
-            required_variables=[]
+            required_variables=[],
         )
 
         template = doc_generator.get_template(template_id)
@@ -366,7 +347,7 @@ class TestVersionTracking:
             document_type=DocumentType.OFFER_LETTER,
             name="Versioned",
             content="Version 1",
-            required_variables=[]
+            required_variables=[],
         )
 
         template = doc_generator.get_template(template_id)
@@ -382,7 +363,7 @@ class TestVersionTracking:
             document_type=DocumentType.OFFER_LETTER,
             name="New",
             content="Content",
-            required_variables=[]
+            required_variables=[],
         )
 
         template = doc_generator.get_template(template_id)
@@ -410,7 +391,7 @@ class TestDocumentTypes:
                 document_type=doc_type,
                 name=f"Test {doc_type.value}",
                 content="Content",
-                required_variables=[]
+                required_variables=[],
             )
             template = doc_generator.get_template(template_id)
             assert template.document_type == doc_type
@@ -425,13 +406,11 @@ class TestAuditTrail:
             document_type=DocumentType.OFFER_LETTER,
             name="Audited",
             content="Content: {{ test }}",
-            required_variables=["test"]
+            required_variables=["test"],
         )
 
         doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"test": "value"},
-            generated_by="user123"
+            template_id=template_id, context={"test": "value"}, generated_by="user123"
         )
 
         audit_trail = doc_generator.get_audit_trail()
@@ -447,13 +426,10 @@ class TestAuditTrail:
             document_type=DocumentType.OFFER_LETTER,
             name="Audit Test",
             content="Content: {{ x }}",
-            required_variables=["x"]
+            required_variables=["x"],
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"x": "y"}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={"x": "y"})
 
         audit = doc_generator.get_audit_trail_for_document(doc_id)
 
@@ -467,19 +443,14 @@ class TestAuditTrail:
             name="Contract",
             content="Content: {{ name }}",
             required_variables=["name"],
-            requires_approval=True
+            requires_approval=True,
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"name": "Test"}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={"name": "Test"})
 
-        with patch('src.core.document_generator.check_permission', return_value=True):
+        with patch("src.core.document_generator.check_permission", return_value=True):
             doc_generator.approve_document(
-                document_id=doc_id,
-                approved_by="approver123",
-                approver_role="hr_admin"
+                document_id=doc_id, approved_by="approver123", approver_role="hr_admin"
             )
 
         audit = doc_generator.get_audit_trail_for_document(doc_id)
@@ -494,16 +465,13 @@ class TestAuditTrail:
             name="Finalize Test",
             content="Content: {{ name }}",
             required_variables=["name"],
-            requires_approval=True  # This will create a draft status
+            requires_approval=True,  # This will create a draft status
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"name": "Test"}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={"name": "Test"})
 
         # First approve it
-        with patch('src.core.document_generator.check_permission', return_value=True):
+        with patch("src.core.document_generator.check_permission", return_value=True):
             doc_generator.approve_document(document_id=doc_id, approved_by="approver")
 
         # Then finalize
@@ -519,7 +487,7 @@ class TestAuditTrail:
 class TestDocumentApproval:
     """Tests for document approval workflow."""
 
-    @patch('src.core.document_generator.check_permission')
+    @patch("src.core.document_generator.check_permission")
     def test_approve_document(self, mock_perm, doc_generator):
         """approve_document changes status to approved."""
         mock_perm.return_value = True
@@ -529,18 +497,13 @@ class TestDocumentApproval:
             name="Contract",
             content="Contract",
             required_variables=[],
-            requires_approval=True
+            requires_approval=True,
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={})
 
         result = doc_generator.approve_document(
-            document_id=doc_id,
-            approved_by="approver_emp",
-            approver_role="hr_admin"
+            document_id=doc_id, approved_by="approver_emp", approver_role="hr_admin"
         )
 
         assert result is True
@@ -549,7 +512,7 @@ class TestDocumentApproval:
         assert document.approved_by == "approver_emp"
         assert document.approved_at is not None
 
-    @patch('src.core.document_generator.check_permission')
+    @patch("src.core.document_generator.check_permission")
     def test_approve_document_insufficient_permission_raises(self, mock_perm, doc_generator):
         """approve_document raises if user lacks permission."""
         mock_perm.return_value = False
@@ -559,19 +522,14 @@ class TestDocumentApproval:
             name="Offer",
             content="Offer",
             required_variables=[],
-            requires_approval=True
+            requires_approval=True,
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={})
 
         with pytest.raises(ValueError, match="cannot approve"):
             doc_generator.approve_document(
-                document_id=doc_id,
-                approved_by="non_admin",
-                approver_role="employee"
+                document_id=doc_id, approved_by="non_admin", approver_role="employee"
             )
 
     def test_finalize_document(self, doc_generator):
@@ -581,16 +539,13 @@ class TestDocumentApproval:
             name="Contract",
             content="Contract: {{ name }}",
             required_variables=["name"],
-            requires_approval=True
+            requires_approval=True,
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"name": "Test"}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={"name": "Test"})
 
         # Approve the document first (moves from draft to approved)
-        with patch('src.core.document_generator.check_permission', return_value=True):
+        with patch("src.core.document_generator.check_permission", return_value=True):
             doc_generator.approve_document(document_id=doc_id, approved_by="approver")
 
         # Now we can finalize
@@ -606,12 +561,11 @@ class TestDocumentApproval:
             document_type=DocumentType.OFFER_LETTER,
             name="Offer",
             content="Offer content: {{ title }}",
-            required_variables=["title"]
+            required_variables=["title"],
         )
 
         doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={"title": "Senior Engineer"}
+            template_id=template_id, context={"title": "Senior Engineer"}
         )
 
         # Document is already finalized since requires_approval is False
@@ -629,13 +583,10 @@ class TestDocumentApproval:
             name="Offer",
             content="Content",
             required_variables=[],
-            requires_approval=True
+            requires_approval=True,
         )
 
-        doc_id = doc_generator.generate_document(
-            template_id=template_id,
-            context={}
-        )
+        doc_id = doc_generator.generate_document(template_id=template_id, context={})
 
         with pytest.raises(ValueError, match="must be finalized"):
             doc_generator.export_document_pdf(doc_id)
@@ -650,7 +601,7 @@ class TestDocumentListing:
             document_type=DocumentType.OFFER_LETTER,
             name="Offer",
             content="{{ name }}",
-            required_variables=["name"]
+            required_variables=["name"],
         )
 
         doc_generator.generate_document(template_id, {"name": "A"})
@@ -666,13 +617,13 @@ class TestDocumentListing:
             document_type=DocumentType.OFFER_LETTER,
             name="Offer",
             content="{{ x }}",
-            required_variables=["x"]
+            required_variables=["x"],
         )
         term_id = doc_generator.create_template(
             document_type=DocumentType.TERMINATION_LETTER,
             name="Termination",
             content="{{ y }}",
-            required_variables=["y"]
+            required_variables=["y"],
         )
 
         doc_generator.generate_document(offer_id, {"x": "a"})
@@ -688,7 +639,7 @@ class TestDocumentListing:
             document_type=DocumentType.OFFER_LETTER,
             name="Offer",
             content="{{ emp }}",
-            required_variables=["emp"]
+            required_variables=["emp"],
         )
 
         doc_generator.generate_document(template_id, {"emp": "emp1"})

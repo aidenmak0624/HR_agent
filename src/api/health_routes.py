@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class HealthStatus(str, Enum):
     """Health status enumeration."""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -32,8 +34,10 @@ class HealthStatus(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class ComponentHealth(BaseModel):
     """Health status of a system component."""
+
     name: str = Field(..., description="Component name")
     status: HealthStatus = Field(..., description="Health status")
     latency_ms: float = Field(default=0.0, description="Check latency in milliseconds")
@@ -46,30 +50,20 @@ class ComponentHealth(BaseModel):
 
 class HealthCheckConfig(BaseModel):
     """Health check configuration."""
-    check_timeout_seconds: int = Field(
-        default=5, description="Timeout for individual checks"
-    )
-    db_check_enabled: bool = Field(
-        default=True, description="Enable database health check"
-    )
-    redis_check_enabled: bool = Field(
-        default=True, description="Enable Redis health check"
-    )
-    llm_check_enabled: bool = Field(
-        default=True, description="Enable LLM provider health check"
-    )
-    detailed_checks: bool = Field(
-        default=False, description="Enable detailed component checks"
-    )
-    cache_ttl_seconds: int = Field(
-        default=30, description="Cache TTL for health check results"
-    )
+
+    check_timeout_seconds: int = Field(default=5, description="Timeout for individual checks")
+    db_check_enabled: bool = Field(default=True, description="Enable database health check")
+    redis_check_enabled: bool = Field(default=True, description="Enable Redis health check")
+    llm_check_enabled: bool = Field(default=True, description="Enable LLM provider health check")
+    detailed_checks: bool = Field(default=False, description="Enable detailed component checks")
+    cache_ttl_seconds: int = Field(default=30, description="Cache TTL for health check results")
 
     model_config = ConfigDict(frozen=False)
 
 
 class HealthCheckResult(BaseModel):
     """Complete health check result."""
+
     status: HealthStatus = Field(..., description="Overall health status")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Check timestamp")
     version: str = Field(default="1.0.0", description="Application version")
@@ -84,6 +78,7 @@ class HealthCheckResult(BaseModel):
 # Health Check Service
 # ============================================================================
 
+
 class HealthCheckService:
     """
     Health check service for system monitoring.
@@ -94,9 +89,7 @@ class HealthCheckService:
     """
 
     def __init__(
-        self,
-        config: Optional[HealthCheckConfig] = None,
-        start_time: Optional[datetime] = None
+        self, config: Optional[HealthCheckConfig] = None, start_time: Optional[datetime] = None
     ):
         """
         Initialize health check service.
@@ -125,7 +118,7 @@ class HealthCheckService:
             result = {
                 "status": "alive",
                 "timestamp": datetime.utcnow().isoformat(),
-                "uptime_seconds": self.get_uptime()
+                "uptime_seconds": self.get_uptime(),
             }
 
             logger.info("Liveness check passed")
@@ -183,13 +176,11 @@ class HealthCheckService:
                 version="1.0.0",
                 uptime_seconds=self.get_uptime(),
                 components=components,
-                checks_performed=check_count
+                checks_performed=check_count,
             )
 
             logger.info(
-                "Readiness check completed: status=%s, checks=%d",
-                overall_status.value,
-                check_count
+                "Readiness check completed: status=%s, checks=%d", overall_status.value, check_count
             )
             return result
         except Exception as e:
@@ -220,15 +211,12 @@ class HealthCheckService:
                 status=status,
                 latency_ms=latency_ms,
                 message=message,
-                metadata={"check_type": "application"}
+                metadata={"check_type": "application"},
             )
         except Exception as e:
             logger.error("Component check failed for %s: %s", name, str(e))
             return ComponentHealth(
-                name=name,
-                status=HealthStatus.UNHEALTHY,
-                message=str(e),
-                metadata={"error": str(e)}
+                name=name, status=HealthStatus.UNHEALTHY, message=str(e), metadata={"error": str(e)}
             )
 
     def check_database(self) -> ComponentHealth:
@@ -266,8 +254,8 @@ class HealthCheckService:
                 metadata={
                     "host": db_host,
                     "port": db_port,
-                    "database": os.getenv("DB_NAME", "hr_agent")
-                }
+                    "database": os.getenv("DB_NAME", "hr_agent"),
+                },
             )
         except Exception as e:
             logger.error("Database check failed: %s", str(e))
@@ -275,7 +263,7 @@ class HealthCheckService:
                 name="database",
                 status=HealthStatus.UNHEALTHY,
                 message=f"Database check error: {str(e)}",
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def check_redis(self) -> ComponentHealth:
@@ -308,7 +296,7 @@ class HealthCheckService:
                 status=status,
                 latency_ms=latency_ms,
                 message=message,
-                metadata={"url": redis_url}
+                metadata={"url": redis_url},
             )
         except Exception as e:
             logger.error("Redis check failed: %s", str(e))
@@ -316,7 +304,7 @@ class HealthCheckService:
                 name="redis",
                 status=HealthStatus.UNHEALTHY,
                 message=f"Redis check error: {str(e)}",
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def check_llm_provider(self) -> ComponentHealth:
@@ -348,10 +336,7 @@ class HealthCheckService:
                 status=status,
                 latency_ms=latency_ms,
                 message=message,
-                metadata={
-                    "provider": llm_provider,
-                    "configured": bool(llm_api_key)
-                }
+                metadata={"provider": llm_provider, "configured": bool(llm_api_key)},
             )
         except Exception as e:
             logger.error("LLM provider check failed: %s", str(e))
@@ -359,7 +344,7 @@ class HealthCheckService:
                 name="llm_provider",
                 status=HealthStatus.UNHEALTHY,
                 message=f"LLM check error: {str(e)}",
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def check_disk_space(self) -> ComponentHealth:
@@ -374,7 +359,7 @@ class HealthCheckService:
 
             disk_usage = psutil.disk_usage("/")
             percent_used = disk_usage.percent
-            free_gb = disk_usage.free / (1024 ** 3)
+            free_gb = disk_usage.free / (1024**3)
 
             # Consider disk full at 90%
             if percent_used >= 90:
@@ -397,8 +382,8 @@ class HealthCheckService:
                 metadata={
                     "percent_used": percent_used,
                     "free_gb": round(free_gb, 2),
-                    "total_gb": round(disk_usage.total / (1024 ** 3), 2)
-                }
+                    "total_gb": round(disk_usage.total / (1024**3), 2),
+                },
             )
         except Exception as e:
             logger.error("Disk space check failed: %s", str(e))
@@ -406,7 +391,7 @@ class HealthCheckService:
                 name="disk_space",
                 status=HealthStatus.DEGRADED,
                 message=f"Disk check error: {str(e)}",
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def check_memory(self) -> ComponentHealth:
@@ -421,7 +406,7 @@ class HealthCheckService:
 
             memory = psutil.virtual_memory()
             percent_used = memory.percent
-            available_gb = memory.available / (1024 ** 3)
+            available_gb = memory.available / (1024**3)
 
             # Consider memory full at 90%
             if percent_used >= 90:
@@ -444,8 +429,8 @@ class HealthCheckService:
                 metadata={
                     "percent_used": percent_used,
                     "available_gb": round(available_gb, 2),
-                    "total_gb": round(memory.total / (1024 ** 3), 2)
-                }
+                    "total_gb": round(memory.total / (1024**3), 2),
+                },
             )
         except Exception as e:
             logger.error("Memory check failed: %s", str(e))
@@ -453,7 +438,7 @@ class HealthCheckService:
                 name="memory",
                 status=HealthStatus.DEGRADED,
                 message=f"Memory check error: {str(e)}",
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     def get_detailed_health(self) -> HealthCheckResult:
@@ -491,7 +476,7 @@ class HealthCheckService:
                 "build": os.getenv("BUILD_ID", "dev-build"),
                 "commit": os.getenv("GIT_COMMIT", "unknown"),
                 "environment": os.getenv("ENVIRONMENT", "development"),
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             logger.info("Version info retrieved")
@@ -535,16 +520,16 @@ class HealthCheckService:
                 "timestamp": datetime.utcnow().isoformat(),
                 "resource_summary": {
                     "disk": {
-                        "used_gb": round(disk.used / (1024 ** 3), 2),
-                        "free_gb": round(disk.free / (1024 ** 3), 2),
-                        "total_gb": round(disk.total / (1024 ** 3), 2)
+                        "used_gb": round(disk.used / (1024**3), 2),
+                        "free_gb": round(disk.free / (1024**3), 2),
+                        "total_gb": round(disk.total / (1024**3), 2),
                     },
                     "memory": {
-                        "used_gb": round(memory.used / (1024 ** 3), 2),
-                        "available_gb": round(memory.available / (1024 ** 3), 2),
-                        "total_gb": round(memory.total / (1024 ** 3), 2)
-                    }
-                }
+                        "used_gb": round(memory.used / (1024**3), 2),
+                        "available_gb": round(memory.available / (1024**3), 2),
+                        "total_gb": round(memory.total / (1024**3), 2),
+                    },
+                },
             }
 
             logger.info("Metrics summary retrieved")

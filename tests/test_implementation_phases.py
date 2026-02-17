@@ -19,26 +19,29 @@ from unittest.mock import MagicMock, patch
 from datetime import datetime
 
 # Ensure src is importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-os.environ.setdefault('JWT_SECRET', 'test-secret-key')
-os.environ.setdefault('GOOGLE_API_KEY', 'test-key')
-os.environ.setdefault('HR_DB_PATH', '/tmp/hr_test_phases.db')
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+os.environ.setdefault("JWT_SECRET", "test-secret-key")
+os.environ.setdefault("GOOGLE_API_KEY", "test-key")
+os.environ.setdefault("HR_DB_PATH", "/tmp/hr_test_phases.db")
 
 
 # ═══════════════════════════════════════════════════════════════
 # UNIT TESTS
 # ═══════════════════════════════════════════════════════════════
 
+
 class TestEventBusUnit:
     """Unit tests for the EventBus singleton pub/sub system."""
 
     def setup_method(self):
         from src.core.event_bus import EventBus
+
         EventBus.reset()
 
     def test_singleton_pattern(self):
         """EventBus.instance() returns the same object on repeated calls."""
         from src.core.event_bus import EventBus
+
         bus1 = EventBus.instance()
         bus2 = EventBus.instance()
         assert bus1 is bus2
@@ -46,6 +49,7 @@ class TestEventBusUnit:
     def test_reset_creates_new_instance(self):
         """EventBus.reset() allows a fresh instance to be created."""
         from src.core.event_bus import EventBus
+
         bus1 = EventBus.instance()
         EventBus.reset()
         bus2 = EventBus.instance()
@@ -54,6 +58,7 @@ class TestEventBusUnit:
     def test_subscribe_and_publish(self):
         """Subscribed handlers are called when events are published."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         received = []
         bus.subscribe("test.event", lambda e: received.append(e))
@@ -66,6 +71,7 @@ class TestEventBusUnit:
     def test_wildcard_subscriber(self):
         """A '*' subscriber receives all event types."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         received = []
         bus.subscribe("*", lambda e: received.append(e.type))
@@ -76,6 +82,7 @@ class TestEventBusUnit:
     def test_unsubscribe(self):
         """Unsubscribed handlers no longer receive events."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         received = []
         handler = lambda e: received.append(e)
@@ -87,6 +94,7 @@ class TestEventBusUnit:
     def test_max_depth_prevents_cascade(self):
         """Recursive event publishing is stopped at MAX_DEPTH."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         depths = []
 
@@ -102,6 +110,7 @@ class TestEventBusUnit:
     def test_handler_error_doesnt_break_bus(self):
         """A failing handler doesn't prevent other handlers from running."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         results = []
 
@@ -119,6 +128,7 @@ class TestEventBusUnit:
     def test_event_has_correlation_id(self):
         """Each event automatically gets a correlation ID."""
         from src.core.event_bus import Event
+
         e1 = Event(type="test", source="test")
         e2 = Event(type="test", source="test")
         assert e1.correlation_id
@@ -128,6 +138,7 @@ class TestEventBusUnit:
     def test_get_recent_events(self):
         """get_recent_events returns published events in order."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         for i in range(5):
             bus.publish(Event(type=f"event.{i}", source="test"))
@@ -139,6 +150,7 @@ class TestEventBusUnit:
     def test_get_recent_events_filtered(self):
         """get_recent_events can filter by event type."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         bus.publish(Event(type="leave.submitted", source="test"))
         bus.publish(Event(type="leave.approved", source="test"))
@@ -149,6 +161,7 @@ class TestEventBusUnit:
     def test_get_stats(self):
         """get_stats returns correct event counts."""
         from src.core.event_bus import EventBus, Event
+
         bus = EventBus.instance()
         bus.publish(Event(type="a", source="test"))
         bus.publish(Event(type="a", source="test"))
@@ -161,10 +174,16 @@ class TestEventBusUnit:
     def test_all_event_type_constants_defined(self):
         """All expected event type constants are defined."""
         from src.core import event_bus
+
         expected = [
-            "LEAVE_SUBMITTED", "LEAVE_APPROVED", "LEAVE_REJECTED",
-            "EMPLOYEE_ONBOARDED", "REVIEW_COMPLETED", "BENEFITS_ENROLLED",
-            "POLICY_UPDATED", "GOAL_COMPLETED",
+            "LEAVE_SUBMITTED",
+            "LEAVE_APPROVED",
+            "LEAVE_REJECTED",
+            "EMPLOYEE_ONBOARDED",
+            "REVIEW_COMPLETED",
+            "BENEFITS_ENROLLED",
+            "POLICY_UPDATED",
+            "GOAL_COMPLETED",
         ]
         for const in expected:
             assert hasattr(event_bus, const), f"Missing constant: {const}"
@@ -175,26 +194,32 @@ class TestDatabaseModelsUnit:
 
     def test_benefits_plan_model_exists(self):
         from src.core.database import BenefitsPlan
+
         assert BenefitsPlan.__tablename__ == "benefits_plans"
 
     def test_benefits_enrollment_model_exists(self):
         from src.core.database import BenefitsEnrollment
+
         assert BenefitsEnrollment.__tablename__ == "benefits_enrollments"
 
     def test_onboarding_checklist_model_exists(self):
         from src.core.database import OnboardingChecklist
+
         assert OnboardingChecklist.__tablename__ == "onboarding_checklists"
 
     def test_performance_review_model_exists(self):
         from src.core.database import PerformanceReview
+
         assert PerformanceReview.__tablename__ == "performance_reviews"
 
     def test_performance_goal_model_exists(self):
         from src.core.database import PerformanceGoal
+
         assert PerformanceGoal.__tablename__ == "performance_goals"
 
     def test_event_log_model_exists(self):
         from src.core.database import EventLog
+
         assert EventLog.__tablename__ == "event_log"
 
 
@@ -203,27 +228,32 @@ class TestRouterAgentUnit:
 
     def test_leave_request_in_intent_categories(self):
         from src.agents.router_agent import RouterAgent
+
         assert "leave_request" in RouterAgent.INTENT_CATEGORIES
 
     def test_leave_request_in_agent_registry(self):
         from src.agents.router_agent import RouterAgent
+
         assert "leave_request" in RouterAgent.AGENT_REGISTRY
         assert RouterAgent.AGENT_REGISTRY["leave_request"] == "LeaveRequestAgent"
 
     def test_analytics_maps_to_performance(self):
         """Analytics intent now maps to PerformanceAgent (no standalone analytics agent)."""
         from src.agents.router_agent import RouterAgent
+
         assert RouterAgent.AGENT_REGISTRY["analytics"] == "PerformanceAgent"
 
     def test_classify_leave_request_intent(self):
         """Leave request keywords are classified correctly."""
         from src.agents.router_agent import RouterAgent
+
         router = RouterAgent(llm=None)
         intent, confidence = router.classify_intent("I want to request leave for next week")
         assert intent in ("leave_request", "leave")
 
     def test_classify_benefits_intent(self):
         from src.agents.router_agent import RouterAgent
+
         router = RouterAgent(llm=None)
         intent, confidence = router.classify_intent("What health insurance plans are available?")
         assert intent == "benefits"
@@ -231,6 +261,7 @@ class TestRouterAgentUnit:
     def test_rbac_all_roles_have_hr_admin(self):
         """hr_admin should have access to all intent types."""
         from src.agents.router_agent import RouterAgent
+
         router = RouterAgent(llm=None)
         ctx = {"role": "hr_admin", "user_id": "hr-001"}
         for intent in RouterAgent.INTENT_CATEGORIES:
@@ -242,20 +273,22 @@ class TestRouterAgentUnit:
 # INTEGRATION TESTS
 # ═══════════════════════════════════════════════════════════════
 
+
 class TestDatabaseIntegration:
     """Integration tests: models + database + seed data."""
 
     @pytest.fixture(autouse=True)
     def setup_db(self):
         """Initialize a fresh test database."""
-        test_db = '/tmp/hr_test_integration.db'
+        test_db = "/tmp/hr_test_integration.db"
         if os.path.exists(test_db):
             os.remove(test_db)
-        os.environ['HR_DB_PATH'] = test_db
+        os.environ["HR_DB_PATH"] = test_db
 
         # Re-import to pick up new path
         import importlib
         import src.core.database as db_mod
+
         importlib.reload(db_mod)
 
         db_mod.init_db()
@@ -317,12 +350,16 @@ class TestDatabaseIntegration:
     def test_event_log_persistence(self):
         """Events published via EventBus are persisted to the EventLog table."""
         from src.core.event_bus import EventBus, Event, LEAVE_SUBMITTED
+
         EventBus.reset()
         bus = EventBus.instance()
-        bus.publish(Event(
-            type=LEAVE_SUBMITTED, source="test",
-            payload={"employee_id": "1", "leave_type": "vacation"},
-        ))
+        bus.publish(
+            Event(
+                type=LEAVE_SUBMITTED,
+                source="test",
+                payload={"employee_id": "1", "leave_type": "vacation"},
+            )
+        )
         session = self.SessionLocal()
         logs = session.query(self.db.EventLog).all()
         session.close()
@@ -343,6 +380,7 @@ class TestDatabaseIntegration:
 # ═══════════════════════════════════════════════════════════════
 # SYSTEM TESTS (API level, end-to-end)
 # ═══════════════════════════════════════════════════════════════
+
 
 class TestAPISystem:
     """System tests: full API request/response cycle against running server.
@@ -372,6 +410,7 @@ class TestAPISystem:
     def check_server(self):
         """Skip system tests if server isn't running."""
         import urllib.request
+
         try:
             urllib.request.urlopen("http://localhost:5050/", timeout=2)
         except Exception:
@@ -379,14 +418,18 @@ class TestAPISystem:
 
     def _get(self, path, headers=None):
         import urllib.request
+
         req = urllib.request.Request(f"{self.BASE}{path}", headers=headers or self.EMPLOYEE_HEADERS)
         with urllib.request.urlopen(req, timeout=10) as resp:
             return json.loads(resp.read()), resp.status
 
     def _post(self, path, data, headers=None):
         import urllib.request
+
         body = json.dumps(data).encode()
-        req = urllib.request.Request(f"{self.BASE}{path}", data=body, headers=headers or self.EMPLOYEE_HEADERS, method="POST")
+        req = urllib.request.Request(
+            f"{self.BASE}{path}", data=body, headers=headers or self.EMPLOYEE_HEADERS, method="POST"
+        )
         try:
             with urllib.request.urlopen(req, timeout=10) as resp:
                 return json.loads(resp.read()), resp.status
@@ -405,6 +448,7 @@ class TestAPISystem:
     def test_get_employees_requires_hr_admin(self):
         """Non-admin users get 403 on /employees."""
         import urllib.request, urllib.error
+
         req = urllib.request.Request(f"{self.BASE}/employees", headers=self.EMPLOYEE_HEADERS)
         try:
             urllib.request.urlopen(req, timeout=10)
@@ -480,7 +524,7 @@ class TestAPISystem:
             "leave_type": "sick",
             "start_date": "2026-04-01",
             "end_date": "2026-04-02",
-            "reason": "Test event creation"
+            "reason": "Test event creation",
         }
         resp, status = self._post("/leave/request", leave_data)
         assert status == 201
@@ -494,13 +538,20 @@ class TestAPISystem:
     def test_approve_creates_event(self):
         """Approving a leave request creates a leave.approved event."""
         # Submit
-        leave_data = {"leave_type": "vacation", "start_date": "2026-05-01", "end_date": "2026-05-02", "reason": "test"}
+        leave_data = {
+            "leave_type": "vacation",
+            "start_date": "2026-05-01",
+            "end_date": "2026-05-02",
+            "reason": "test",
+        }
         resp, status = self._post("/leave/request", leave_data)
         assert status == 201
         req_id = resp["data"]["request_id"]
 
         # Approve
-        approve_resp, approve_status = self._post("/workflows/approve", {"request_id": req_id}, headers=self.MANAGER_HEADERS)
+        approve_resp, approve_status = self._post(
+            "/workflows/approve", {"request_id": req_id}, headers=self.MANAGER_HEADERS
+        )
         assert approve_status == 200
 
         # Check events
@@ -513,9 +564,14 @@ class TestAPISystem:
     def test_all_responses_have_standard_shape(self):
         """Every endpoint returns {success, data} at minimum."""
         endpoints = [
-            "/profile", "/benefits/plans", "/benefits/enrollments",
-            "/onboarding/checklist", "/performance/reviews",
-            "/performance/goals", "/events", "/metrics",
+            "/profile",
+            "/benefits/plans",
+            "/benefits/enrollments",
+            "/onboarding/checklist",
+            "/performance/reviews",
+            "/performance/goals",
+            "/events",
+            "/metrics",
         ]
         for ep in endpoints:
             data, status = self._get(ep)
@@ -526,10 +582,15 @@ class TestAPISystem:
     def test_leave_history_after_submit(self):
         """After submitting leave, it appears in the history."""
         # Submit
-        self._post("/leave/request", {
-            "leave_type": "personal", "start_date": "2026-06-01",
-            "end_date": "2026-06-01", "reason": "history test"
-        })
+        self._post(
+            "/leave/request",
+            {
+                "leave_type": "personal",
+                "start_date": "2026-06-01",
+                "end_date": "2026-06-01",
+                "reason": "history test",
+            },
+        )
         # Check history
         data, status = self._get("/leave/history")
         assert status == 200
@@ -550,6 +611,7 @@ class TestAPISystem:
 # UI CONTRACT TESTS
 # ═══════════════════════════════════════════════════════════════
 
+
 class TestUIContracts:
     """Tests that validate the API returns data in the shape the frontend JS expects.
 
@@ -566,6 +628,7 @@ class TestUIContracts:
     @pytest.fixture(autouse=True)
     def check_server(self):
         import urllib.request
+
         try:
             urllib.request.urlopen("http://localhost:5050/", timeout=2)
         except Exception:
@@ -573,6 +636,7 @@ class TestUIContracts:
 
     def _get(self, path):
         import urllib.request
+
         req = urllib.request.Request(f"{self.BASE}{path}", headers=self.HEADERS)
         with urllib.request.urlopen(req, timeout=10) as resp:
             return json.loads(resp.read())

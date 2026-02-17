@@ -17,6 +17,7 @@ from src.core.ccpa import (
 # Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def ccpa_service():
     """Create a fresh CCPAComplianceService for each test."""
@@ -27,10 +28,7 @@ def ccpa_service():
 def ccpa_service_custom():
     """Create a CCPAComplianceService with custom config."""
     config = CCPAConfig(
-        enabled=True,
-        response_deadline_days=30,
-        extension_allowed_days=30,
-        min_age_for_consent=16
+        enabled=True, response_deadline_days=30, extension_allowed_days=30, min_age_for_consent=16
     )
     return CCPAComplianceService(config=config)
 
@@ -41,13 +39,14 @@ def sample_request(ccpa_service):
     return ccpa_service.submit_request(
         consumer_id="consumer_001",
         right_type=ConsumerRight.RIGHT_TO_KNOW,
-        data_categories=[CCPADataCategory.PERSONAL_INFO]
+        data_categories=[CCPADataCategory.PERSONAL_INFO],
     )
 
 
 # ============================================================================
 # Test Enums
 # ============================================================================
+
 
 class TestCCPADataCategory:
     """Tests for CCPADataCategory enum."""
@@ -120,15 +119,13 @@ class TestCCPARequestStatus:
 # Test Models
 # ============================================================================
 
+
 class TestCCPARequest:
     """Tests for CCPARequest model."""
 
     def test_ccpa_request_defaults(self):
         """CCPARequest uses default values when not provided."""
-        request = CCPARequest(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
-        )
+        request = CCPARequest(consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW)
 
         assert request.consumer_id == "consumer_001"
         assert request.right_type == ConsumerRight.RIGHT_TO_KNOW
@@ -144,7 +141,7 @@ class TestCCPARequest:
         request = CCPARequest(
             consumer_id="consumer_002",
             right_type=ConsumerRight.RIGHT_TO_DELETE,
-            data_categories=categories
+            data_categories=categories,
         )
 
         assert request.consumer_id == "consumer_002"
@@ -153,14 +150,8 @@ class TestCCPARequest:
 
     def test_ccpa_request_generates_uuid(self):
         """CCPARequest generates unique request IDs."""
-        request1 = CCPARequest(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
-        )
-        request2 = CCPARequest(
-            consumer_id="consumer_002",
-            right_type=ConsumerRight.RIGHT_TO_DELETE
-        )
+        request1 = CCPARequest(consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW)
+        request2 = CCPARequest(consumer_id="consumer_002", right_type=ConsumerRight.RIGHT_TO_DELETE)
 
         assert request1.request_id != request2.request_id
         assert len(request1.request_id) > 0
@@ -169,10 +160,7 @@ class TestCCPARequest:
     def test_ccpa_request_deadline_calculation(self):
         """CCPARequest sets response_deadline to 45 days."""
         before = datetime.utcnow()
-        request = CCPARequest(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
-        )
+        request = CCPARequest(consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW)
         after = datetime.utcnow()
 
         # Deadline should be approximately 45 days from submission
@@ -188,7 +176,7 @@ class TestDataInventoryItem:
         item = DataInventoryItem(
             category=CCPADataCategory.PERSONAL_INFO,
             source="HRIS System",
-            purpose="Employment Administration"
+            purpose="Employment Administration",
         )
 
         assert item.category == CCPADataCategory.PERSONAL_INFO
@@ -204,7 +192,7 @@ class TestDataInventoryItem:
             source="Payroll System",
             purpose="Compensation Management",
             shared_with_third_parties=True,
-            sale_opt_out=True
+            sale_opt_out=True,
         )
 
         assert item.shared_with_third_parties is True
@@ -213,14 +201,10 @@ class TestDataInventoryItem:
     def test_data_inventory_item_generates_uuid(self):
         """DataInventoryItem generates unique item IDs."""
         item1 = DataInventoryItem(
-            category=CCPADataCategory.PERSONAL_INFO,
-            source="Source 1",
-            purpose="Purpose 1"
+            category=CCPADataCategory.PERSONAL_INFO, source="Source 1", purpose="Purpose 1"
         )
         item2 = DataInventoryItem(
-            category=CCPADataCategory.FINANCIAL,
-            source="Source 2",
-            purpose="Purpose 2"
+            category=CCPADataCategory.FINANCIAL, source="Source 2", purpose="Purpose 2"
         )
 
         assert item1.item_id != item2.item_id
@@ -248,7 +232,7 @@ class TestCCPAConfig:
             verification_required=False,
             response_deadline_days=30,
             extension_allowed_days=30,
-            min_age_for_consent=13
+            min_age_for_consent=13,
         )
 
         assert config.enabled is False
@@ -274,6 +258,7 @@ class TestCCPAConfig:
 # ============================================================================
 # Test Service Initialization
 # ============================================================================
+
 
 class TestCCPAComplianceServiceInit:
     """Tests for CCPAComplianceService initialization."""
@@ -307,14 +292,14 @@ class TestCCPAComplianceServiceInit:
 # Test Submit Request
 # ============================================================================
 
+
 class TestSubmitRequest:
     """Tests for submit_request method."""
 
     def test_submit_request_creates_request(self, ccpa_service):
         """submit_request creates a CCPARequest."""
         request = ccpa_service.submit_request(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
+            consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW
         )
 
         assert isinstance(request, CCPARequest)
@@ -324,8 +309,7 @@ class TestSubmitRequest:
     def test_submit_request_assigns_uuid(self, ccpa_service):
         """submit_request assigns unique request ID."""
         request = ccpa_service.submit_request(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
+            consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW
         )
 
         assert request.request_id is not None
@@ -334,8 +318,7 @@ class TestSubmitRequest:
     def test_submit_request_sets_deadline(self, ccpa_service_custom):
         """submit_request sets response_deadline based on config."""
         request = ccpa_service_custom.submit_request(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
+            consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW
         )
 
         delta = request.response_deadline - request.submitted_at
@@ -345,8 +328,7 @@ class TestSubmitRequest:
     def test_submit_request_stores_request(self, ccpa_service):
         """submit_request stores request internally."""
         request = ccpa_service.submit_request(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
+            consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW
         )
 
         assert request.request_id in ccpa_service._requests
@@ -356,6 +338,7 @@ class TestSubmitRequest:
 # ============================================================================
 # Test Process Request
 # ============================================================================
+
 
 class TestProcessRequest:
     """Tests for process_request method."""
@@ -396,6 +379,7 @@ class TestProcessRequest:
 # Test Verify Consumer
 # ============================================================================
 
+
 class TestVerifyConsumer:
     """Tests for verify_consumer method."""
 
@@ -405,8 +389,7 @@ class TestVerifyConsumer:
         service = CCPAComplianceService(config=config)
 
         result = service.verify_consumer(
-            consumer_id="consumer_001",
-            verification_data={"email": "test@example.com"}
+            consumer_id="consumer_001", verification_data={"email": "test@example.com"}
         )
 
         assert result is True
@@ -418,8 +401,7 @@ class TestVerifyConsumer:
 
         with pytest.raises(ValueError, match="Verification data incomplete"):
             service.verify_consumer(
-                consumer_id="consumer_001",
-                verification_data={"name": "John Doe"}
+                consumer_id="consumer_001", verification_data={"name": "John Doe"}
             )
 
     def test_verify_consumer_missing_verification(self, ccpa_service):
@@ -428,15 +410,13 @@ class TestVerifyConsumer:
         service = CCPAComplianceService(config=config)
 
         with pytest.raises(ValueError):
-            service.verify_consumer(
-                consumer_id="consumer_001",
-                verification_data=None
-            )
+            service.verify_consumer(consumer_id="consumer_001", verification_data=None)
 
 
 # ============================================================================
 # Test Opt Out of Sale
 # ============================================================================
+
 
 class TestOptOutOfSale:
     """Tests for opt_out_of_sale method."""
@@ -468,6 +448,7 @@ class TestOptOutOfSale:
 # Test Data Inventory
 # ============================================================================
 
+
 class TestGetDataInventory:
     """Tests for get_data_inventory method."""
 
@@ -498,6 +479,7 @@ class TestGetDataInventory:
 # Test Classify Data
 # ============================================================================
 
+
 class TestClassifyData:
     """Tests for classify_data method."""
 
@@ -517,11 +499,7 @@ class TestClassifyData:
 
     def test_classify_data_multiple(self, ccpa_service):
         """classify_data handles multiple data categories."""
-        data = {
-            "first_name": "John",
-            "salary": 100000,
-            "ip_address": "192.168.1.1"
-        }
+        data = {"first_name": "John", "salary": 100000, "ip_address": "192.168.1.1"}
         categories = ccpa_service.classify_data(data)
 
         assert len(categories) >= 2
@@ -531,6 +509,7 @@ class TestClassifyData:
 # ============================================================================
 # Test Minor Consent
 # ============================================================================
+
 
 class TestCheckMinorConsent:
     """Tests for check_minor_consent method."""
@@ -564,6 +543,7 @@ class TestCheckMinorConsent:
 # Test Generate Disclosure
 # ============================================================================
 
+
 class TestGenerateDisclosure:
     """Tests for generate_disclosure method."""
 
@@ -593,6 +573,7 @@ class TestGenerateDisclosure:
 # Test Extend Deadline
 # ============================================================================
 
+
 class TestExtendDeadline:
     """Tests for extend_deadline method."""
 
@@ -600,8 +581,7 @@ class TestExtendDeadline:
         """extend_deadline extends response deadline."""
         original_deadline = sample_request.response_deadline
         extended = ccpa_service.extend_deadline(
-            sample_request.request_id,
-            "Complex request requiring additional investigation"
+            sample_request.request_id, "Complex request requiring additional investigation"
         )
 
         assert extended.extended is True
@@ -609,16 +589,10 @@ class TestExtendDeadline:
 
     def test_extend_deadline_already_extended(self, sample_request, ccpa_service):
         """extend_deadline raises error if already extended."""
-        ccpa_service.extend_deadline(
-            sample_request.request_id,
-            "First extension"
-        )
+        ccpa_service.extend_deadline(sample_request.request_id, "First extension")
 
         with pytest.raises(ValueError, match="already extended"):
-            ccpa_service.extend_deadline(
-                sample_request.request_id,
-                "Second extension"
-            )
+            ccpa_service.extend_deadline(sample_request.request_id, "Second extension")
 
     def test_extend_deadline_missing_request(self, ccpa_service):
         """extend_deadline raises ValueError for missing request."""
@@ -629,6 +603,7 @@ class TestExtendDeadline:
 # ============================================================================
 # Test Annual Metrics
 # ============================================================================
+
 
 class TestGetAnnualMetrics:
     """Tests for get_annual_metrics method."""
@@ -644,12 +619,10 @@ class TestGetAnnualMetrics:
     def test_get_annual_metrics_request_counts(self, ccpa_service):
         """get_annual_metrics includes request counts."""
         ccpa_service.submit_request(
-            consumer_id="consumer_001",
-            right_type=ConsumerRight.RIGHT_TO_KNOW
+            consumer_id="consumer_001", right_type=ConsumerRight.RIGHT_TO_KNOW
         )
         ccpa_service.submit_request(
-            consumer_id="consumer_002",
-            right_type=ConsumerRight.RIGHT_TO_DELETE
+            consumer_id="consumer_002", right_type=ConsumerRight.RIGHT_TO_DELETE
         )
 
         metrics = ccpa_service.get_annual_metrics()

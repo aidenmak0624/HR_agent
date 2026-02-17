@@ -20,21 +20,13 @@ logger = logging.getLogger(__name__)
 class SummarizationConfig(BaseModel):
     """Configuration for conversation summarization."""
 
-    max_summary_tokens: int = Field(
-        default=500, description="Maximum tokens in summary"
-    )
+    max_summary_tokens: int = Field(default=500, description="Maximum tokens in summary")
     summarize_threshold: int = Field(
         default=20, description="Summarize when message count exceeds this"
     )
-    summary_model: str = Field(
-        default="gpt-4o-mini", description="Model for summarization"
-    )
-    include_key_facts: bool = Field(
-        default=True, description="Extract key facts"
-    )
-    include_action_items: bool = Field(
-        default=True, description="Extract action items"
-    )
+    summary_model: str = Field(default="gpt-4o-mini", description="Model for summarization")
+    include_key_facts: bool = Field(default=True, description="Extract key facts")
+    include_action_items: bool = Field(default=True, description="Extract action items")
 
 
 class ConversationSummary(BaseModel):
@@ -69,7 +61,8 @@ class ConversationSummarizer:
         self.config = config or SummarizationConfig()
         logger.info(
             "ConversationSummarizer initialized - model=%s threshold=%d",
-            self.config.summary_model, self.config.summarize_threshold
+            self.config.summary_model,
+            self.config.summarize_threshold,
         )
 
     def should_summarize(self, messages: List[Dict[str, Any]]) -> bool:
@@ -86,14 +79,13 @@ class ConversationSummarizer:
         if should:
             logger.debug(
                 "Should summarize: %d messages exceeds threshold of %d",
-                len(messages), self.config.summarize_threshold
+                len(messages),
+                self.config.summarize_threshold,
             )
         return should
 
     def summarize(
-        self,
-        messages: List[Dict[str, Any]],
-        user_context: Optional[Dict[str, Any]] = None
+        self, messages: List[Dict[str, Any]], user_context: Optional[Dict[str, Any]] = None
     ) -> ConversationSummary:
         """
         Generate summary from conversation messages.
@@ -118,13 +110,10 @@ class ConversationSummarizer:
                 return ConversationSummary(
                     summary_text="No messages to summarize",
                     message_count_summarized=0,
-                    confidence=0.0
+                    confidence=0.0,
                 )
 
-            logger.info(
-                "Summarizing %d messages for user_context=%s",
-                len(messages), user_context
-            )
+            logger.info("Summarizing %d messages for user_context=%s", len(messages), user_context)
 
             # Build prompt
             prompt = self._build_summarization_prompt(messages, user_context)
@@ -142,7 +131,7 @@ class ConversationSummarizer:
                 len(summary.key_facts),
                 len(summary.action_items),
                 len(summary.topics_discussed),
-                summary.confidence
+                summary.confidence,
             )
 
             return summary
@@ -152,13 +141,11 @@ class ConversationSummarizer:
             return ConversationSummary(
                 summary_text=f"Error summarizing conversation: {str(e)}",
                 message_count_summarized=len(messages),
-                confidence=0.0
+                confidence=0.0,
             )
 
     def _build_summarization_prompt(
-        self,
-        messages: List[Dict[str, Any]],
-        user_context: Optional[Dict[str, Any]] = None
+        self, messages: List[Dict[str, Any]], user_context: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         Construct summarization prompt for LLM.
@@ -196,11 +183,7 @@ Format your response with clear sections for each part."""
         logger.debug("Built summarization prompt: %d chars", len(prompt))
         return prompt
 
-    def _parse_summary_response(
-        self,
-        response: str,
-        message_count: int
-    ) -> ConversationSummary:
+    def _parse_summary_response(self, response: str, message_count: int) -> ConversationSummary:
         """
         Parse LLM response into structured summary.
 
@@ -217,7 +200,8 @@ Format your response with clear sections for each part."""
             # Extract summary (first paragraph before KEY FACTS)
             summary_match = re.search(
                 r"(?:SUMMARY|^):\s*(.*?)(?=KEY FACTS|ACTION ITEMS|$)",
-                response, re.IGNORECASE | re.DOTALL
+                response,
+                re.IGNORECASE | re.DOTALL,
             )
             summary_text = summary_match.group(1).strip() if summary_match else response[:200]
 
@@ -225,7 +209,9 @@ Format your response with clear sections for each part."""
             key_facts = self._extract_key_facts(response) if self.config.include_key_facts else []
 
             # Extract action items
-            action_items = self._extract_action_items(response) if self.config.include_action_items else []
+            action_items = (
+                self._extract_action_items(response) if self.config.include_action_items else []
+            )
 
             # Extract topics
             topics = self._extract_topics(response)
@@ -236,7 +222,10 @@ Format your response with clear sections for each part."""
 
             logger.debug(
                 "Parsed response: summary=%d chars, facts=%d, actions=%d, topics=%d",
-                len(summary_text), len(key_facts), len(action_items), len(topics)
+                len(summary_text),
+                len(key_facts),
+                len(action_items),
+                len(topics),
             )
 
             return ConversationSummary(
@@ -245,15 +234,13 @@ Format your response with clear sections for each part."""
                 action_items=action_items,
                 topics_discussed=topics,
                 message_count_summarized=message_count,
-                confidence=confidence
+                confidence=confidence,
             )
 
         except Exception as e:
             logger.exception("Error parsing summary response: %s", e)
             return ConversationSummary(
-                summary_text=response[:200],
-                message_count_summarized=message_count,
-                confidence=0.5
+                summary_text=response[:200], message_count_summarized=message_count, confidence=0.5
             )
 
     def _extract_key_facts(self, text: str) -> List[str]:
@@ -270,7 +257,8 @@ Format your response with clear sections for each part."""
         """
         match = re.search(
             r"KEY FACTS[:\s]*(.*?)(?=ACTION ITEMS|TOPICS|CONFIDENCE|$)",
-            text, re.IGNORECASE | re.DOTALL
+            text,
+            re.IGNORECASE | re.DOTALL,
         )
 
         if not match:
@@ -298,7 +286,8 @@ Format your response with clear sections for each part."""
         """
         match = re.search(
             r"ACTION ITEMS[:\s]*(.*?)(?=TOPICS|KEY FACTS|CONFIDENCE|$)",
-            text, re.IGNORECASE | re.DOTALL
+            text,
+            re.IGNORECASE | re.DOTALL,
         )
 
         if not match:
@@ -326,7 +315,8 @@ Format your response with clear sections for each part."""
         """
         match = re.search(
             r"TOPICS[:\s]*(.*?)(?=CONFIDENCE|ACTION ITEMS|KEY FACTS|$)",
-            text, re.IGNORECASE | re.DOTALL
+            text,
+            re.IGNORECASE | re.DOTALL,
         )
 
         if not match:
@@ -343,10 +333,7 @@ Format your response with clear sections for each part."""
         logger.debug("Extracted %d topics", len(topics))
         return topics
 
-    def merge_summaries(
-        self,
-        summaries: List[ConversationSummary]
-    ) -> ConversationSummary:
+    def merge_summaries(self, summaries: List[ConversationSummary]) -> ConversationSummary:
         """
         Merge multiple summaries into one.
 
@@ -360,9 +347,7 @@ Format your response with clear sections for each part."""
         """
         if not summaries:
             return ConversationSummary(
-                summary_text="No summaries to merge",
-                message_count_summarized=0,
-                confidence=0.0
+                summary_text="No summaries to merge", message_count_summarized=0, confidence=0.0
             )
 
         if len(summaries) == 1:
@@ -398,7 +383,10 @@ Format your response with clear sections for each part."""
 
             logger.info(
                 "Merged %d summaries: %d facts, %d items, %d topics",
-                len(summaries), len(unique_facts), len(unique_items), len(unique_topics)
+                len(summaries),
+                len(unique_facts),
+                len(unique_items),
+                len(unique_topics),
             )
 
             return ConversationSummary(
@@ -407,21 +395,17 @@ Format your response with clear sections for each part."""
                 action_items=unique_items,
                 topics_discussed=unique_topics,
                 message_count_summarized=total_messages,
-                confidence=avg_confidence
+                confidence=avg_confidence,
             )
 
         except Exception as e:
             logger.exception("Error merging summaries: %s", e)
             return ConversationSummary(
-                summary_text="Error merging summaries",
-                message_count_summarized=0,
-                confidence=0.0
+                summary_text="Error merging summaries", message_count_summarized=0, confidence=0.0
             )
 
     def create_context_with_summary(
-        self,
-        summary: ConversationSummary,
-        recent_messages: List[Dict[str, Any]]
+        self, summary: ConversationSummary, recent_messages: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """
         Create context list with summary as system message plus recent messages.
@@ -448,18 +432,12 @@ Action Items:
 Topics Discussed: {', '.join(summary.topics_discussed[:5])}
 """
 
-        context.append({
-            "role": "system",
-            "content": summary_content
-        })
+        context.append({"role": "system", "content": summary_content})
 
         # Add recent messages
         context.extend(recent_messages)
 
-        logger.debug(
-            "Created context with summary: %d messages total",
-            len(context)
-        )
+        logger.debug("Created context with summary: %d messages total", len(context))
 
         return context
 

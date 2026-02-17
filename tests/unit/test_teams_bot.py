@@ -30,9 +30,7 @@ class TestTeamsBotConfig:
     def test_default_values(self):
         """Test that TeamsBotConfig initializes with correct defaults."""
         config = TeamsBotConfig(
-            app_id="test-app-id",
-            app_password="test-password",
-            tenant_id="test-tenant"
+            app_id="test-app-id", app_password="test-password", tenant_id="test-tenant"
         )
         assert config.app_id == "test-app-id"
         assert config.app_password == "test-password"
@@ -47,7 +45,7 @@ class TestTeamsBotConfig:
             app_password="test-password",
             tenant_id="test-tenant",
             bot_name="Custom Bot",
-            max_message_length=2000
+            max_message_length=2000,
         )
         assert config.app_id == "test-app-id"
         assert config.app_password == "test-password"
@@ -57,11 +55,7 @@ class TestTeamsBotConfig:
 
     def test_bot_name_default(self):
         """Test that bot_name has a default value."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         assert config.bot_name == "HR Assistant"
 
     def test_required_fields(self):
@@ -78,11 +72,7 @@ class TestTeamsActivityHandlerInit:
 
     def test_creates_with_config(self):
         """Test handler creation with valid config."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         agent_service = Mock()
         handler = TeamsActivityHandler(config=config, agent_service=agent_service)
         assert handler.config == config
@@ -90,11 +80,7 @@ class TestTeamsActivityHandlerInit:
 
     def test_initializes_metrics(self):
         """Test that handler initializes metrics."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         agent_service = Mock()
         handler = TeamsActivityHandler(config=config, agent_service=agent_service)
         assert hasattr(handler, "metrics")
@@ -103,11 +89,7 @@ class TestTeamsActivityHandlerInit:
 
     def test_stores_agent_service(self):
         """Test that agent_service is properly stored."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         agent_service = Mock()
         handler = TeamsActivityHandler(config=config, agent_service=agent_service)
         assert handler.agent_service is agent_service
@@ -118,11 +100,7 @@ class TestHandleMessage:
 
     def test_valid_activity(self):
         """Test handling of valid message activity."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         agent_service = Mock()
         agent_service.process_query.return_value = {
             "answer": "Test answer",
@@ -145,11 +123,7 @@ class TestHandleMessage:
 
     def test_non_message_activity_ignored(self):
         """Test that non-message activities are ignored."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -164,11 +138,7 @@ class TestHandleMessage:
 
     def test_empty_text_rejected(self):
         """Test handling of message with empty text."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -188,7 +158,7 @@ class TestHandleMessage:
             app_id="test-app",
             app_password="test-pwd",
             tenant_id="test-tenant",
-            max_message_length=100
+            max_message_length=100,
         )
         handler = TeamsActivityHandler(config=config)
 
@@ -205,11 +175,7 @@ class TestHandleMessage:
 
     def test_tracks_metrics(self):
         """Test that metrics are tracked."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         agent_service = Mock()
         agent_service.process_query.return_value = {
             "answer": "Test",
@@ -231,11 +197,7 @@ class TestHandleMessage:
 
     def test_handles_error(self):
         """Test error handling."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         agent_service = Mock()
         agent_service.process_query.side_effect = Exception("Service error")
 
@@ -257,11 +219,7 @@ class TestHandleConversationUpdate:
 
     def test_member_added_welcome(self):
         """Test welcome message for member added."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -279,11 +237,7 @@ class TestHandleConversationUpdate:
 
     def test_member_removed(self):
         """Test handling of member removed."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -300,11 +254,7 @@ class TestHandleConversationUpdate:
 
     def test_no_members(self):
         """Test handling when no members added or removed."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -320,11 +270,7 @@ class TestHandleConversationUpdate:
 
     def test_non_conversation_update_ignored(self):
         """Test that non-conversationUpdate activities are ignored."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -343,11 +289,7 @@ class TestHandleInvoke:
 
     def test_card_action(self):
         """Test handling of card action invoke."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
         activity = {
             "type": "invoke",
@@ -366,11 +308,7 @@ class TestHandleInvoke:
 
     def test_non_invoke_ignored(self):
         """Test handling of non-invoke activity."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -385,11 +323,7 @@ class TestHandleInvoke:
 
     def test_returns_invoke_response(self):
         """Test that response follows invoke format."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         activity = {
@@ -411,18 +345,16 @@ class TestFormatTeamsResponse:
 
     def test_adaptive_card_format(self):
         """Test adaptive card response format."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
-        response = handler._format_teams_response({
-            "answer": "Test answer",
-            "confidence": 0.95,
-            "sources": ["source1"],
-        })
+        response = handler._format_teams_response(
+            {
+                "answer": "Test answer",
+                "confidence": 0.95,
+                "sources": ["source1"],
+            }
+        )
 
         assert response is not None
         assert isinstance(response, dict)
@@ -431,18 +363,16 @@ class TestFormatTeamsResponse:
 
     def test_includes_confidence(self):
         """Test that confidence is included in response."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
-        response = handler._format_teams_response({
-            "answer": "Test answer",
-            "confidence": 0.85,
-            "sources": [],
-        })
+        response = handler._format_teams_response(
+            {
+                "answer": "Test answer",
+                "confidence": 0.85,
+                "sources": [],
+            }
+        )
 
         assert response is not None
         assert isinstance(response, dict)
@@ -450,54 +380,48 @@ class TestFormatTeamsResponse:
 
     def test_includes_sources(self):
         """Test that sources are included in response."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
-        response = handler._format_teams_response({
-            "answer": "Test answer",
-            "confidence": 0.9,
-            "sources": ["source1", "source2"],
-        })
+        response = handler._format_teams_response(
+            {
+                "answer": "Test answer",
+                "confidence": 0.9,
+                "sources": ["source1", "source2"],
+            }
+        )
 
         assert response is not None
         assert isinstance(response, dict)
 
     def test_hero_card_format(self):
         """Test hero card format option."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
-        response = handler._format_hero_card({
-            "answer": "Test answer",
-            "confidence": 0.9,
-            "sources": [],
-        })
+        response = handler._format_hero_card(
+            {
+                "answer": "Test answer",
+                "confidence": 0.9,
+                "sources": [],
+            }
+        )
 
         assert response is not None
         assert isinstance(response, dict)
 
     def test_handles_missing_fields(self):
         """Test response formatting with missing optional fields."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
-        response = handler._format_teams_response({
-            "answer": "Test answer",
-            "confidence": 0.5,
-            "sources": [],
-        })
+        response = handler._format_teams_response(
+            {
+                "answer": "Test answer",
+                "confidence": 0.5,
+                "sources": [],
+            }
+        )
 
         assert response is not None
         assert "attachments" in response
@@ -508,11 +432,7 @@ class TestGetUserContext:
 
     def test_default_context(self):
         """Test that default context is created."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         context = handler._get_user_context(user_id="user123")
@@ -523,11 +443,7 @@ class TestGetUserContext:
 
     def test_includes_source_and_platform(self):
         """Test that source and platform are included."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         handler = TeamsActivityHandler(config=config)
 
         context = handler._get_user_context(user_id="unknown")
@@ -539,9 +455,7 @@ class TestGetUserContext:
     def test_includes_tenant_id(self):
         """Test that tenant_id is included if available."""
         config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant-123"
+            app_id="test-app", app_password="test-pwd", tenant_id="test-tenant-123"
         )
         handler = TeamsActivityHandler(config=config)
 
@@ -557,11 +471,7 @@ class TestTeamsBotServiceHealth:
 
     def test_status_check(self):
         """Test status check returns valid structure."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         service = TeamsBotService(config=config)
 
         status = service.get_status()
@@ -573,11 +483,7 @@ class TestTeamsBotServiceHealth:
 
     def test_handler_health_tracking(self):
         """Test that handler health is tracked."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         service = TeamsBotService(config=config)
         status = service.get_status()
 
@@ -587,11 +493,7 @@ class TestTeamsBotServiceHealth:
 
     def test_error_counting(self):
         """Test that errors are counted in status."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         service = TeamsBotService(config=config)
 
         status = service.get_status()
@@ -606,11 +508,7 @@ class TestTeamsBotServiceLifecycle:
 
     def test_start(self):
         """Test service start."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         service = TeamsBotService(config=config)
 
         service.start()
@@ -619,11 +517,7 @@ class TestTeamsBotServiceLifecycle:
 
     def test_stop(self):
         """Test service stop."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         service = TeamsBotService(config=config)
         service.start()
         assert service.running is True
@@ -634,11 +528,7 @@ class TestTeamsBotServiceLifecycle:
 
     def test_get_status(self):
         """Test get_status returns valid status."""
-        config = TeamsBotConfig(
-            app_id="test-app",
-            app_password="test-pwd",
-            tenant_id="test-tenant"
-        )
+        config = TeamsBotConfig(app_id="test-app", app_password="test-pwd", tenant_id="test-tenant")
         service = TeamsBotService(config=config)
         service.start()
 

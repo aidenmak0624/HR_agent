@@ -289,6 +289,7 @@ class TestAddMessage:
         original_updated = session.updated_at
 
         import time
+
         time.sleep(0.01)
 
         memory.add_message(
@@ -443,6 +444,7 @@ class TestGetSessionHistory:
         session1 = memory.create_session(user_id="U123", agent_type="hr_assistant")
 
         import time
+
         time.sleep(0.01)
 
         session2 = memory.create_session(user_id="U123", agent_type="hr_assistant")
@@ -500,6 +502,7 @@ class TestCleanupExpired:
         session = memory.create_session(user_id="U123", agent_type="hr_assistant")
 
         import time
+
         time.sleep(0.1)
 
         count = memory.cleanup_expired()

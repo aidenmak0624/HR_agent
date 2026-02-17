@@ -22,9 +22,7 @@ class ConversationMessage(BaseModel):
     """Single message in a conversation."""
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Message ID")
-    role: Literal["user", "assistant", "system"] = Field(
-        ..., description="Message role"
-    )
+    role: Literal["user", "assistant", "system"] = Field(..., description="Message role")
     content: str = Field(..., description="Message content")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Message timestamp")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
@@ -52,15 +50,9 @@ class ConversationSession(BaseModel):
 class ConversationMemoryConfig(BaseModel):
     """Configuration for conversation memory."""
 
-    max_messages_per_session: int = Field(
-        default=50, description="Maximum messages per session"
-    )
-    max_token_window: int = Field(
-        default=4000, description="Maximum tokens in context window"
-    )
-    session_ttl_hours: int = Field(
-        default=24, description="Session time-to-live in hours"
-    )
+    max_messages_per_session: int = Field(default=50, description="Maximum messages per session")
+    max_token_window: int = Field(default=4000, description="Maximum tokens in context window")
+    session_ttl_hours: int = Field(default=24, description="Session time-to-live in hours")
     storage_backend: Literal["memory", "database"] = Field(
         default="memory", description="Storage backend type"
     )
@@ -89,14 +81,11 @@ class ConversationMemoryStore:
         self.user_sessions: Dict[str, List[str]] = {}
         logger.info(
             "ConversationMemoryStore initialized - backend=%s, ttl=%d hours",
-            self.config.storage_backend, self.config.session_ttl_hours
+            self.config.storage_backend,
+            self.config.session_ttl_hours,
         )
 
-    def create_session(
-        self,
-        user_id: str,
-        agent_type: str = "router"
-    ) -> ConversationSession:
+    def create_session(self, user_id: str, agent_type: str = "router") -> ConversationSession:
         """
         Create a new conversation session for a user.
 
@@ -108,11 +97,7 @@ class ConversationMemoryStore:
             New ConversationSession
         """
         session_id = str(uuid.uuid4())
-        session = ConversationSession(
-            session_id=session_id,
-            user_id=user_id,
-            agent_type=agent_type
-        )
+        session = ConversationSession(session_id=session_id, user_id=user_id, agent_type=agent_type)
 
         self.sessions[session_id] = session
 
@@ -121,8 +106,7 @@ class ConversationMemoryStore:
         self.user_sessions[user_id].append(session_id)
 
         logger.info(
-            "Created session session_id=%s user=%s agent=%s",
-            session_id, user_id, agent_type
+            "Created session session_id=%s user=%s agent=%s", session_id, user_id, agent_type
         )
 
         return session
@@ -150,18 +134,16 @@ class ConversationMemoryStore:
         max_age = timedelta(hours=self.config.session_ttl_hours)
 
         if age > max_age:
-            logger.info("Session expired: %s (age=%.1f hours)", session_id, age.total_seconds() / 3600)
+            logger.info(
+                "Session expired: %s (age=%.1f hours)", session_id, age.total_seconds() / 3600
+            )
             del self.sessions[session_id]
             return None
 
         return session
 
     def add_message(
-        self,
-        session_id: str,
-        role: str,
-        content: str,
-        metadata: Optional[Dict[str, Any]] = None
+        self, session_id: str, role: str, content: str, metadata: Optional[Dict[str, Any]] = None
     ) -> ConversationMessage:
         """
         Add a message to a session.
@@ -184,11 +166,7 @@ class ConversationMemoryStore:
         if not session:
             raise ValueError(f"Session not found: {session_id}")
 
-        message = ConversationMessage(
-            role=role,
-            content=content,
-            metadata=metadata or {}
-        )
+        message = ConversationMessage(role=role, content=content, metadata=metadata or {})
 
         # Estimate tokens
         message.token_count = self._estimate_tokens(content)
@@ -202,15 +180,16 @@ class ConversationMemoryStore:
 
         logger.debug(
             "Added message to session %s - role=%s tokens=%d total_tokens=%d",
-            session_id, role, message.token_count, session.total_tokens
+            session_id,
+            role,
+            message.token_count,
+            session.total_tokens,
         )
 
         return message
 
     def get_context_window(
-        self,
-        session_id: str,
-        max_tokens: Optional[int] = None
+        self, session_id: str, max_tokens: Optional[int] = None
     ) -> List[ConversationMessage]:
         """
         Get recent messages fitting in token budget.
@@ -243,16 +222,14 @@ class ConversationMemoryStore:
 
         logger.debug(
             "Got context window for session %s: %d messages, %d tokens",
-            session_id, len(context), token_sum
+            session_id,
+            len(context),
+            token_sum,
         )
 
         return context
 
-    def get_session_history(
-        self,
-        user_id: str,
-        limit: int = 10
-    ) -> List[ConversationSession]:
+    def get_session_history(self, user_id: str, limit: int = 10) -> List[ConversationSession]:
         """
         Get user's recent sessions.
 
@@ -272,10 +249,7 @@ class ConversationMemoryStore:
             if session:
                 sessions.append(session)
 
-        logger.debug(
-            "Retrieved session history for user %s: %d sessions",
-            user_id, len(sessions)
-        )
+        logger.debug("Retrieved session history for user %s: %d sessions", user_id, len(sessions))
 
         return sessions
 
@@ -298,7 +272,9 @@ class ConversationMemoryStore:
 
         logger.info(
             "Closed session %s - message_count=%d total_tokens=%d",
-            session_id, len(session.messages), session.total_tokens
+            session_id,
+            len(session.messages),
+            session.total_tokens,
         )
 
         return True
@@ -346,7 +322,7 @@ class ConversationMemoryStore:
                 "total_messages": 0,
                 "total_tokens": 0,
                 "avg_messages_per_session": 0.0,
-                "avg_tokens_per_session": 0.0
+                "avg_tokens_per_session": 0.0,
             }
 
         total_messages = sum(len(s.messages) for s in self.sessions.values())
@@ -357,8 +333,10 @@ class ConversationMemoryStore:
             "active_sessions": session_count,
             "total_messages": total_messages,
             "total_tokens": total_tokens,
-            "avg_messages_per_session": total_messages / session_count if session_count > 0 else 0.0,
-            "avg_tokens_per_session": total_tokens / session_count if session_count > 0 else 0.0
+            "avg_messages_per_session": total_messages / session_count
+            if session_count > 0
+            else 0.0,
+            "avg_tokens_per_session": total_tokens / session_count if session_count > 0 else 0.0,
         }
 
     def _estimate_tokens(self, text: str) -> int:
@@ -389,8 +367,7 @@ class ConversationMemoryStore:
             removed = session.messages.pop(0)
             session.total_tokens -= removed.token_count
             logger.debug(
-                "Removed message due to message limit: removed_tokens=%d",
-                removed.token_count
+                "Removed message due to message limit: removed_tokens=%d", removed.token_count
             )
 
         # Check token limit (but keep at least 1 message)
@@ -399,7 +376,8 @@ class ConversationMemoryStore:
             session.total_tokens -= removed.token_count
             logger.debug(
                 "Removed message due to token limit: removed_tokens=%d, remaining=%d",
-                removed.token_count, session.total_tokens
+                removed.token_count,
+                session.total_tokens,
             )
 
     def export_session(self, session_id: str) -> Dict[str, Any]:
@@ -431,18 +409,14 @@ class ConversationMemoryStore:
                     "role": m.role,
                     "content": m.content,
                     "timestamp": m.timestamp.isoformat(),
-                    "token_count": m.token_count
+                    "token_count": m.token_count,
                 }
                 for m in session.messages
             ],
-            "context": session.context
+            "context": session.context,
         }
 
-    def search_sessions(
-        self,
-        user_id: str,
-        query: str
-    ) -> List[ConversationSession]:
+    def search_sessions(self, user_id: str, query: str) -> List[ConversationSession]:
         """
         Simple text search in user's session messages.
 
@@ -470,8 +444,7 @@ class ConversationMemoryStore:
                     break  # Only include session once
 
         logger.debug(
-            "Search for '%s' in user %s: found %d sessions",
-            query, user_id, len(matching_sessions)
+            "Search for '%s' in user %s: found %d sessions", query, user_id, len(matching_sessions)
         )
 
         return matching_sessions

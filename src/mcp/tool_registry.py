@@ -30,16 +30,19 @@ class MCPToolDescriptor:
         input_schema: JSON Schema describing expected input parameters
         callable_fn: Reference to the actual Python function
     """
+
     name: str
     description: str
     agent_type: str
-    input_schema: Dict[str, Any] = field(default_factory=lambda: {
-        "type": "object",
-        "properties": {
-            "query": {"type": "string", "description": "Query or JSON payload for the tool"}
-        },
-        "required": ["query"],
-    })
+    input_schema: Dict[str, Any] = field(
+        default_factory=lambda: {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Query or JSON payload for the tool"}
+            },
+            "required": ["query"],
+        }
+    )
     callable_fn: Optional[Callable] = None
 
     def to_mcp_format(self) -> Dict[str, Any]:
@@ -148,7 +151,10 @@ class MCPToolRegistry:
         fn = descriptor.callable_fn
 
         if fn is None:
-            return {"content": [{"type": "text", "text": "Tool has no callable function"}], "isError": True}
+            return {
+                "content": [{"type": "text", "text": "Tool has no callable function"}],
+                "isError": True,
+            }
 
         query = arguments.get("query", "")
 

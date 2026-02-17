@@ -18,7 +18,7 @@ class TestRoleHierarchy:
         assert RoleLevel.EMPLOYEE.value < RoleLevel.MANAGER.value
         assert RoleLevel.MANAGER.value < RoleLevel.HR_GENERALIST.value
         assert RoleLevel.HR_GENERALIST.value < RoleLevel.HR_ADMIN.value
-        
+
         # Verify specific values
         assert RoleLevel.EMPLOYEE.value == 1
         assert RoleLevel.MANAGER.value == 2
@@ -72,10 +72,10 @@ class TestPermissionChecks:
         """Higher roles inherit lower role permissions."""
         # Manager inherits employee permissions
         assert check_permission("manager", "employee_info", "view_own") is True
-        
+
         # HR Generalist inherits manager permissions
         assert check_permission("hr_generalist", "leave", "approve") is True
-        
+
         # HR Admin inherits all permissions
         assert check_permission("hr_admin", "employee_info", "view_own") is True
         assert check_permission("hr_admin", "leave", "approve") is True
@@ -149,9 +149,9 @@ class TestDataFiltering:
             "ssn": "123-45-6789",
             "compensation": 120000,
         }
-        
+
         filtered = enforcer.filter_employee_data(employee_data, "employee", "emp-001")
-        
+
         assert "id" in filtered
         assert "name" in filtered
         assert "email" in filtered
@@ -169,11 +169,9 @@ class TestDataFiltering:
             "ssn": "123-45-6789",
             "compensation": 120000,
         }
-        
-        filtered = enforcer.filter_employee_data(
-            employee_data, "hr_generalist", "hr-001"
-        )
-        
+
+        filtered = enforcer.filter_employee_data(employee_data, "hr_generalist", "hr-001")
+
         assert "salary" in filtered
         assert "ssn" in filtered
         assert "compensation" in filtered
@@ -190,11 +188,9 @@ class TestDataFiltering:
             "salary": 100000,
             "ssn": "123-45-6789",
         }
-        
-        filtered = enforcer.filter_employee_data(
-            employee_data, "manager", "mgr-001"
-        )
-        
+
+        filtered = enforcer.filter_employee_data(employee_data, "manager", "mgr-001")
+
         # Manager can see salary for their own reports
         assert "salary" in filtered
         assert "ssn" not in filtered
@@ -203,7 +199,7 @@ class TestDataFiltering:
         """Invalid role in filter_employee_data raises error."""
         enforcer = RBACEnforcer()
         employee_data = {"id": "emp-001", "name": "John Doe"}
-        
+
         with pytest.raises(PermissionDeniedError):
             enforcer.filter_employee_data(employee_data, "invalid_role", "emp-001")
 
@@ -220,17 +216,17 @@ class TestRBACEnforcer:
     def test_enforce_permission_denied_raises(self):
         """enforce() raises PermissionDeniedError when denied."""
         enforcer = RBACEnforcer()
-        
+
         with pytest.raises(PermissionDeniedError) as exc_info:
             enforcer.enforce("employee", "admin", "configure")
-        
+
         assert "lacks permission" in str(exc_info.value)
 
     def test_get_allowed_actions_employee(self):
         """Employee gets appropriate allowed actions."""
         enforcer = RBACEnforcer()
         actions = enforcer.get_allowed_actions("employee", "employee_info")
-        
+
         assert "view_own" in actions
         assert "view_reports" not in actions
         assert "view_all" not in actions
@@ -239,7 +235,7 @@ class TestRBACEnforcer:
         """Manager gets appropriate allowed actions."""
         enforcer = RBACEnforcer()
         actions = enforcer.get_allowed_actions("manager", "leave")
-        
+
         assert "view_own" in actions
         assert "view_team" in actions
         assert "approve" in actions
@@ -249,14 +245,14 @@ class TestRBACEnforcer:
         """HR admin gets all actions."""
         enforcer = RBACEnforcer()
         actions = enforcer.get_allowed_actions("hr_admin", "admin")
-        
+
         assert "configure" in actions
         assert "audit_logs" in actions
 
     def test_get_allowed_actions_invalid_role(self):
         """Invalid role raises error."""
         enforcer = RBACEnforcer()
-        
+
         with pytest.raises(PermissionDeniedError):
             enforcer.get_allowed_actions("invalid_role", "employee_info")
 
@@ -267,9 +263,9 @@ class TestRBACEnforcer:
             {"id": "emp-001", "name": "John", "salary": 100000},
             {"id": "emp-002", "name": "Jane", "salary": 120000},
         ]
-        
+
         filtered = enforcer.get_filtered_list(data_list, "employee", "emp-001")
-        
+
         assert len(filtered) == 2
         for item in filtered:
             assert "salary" not in item
@@ -281,11 +277,11 @@ class TestRBACEnforcer:
             {"user_id": "emp-001", "name": "John", "value": 100},
             {"user_id": "emp-002", "name": "Jane", "value": 200},
         ]
-        
+
         filtered = enforcer.apply_data_scope_filter(
             data_list, "employee", "employee_info", "emp-001", "Engineering"
         )
-        
+
         assert len(filtered) == 1
         assert filtered[0]["user_id"] == "emp-001"
 
@@ -298,16 +294,16 @@ class TestRBACEnforcer:
             {"user_id": "emp-002", "name": "Report2", "value": 300},
             {"user_id": "emp-003", "name": "Other", "value": 400},
         ]
-        
+
         filtered = enforcer.apply_data_scope_filter(
             data_list,
             "manager",
             "employee_info",
             "mgr-001",
             "Engineering",
-            team_members=["emp-001", "emp-002"]
+            team_members=["emp-001", "emp-002"],
         )
-        
+
         assert len(filtered) == 3
         user_ids = {item["user_id"] for item in filtered}
         assert user_ids == {"mgr-001", "emp-001", "emp-002"}
@@ -320,15 +316,11 @@ class TestRBACEnforcer:
             {"user_id": "emp-002", "department": "Engineering", "value": 200},
             {"user_id": "emp-003", "department": "Sales", "value": 300},
         ]
-        
+
         filtered = enforcer.apply_data_scope_filter(
-            data_list,
-            "hr_generalist",
-            "employee_info",
-            "hr-001",
-            "Engineering"
+            data_list, "hr_generalist", "employee_info", "hr-001", "Engineering"
         )
-        
+
         assert len(filtered) == 2
         for item in filtered:
             assert item["department"] == "Engineering"
@@ -341,13 +333,9 @@ class TestRBACEnforcer:
             {"user_id": "emp-002", "department": "Sales"},
             {"user_id": "emp-003", "department": "Marketing"},
         ]
-        
+
         filtered = enforcer.apply_data_scope_filter(
-            data_list,
-            "hr_admin",
-            "employee_info",
-            "hr-001",
-            "Engineering"
+            data_list, "hr_admin", "employee_info", "hr-001", "Engineering"
         )
-        
+
         assert len(filtered) == 3

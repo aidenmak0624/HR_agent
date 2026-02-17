@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class WebSocketEvent(str, Enum):
     """WebSocket event types."""
+
     NOTIFICATION = "notification"
     QUERY_UPDATE = "query_update"
     AGENT_STATUS = "agent_status"
@@ -34,8 +36,10 @@ class WebSocketEvent(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class WebSocketMessage(BaseModel):
     """Message sent over WebSocket connection."""
+
     message_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique message ID")
     event_type: WebSocketEvent = Field(..., description="Type of event")
     payload: Dict[str, Any] = Field(default_factory=dict, description="Event payload")
@@ -43,19 +47,21 @@ class WebSocketMessage(BaseModel):
     target_user: Optional[str] = Field(None, description="Target user ID (None for broadcast)")
     broadcast: bool = Field(default=False, description="Whether to broadcast to all users")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Message timestamp")
-    priority: str = Field(
-        default="medium",
-        description="Message priority (low/medium/high)"
-    )
+    priority: str = Field(default="medium", description="Message priority (low/medium/high)")
 
     model_config = ConfigDict(use_enum_values=False)
 
 
 class ConnectionInfo(BaseModel):
     """Information about an active WebSocket connection."""
-    connection_id: str = Field(default_factory=lambda: str(uuid4()), description="Unique connection ID")
+
+    connection_id: str = Field(
+        default_factory=lambda: str(uuid4()), description="Unique connection ID"
+    )
     user_id: str = Field(..., description="Connected user ID")
-    connected_at: datetime = Field(default_factory=datetime.utcnow, description="Connection timestamp")
+    connected_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Connection timestamp"
+    )
     last_ping: datetime = Field(default_factory=datetime.utcnow, description="Last ping timestamp")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Connection metadata")
 
@@ -64,6 +70,7 @@ class ConnectionInfo(BaseModel):
 
 class WebSocketConfig(BaseModel):
     """Configuration for WebSocket manager."""
+
     max_connections_per_user: int = Field(5, description="Max connections per user")
     ping_interval: int = Field(30, description="Ping interval in seconds")
     ping_timeout: int = Field(10, description="Ping timeout in seconds")
@@ -76,7 +83,7 @@ class WebSocketConfig(BaseModel):
             WebSocketEvent.SYSTEM_ALERT,
             WebSocketEvent.WORKFLOW_UPDATE,
         ],
-        description="Allowed event types"
+        description="Allowed event types",
     )
 
     model_config = ConfigDict(use_enum_values=False)
@@ -85,6 +92,7 @@ class WebSocketConfig(BaseModel):
 # ============================================================================
 # WebSocket Manager
 # ============================================================================
+
 
 class WebSocketManager:
     """
@@ -106,10 +114,10 @@ class WebSocketManager:
         self.user_connections: Dict[str, List[str]] = {}  # user_id -> [connection_ids]
         self.message_queue: List[WebSocketMessage] = []
         self.stats = {
-            'total_connections': 0,
-            'messages_sent': 0,
-            'messages_broadcast': 0,
-            'connected_users': 0,
+            "total_connections": 0,
+            "messages_sent": 0,
+            "messages_broadcast": 0,
+            "connected_users": 0,
         }
 
         logger.info("WebSocketManager initialized")
@@ -138,20 +146,17 @@ class WebSocketManager:
                 )
 
             # Create connection info
-            conn_info = ConnectionInfo(
-                user_id=user_id,
-                metadata=metadata or {}
-            )
+            conn_info = ConnectionInfo(user_id=user_id, metadata=metadata or {})
 
             self.connections[conn_info.connection_id] = conn_info
             user_conns.append(conn_info.connection_id)
 
             # Increment connected_users only if this is a new user
             if user_id not in self.user_connections or len(user_conns) == 1:
-                self.stats['connected_users'] += 1
+                self.stats["connected_users"] += 1
 
             self.user_connections[user_id] = user_conns
-            self.stats['total_connections'] += 1
+            self.stats["total_connections"] += 1
 
             logger.info(f"User {user_id} connected (connection_id: {conn_info.connection_id})")
             return conn_info
@@ -184,7 +189,7 @@ class WebSocketManager:
                 self.user_connections[user_id].remove(connection_id)
                 if not self.user_connections[user_id]:
                     del self.user_connections[user_id]
-                    self.stats['connected_users'] -= 1
+                    self.stats["connected_users"] -= 1
 
             logger.info(f"User {user_id} disconnected (connection_id: {connection_id})")
             return True
@@ -216,12 +221,15 @@ class WebSocketManager:
 
             # Check message size
             import json
+
             msg_size = len(json.dumps(message.model_dump(), default=str))
             if msg_size > self.config.max_message_size:
-                raise ValueError(f"Message exceeds max size ({msg_size} > {self.config.max_message_size})")
+                raise ValueError(
+                    f"Message exceeds max size ({msg_size} > {self.config.max_message_size})"
+                )
 
             self.message_queue.append(message)
-            self.stats['messages_sent'] += 1
+            self.stats["messages_sent"] += 1
 
             conn_info = self.connections[connection_id]
             logger.debug(f"Queued message for {conn_info.user_id} (connection: {connection_id})")
@@ -231,7 +239,9 @@ class WebSocketManager:
             logger.error(f"Error sending message to {connection_id}: {e}")
             raise ValueError(f"Failed to send message: {e}")
 
-    def broadcast(self, message: WebSocketMessage, exclude_users: Optional[List[str]] = None) -> int:
+    def broadcast(
+        self, message: WebSocketMessage, exclude_users: Optional[List[str]] = None
+    ) -> int:
         """
         Broadcast message to all or multiple users.
 
@@ -260,7 +270,7 @@ class WebSocketManager:
                     except Exception as e:
                         logger.warning(f"Failed to send to {connection_id}: {e}")
 
-            self.stats['messages_broadcast'] += 1
+            self.stats["messages_broadcast"] += 1
             logger.info(f"Broadcast message to {sent_count} connections")
             return sent_count
 
@@ -320,8 +330,8 @@ class WebSocketManager:
             message = WebSocketMessage(
                 event_type=WebSocketEvent.NOTIFICATION,
                 payload={
-                    'title': title,
-                    'body': body,
+                    "title": title,
+                    "body": body,
                 },
                 target_user=user_id,
                 priority=priority,
@@ -347,8 +357,7 @@ class WebSocketManager:
         try:
             connection_ids = self.user_connections.get(user_id, [])
             connections = [
-                self.connections[cid] for cid in connection_ids
-                if cid in self.connections
+                self.connections[cid] for cid in connection_ids if cid in self.connections
             ]
 
             logger.debug(f"Retrieved {len(connections)} connections for user {user_id}")
@@ -386,9 +395,9 @@ class WebSocketManager:
 
             stats = {
                 **self.stats,
-                'total_active_connections': len(self.connections),
-                'pending_messages': pending_messages,
-                'timestamp': datetime.utcnow().isoformat(),
+                "total_active_connections": len(self.connections),
+                "pending_messages": pending_messages,
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             logger.debug(f"WebSocket stats: {stats}")

@@ -18,11 +18,11 @@ class EmailService:
 
     def __init__(self):
         """Initialize email service with SMTP configuration from environment."""
-        self.smtp_host = os.getenv('SMTP_HOST', '').strip()
-        self.smtp_port = int(os.getenv('SMTP_PORT', '587'))
-        self.smtp_user = os.getenv('SMTP_USER', '').strip()
-        self.smtp_password = os.getenv('SMTP_PASSWORD', '').strip()
-        self.from_email = os.getenv('SMTP_FROM_EMAIL', '').strip()
+        self.smtp_host = os.getenv("SMTP_HOST", "").strip()
+        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
+        self.smtp_user = os.getenv("SMTP_USER", "").strip()
+        self.smtp_password = os.getenv("SMTP_PASSWORD", "").strip()
+        self.from_email = os.getenv("SMTP_FROM_EMAIL", "").strip()
         self.smtp_enabled = bool(self.smtp_host and self.smtp_user)
 
         if not self.smtp_enabled:
@@ -36,11 +36,7 @@ class EmailService:
         return self.smtp_enabled
 
     def send_email(
-        self,
-        to_email: str,
-        subject: str,
-        html_body: str,
-        text_body: Optional[str] = None
+        self, to_email: str, subject: str, html_body: str, text_body: Optional[str] = None
     ) -> bool:
         """Send an email via SMTP with fallback to logging.
 
@@ -69,15 +65,15 @@ class EmailService:
 
         try:
             # Create message
-            msg = MIMEMultipart('alternative')
-            msg['Subject'] = subject
-            msg['From'] = self.from_email
-            msg['To'] = to_email
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = self.from_email
+            msg["To"] = to_email
 
             # Attach plain text and HTML
             if text_body:
-                msg.attach(MIMEText(text_body, 'plain'))
-            msg.attach(MIMEText(html_body, 'html'))
+                msg.attach(MIMEText(text_body, "plain"))
+            msg.attach(MIMEText(html_body, "html"))
 
             # Send via SMTP
             with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=10) as server:
@@ -106,7 +102,7 @@ class EmailService:
         start_date: str,
         end_date: str,
         status: str,
-        notes: Optional[str] = None
+        notes: Optional[str] = None,
     ) -> bool:
         """Send a leave request notification email.
 
@@ -122,11 +118,9 @@ class EmailService:
         Returns:
             True if sent, False otherwise
         """
-        status_color = {
-            'approved': '#27AE60',
-            'rejected': '#E74C3C',
-            'pending': '#F39C12'
-        }.get(status.lower(), '#3498DB')
+        status_color = {"approved": "#27AE60", "rejected": "#E74C3C", "pending": "#F39C12"}.get(
+            status.lower(), "#3498DB"
+        )
 
         status_text = status.upper()
 
@@ -184,7 +178,7 @@ This is an automated notification from the HR Intelligence Platform.
         request_type: str,
         requester_name: str,
         approved: bool,
-        reason: Optional[str] = None
+        reason: Optional[str] = None,
     ) -> bool:
         """Send a general approval/rejection notification.
 

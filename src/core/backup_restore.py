@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class BackupType(str, Enum):
     """Enumeration of backup types."""
+
     FULL = "full"
     INCREMENTAL = "incremental"
     DIFFERENTIAL = "differential"
@@ -27,6 +28,7 @@ class BackupType(str, Enum):
 
 class BackupStatus(str, Enum):
     """Enumeration of backup statuses."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -36,6 +38,7 @@ class BackupStatus(str, Enum):
 
 class BackupRecord(BaseModel):
     """Model representing a database backup record."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     backup_id: UUID
@@ -53,6 +56,7 @@ class BackupRecord(BaseModel):
 
 class RestorePoint(BaseModel):
     """Model representing a restore point."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     restore_id: UUID
@@ -67,6 +71,7 @@ class RestorePoint(BaseModel):
 
 class BackupConfig(BaseModel):
     """Configuration for backup operations."""
+
     model_config = ConfigDict(str_strip_whitespace=True, validate_default=True)
 
     backup_dir: str = "/var/backups/hr_agent"
@@ -191,9 +196,7 @@ class BackupRestoreService:
                 tables = ["employees", "users", "leave_records", "workflows", "audit_logs"]
 
             # Simulate backup file creation
-            backup_filename = (
-                f"backup_{database_name}_{backup_type.value}_{timestamp.strftime('%Y%m%d_%H%M%S')}.bak"
-            )
+            backup_filename = f"backup_{database_name}_{backup_type.value}_{timestamp.strftime('%Y%m%d_%H%M%S')}.bak"
             file_path = os.path.join(self.config.backup_dir, backup_filename)
 
             # Create dummy backup file
@@ -356,7 +359,9 @@ class BackupRestoreService:
             file_size = os.path.getsize(backup_record.file_path)
             size_match = file_size == backup_record.size_bytes
 
-            is_valid = checksum_match and size_match and backup_record.status == BackupStatus.VERIFIED
+            is_valid = (
+                checksum_match and size_match and backup_record.status == BackupStatus.VERIFIED
+            )
 
             result = {
                 "is_valid": is_valid,

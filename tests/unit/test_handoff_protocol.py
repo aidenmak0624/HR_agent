@@ -23,13 +23,12 @@ from src.agents.handoff_protocol import (
 # Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def handoff_config():
     """Create a HandoffConfig for testing."""
     return HandoffConfig(
-        max_handoffs_per_session=5,
-        handoff_timeout_seconds=30,
-        require_acceptance=True
+        max_handoffs_per_session=5, handoff_timeout_seconds=30, require_acceptance=True
     )
 
 
@@ -42,6 +41,7 @@ def handoff_protocol(handoff_config):
 # ============================================================================
 # Test HandoffReason Enum
 # ============================================================================
+
 
 class TestHandoffReason:
     """Tests for HandoffReason enum."""
@@ -71,15 +71,14 @@ class TestHandoffReason:
 # Test HandoffState Model
 # ============================================================================
 
+
 class TestHandoffState:
     """Tests for HandoffState model."""
 
     def test_state_defaults(self):
         """Test HandoffState default values."""
         state = HandoffState(
-            source_agent="agent1",
-            target_agent="agent2",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            source_agent="agent1", target_agent="agent2", reason=HandoffReason.EXPERTISE_REQUIRED
         )
         assert state.status == "initiated"
         assert state.completed_at is None
@@ -91,21 +90,17 @@ class TestHandoffState:
             source_agent="leave_agent",
             target_agent="compensation_agent",
             reason=HandoffReason.ESCALATION,
-            context=context
+            context=context,
         )
         assert state.context == context
 
     def test_state_uuid(self):
         """Test HandoffState generates unique handoff_id."""
         state1 = HandoffState(
-            source_agent="agent1",
-            target_agent="agent2",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            source_agent="agent1", target_agent="agent2", reason=HandoffReason.EXPERTISE_REQUIRED
         )
         state2 = HandoffState(
-            source_agent="agent1",
-            target_agent="agent2",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            source_agent="agent1", target_agent="agent2", reason=HandoffReason.EXPERTISE_REQUIRED
         )
         assert state1.handoff_id != state2.handoff_id
         assert len(state1.handoff_id) > 0
@@ -113,9 +108,7 @@ class TestHandoffState:
     def test_state_status_tracking(self):
         """Test HandoffState tracks status correctly."""
         state = HandoffState(
-            source_agent="agent1",
-            target_agent="agent2",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            source_agent="agent1", target_agent="agent2", reason=HandoffReason.EXPERTISE_REQUIRED
         )
         assert state.status == "initiated"
         state.status = "accepted"
@@ -126,15 +119,13 @@ class TestHandoffState:
 # Test SharedAgentState Model
 # ============================================================================
 
+
 class TestSharedAgentState:
     """Tests for SharedAgentState model."""
 
     def test_state_defaults(self):
         """Test SharedAgentState default values."""
-        state = SharedAgentState(
-            session_id="session1",
-            current_agent="agent1"
-        )
+        state = SharedAgentState(session_id="session1", current_agent="agent1")
         assert state.previous_agents == []
         assert state.shared_context == {}
 
@@ -144,7 +135,7 @@ class TestSharedAgentState:
             session_id="session1",
             current_agent="agent2",
             previous_agents=["agent1"],
-            shared_context={"key": "value"}
+            shared_context={"key": "value"},
         )
         assert state.previous_agents == ["agent1"]
         assert state.shared_context["key"] == "value"
@@ -152,9 +143,7 @@ class TestSharedAgentState:
     def test_state_previous_agents_list(self):
         """Test SharedAgentState maintains previous agents list."""
         state = SharedAgentState(
-            session_id="session1",
-            current_agent="agent1",
-            previous_agents=["agent0", "agent1"]
+            session_id="session1", current_agent="agent1", previous_agents=["agent0", "agent1"]
         )
         assert isinstance(state.previous_agents, list)
         assert len(state.previous_agents) == 2
@@ -162,9 +151,7 @@ class TestSharedAgentState:
     def test_state_accumulated_facts(self):
         """Test SharedAgentState accumulates facts."""
         state = SharedAgentState(
-            session_id="session1",
-            current_agent="agent1",
-            accumulated_facts=["fact1", "fact2"]
+            session_id="session1", current_agent="agent1", accumulated_facts=["fact1", "fact2"]
         )
         assert isinstance(state.accumulated_facts, list)
         assert len(state.accumulated_facts) == 2
@@ -173,6 +160,7 @@ class TestSharedAgentState:
 # ============================================================================
 # Test HandoffConfig Model
 # ============================================================================
+
 
 class TestHandoffConfig:
     """Tests for HandoffConfig model."""
@@ -186,10 +174,7 @@ class TestHandoffConfig:
 
     def test_config_custom_values(self):
         """Test HandoffConfig with custom values."""
-        config = HandoffConfig(
-            max_handoffs_per_session=10,
-            require_acceptance=False
-        )
+        config = HandoffConfig(max_handoffs_per_session=10, require_acceptance=False)
         assert config.max_handoffs_per_session == 10
         assert config.require_acceptance is False
 
@@ -208,6 +193,7 @@ class TestHandoffConfig:
 # ============================================================================
 # Test HandoffProtocol Initialization
 # ============================================================================
+
 
 class TestHandoffProtocolInit:
     """Tests for HandoffProtocol initialization."""
@@ -233,6 +219,7 @@ class TestHandoffProtocolInit:
 # Test Initiate Handoff
 # ============================================================================
 
+
 class TestInitiateHandoff:
     """Tests for HandoffProtocol.initiate_handoff method."""
 
@@ -242,7 +229,7 @@ class TestInitiateHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         assert isinstance(handoff, HandoffState)
 
@@ -252,7 +239,7 @@ class TestInitiateHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.ESCALATION
+            reason=HandoffReason.ESCALATION,
         )
         assert len(handoff.handoff_id) > 0
 
@@ -263,7 +250,7 @@ class TestInitiateHandoff:
                 session_id="sess1",
                 source_agent="invalid_agent",
                 target_agent="compensation_agent",
-                reason=HandoffReason.EXPERTISE_REQUIRED
+                reason=HandoffReason.EXPERTISE_REQUIRED,
             )
 
     def test_stores_state(self, handoff_protocol):
@@ -272,7 +259,7 @@ class TestInitiateHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         assert handoff.handoff_id in handoff_protocol.handoff_records
 
@@ -280,6 +267,7 @@ class TestInitiateHandoff:
 # ============================================================================
 # Test Accept Handoff
 # ============================================================================
+
 
 class TestAcceptHandoff:
     """Tests for HandoffProtocol.accept_handoff method."""
@@ -290,7 +278,7 @@ class TestAcceptHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         accepted = handoff_protocol.accept_handoff(handoff.handoff_id)
         assert accepted.status == "accepted"
@@ -301,7 +289,7 @@ class TestAcceptHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.WORKFLOW_CONTINUATION
+            reason=HandoffReason.WORKFLOW_CONTINUATION,
         )
         original_status = handoff.status
         accepted = handoff_protocol.accept_handoff(handoff.handoff_id)
@@ -318,6 +306,7 @@ class TestAcceptHandoff:
 # Test Reject Handoff
 # ============================================================================
 
+
 class TestRejectHandoff:
     """Tests for HandoffProtocol.reject_handoff method."""
 
@@ -327,7 +316,7 @@ class TestRejectHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         rejected = handoff_protocol.reject_handoff(handoff.handoff_id)
         assert rejected.status == "rejected"
@@ -338,11 +327,11 @@ class TestRejectHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.ESCALATION
+            reason=HandoffReason.ESCALATION,
         )
         reason = "Agent unavailable"
         rejected = handoff_protocol.reject_handoff(handoff.handoff_id, reason)
-        assert rejected.metadata['rejection_reason'] == reason
+        assert rejected.metadata["rejection_reason"] == reason
 
     def test_missing_handoff(self, handoff_protocol):
         """Test reject_handoff with missing handoff."""
@@ -354,6 +343,7 @@ class TestRejectHandoff:
 # Test Complete Handoff
 # ============================================================================
 
+
 class TestCompleteHandoff:
     """Tests for HandoffProtocol.complete_handoff method."""
 
@@ -363,7 +353,7 @@ class TestCompleteHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         completed = handoff_protocol.complete_handoff(handoff.handoff_id)
         assert completed.status == "completed"
@@ -374,11 +364,11 @@ class TestCompleteHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         result = {"outcome": "success"}
         completed = handoff_protocol.complete_handoff(handoff.handoff_id, result)
-        assert completed.metadata['result'] == result
+        assert completed.metadata["result"] == result
 
     def test_timestamps(self, handoff_protocol):
         """Test complete_handoff records completion timestamp."""
@@ -386,7 +376,7 @@ class TestCompleteHandoff:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.WORKFLOW_CONTINUATION
+            reason=HandoffReason.WORKFLOW_CONTINUATION,
         )
         completed = handoff_protocol.complete_handoff(handoff.handoff_id)
         assert completed.completed_at is not None
@@ -395,6 +385,7 @@ class TestCompleteHandoff:
 # ============================================================================
 # Test Get Shared State
 # ============================================================================
+
 
 class TestGetSharedState:
     """Tests for HandoffProtocol.get_shared_state method."""
@@ -405,7 +396,7 @@ class TestGetSharedState:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         state = handoff_protocol.get_shared_state("sess1")
         assert isinstance(state, SharedAgentState)
@@ -416,7 +407,7 @@ class TestGetSharedState:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         assert "sess1" in handoff_protocol.shared_states
         state = handoff_protocol.get_shared_state("sess1")
@@ -428,7 +419,7 @@ class TestGetSharedState:
             session_id="sess2",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.USER_REQUEST
+            reason=HandoffReason.USER_REQUEST,
         )
         state = handoff_protocol.get_shared_state("sess2")
         assert state in handoff_protocol.shared_states.values()
@@ -437,6 +428,7 @@ class TestGetSharedState:
 # ============================================================================
 # Test Update Shared Context
 # ============================================================================
+
 
 class TestUpdateSharedContext:
     """Tests for HandoffProtocol.update_shared_context method."""
@@ -447,7 +439,7 @@ class TestUpdateSharedContext:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         state = handoff_protocol.update_shared_context("sess1", "user_id", "user123")
         assert state.shared_context["user_id"] == "user123"
@@ -458,7 +450,7 @@ class TestUpdateSharedContext:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         handoff_protocol.update_shared_context("sess1", "key1", "value1")
         state = handoff_protocol.update_shared_context("sess1", "key1", "value2")
@@ -470,7 +462,7 @@ class TestUpdateSharedContext:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         state = handoff_protocol.update_shared_context("sess1", "test", "value")
         assert isinstance(state, SharedAgentState)
@@ -479,6 +471,7 @@ class TestUpdateSharedContext:
 # ============================================================================
 # Test Can Handoff
 # ============================================================================
+
 
 class TestCanHandoff:
     """Tests for HandoffProtocol.can_handoff method."""
@@ -506,6 +499,7 @@ class TestCanHandoff:
 # Test Get Stats
 # ============================================================================
 
+
 class TestGetStats:
     """Tests for HandoffProtocol.get_stats method."""
 
@@ -513,7 +507,7 @@ class TestGetStats:
         """Test get_stats returns statistics."""
         stats = handoff_protocol.get_stats()
         assert isinstance(stats, dict)
-        assert 'total_handoffs' in stats
+        assert "total_handoffs" in stats
 
     def test_handoff_counts(self, handoff_protocol):
         """Test get_stats includes handoff counts."""
@@ -521,10 +515,10 @@ class TestGetStats:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         stats = handoff_protocol.get_stats()
-        assert stats['total_handoffs'] == 1
+        assert stats["total_handoffs"] == 1
 
     def test_session_counts(self, handoff_protocol):
         """Test get_stats includes session counts."""
@@ -532,15 +526,16 @@ class TestGetStats:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         stats = handoff_protocol.get_stats()
-        assert stats['active_sessions'] > 0
+        assert stats["active_sessions"] > 0
 
 
 # ============================================================================
 # Integration Tests
 # ============================================================================
+
 
 class TestHandoffLifecycle:
     """Integration tests for complete handoff lifecycle."""
@@ -552,7 +547,7 @@ class TestHandoffLifecycle:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         assert handoff.status == "initiated"
 
@@ -571,16 +566,13 @@ class TestHandoffLifecycle:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.ESCALATION
+            reason=HandoffReason.ESCALATION,
         )
 
         # Reject handoff
-        rejected = handoff_protocol.reject_handoff(
-            handoff.handoff_id,
-            "Not available"
-        )
+        rejected = handoff_protocol.reject_handoff(handoff.handoff_id, "Not available")
         assert rejected.status == "rejected"
-        assert rejected.metadata['rejection_reason'] == "Not available"
+        assert rejected.metadata["rejection_reason"] == "Not available"
 
     def test_shared_state_accumulation(self, handoff_protocol):
         """Test shared state accumulation across handoffs."""
@@ -589,7 +581,7 @@ class TestHandoffLifecycle:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
 
         # Update context
@@ -608,7 +600,7 @@ class TestHandoffLifecycle:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         handoff_protocol.complete_handoff(h1.handoff_id)
 
@@ -617,11 +609,11 @@ class TestHandoffLifecycle:
             session_id="sess1",
             source_agent="compensation_agent",
             target_agent="benefits_agent",
-            reason=HandoffReason.WORKFLOW_CONTINUATION
+            reason=HandoffReason.WORKFLOW_CONTINUATION,
         )
 
         stats = handoff_protocol.get_stats()
-        assert stats['total_handoffs'] == 2
+        assert stats["total_handoffs"] == 2
         assert len(handoff_protocol.handoff_records) == 2
 
     def test_handoff_limit_enforcement(self):
@@ -634,13 +626,13 @@ class TestHandoffLifecycle:
             session_id="sess1",
             source_agent="leave_agent",
             target_agent="compensation_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
         h2 = protocol.initiate_handoff(
             session_id="sess1",
             source_agent="compensation_agent",
             target_agent="benefits_agent",
-            reason=HandoffReason.EXPERTISE_REQUIRED
+            reason=HandoffReason.EXPERTISE_REQUIRED,
         )
 
         # Third handoff should fail
@@ -649,5 +641,5 @@ class TestHandoffLifecycle:
                 session_id="sess1",
                 source_agent="benefits_agent",
                 target_agent="policy_agent",
-                reason=HandoffReason.EXPERTISE_REQUIRED
+                reason=HandoffReason.EXPERTISE_REQUIRED,
             )

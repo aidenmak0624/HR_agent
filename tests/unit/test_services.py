@@ -6,10 +6,12 @@ External dependencies (LLM, RAG, etc.) are mocked at module level.
 import pytest
 from unittest.mock import MagicMock, patch
 
+
 # Test configuration expectations
 def test_agent_service_user_context_exists():
     """Test UserContext type exists."""
     from src.services.agent_service import UserContext
+
     assert UserContext is not None
 
 
@@ -20,11 +22,11 @@ def test_llm_service_initialization():
     service = LLMService()
 
     assert service is not None
-    assert hasattr(service, 'generate')
-    assert hasattr(service, 'generate_json')
-    assert hasattr(service, 'is_available')
-    assert hasattr(service, 'get_health_status')
-    assert hasattr(service, 'token_count')
+    assert hasattr(service, "generate")
+    assert hasattr(service, "generate_json")
+    assert hasattr(service, "is_available")
+    assert hasattr(service, "get_health_status")
+    assert hasattr(service, "token_count")
     assert LLMProvider.GOOGLE is not None
     assert LLMProvider.OPENAI is not None
 
@@ -35,9 +37,9 @@ def test_llm_service_has_circuit_breaker():
 
     service = LLMService()
 
-    assert hasattr(service, 'circuit_breaker_open')
-    assert hasattr(service, 'consecutive_failures')
-    assert hasattr(service, 'max_consecutive_failures')
+    assert hasattr(service, "circuit_breaker_open")
+    assert hasattr(service, "consecutive_failures")
+    assert hasattr(service, "max_consecutive_failures")
     assert service.circuit_breaker_open is False
 
 
@@ -60,11 +62,11 @@ def test_llm_service_health_status():
     service = LLMService()
     status = service.get_health_status()
 
-    assert 'available' in status
-    assert 'circuit_breaker_open' in status
-    assert 'consecutive_failures' in status
-    assert 'request_count' in status
-    assert isinstance(status['available'], bool)
+    assert "available" in status
+    assert "circuit_breaker_open" in status
+    assert "consecutive_failures" in status
+    assert "request_count" in status
+    assert isinstance(status["available"], bool)
 
 
 def test_rag_service_initialization():
@@ -74,11 +76,11 @@ def test_rag_service_initialization():
     service = RAGService()
 
     assert service is not None
-    assert hasattr(service, 'search')
-    assert hasattr(service, 'ingest_file')
-    assert hasattr(service, 'ingest_directory')
-    assert hasattr(service, 'get_collection_stats')
-    assert hasattr(service, 'reindex')
+    assert hasattr(service, "search")
+    assert hasattr(service, "ingest_file")
+    assert hasattr(service, "ingest_directory")
+    assert hasattr(service, "get_collection_stats")
+    assert hasattr(service, "reindex")
 
 
 def test_rag_service_search_interface():
@@ -115,6 +117,7 @@ def test_rag_service_collection_management():
 
 # ==================== MOCK-BASED INTEGRATION TESTS ====================
 
+
 class TestAgentServiceWithMocks:
     """Integration tests for AgentService with mocked dependencies."""
 
@@ -143,7 +146,7 @@ class TestLLMServiceWithMocks:
 
         service = LLMService()
 
-        assert hasattr(service, 'request_count')
+        assert hasattr(service, "request_count")
         assert service.request_count >= 0
 
     def test_llm_service_cost_tracking(self):
@@ -152,7 +155,7 @@ class TestLLMServiceWithMocks:
 
         service = LLMService()
 
-        assert hasattr(service, 'total_cost_usd')
+        assert hasattr(service, "total_cost_usd")
         assert service.total_cost_usd >= 0.0
 
 
@@ -173,13 +176,14 @@ class TestRAGServiceWithMocks:
         from src.services.rag_service import RAGService
 
         service = RAGService()
-        result = service.ingest_file('/nonexistent/path.txt', 'collection')
+        result = service.ingest_file("/nonexistent/path.txt", "collection")
 
         assert isinstance(result, dict)
-        assert 'success' in result
+        assert "success" in result
 
 
 # ==================== BEHAVIOR PATTERN TESTS ====================
+
 
 class TestServicePatterns:
     """Test service implementation patterns and contracts."""
@@ -195,9 +199,9 @@ class TestServicePatterns:
 
         service = LLMService()
 
-        assert hasattr(service, 'primary_provider')
-        assert hasattr(service, 'fallback_provider')
-        assert hasattr(service, 'current_provider')
+        assert hasattr(service, "primary_provider")
+        assert hasattr(service, "fallback_provider")
+        assert hasattr(service, "current_provider")
 
     def test_rag_service_file_operations_safe(self):
         """RAGService handles file operations safely."""
@@ -206,9 +210,9 @@ class TestServicePatterns:
         service = RAGService()
 
         # Should return error dict for missing files
-        result = service.ingest_file('/missing/file.txt', 'col')
-        assert result['success'] is False
+        result = service.ingest_file("/missing/file.txt", "col")
+        assert result["success"] is False
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

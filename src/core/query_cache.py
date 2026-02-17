@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 try:
     import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class CacheStrategy(str, Enum):
     """Cache eviction strategy enumeration."""
+
     LRU = "lru"
     TTL = "ttl"
     LFU = "lfu"
@@ -33,6 +35,7 @@ class CacheStrategy(str, Enum):
 
 class CacheEntry(BaseModel):
     """A single cache entry."""
+
     key: str = Field(..., description="Cache key")
     value: Any = Field(..., description="Cached value")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
@@ -52,7 +55,7 @@ class CacheEntry(BaseModel):
                 "access_count": 5,
                 "last_accessed": "2025-02-06T10:04:00Z",
                 "size_bytes": 256,
-                "tags": ["employee", "profile"]
+                "tags": ["employee", "profile"],
             }
         }
     )
@@ -60,6 +63,7 @@ class CacheEntry(BaseModel):
 
 class CacheConfig(BaseModel):
     """Configuration for query cache service."""
+
     strategy: CacheStrategy = Field(default=CacheStrategy.LRU, description="Eviction strategy")
     max_entries: int = Field(default=1000, ge=10, description="Maximum cache entries")
     default_ttl_seconds: int = Field(default=300, ge=10, description="Default TTL in seconds")
@@ -81,7 +85,7 @@ class CacheConfig(BaseModel):
                 "redis_enabled": False,
                 "redis_url": "redis://localhost:6379/0",
                 "namespace": "hr_agent",
-                "warmup_enabled": False
+                "warmup_enabled": False,
             }
         }
     )
@@ -89,6 +93,7 @@ class CacheConfig(BaseModel):
 
 class CacheStats(BaseModel):
     """Statistics for cache service."""
+
     total_hits: int = Field(default=0, ge=0, description="Total cache hits")
     total_misses: int = Field(default=0, ge=0, description="Total cache misses")
     hit_rate: float = Field(default=0.0, ge=0.0, le=1.0, description="Hit rate ratio")
@@ -106,7 +111,7 @@ class CacheStats(BaseModel):
                 "total_entries": 425,
                 "memory_used_mb": 128.5,
                 "evictions_count": 125,
-                "avg_response_time_ms": 2.3
+                "avg_response_time_ms": 2.3,
             }
         }
     )
@@ -146,10 +151,7 @@ class QueryCacheService:
         try:
             url = self.config.redis_url or "redis://localhost:6379/0"
             self._redis_client = redis.from_url(
-                url,
-                decode_responses=True,
-                socket_keepalive=True,
-                health_check_interval=30
+                url, decode_responses=True, socket_keepalive=True, health_check_interval=30
             )
             self._redis_client.ping()
             logger.info("Connected to Redis for cache backend")
@@ -181,13 +183,13 @@ class QueryCacheService:
         """
         try:
             if isinstance(value, str):
-                return len(value.encode('utf-8'))
+                return len(value.encode("utf-8"))
             elif isinstance(value, (dict, list)):
-                return len(json.dumps(value).encode('utf-8'))
+                return len(json.dumps(value).encode("utf-8"))
             elif isinstance(value, bytes):
                 return len(value)
             else:
-                return len(str(value).encode('utf-8'))
+                return len(str(value).encode("utf-8"))
         except Exception as e:
             logger.debug(f"Error calculating value size: {e}")
             return 0
@@ -226,8 +228,10 @@ class QueryCacheService:
                             entry.last_accessed = datetime.utcnow()
                             self._redis_client.setex(
                                 full_key,
-                                int((entry.expires_at - datetime.utcnow()).total_seconds()) if entry.expires_at else self.config.default_ttl_seconds,
-                                json.dumps(entry.model_dump(default=str))
+                                int((entry.expires_at - datetime.utcnow()).total_seconds())
+                                if entry.expires_at
+                                else self.config.default_ttl_seconds,
+                                json.dumps(entry.model_dump(default=str)),
                             )
 
                             self._total_hits += 1
@@ -274,7 +278,7 @@ class QueryCacheService:
         value: Any,
         ttl: Optional[int] = None,
         tags: Optional[List[str]] = None,
-        namespace: Optional[str] = None
+        namespace: Optional[str] = None,
     ) -> bool:
         """Set value in cache.
 
@@ -304,7 +308,7 @@ class QueryCacheService:
                 access_count=0,
                 last_accessed=now,
                 size_bytes=size,
-                tags=tags or []
+                tags=tags or [],
             )
 
             # Check memory usage before adding
@@ -322,9 +326,7 @@ class QueryCacheService:
             if self._redis_client:
                 try:
                     self._redis_client.setex(
-                        full_key,
-                        ttl_seconds,
-                        json.dumps(entry.model_dump(default=str))
+                        full_key, ttl_seconds, json.dumps(entry.model_dump(default=str))
                     )
                 except Exception as e:
                     logger.warning(f"Failed to store in Redis: {e}")
@@ -412,10 +414,7 @@ class QueryCacheService:
 
         try:
             # Invalidate in local cache
-            keys_to_delete = [
-                k for k, v in self._local_cache.items()
-                if tag in v.tags
-            ]
+            keys_to_delete = [k for k, v in self._local_cache.items() if tag in v.tags]
             for key in keys_to_delete:
                 del self._local_cache[key]
                 count += 1
@@ -452,10 +451,7 @@ class QueryCacheService:
 
         try:
             regex = re.compile(pattern)
-            keys_to_delete = [
-                k for k in self._local_cache.keys()
-                if regex.search(k)
-            ]
+            keys_to_delete = [k for k in self._local_cache.keys() if regex.search(k)]
 
             for key in keys_to_delete:
                 del self._local_cache[key]
@@ -485,7 +481,7 @@ class QueryCacheService:
         factory_fn: Callable[[], Any],
         ttl: Optional[int] = None,
         tags: Optional[List[str]] = None,
-        namespace: Optional[str] = None
+        namespace: Optional[str] = None,
     ) -> Any:
         """Cache-aside pattern: get from cache or compute and set.
 
@@ -547,10 +543,7 @@ class QueryCacheService:
             return result
 
     def bulk_set(
-        self,
-        items: Dict[str, Any],
-        ttl: Optional[int] = None,
-        namespace: Optional[str] = None
+        self, items: Dict[str, Any], ttl: Optional[int] = None, namespace: Optional[str] = None
     ) -> int:
         """Set multiple values in cache.
 
@@ -586,7 +579,11 @@ class QueryCacheService:
             total_requests = self._total_hits + self._total_misses
             hit_rate = self._total_hits / total_requests if total_requests > 0 else 0.0
             memory_mb = sum(e.size_bytes for e in self._local_cache.values()) / (1024 * 1024)
-            avg_response = sum(self._response_times) / len(self._response_times) if self._response_times else 0.0
+            avg_response = (
+                sum(self._response_times) / len(self._response_times)
+                if self._response_times
+                else 0.0
+            )
 
             return CacheStats(
                 total_hits=self._total_hits,
@@ -595,7 +592,7 @@ class QueryCacheService:
                 total_entries=len(self._local_cache),
                 memory_used_mb=memory_mb,
                 evictions_count=self._total_evictions,
-                avg_response_time_ms=avg_response
+                avg_response_time_ms=avg_response,
             )
 
         except Exception as e:
@@ -693,20 +690,14 @@ class QueryCacheService:
 
             if strategy == CacheStrategy.LRU:
                 # Evict least recently used
-                sorted_entries = sorted(
-                    self._local_cache.items(),
-                    key=lambda x: x[1].last_accessed
-                )
+                sorted_entries = sorted(self._local_cache.items(), key=lambda x: x[1].last_accessed)
                 for key, _ in sorted_entries[:evict_count]:
                     del self._local_cache[key]
                     evicted += 1
 
             elif strategy == CacheStrategy.LFU:
                 # Evict least frequently used
-                sorted_entries = sorted(
-                    self._local_cache.items(),
-                    key=lambda x: x[1].access_count
-                )
+                sorted_entries = sorted(self._local_cache.items(), key=lambda x: x[1].access_count)
                 for key, _ in sorted_entries[:evict_count]:
                     del self._local_cache[key]
                     evicted += 1
@@ -715,7 +706,7 @@ class QueryCacheService:
                 # Evict entries closest to expiration
                 sorted_entries = sorted(
                     self._local_cache.items(),
-                    key=lambda x: x[1].expires_at or datetime.utcnow() + timedelta(days=365)
+                    key=lambda x: x[1].expires_at or datetime.utcnow() + timedelta(days=365),
                 )
                 for key, _ in sorted_entries[:evict_count]:
                     del self._local_cache[key]
@@ -723,10 +714,7 @@ class QueryCacheService:
 
             else:
                 # Default to LRU for other strategies
-                sorted_entries = sorted(
-                    self._local_cache.items(),
-                    key=lambda x: x[1].last_accessed
-                )
+                sorted_entries = sorted(self._local_cache.items(), key=lambda x: x[1].last_accessed)
                 for key, _ in sorted_entries[:evict_count]:
                     del self._local_cache[key]
                     evicted += 1

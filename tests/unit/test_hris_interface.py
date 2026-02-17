@@ -31,9 +31,9 @@ class TestEmployeeModel:
             hire_date=datetime(2020, 1, 15),
             status=EmployeeStatus.ACTIVE,
             location="New York",
-            phone="555-123-4567"
+            phone="555-123-4567",
         )
-        
+
         assert employee.id == "emp-001"
         assert employee.first_name == "John"
         assert employee.email == "john@company.com"
@@ -57,9 +57,9 @@ class TestEmployeeModel:
             job_title="Engineer",
             hire_date=datetime(2020, 1, 1),
             status=EmployeeStatus.ACTIVE,
-            location="Remote"
+            location="Remote",
         )
-        
+
         assert employee.id == "emp-001"
         assert employee.phone is None
 
@@ -75,9 +75,9 @@ class TestLeaveBalanceModel:
             total_days=20.0,
             used_days=5.0,
             pending_days=2.0,
-            available_days=13.0
+            available_days=13.0,
         )
-        
+
         assert balance.employee_id == "emp-001"
         assert balance.leave_type == LeaveType.PTO
         assert balance.total_days == 20.0
@@ -91,9 +91,9 @@ class TestLeaveBalanceModel:
             total_days=10.0,
             used_days=2.0,
             pending_days=1.0,
-            available_days=7.0
+            available_days=7.0,
         )
-        
+
         # Available should be total - used - pending
         expected_available = 10.0 - 2.0 - 1.0
         assert balance.available_days == expected_available
@@ -106,18 +106,18 @@ class TestLeaveBalanceModel:
             total_days=20.0,
             used_days=5.0,
             pending_days=0.0,
-            available_days=15.0
+            available_days=15.0,
         )
-        
+
         sick_balance = LeaveBalance(
             employee_id="emp-001",
             leave_type=LeaveType.SICK,
             total_days=10.0,
             used_days=2.0,
             pending_days=0.0,
-            available_days=8.0
+            available_days=8.0,
         )
-        
+
         assert pto_balance.leave_type != sick_balance.leave_type
         assert pto_balance.total_days != sick_balance.total_days
 
@@ -137,9 +137,9 @@ class TestLeaveRequestModel:
             status=LeaveStatus.PENDING,
             reason="Vacation",
             approver_id="mgr-001",
-            submitted_at=now
+            submitted_at=now,
         )
-        
+
         assert request.id == "leave-001"
         assert request.employee_id == "emp-001"
         assert request.status == LeaveStatus.PENDING
@@ -147,25 +147,25 @@ class TestLeaveRequestModel:
     def test_leave_request_status_transitions(self):
         """LeaveRequest tracks different statuses."""
         now = datetime.now()
-        
+
         pending = LeaveRequest(
             employee_id="emp-001",
             leave_type=LeaveType.PTO,
             start_date=now,
             end_date=datetime(2025, 2, 20),
             status=LeaveStatus.PENDING,
-            submitted_at=now
+            submitted_at=now,
         )
-        
+
         approved = LeaveRequest(
             employee_id="emp-001",
             leave_type=LeaveType.PTO,
             start_date=now,
             end_date=datetime(2025, 2, 20),
             status=LeaveStatus.APPROVED,
-            submitted_at=now
+            submitted_at=now,
         )
-        
+
         assert pending.status == LeaveStatus.PENDING
         assert approved.status == LeaveStatus.APPROVED
 
@@ -175,82 +175,96 @@ class TestConnectorRegistry:
 
     def test_connector_registry_register_and_get(self):
         """Connectors can be registered and retrieved."""
-        
+
         class MockConnector(HRISConnector):
             def get_employee(self, employee_id):
                 return None
+
             def search_employees(self, filters):
                 return []
+
             def get_leave_balance(self, employee_id):
                 return []
+
             def get_leave_requests(self, employee_id, status=None):
                 return []
+
             def submit_leave_request(self, request):
                 return request
+
             def get_org_chart(self, department=None):
                 return []
+
             def get_benefits(self, employee_id):
                 return []
+
             def health_check(self):
                 return True
-        
+
         # Clear registry
         ConnectorRegistry._registry = {}
-        
+
         # Register
         ConnectorRegistry.register("mock", MockConnector)
-        
+
         # Retrieve
         retrieved = ConnectorRegistry.get("mock")
-        
+
         assert retrieved == MockConnector
 
     def test_connector_registry_invalid_connector_raises(self):
         """Registering non-HRISConnector raises error."""
-        
+
         class InvalidConnector:
             pass
-        
+
         ConnectorRegistry._registry = {}
-        
+
         with pytest.raises(ValueError):
             ConnectorRegistry.register("invalid", InvalidConnector)
 
     def test_connector_registry_unknown_returns_none(self):
         """Getting unknown connector returns None."""
         ConnectorRegistry._registry = {}
-        
+
         result = ConnectorRegistry.get("unknown")
-        
+
         assert result is None
 
     def test_connector_registry_list_connectors(self):
         """List all registered connectors."""
-        
+
         class Connector1(HRISConnector):
             def get_employee(self, employee_id):
                 return None
+
             def search_employees(self, filters):
                 return []
+
             def get_leave_balance(self, employee_id):
                 return []
+
             def get_leave_requests(self, employee_id, status=None):
                 return []
+
             def submit_leave_request(self, request):
                 return request
+
             def get_org_chart(self, department=None):
                 return []
+
             def get_benefits(self, employee_id):
                 return []
+
             def health_check(self):
                 return True
-        
+
         ConnectorRegistry._registry = {}
         ConnectorRegistry.register("conn1", Connector1)
         ConnectorRegistry.register("conn2", Connector1)
-        
+
         connectors = ConnectorRegistry.list_connectors()
-        
+
         assert "conn1" in connectors
         assert "conn2" in connectors
         assert len(connectors) >= 2
@@ -299,34 +313,41 @@ class TestHRISConnectorInterface:
 
     def test_hris_connector_subclass_implements_methods(self):
         """Subclass must implement all abstract methods."""
-        
+
         class IncompleteConnector(HRISConnector):
             def get_employee(self, employee_id):
                 return None
-        
+
         with pytest.raises(TypeError):
             IncompleteConnector()
 
     def test_hris_connector_complete_subclass(self):
         """Complete subclass can be instantiated."""
-        
+
         class CompleteConnector(HRISConnector):
             def get_employee(self, employee_id):
                 return None
+
             def search_employees(self, filters):
                 return []
+
             def get_leave_balance(self, employee_id):
                 return []
+
             def get_leave_requests(self, employee_id, status=None):
                 return []
+
             def submit_leave_request(self, request):
                 return request
+
             def get_org_chart(self, department=None):
                 return []
+
             def get_benefits(self, employee_id):
                 return []
+
             def health_check(self):
                 return True
-        
+
         connector = CompleteConnector()
         assert connector is not None

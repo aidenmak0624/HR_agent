@@ -12,6 +12,7 @@ from typing import Any, Optional
 # Try to import pythonjsonlogger for JSON formatting
 try:
     from pythonjsonlogger import jsonlogger
+
     JSON_LOGGER_AVAILABLE = True
 except ImportError:
     JSON_LOGGER_AVAILABLE = False
@@ -19,7 +20,7 @@ except ImportError:
 
 class CorrelationIdFilter(logging.Filter):
     """Add correlation ID to all log records for request tracing.
-    
+
     This filter adds a unique correlation_id to each log record,
     enabling request tracing across distributed systems.
     """
@@ -31,10 +32,10 @@ class CorrelationIdFilter(logging.Filter):
 
     def filter(self, record: logging.LogRecord) -> bool:
         """Add correlation_id to the log record.
-        
+
         Args:
             record: Log record to filter
-            
+
         Returns:
             True to allow the log record to be processed
         """
@@ -45,7 +46,7 @@ class CorrelationIdFilter(logging.Filter):
     @staticmethod
     def get_correlation_id() -> str:
         """Get or create a correlation ID.
-        
+
         Returns:
             Correlation ID string
         """
@@ -54,7 +55,7 @@ class CorrelationIdFilter(logging.Filter):
     @staticmethod
     def set_correlation_id(correlation_id: str) -> None:
         """Set correlation ID for current context.
-        
+
         Args:
             correlation_id: Correlation ID to set
         """
@@ -67,10 +68,10 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON.
-        
+
         Args:
             record: Log record to format
-            
+
         Returns:
             JSON string
         """
@@ -96,13 +97,13 @@ class JSONFormatter(logging.Formatter):
 
 class RequestLogger:
     """Middleware class for logging HTTP requests (Flask/FastAPI compatible).
-    
+
     Logs request method, path, status code, duration, user info, and correlation ID.
     """
 
     def __init__(self, logger: logging.Logger):
         """Initialize request logger.
-        
+
         Args:
             logger: Logger instance to use
         """
@@ -118,7 +119,7 @@ class RequestLogger:
         correlation_id: Optional[str] = None,
     ) -> None:
         """Log HTTP request details.
-        
+
         Args:
             method: HTTP method (GET, POST, etc.)
             path: Request path
@@ -129,9 +130,7 @@ class RequestLogger:
         """
         log_level = logging.WARNING if status_code >= 400 else logging.INFO
 
-        message = (
-            f"{method} {path} {status_code} in {duration_ms:.2f}ms"
-        )
+        message = f"{method} {path} {status_code} in {duration_ms:.2f}ms"
 
         extra = {
             "correlation_id": correlation_id or str(uuid.uuid4()),
@@ -149,10 +148,10 @@ class RequestLogger:
     @staticmethod
     def create_middleware(logger: logging.Logger):
         """Create Flask middleware for request logging.
-        
+
         Args:
             logger: Logger instance to use
-            
+
         Returns:
             Flask before/after request handlers
         """
@@ -161,17 +160,18 @@ class RequestLogger:
         def before_request() -> None:
             """Record request start time."""
             from flask import g
+
             g._request_start_time = time.time()
             g.correlation_id = str(uuid.uuid4())
 
         def after_request(response):
             """Log request after response."""
             from flask import g, request
-            
+
             if hasattr(g, "_request_start_time"):
                 duration_ms = (time.time() - g._request_start_time) * 1000
                 user_id = getattr(g, "user_id", None)
-                
+
                 request_logger.log_request(
                     method=request.method,
                     path=request.path,
@@ -188,16 +188,16 @@ class RequestLogger:
 @contextmanager
 def log_performance(operation_name: str, logger: Optional[logging.Logger] = None):
     """Context manager for logging operation performance.
-    
+
     Usage:
         with log_performance("database_query"):
             # perform operation
             pass
-    
+
     Args:
         operation_name: Name of the operation being timed
         logger: Logger instance (defaults to root logger)
-        
+
     Yields:
         None
     """
@@ -223,10 +223,10 @@ def log_performance(operation_name: str, logger: Optional[logging.Logger] = None
 
 def setup_logging(level: str = "INFO") -> logging.Logger:
     """Configure structured JSON logging for the application.
-    
+
     Args:
         level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        
+
     Returns:
         Configured root logger
     """
@@ -262,17 +262,17 @@ def setup_logging(level: str = "INFO") -> logging.Logger:
 
 def get_logger(name: str) -> logging.Logger:
     """Get a configured logger instance.
-    
+
     Args:
         name: Logger name (usually __name__)
-        
+
     Returns:
         Configured logger instance
     """
     logger = logging.getLogger(name)
-    
+
     # Ensure parent logger is properly configured
     if not logging.root.handlers:
         setup_logging()
-    
+
     return logger

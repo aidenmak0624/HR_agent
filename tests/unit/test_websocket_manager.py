@@ -23,14 +23,12 @@ from src.core.websocket_manager import (
 # Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def ws_config():
     """Create a WebSocketConfig for testing."""
     return WebSocketConfig(
-        max_connections_per_user=5,
-        ping_interval=30,
-        ping_timeout=10,
-        max_message_size=65536
+        max_connections_per_user=5, ping_interval=30, ping_timeout=10, max_message_size=65536
     )
 
 
@@ -43,6 +41,7 @@ def ws_manager(ws_config):
 # ============================================================================
 # Test WebSocketEvent Enum
 # ============================================================================
+
 
 class TestWebSocketEvent:
     """Tests for WebSocketEvent enum."""
@@ -72,14 +71,13 @@ class TestWebSocketEvent:
 # Test WebSocketMessage Model
 # ============================================================================
 
+
 class TestWebSocketMessage:
     """Tests for WebSocketMessage model."""
 
     def test_message_defaults(self):
         """Test WebSocketMessage default values."""
-        message = WebSocketMessage(
-            event_type=WebSocketEvent.NOTIFICATION
-        )
+        message = WebSocketMessage(event_type=WebSocketEvent.NOTIFICATION)
         assert message.sender == "system"
         assert message.target_user is None
         assert message.broadcast is False
@@ -91,7 +89,7 @@ class TestWebSocketMessage:
             event_type=WebSocketEvent.QUERY_UPDATE,
             sender="agent1",
             target_user="user1",
-            priority="high"
+            priority="high",
         )
         assert message.sender == "agent1"
         assert message.target_user == "user1"
@@ -107,16 +105,14 @@ class TestWebSocketMessage:
     def test_message_priority_levels(self):
         """Test WebSocketMessage supports different priority levels."""
         for priority in ["low", "medium", "high"]:
-            message = WebSocketMessage(
-                event_type=WebSocketEvent.SYSTEM_ALERT,
-                priority=priority
-            )
+            message = WebSocketMessage(event_type=WebSocketEvent.SYSTEM_ALERT, priority=priority)
             assert message.priority == priority
 
 
 # ============================================================================
 # Test ConnectionInfo Model
 # ============================================================================
+
 
 class TestConnectionInfo:
     """Tests for ConnectionInfo model."""
@@ -131,10 +127,7 @@ class TestConnectionInfo:
     def test_connection_custom_values(self):
         """Test ConnectionInfo with custom values."""
         metadata = {"device": "mobile", "ip": "192.168.1.1"}
-        conn = ConnectionInfo(
-            user_id="user2",
-            metadata=metadata
-        )
+        conn = ConnectionInfo(user_id="user2", metadata=metadata)
         assert conn.metadata["device"] == "mobile"
 
     def test_connection_uuid(self):
@@ -149,6 +142,7 @@ class TestConnectionInfo:
 # Test WebSocketConfig Model
 # ============================================================================
 
+
 class TestWebSocketConfig:
     """Tests for WebSocketConfig model."""
 
@@ -161,11 +155,7 @@ class TestWebSocketConfig:
 
     def test_config_custom_values(self):
         """Test WebSocketConfig with custom values."""
-        config = WebSocketConfig(
-            max_connections_per_user=10,
-            ping_interval=60,
-            ping_timeout=20
-        )
+        config = WebSocketConfig(max_connections_per_user=10, ping_interval=60, ping_timeout=20)
         assert config.max_connections_per_user == 10
         assert config.ping_interval == 60
 
@@ -185,6 +175,7 @@ class TestWebSocketConfig:
 # Test WebSocketManager Initialization
 # ============================================================================
 
+
 class TestWebSocketManagerInit:
     """Tests for WebSocketManager initialization."""
 
@@ -202,13 +193,14 @@ class TestWebSocketManagerInit:
     def test_manager_stats(self, ws_config):
         """Test manager initializes stats."""
         manager = WebSocketManager(ws_config)
-        assert manager.stats['total_connections'] == 0
-        assert manager.stats['messages_sent'] == 0
+        assert manager.stats["total_connections"] == 0
+        assert manager.stats["messages_sent"] == 0
 
 
 # ============================================================================
 # Test Connect
 # ============================================================================
+
 
 class TestConnect:
     """Tests for WebSocketManager.connect method."""
@@ -247,6 +239,7 @@ class TestConnect:
 # Test Disconnect
 # ============================================================================
 
+
 class TestDisconnect:
     """Tests for WebSocketManager.disconnect method."""
 
@@ -273,6 +266,7 @@ class TestDisconnect:
 # Test Send Message
 # ============================================================================
 
+
 class TestSendMessage:
     """Tests for WebSocketManager.send_message method."""
 
@@ -295,10 +289,7 @@ class TestSendMessage:
     def test_validates_message(self, ws_manager):
         """Test send_message validates message."""
         conn = ws_manager.connect("user1")
-        message = WebSocketMessage(
-            event_type=WebSocketEvent.NOTIFICATION,
-            priority="invalid"
-        )
+        message = WebSocketMessage(event_type=WebSocketEvent.NOTIFICATION, priority="invalid")
 
         with pytest.raises(ValueError):
             ws_manager.send_message(conn.connection_id, message)
@@ -307,6 +298,7 @@ class TestSendMessage:
 # ============================================================================
 # Test Broadcast
 # ============================================================================
+
 
 class TestBroadcast:
     """Tests for WebSocketManager.broadcast method."""
@@ -317,10 +309,7 @@ class TestBroadcast:
         ws_manager.connect("user2")
         ws_manager.connect("user3")
 
-        message = WebSocketMessage(
-            event_type=WebSocketEvent.SYSTEM_ALERT,
-            broadcast=True
-        )
+        message = WebSocketMessage(event_type=WebSocketEvent.SYSTEM_ALERT, broadcast=True)
         count = ws_manager.broadcast(message)
         assert count == 3
 
@@ -347,6 +336,7 @@ class TestBroadcast:
 # ============================================================================
 # Test Send To User
 # ============================================================================
+
 
 class TestSendToUser:
     """Tests for WebSocketManager.send_to_user method."""
@@ -384,27 +374,21 @@ class TestSendToUser:
 # Test Send Notification
 # ============================================================================
 
+
 class TestSendNotification:
     """Tests for WebSocketManager.send_notification method."""
 
     def test_creates_notification(self, ws_manager):
         """Test send_notification creates notification message."""
         ws_manager.connect("user1")
-        result = ws_manager.send_notification(
-            "user1",
-            title="Test",
-            body="Test body"
-        )
+        result = ws_manager.send_notification("user1", title="Test", body="Test body")
         assert result is True
 
     def test_sets_priority(self, ws_manager):
         """Test send_notification sets message priority."""
         ws_manager.connect("user1")
         result = ws_manager.send_notification(
-            "user1",
-            title="Urgent",
-            body="Action required",
-            priority="high"
+            "user1", title="Urgent", body="Action required", priority="high"
         )
         assert result is True
 
@@ -413,11 +397,7 @@ class TestSendNotification:
         ws_manager.connect("user1")
         ws_manager.connect("user2")
 
-        result = ws_manager.send_notification(
-            "user1",
-            title="Personal",
-            body="For user1 only"
-        )
+        result = ws_manager.send_notification("user1", title="Personal", body="For user1 only")
         assert result is True
         # Only user1 should receive it
 
@@ -425,6 +405,7 @@ class TestSendNotification:
 # ============================================================================
 # Test Get Stats
 # ============================================================================
+
 
 class TestGetStats:
     """Tests for WebSocketManager.get_stats method."""
@@ -434,7 +415,7 @@ class TestGetStats:
         ws_manager.connect("user1")
         stats = ws_manager.get_stats()
         assert isinstance(stats, dict)
-        assert 'total_connections' in stats
+        assert "total_connections" in stats
 
     def test_connection_counts(self, ws_manager):
         """Test get_stats includes connection counts."""
@@ -442,8 +423,8 @@ class TestGetStats:
         ws_manager.connect("user2")
 
         stats = ws_manager.get_stats()
-        assert stats['total_active_connections'] == 2
-        assert stats['connected_users'] == 2
+        assert stats["total_active_connections"] == 2
+        assert stats["connected_users"] == 2
 
     def test_message_counts(self, ws_manager):
         """Test get_stats includes message counts."""
@@ -452,12 +433,13 @@ class TestGetStats:
 
         ws_manager.send_message(conn.connection_id, message)
         stats = ws_manager.get_stats()
-        assert stats['messages_sent'] > 0
+        assert stats["messages_sent"] > 0
 
 
 # ============================================================================
 # Test Cleanup Stale
 # ============================================================================
+
 
 class TestCleanupStale:
     """Tests for WebSocketManager.cleanup_stale_connections method."""
@@ -496,6 +478,7 @@ class TestCleanupStale:
 # Integration Tests
 # ============================================================================
 
+
 class TestWebSocketIntegration:
     """Integration tests for WebSocket functionality."""
 
@@ -522,23 +505,17 @@ class TestWebSocketIntegration:
         user2_conn = ws_manager.connect("user2")
 
         # Send targeted message
-        msg1 = WebSocketMessage(
-            event_type=WebSocketEvent.NOTIFICATION,
-            target_user="user1"
-        )
+        msg1 = WebSocketMessage(event_type=WebSocketEvent.NOTIFICATION, target_user="user1")
         ws_manager.send_message(user1_conn.connection_id, msg1)
 
         # Broadcast message
-        msg2 = WebSocketMessage(
-            event_type=WebSocketEvent.SYSTEM_ALERT,
-            broadcast=True
-        )
+        msg2 = WebSocketMessage(event_type=WebSocketEvent.SYSTEM_ALERT, broadcast=True)
         count = ws_manager.broadcast(msg2)
         assert count == 2
 
         # Check stats
         stats = ws_manager.get_stats()
-        assert stats['total_active_connections'] == 2
+        assert stats["total_active_connections"] == 2
 
     def test_high_load_scenario(self, ws_manager):
         """Test handling multiple users and messages."""
@@ -547,7 +524,7 @@ class TestWebSocketIntegration:
             ws_manager.connect(f"user{i}")
 
         stats = ws_manager.get_stats()
-        assert stats['connected_users'] == 10
+        assert stats["connected_users"] == 10
 
         # Broadcast to all
         message = WebSocketMessage(event_type=WebSocketEvent.NOTIFICATION)

@@ -57,7 +57,8 @@ class TeamsActivityHandler:
         self.start_time = datetime.utcnow()
         logger.info(
             "TeamsActivityHandler initialized with bot_name=%s, app_id=%s",
-            config.bot_name, config.app_id[:20]
+            config.bot_name,
+            config.app_id[:20],
         )
 
     def handle_message(self, activity: Dict[str, Any]) -> Dict[str, Any]:
@@ -85,21 +86,18 @@ class TeamsActivityHandler:
 
             if not text or len(text) > self.config.max_message_length:
                 logger.warning(
-                    "Invalid message from %s: length=%d",
-                    user_id, len(text) if text else 0
+                    "Invalid message from %s: length=%d", user_id, len(text) if text else 0
                 )
                 return {"status": "rejected", "reason": "invalid_length"}
 
             logger.info(
                 "Message activity from user=%s conversation=%s activity_id=%s",
-                user_id, conversation_id, activity_id
+                user_id,
+                conversation_id,
+                activity_id,
             )
 
-            return self._process_query(
-                user_id=user_id,
-                text=text,
-                conversation_id=conversation_id
-            )
+            return self._process_query(user_id=user_id, text=text, conversation_id=conversation_id)
 
         except Exception as e:
             logger.exception("Error handling message activity: %s", e)
@@ -132,7 +130,9 @@ class TeamsActivityHandler:
                     member_name = member.get("name", "Unknown")
                     logger.info(
                         "Member added to conversation %s: %s (%s)",
-                        conversation_id, member_name, member_id
+                        conversation_id,
+                        member_name,
+                        member_id,
                     )
 
             if members_removed:
@@ -141,7 +141,9 @@ class TeamsActivityHandler:
                     member_name = member.get("name", "Unknown")
                     logger.info(
                         "Member removed from conversation %s: %s (%s)",
-                        conversation_id, member_name, member_id
+                        conversation_id,
+                        member_name,
+                        member_id,
                     )
 
             return {"status": "acknowledged"}
@@ -171,10 +173,7 @@ class TeamsActivityHandler:
             value = activity.get("value", {})
             user_id = activity.get("from", {}).get("id", "unknown")
 
-            logger.info(
-                "Invoke activity from user=%s name=%s",
-                user_id, name
-            )
+            logger.info("Invoke activity from user=%s name=%s", user_id, name)
 
             # Handle specific invoke actions
             if name == "adaptiveCard/action":
@@ -188,12 +187,7 @@ class TeamsActivityHandler:
             self.metrics["errors"] += 1
             return {"status": "error", "error": str(e)}
 
-    def _process_query(
-        self,
-        user_id: str,
-        text: str,
-        conversation_id: str
-    ) -> Dict[str, Any]:
+    def _process_query(self, user_id: str, text: str, conversation_id: str) -> Dict[str, Any]:
         """
         Process HR query through AgentService.
 
@@ -214,22 +208,14 @@ class TeamsActivityHandler:
         try:
             user_context = self._get_user_context(user_id)
 
-            logger.info(
-                "Processing Teams query message_id=%s user=%s",
-                message_id, user_id
-            )
+            logger.info("Processing Teams query message_id=%s user=%s", message_id, user_id)
 
             if not self.agent_service:
                 logger.warning("AgentService not configured")
-                return {
-                    "status": "error",
-                    "error": "Agent service not available"
-                }
+                return {"status": "error", "error": "Agent service not available"}
 
             result = self.agent_service.process_query(
-                query=text,
-                user_context=user_context,
-                session_id=message_id
+                query=text, user_context=user_context, session_id=message_id
             )
 
             response_time = time.time() - start_time
@@ -237,7 +223,8 @@ class TeamsActivityHandler:
 
             logger.info(
                 "Query processed in %.2f seconds, confidence=%.2f",
-                response_time, result.get("confidence", 0.0)
+                response_time,
+                result.get("confidence", 0.0),
             )
 
             # Format as Adaptive Card
@@ -254,7 +241,7 @@ class TeamsActivityHandler:
             return {
                 "status": "error",
                 "error": f"Failed to process query: {str(e)[:100]}",
-                "message_id": message_id
+                "message_id": message_id,
             }
 
     def _format_teams_response(self, result: Dict[str, Any]) -> Dict[str, Any]:
@@ -296,14 +283,9 @@ class TeamsActivityHandler:
                     "type": "TextBlock",
                     "text": "HR Assistant Response",
                     "weight": "bolder",
-                    "size": "large"
+                    "size": "large",
                 },
-                {
-                    "type": "TextBlock",
-                    "text": answer,
-                    "wrap": True,
-                    "spacing": "medium"
-                },
+                {"type": "TextBlock", "text": answer, "wrap": True, "spacing": "medium"},
                 {
                     "type": "ColumnSet",
                     "columns": [
@@ -314,15 +296,15 @@ class TeamsActivityHandler:
                                     "type": "TextBlock",
                                     "text": f"Confidence: {confidence_label}",
                                     "color": confidence_color,
-                                    "size": "small"
+                                    "size": "small",
                                 },
                                 {
                                     "type": "TextBlock",
                                     "text": f"Score: {confidence:.0%}",
                                     "size": "small",
-                                    "spacing": "none"
-                                }
-                            ]
+                                    "spacing": "none",
+                                },
+                            ],
                         },
                         {
                             "width": "stretch",
@@ -330,13 +312,13 @@ class TeamsActivityHandler:
                                 {
                                     "type": "TextBlock",
                                     "text": f"Agent: {agent_type}",
-                                    "size": "small"
+                                    "size": "small",
                                 }
-                            ]
-                        }
+                            ],
+                        },
                     ],
-                    "spacing": "medium"
-                }
+                    "spacing": "medium",
+                },
             ]
 
             # Add sources if available
@@ -350,14 +332,16 @@ class TeamsActivityHandler:
                     else:
                         sources_text += f"{i}. {source}\n"
 
-                body.append({
-                    "type": "TextBlock",
-                    "text": sources_text,
-                    "wrap": True,
-                    "spacing": "medium",
-                    "size": "small",
-                    "weight": "lighter"
-                })
+                body.append(
+                    {
+                        "type": "TextBlock",
+                        "text": sources_text,
+                        "wrap": True,
+                        "spacing": "medium",
+                        "size": "small",
+                        "weight": "lighter",
+                    }
+                )
 
             # Create Adaptive Card
             card = {
@@ -369,16 +353,14 @@ class TeamsActivityHandler:
                     {
                         "type": "Action.OpenUrl",
                         "title": "Learn More",
-                        "url": "https://www.example.com"
+                        "url": "https://www.example.com",
                     },
                     {
                         "type": "Action.Submit",
                         "title": "Ask Follow-up",
-                        "data": {
-                            "action": "followup"
-                        }
-                    }
-                ]
+                        "data": {"action": "followup"},
+                    },
+                ],
             }
 
             logger.debug("Formatted Teams Adaptive Card response")
@@ -388,16 +370,14 @@ class TeamsActivityHandler:
                     {
                         "contentType": "application/vnd.microsoft.card.adaptive",
                         "contentUrl": None,
-                        "content": card
+                        "content": card,
                     }
                 ]
             }
 
         except Exception as e:
             logger.exception("Error formatting Teams response: %s", e)
-            return {
-                "text": f"Error formatting response: {str(e)[:100]}"
-            }
+            return {"text": f"Error formatting response: {str(e)[:100]}"}
 
     def _format_hero_card(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -425,31 +405,23 @@ class TeamsActivityHandler:
                     {
                         "activityTitle": f"Confidence: {confidence:.0%}",
                         "activitySubtitle": f"Agent Response",
-                        "text": answer
+                        "text": answer,
                     }
                 ],
                 "potentialAction": [
                     {
                         "@type": "OpenUri",
                         "name": "Learn More",
-                        "targets": [
-                            {
-                                "os": "default",
-                                "uri": "https://www.example.com"
-                            }
-                        ]
+                        "targets": [{"os": "default", "uri": "https://www.example.com"}],
                     }
-                ]
+                ],
             }
 
             logger.debug("Formatted Teams Hero Card response")
 
             return {
                 "attachments": [
-                    {
-                        "contentType": "application/vnd.microsoft.card.hero",
-                        "content": card
-                    }
+                    {"contentType": "application/vnd.microsoft.card.hero", "content": card}
                 ]
             }
 
@@ -475,7 +447,7 @@ class TeamsActivityHandler:
             "source": "teams",
             "platform": "microsoft_teams",
             "tenant_id": self.config.tenant_id,
-            "timezone": "UTC"
+            "timezone": "UTC",
         }
 
     def _update_metrics(self, response_time: float, is_error: bool = False) -> None:
@@ -492,9 +464,7 @@ class TeamsActivityHandler:
 
         old_avg = self.metrics["avg_response_time"]
         count = self.metrics["messages_processed"]
-        self.metrics["avg_response_time"] = (
-            (old_avg * (count - 1) + response_time) / count
-        )
+        self.metrics["avg_response_time"] = (old_avg * (count - 1) + response_time) / count
 
     def get_health(self) -> Dict[str, Any]:
         """
@@ -518,7 +488,7 @@ class TeamsActivityHandler:
             "errors": self.metrics["errors"],
             "error_rate": f"{error_rate:.1%}",
             "avg_response_time_ms": f"{self.metrics['avg_response_time'] * 1000:.1f}",
-            "uptime_minutes": f"{uptime / 60:.1f}"
+            "uptime_minutes": f"{uptime / 60:.1f}",
         }
 
 
@@ -552,7 +522,8 @@ class TeamsBotService:
             self.running = True
             logger.info(
                 "TeamsBotService starting - app_id=%s, bot_name=%s",
-                self.config.app_id[:20], self.config.bot_name
+                self.config.app_id[:20],
+                self.config.bot_name,
             )
             # In production: adapter = BotFrameworkAdapter(...)
             # adapter.onTurnError = error_handler
@@ -588,6 +559,6 @@ class TeamsBotService:
             "config": {
                 "bot_name": self.config.bot_name,
                 "max_message_length": self.config.max_message_length,
-                "tenant_id": self.config.tenant_id
-            }
+                "tenant_id": self.config.tenant_id,
+            },
         }

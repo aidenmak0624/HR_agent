@@ -29,9 +29,7 @@ class Base(DeclarativeBase):
 class TimestampMixin:
     """Mixin for timestamp columns (created_at, updated_at)."""
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
@@ -39,7 +37,7 @@ class TimestampMixin:
 
 class Employee(Base, TimestampMixin):
     """Employee model representing users in the system.
-    
+
     Attributes:
         id: Primary key
         hris_id: External HRIS system ID
@@ -64,9 +62,7 @@ class Employee(Base, TimestampMixin):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     department: Mapped[str] = mapped_column(String(255), nullable=False)
     role_level: Mapped[str] = mapped_column(String(50), nullable=False)
-    manager_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("employees.id"), nullable=True
-    )
+    manager_id: Mapped[Optional[int]] = mapped_column(ForeignKey("employees.id"), nullable=True)
     hire_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="active", nullable=False)
     password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
@@ -77,7 +73,7 @@ class Employee(Base, TimestampMixin):
 
 class AuthSession(Base, TimestampMixin):
     """Authentication session model for tracking user sessions.
-    
+
     Attributes:
         id: Primary key
         user_id: FK to Employee
@@ -106,7 +102,7 @@ class AuthSession(Base, TimestampMixin):
 
 class AuditLog(Base):
     """Audit log model for tracking user actions.
-    
+
     Attributes:
         id: Primary key
         user_id: FK to Employee
@@ -127,9 +123,7 @@ class AuditLog(Base):
     resource_id: Mapped[str] = mapped_column(String(255), nullable=False)
     details: Mapped[dict] = mapped_column(JSON, default=dict)
     ip_address: Mapped[str] = mapped_column(String(45), nullable=False)
-    timestamp: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, nullable=False
-    )
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self) -> str:
         return f"<AuditLog(user_id={self.user_id}, action={self.action}, resource={self.resource_type})>"
@@ -137,7 +131,7 @@ class AuditLog(Base):
 
 class Conversation(Base, TimestampMixin):
     """Conversation model for tracking agent interactions.
-    
+
     Attributes:
         id: Primary key
         user_id: FK to Employee
@@ -170,7 +164,7 @@ class Conversation(Base, TimestampMixin):
 
 class ConversationMessage(Base):
     """Conversation message model for tracking message history.
-    
+
     Attributes:
         id: Primary key
         conversation_id: FK to Conversation
@@ -183,15 +177,11 @@ class ConversationMessage(Base):
     __tablename__ = "conversation_messages"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    conversation_id: Mapped[int] = mapped_column(
-        ForeignKey("conversations.id"), nullable=False
-    )
+    conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"), nullable=False)
     role: Mapped[str] = mapped_column(String(50), nullable=False)
     content: Mapped[str] = mapped_column(String(5000), nullable=False)
     tool_call: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
-    timestamp: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, nullable=False
-    )
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self) -> str:
         return f"<ConversationMessage(conversation_id={self.conversation_id}, role={self.role})>"
@@ -199,6 +189,7 @@ class ConversationMessage(Base):
 
 class LeaveRequest(Base, TimestampMixin):
     """Leave request model for tracking employee leave applications."""
+
     __tablename__ = "leave_requests"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -207,7 +198,9 @@ class LeaveRequest(Base, TimestampMixin):
     start_date: Mapped[str] = mapped_column(String(20), nullable=False)  # YYYY-MM-DD
     end_date: Mapped[str] = mapped_column(String(20), nullable=False)
     reason: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
-    status: Mapped[str] = mapped_column(String(20), default="pending", nullable=False)  # pending/approved/rejected
+    status: Mapped[str] = mapped_column(
+        String(20), default="pending", nullable=False
+    )  # pending/approved/rejected
     approved_by: Mapped[Optional[int]] = mapped_column(ForeignKey("employees.id"), nullable=True)
     approved_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
@@ -217,10 +210,13 @@ class LeaveRequest(Base, TimestampMixin):
 
 class LeaveBalance(Base, TimestampMixin):
     """Leave balance model tracking available leave days per employee."""
+
     __tablename__ = "leave_balances"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=False, unique=True)
+    employee_id: Mapped[int] = mapped_column(
+        ForeignKey("employees.id"), nullable=False, unique=True
+    )
     vacation_total: Mapped[int] = mapped_column(default=15, nullable=False)
     vacation_used: Mapped[int] = mapped_column(default=0, nullable=False)
     sick_total: Mapped[int] = mapped_column(default=10, nullable=False)
@@ -234,6 +230,7 @@ class LeaveBalance(Base, TimestampMixin):
 
 class GeneratedDocument(Base, TimestampMixin):
     """Generated document model for HR document tracking."""
+
     __tablename__ = "generated_documents"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -249,11 +246,14 @@ class GeneratedDocument(Base, TimestampMixin):
 
 class BenefitsPlan(Base, TimestampMixin):
     """Benefits plan available for enrollment."""
+
     __tablename__ = "benefits_plans"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
-    plan_type: Mapped[str] = mapped_column(String(50), nullable=False)  # medical/dental/vision/life/retirement
+    plan_type: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # medical/dental/vision/life/retirement
     provider: Mapped[str] = mapped_column(String(200), nullable=False)
     premium_monthly: Mapped[float] = mapped_column(default=0.0, nullable=False)
     coverage_details: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
@@ -265,13 +265,16 @@ class BenefitsPlan(Base, TimestampMixin):
 
 class BenefitsEnrollment(Base, TimestampMixin):
     """Employee enrollment in a benefits plan."""
+
     __tablename__ = "benefits_enrollments"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=False)
     plan_id: Mapped[int] = mapped_column(ForeignKey("benefits_plans.id"), nullable=False)
     coverage_level: Mapped[str] = mapped_column(String(50), default="employee", nullable=False)
-    status: Mapped[str] = mapped_column(String(50), default="active", nullable=False)  # active/waived/terminated
+    status: Mapped[str] = mapped_column(
+        String(50), default="active", nullable=False
+    )  # active/waived/terminated
     enrolled_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self) -> str:
@@ -280,14 +283,19 @@ class BenefitsEnrollment(Base, TimestampMixin):
 
 class OnboardingChecklist(Base, TimestampMixin):
     """Onboarding checklist item for new employees."""
+
     __tablename__ = "onboarding_checklists"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=False)
     task_name: Mapped[str] = mapped_column(String(300), nullable=False)
-    category: Mapped[str] = mapped_column(String(100), nullable=False)  # documentation/it_setup/training/compliance
+    category: Mapped[str] = mapped_column(
+        String(100), nullable=False
+    )  # documentation/it_setup/training/compliance
     description: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
-    status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False)  # pending/in_progress/completed
+    status: Mapped[str] = mapped_column(
+        String(50), default="pending", nullable=False
+    )  # pending/in_progress/completed
     due_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
@@ -297,6 +305,7 @@ class OnboardingChecklist(Base, TimestampMixin):
 
 class PerformanceReview(Base, TimestampMixin):
     """Performance review record for an employee."""
+
     __tablename__ = "performance_reviews"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -307,7 +316,9 @@ class PerformanceReview(Base, TimestampMixin):
     strengths: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
     areas_for_improvement: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
     comments: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
-    status: Mapped[str] = mapped_column(String(50), default="draft", nullable=False)  # draft/submitted/finalized
+    status: Mapped[str] = mapped_column(
+        String(50), default="draft", nullable=False
+    )  # draft/submitted/finalized
 
     def __repr__(self) -> str:
         return f"<PerformanceReview(employee_id={self.employee_id}, period={self.review_period}, rating={self.rating})>"
@@ -315,6 +326,7 @@ class PerformanceReview(Base, TimestampMixin):
 
 class PerformanceGoal(Base, TimestampMixin):
     """Performance goal for an employee."""
+
     __tablename__ = "performance_goals"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -322,7 +334,9 @@ class PerformanceGoal(Base, TimestampMixin):
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
     category: Mapped[str] = mapped_column(String(100), default="professional", nullable=False)
-    status: Mapped[str] = mapped_column(String(50), default="active", nullable=False)  # active/completed/cancelled
+    status: Mapped[str] = mapped_column(
+        String(50), default="active", nullable=False
+    )  # active/completed/cancelled
     target_date: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     progress_pct: Mapped[int] = mapped_column(default=0, nullable=False)  # 0-100
 
@@ -332,6 +346,7 @@ class PerformanceGoal(Base, TimestampMixin):
 
 class EventLog(Base):
     """Persisted event log for the inter-agent event bus."""
+
     __tablename__ = "event_log"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -348,6 +363,7 @@ class EventLog(Base):
 # Database configuration — PostgreSQL preferred, SQLite fallback for local dev
 import pathlib as _pathlib
 import os as _os
+
 
 def _resolve_database_url() -> str:
     """Resolve DATABASE_URL from environment, preferring PostgreSQL.
@@ -371,6 +387,7 @@ def _resolve_database_url() -> str:
         try:
             import socket
             from urllib.parse import urlparse
+
             parsed = urlparse(url)
             host = parsed.hostname or "localhost"
             port = parsed.port or 5432
@@ -383,6 +400,7 @@ def _resolve_database_url() -> str:
     # Fallback to SQLite for local dev without PostgreSQL
     db_path = _os.environ.get("HR_DB_PATH", "")
     if not db_path:
+
         def _is_dir_truly_writable(dirpath):
             """Test actual write capability (os.access can lie on FUSE mounts)."""
             _probe = _os.path.join(str(dirpath), ".write_test_probe")
@@ -407,11 +425,13 @@ def _resolve_database_url() -> str:
             db_path = _tmp_path
     return f"sqlite:///{db_path}"
 
+
 def _resolve_async_database_url(sync_url: str) -> str:
     """Convert sync URL to async driver variant."""
     if "postgresql" in sync_url:
         return sync_url.replace("postgresql://", "postgresql+asyncpg://", 1)
     return sync_url.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
 
 DATABASE_URL = _resolve_database_url()
 ASYNC_DATABASE_URL = _resolve_async_database_url(DATABASE_URL)
@@ -437,14 +457,18 @@ def init_sync_engine(database_url: str = DATABASE_URL) -> None:
     is_pg = "postgresql" in database_url
     connect_args = {} if is_pg else {"check_same_thread": False}
 
-    pool_kwargs = dict(
-        poolclass=QueuePool,
-        pool_size=20,
-        max_overflow=40,
-        pool_pre_ping=True,
-        pool_recycle=300,  # Recycle connections every 5 min (prevents stale PG connections)
-    ) if is_pg else dict(
-        pool_pre_ping=True,
+    pool_kwargs = (
+        dict(
+            poolclass=QueuePool,
+            pool_size=20,
+            max_overflow=40,
+            pool_pre_ping=True,
+            pool_recycle=300,  # Recycle connections every 5 min (prevents stale PG connections)
+        )
+        if is_pg
+        else dict(
+            pool_pre_ping=True,
+        )
     )
 
     engine = create_engine(
@@ -468,13 +492,17 @@ async def init_async_engine(database_url: str = ASYNC_DATABASE_URL) -> None:
     is_pg = "postgresql" in database_url
     connect_args = {} if is_pg else {"check_same_thread": False}
 
-    pool_kwargs = dict(
-        pool_size=20,
-        max_overflow=40,
-        pool_pre_ping=True,
-        pool_recycle=300,
-    ) if is_pg else dict(
-        pool_pre_ping=True,
+    pool_kwargs = (
+        dict(
+            pool_size=20,
+            max_overflow=40,
+            pool_pre_ping=True,
+            pool_recycle=300,
+        )
+        if is_pg
+        else dict(
+            pool_pre_ping=True,
+        )
     )
 
     async_engine = create_async_engine(
@@ -483,18 +511,16 @@ async def init_async_engine(database_url: str = ASYNC_DATABASE_URL) -> None:
         connect_args=connect_args,
         **pool_kwargs,
     )
-    AsyncSessionLocal = sessionmaker(
-        bind=async_engine, class_=AsyncSession, expire_on_commit=False
-    )
+    AsyncSessionLocal = sessionmaker(bind=async_engine, class_=AsyncSession, expire_on_commit=False)
     logger.info(f"Initialized async database engine: {'PostgreSQL' if is_pg else 'SQLite'}")
 
 
 def get_db() -> Session:
     """Get a synchronous database session.
-    
+
     Returns:
         SQLAlchemy Session instance
-        
+
     Raises:
         RuntimeError: If engine not initialized
     """
@@ -505,16 +531,16 @@ def get_db() -> Session:
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     """Get an asynchronous database session.
-    
+
     Yields:
         SQLAlchemy AsyncSession instance
-        
+
     Raises:
         RuntimeError: If async engine not initialized
     """
     if AsyncSessionLocal is None:
         raise RuntimeError("Async database not initialized. Call init_async_engine() first.")
-    
+
     async with AsyncSessionLocal() as session:
         yield session
 
@@ -535,6 +561,7 @@ def init_db(database_url: str = DATABASE_URL) -> None:
     # Create database indexes for performance
     try:
         from src.core.indexes import ensure_indexes
+
         ensure_indexes(engine)
     except Exception as e:
         logger.warning(f"Failed to create database indexes: {e}")
@@ -546,16 +573,56 @@ def _seed_new_tables(session, demo_employees) -> None:
 
     # Seed benefits plans
     plans = [
-        BenefitsPlan(name="Standard Medical PPO", plan_type="medical", provider="Blue Cross", premium_monthly=450.00,
-                     coverage_details={"deductible": 1500, "copay": 30, "coinsurance": "80/20", "oop_max": 6000}),
-        BenefitsPlan(name="Premium Medical PPO", plan_type="medical", provider="Blue Cross", premium_monthly=750.00,
-                     coverage_details={"deductible": 500, "copay": 15, "coinsurance": "90/10", "oop_max": 3000}),
-        BenefitsPlan(name="Dental Plus", plan_type="dental", provider="Delta Dental", premium_monthly=45.00,
-                     coverage_details={"preventive": "100%", "basic": "80%", "major": "50%", "annual_max": 2000}),
-        BenefitsPlan(name="Vision Care", plan_type="vision", provider="VSP", premium_monthly=15.00,
-                     coverage_details={"exam_copay": 10, "frames_allowance": 200, "contacts_allowance": 150}),
-        BenefitsPlan(name="401(k) Retirement", plan_type="retirement", provider="Fidelity", premium_monthly=0.0,
-                     coverage_details={"match_pct": 4, "vesting_years": 3, "max_contribution": 23000}),
+        BenefitsPlan(
+            name="Standard Medical PPO",
+            plan_type="medical",
+            provider="Blue Cross",
+            premium_monthly=450.00,
+            coverage_details={
+                "deductible": 1500,
+                "copay": 30,
+                "coinsurance": "80/20",
+                "oop_max": 6000,
+            },
+        ),
+        BenefitsPlan(
+            name="Premium Medical PPO",
+            plan_type="medical",
+            provider="Blue Cross",
+            premium_monthly=750.00,
+            coverage_details={
+                "deductible": 500,
+                "copay": 15,
+                "coinsurance": "90/10",
+                "oop_max": 3000,
+            },
+        ),
+        BenefitsPlan(
+            name="Dental Plus",
+            plan_type="dental",
+            provider="Delta Dental",
+            premium_monthly=45.00,
+            coverage_details={
+                "preventive": "100%",
+                "basic": "80%",
+                "major": "50%",
+                "annual_max": 2000,
+            },
+        ),
+        BenefitsPlan(
+            name="Vision Care",
+            plan_type="vision",
+            provider="VSP",
+            premium_monthly=15.00,
+            coverage_details={"exam_copay": 10, "frames_allowance": 200, "contacts_allowance": 150},
+        ),
+        BenefitsPlan(
+            name="401(k) Retirement",
+            plan_type="retirement",
+            provider="Fidelity",
+            premium_monthly=0.0,
+            coverage_details={"match_pct": 4, "vesting_years": 3, "max_contribution": 23000},
+        ),
     ]
     for plan in plans:
         session.add(plan)
@@ -564,77 +631,163 @@ def _seed_new_tables(session, demo_employees) -> None:
     # Enroll demo employees in some plans
     if len(demo_employees) >= 3:
         enrollments = [
-            BenefitsEnrollment(employee_id=demo_employees[0].id, plan_id=plans[0].id, coverage_level="employee", status="active"),
-            BenefitsEnrollment(employee_id=demo_employees[0].id, plan_id=plans[2].id, coverage_level="employee", status="active"),
-            BenefitsEnrollment(employee_id=demo_employees[1].id, plan_id=plans[1].id, coverage_level="family", status="active"),
-            BenefitsEnrollment(employee_id=demo_employees[1].id, plan_id=plans[4].id, coverage_level="employee", status="active"),
-            BenefitsEnrollment(employee_id=demo_employees[2].id, plan_id=plans[0].id, coverage_level="employee_spouse", status="active"),
+            BenefitsEnrollment(
+                employee_id=demo_employees[0].id,
+                plan_id=plans[0].id,
+                coverage_level="employee",
+                status="active",
+            ),
+            BenefitsEnrollment(
+                employee_id=demo_employees[0].id,
+                plan_id=plans[2].id,
+                coverage_level="employee",
+                status="active",
+            ),
+            BenefitsEnrollment(
+                employee_id=demo_employees[1].id,
+                plan_id=plans[1].id,
+                coverage_level="family",
+                status="active",
+            ),
+            BenefitsEnrollment(
+                employee_id=demo_employees[1].id,
+                plan_id=plans[4].id,
+                coverage_level="employee",
+                status="active",
+            ),
+            BenefitsEnrollment(
+                employee_id=demo_employees[2].id,
+                plan_id=plans[0].id,
+                coverage_level="employee_spouse",
+                status="active",
+            ),
         ]
     else:
         enrollments = [
-            BenefitsEnrollment(employee_id=demo_employees[0].id, plan_id=plans[0].id, coverage_level="employee", status="active"),
-            BenefitsEnrollment(employee_id=demo_employees[0].id, plan_id=plans[2].id, coverage_level="employee", status="active"),
+            BenefitsEnrollment(
+                employee_id=demo_employees[0].id,
+                plan_id=plans[0].id,
+                coverage_level="employee",
+                status="active",
+            ),
+            BenefitsEnrollment(
+                employee_id=demo_employees[0].id,
+                plan_id=plans[2].id,
+                coverage_level="employee",
+                status="active",
+            ),
         ]
     for enr in enrollments:
         session.add(enr)
 
     # Seed onboarding checklists for first employee (newest hire)
     onboarding_tasks = [
-        ("Complete I-9 Form", "documentation", "Submit identity and employment eligibility documents"),
-        ("Sign Employee Handbook", "documentation", "Review and digitally sign the employee handbook"),
+        (
+            "Complete I-9 Form",
+            "documentation",
+            "Submit identity and employment eligibility documents",
+        ),
+        (
+            "Sign Employee Handbook",
+            "documentation",
+            "Review and digitally sign the employee handbook",
+        ),
         ("Set Up Workstation", "it_setup", "Configure laptop, email, Slack, and VPN access"),
         ("Enroll in Benefits", "compliance", "Select health, dental, and vision plans"),
-        ("Complete Security Training", "training", "Mandatory information security awareness training"),
+        (
+            "Complete Security Training",
+            "training",
+            "Mandatory information security awareness training",
+        ),
         ("Meet Your Buddy", "social", "Schedule intro coffee chat with assigned buddy"),
         ("Complete Tax Forms", "documentation", "Submit W-4 and state tax withholding forms"),
         ("Team Introduction Meeting", "social", "Attend team standup and introduce yourself"),
     ]
     for i, (name, cat, desc) in enumerate(onboarding_tasks):
         status = "completed" if i < 4 else "pending"
-        session.add(OnboardingChecklist(
-            employee_id=demo_employees[0].id, task_name=name, category=cat,
-            description=desc, status=status,
-            completed_at=datetime.utcnow() if status == "completed" else None,
-        ))
+        session.add(
+            OnboardingChecklist(
+                employee_id=demo_employees[0].id,
+                task_name=name,
+                category=cat,
+                description=desc,
+                status=status,
+                completed_at=datetime.utcnow() if status == "completed" else None,
+            )
+        )
 
     # Seed performance reviews
     if len(demo_employees) >= 2:
         reviews = [
-            PerformanceReview(employee_id=demo_employees[0].id, reviewer_id=demo_employees[1].id,
-                              review_period="2025-H2", rating=4, status="finalized",
-                              strengths="Strong technical skills, great team collaboration",
-                              areas_for_improvement="Could improve documentation practices",
-                              comments="John has exceeded expectations in his first year"),
+            PerformanceReview(
+                employee_id=demo_employees[0].id,
+                reviewer_id=demo_employees[1].id,
+                review_period="2025-H2",
+                rating=4,
+                status="finalized",
+                strengths="Strong technical skills, great team collaboration",
+                areas_for_improvement="Could improve documentation practices",
+                comments="John has exceeded expectations in his first year",
+            ),
         ]
         if len(demo_employees) >= 3:
-            reviews.append(PerformanceReview(employee_id=demo_employees[1].id, reviewer_id=demo_employees[2].id,
-                              review_period="2025-H2", rating=5, status="finalized",
-                              strengths="Excellent leadership, mentoring junior engineers",
-                              areas_for_improvement="Delegate more to grow team autonomy",
-                              comments="Sarah is a top-performing engineering manager"))
+            reviews.append(
+                PerformanceReview(
+                    employee_id=demo_employees[1].id,
+                    reviewer_id=demo_employees[2].id,
+                    review_period="2025-H2",
+                    rating=5,
+                    status="finalized",
+                    strengths="Excellent leadership, mentoring junior engineers",
+                    areas_for_improvement="Delegate more to grow team autonomy",
+                    comments="Sarah is a top-performing engineering manager",
+                )
+            )
         for rev in reviews:
             session.add(rev)
 
     # Seed performance goals
     goals = [
-        PerformanceGoal(employee_id=demo_employees[0].id, title="Complete AWS Solutions Architect Cert",
-                        description="Pass the AWS Solutions Architect Associate exam by Q2",
-                        category="professional", status="active", progress_pct=60,
-                        target_date=datetime(2026, 6, 30)),
-        PerformanceGoal(employee_id=demo_employees[0].id, title="Lead Feature X Release",
-                        description="Own end-to-end delivery of Feature X including testing and deployment",
-                        category="deliverable", status="active", progress_pct=35,
-                        target_date=datetime(2026, 4, 15)),
-        PerformanceGoal(employee_id=demo_employees[0].id, title="Improve Code Review Turnaround",
-                        description="Reduce average code review time from 48h to 24h",
-                        category="process", status="active", progress_pct=70,
-                        target_date=datetime(2026, 3, 31)),
+        PerformanceGoal(
+            employee_id=demo_employees[0].id,
+            title="Complete AWS Solutions Architect Cert",
+            description="Pass the AWS Solutions Architect Associate exam by Q2",
+            category="professional",
+            status="active",
+            progress_pct=60,
+            target_date=datetime(2026, 6, 30),
+        ),
+        PerformanceGoal(
+            employee_id=demo_employees[0].id,
+            title="Lead Feature X Release",
+            description="Own end-to-end delivery of Feature X including testing and deployment",
+            category="deliverable",
+            status="active",
+            progress_pct=35,
+            target_date=datetime(2026, 4, 15),
+        ),
+        PerformanceGoal(
+            employee_id=demo_employees[0].id,
+            title="Improve Code Review Turnaround",
+            description="Reduce average code review time from 48h to 24h",
+            category="process",
+            status="active",
+            progress_pct=70,
+            target_date=datetime(2026, 3, 31),
+        ),
     ]
     if len(demo_employees) >= 2:
-        goals.append(PerformanceGoal(employee_id=demo_employees[1].id, title="Grow Engineering Team",
-                        description="Hire 3 senior engineers and establish mentoring program",
-                        category="leadership", status="active", progress_pct=45,
-                        target_date=datetime(2026, 12, 31)))
+        goals.append(
+            PerformanceGoal(
+                employee_id=demo_employees[1].id,
+                title="Grow Engineering Team",
+                description="Hire 3 senior engineers and establish mentoring program",
+                category="leadership",
+                status="active",
+                progress_pct=45,
+                target_date=datetime(2026, 12, 31),
+            )
+        )
     for goal in goals:
         session.add(goal)
 
@@ -726,9 +879,9 @@ def seed_demo_data() -> None:
 
         # Create leave balances
         leave_defaults = [
-            (demo_employees[0].id, 15, 5, 10, 2, 5, 1),   # John
-            (demo_employees[1].id, 18, 3, 10, 1, 5, 0),   # Sarah (more vacation as manager)
-            (demo_employees[2].id, 18, 4, 10, 1, 5, 2),   # Emily
+            (demo_employees[0].id, 15, 5, 10, 2, 5, 1),  # John
+            (demo_employees[1].id, 18, 3, 10, 1, 5, 0),  # Sarah (more vacation as manager)
+            (demo_employees[2].id, 18, 4, 10, 1, 5, 2),  # Emily
         ]
 
         for emp_id, vt, vu, st, su, pt, pu in leave_defaults:
@@ -747,7 +900,9 @@ def seed_demo_data() -> None:
         _seed_new_tables(session, demo_employees)
 
         session.commit()
-        logger.info("✅ Demo data seeded: 3 employees + leave balances + benefits + onboarding + performance")
+        logger.info(
+            "✅ Demo data seeded: 3 employees + leave balances + benefits + onboarding + performance"
+        )
     except Exception as e:
         session.rollback()
         logger.error(f"Failed to seed demo data: {e}")
@@ -757,7 +912,7 @@ def seed_demo_data() -> None:
 
 async def health_check() -> bool:
     """Verify database connection is healthy.
-    
+
     Returns:
         True if connection is healthy, False otherwise
     """

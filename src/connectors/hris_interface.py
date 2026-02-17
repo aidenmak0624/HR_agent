@@ -16,28 +16,34 @@ from pydantic import BaseModel, ConfigDict, Field
 # Exception Classes
 # ============================================================================
 
+
 class ConnectorError(Exception):
     """Base exception for HRIS connector errors."""
+
     pass
 
 
 class ConnectionError(ConnectorError):
     """Raised when unable to establish connection to HRIS system."""
+
     pass
 
 
 class AuthenticationError(ConnectorError):
     """Raised when authentication fails."""
+
     pass
 
 
 class NotFoundError(ConnectorError):
     """Raised when requested resource is not found."""
+
     pass
 
 
 class RateLimitError(ConnectorError):
     """Raised when rate limit is exceeded."""
+
     pass
 
 
@@ -45,8 +51,10 @@ class RateLimitError(ConnectorError):
 # Enums
 # ============================================================================
 
+
 class EmployeeStatus(str, Enum):
     """Employee employment status."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     ON_LEAVE = "on_leave"
@@ -55,6 +63,7 @@ class EmployeeStatus(str, Enum):
 
 class LeaveType(str, Enum):
     """Types of leave."""
+
     PTO = "pto"
     SICK = "sick"
     PERSONAL = "personal"
@@ -64,6 +73,7 @@ class LeaveType(str, Enum):
 
 class LeaveStatus(str, Enum):
     """Status of leave request."""
+
     PENDING = "pending"
     APPROVED = "approved"
     DENIED = "denied"
@@ -72,6 +82,7 @@ class LeaveStatus(str, Enum):
 
 class PlanType(str, Enum):
     """Types of benefit plans."""
+
     HEALTH = "health"
     DENTAL = "dental"
     VISION = "vision"
@@ -84,8 +95,10 @@ class PlanType(str, Enum):
 # Pydantic Data Models
 # ============================================================================
 
+
 class Employee(BaseModel):
     """Employee information model."""
+
     id: str = Field(..., description="Internal employee ID")
     hris_id: str = Field(..., description="HRIS system employee ID")
     first_name: str = Field(..., description="Employee first name")
@@ -104,6 +117,7 @@ class Employee(BaseModel):
 
 class LeaveBalance(BaseModel):
     """Leave balance information model."""
+
     employee_id: str = Field(..., description="Employee ID")
     leave_type: LeaveType = Field(..., description="Type of leave")
     total_days: float = Field(..., description="Total days allocated")
@@ -116,6 +130,7 @@ class LeaveBalance(BaseModel):
 
 class LeaveRequest(BaseModel):
     """Leave request information model."""
+
     id: Optional[str] = Field(None, description="Request ID")
     employee_id: str = Field(..., description="Employee ID")
     leave_type: LeaveType = Field(..., description="Type of leave")
@@ -131,11 +146,12 @@ class LeaveRequest(BaseModel):
 
 class OrgNode(BaseModel):
     """Organization hierarchy node."""
+
     employee_id: str = Field(..., description="Employee ID")
     name: str = Field(..., description="Employee name")
     title: str = Field(..., description="Job title")
     department: str = Field(..., description="Department")
-    direct_reports: List['OrgNode'] = Field(default_factory=list, description="Direct reports")
+    direct_reports: List["OrgNode"] = Field(default_factory=list, description="Direct reports")
 
 
 # Update forward references for recursive model
@@ -144,6 +160,7 @@ OrgNode.model_rebuild()
 
 class BenefitsPlan(BaseModel):
     """Benefits plan information model."""
+
     id: str = Field(..., description="Plan ID")
     name: str = Field(..., description="Plan name")
     plan_type: PlanType = Field(..., description="Type of plan")
@@ -157,6 +174,7 @@ class BenefitsPlan(BaseModel):
 # ============================================================================
 # Abstract Base Class
 # ============================================================================
+
 
 class HRISConnector(ABC):
     """
@@ -303,6 +321,7 @@ class HRISConnector(ABC):
 # Connector Registry
 # ============================================================================
 
+
 class ConnectorRegistry:
     """Registry for managing HRIS connector implementations."""
 
@@ -321,9 +340,7 @@ class ConnectorRegistry:
             ValueError: If connector_cls is not a subclass of HRISConnector
         """
         if not issubclass(connector_cls, HRISConnector):
-            raise ValueError(
-                f"{connector_cls} must be a subclass of HRISConnector"
-            )
+            raise ValueError(f"{connector_cls} must be a subclass of HRISConnector")
         cls._registry[name] = connector_cls
 
     @classmethod

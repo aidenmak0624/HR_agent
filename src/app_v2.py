@@ -8,6 +8,7 @@ Main entry point with multi-agent system integration, RAG, and API v2
 # Python adds `src/` to sys.path, which causes `src/platform/` to shadow
 # the stdlib `platform` module. Replace it with the project root instead.
 import sys as _sys, os as _os
+
 _project_root = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
 if _project_root not in _sys.path:
     _sys.path.insert(0, _project_root)
@@ -30,8 +31,7 @@ load_dotenv()
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,8 @@ logger = logging.getLogger(__name__)
 # Resolve paths for frontend templates and static files
 _app_root = os.path.dirname(os.path.abspath(__file__))
 _project_root = os.path.dirname(_app_root)
-_template_dir = os.path.join(_project_root, 'frontend', 'templates')
-_static_dir = os.path.join(_project_root, 'frontend', 'static')
+_template_dir = os.path.join(_project_root, "frontend", "templates")
+_static_dir = os.path.join(_project_root, "frontend", "static")
 
 app = Flask(
     __name__,
@@ -50,14 +50,15 @@ app = Flask(
 )
 
 # Set configuration
-app.config['JSON_SORT_KEYS'] = False
-app.config['PROPAGATE_EXCEPTIONS'] = True
+app.config["JSON_SORT_KEYS"] = False
+app.config["PROPAGATE_EXCEPTIONS"] = True
 
 # ==================== MIDDLEWARE REGISTRATION ====================
 
 # Initialize security and production hardening middleware
 try:
     from src.middleware.request_logger import setup_structured_logging
+
     setup_structured_logging(app)
     logger.info("✅ Structured request logging initialized")
 except Exception as e:
@@ -65,6 +66,7 @@ except Exception as e:
 
 try:
     from src.middleware.sanitizer import setup_request_sanitization
+
     setup_request_sanitization(app)
     logger.info("✅ Request input sanitization initialized")
 except Exception as e:
@@ -72,6 +74,7 @@ except Exception as e:
 
 try:
     from src.middleware.security_headers import SecurityHeadersMiddleware
+
     security_headers_mw = SecurityHeadersMiddleware()
 
     @app.after_request
@@ -96,10 +99,11 @@ CORS(
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
         }
-    }
+    },
 )
 
 # ==================== SERVICE INITIALIZATION ====================
+
 
 def init_services():
     """Initialize all backend services on app startup.
@@ -113,6 +117,7 @@ def init_services():
     def _init_worker():
         try:
             from src.services.agent_service import AgentService
+
             app.agent_service = AgentService()
             logger.info("✅ Agent service initialized")
         except Exception as e:
@@ -121,6 +126,7 @@ def init_services():
 
         try:
             from src.services.llm_service import LLMService
+
             app.llm_service = LLMService()
             logger.info("✅ LLM service initialized")
         except Exception as e:
@@ -129,6 +135,7 @@ def init_services():
 
         try:
             from src.services.rag_service import RAGService
+
             app.rag_service = RAGService()
             logger.info("✅ RAG service initialized")
         except Exception as e:
@@ -148,17 +155,21 @@ def init_services():
     init_thread.start()
     # Don't join — let the thread run in the background
 
+
 # ==================== HEALTH CHECKS ====================
+
 
 def health_check_database() -> bool:
     """Check database connectivity."""
     try:
         from src.core.database import SessionLocal
+
         if SessionLocal is None:
             return False
         session = SessionLocal()
         try:
             from sqlalchemy import text
+
             session.execute(text("SELECT 1"))
             return True
         finally:
@@ -167,11 +178,13 @@ def health_check_database() -> bool:
         logger.error(f"❌ Database health check failed: {e}")
         return False
 
+
 def health_check_redis() -> bool:
     """Check Redis connectivity."""
     try:
         import redis  # type: ignore[import-untyped]
         from config.settings import get_settings
+
         settings = get_settings()
         client = redis.from_url(settings.REDIS_URL, decode_responses=True)
         client.ping()
@@ -181,10 +194,12 @@ def health_check_redis() -> bool:
         logger.warning(f"⚠️  Redis health check failed (optional): {e}")
         return False
 
+
 def health_check_llm() -> bool:
     """Check LLM provider availability."""
     try:
         from src.services.llm_service import LLMService
+
         service = LLMService()
         is_available = service.is_available()
         if is_available:
@@ -196,7 +211,9 @@ def health_check_llm() -> bool:
         logger.warning(f"⚠️  LLM health check failed (optional): {e}")
         return False
 
+
 # ==================== MIDDLEWARE ====================
+
 
 @app.before_request
 def before_request():
@@ -207,13 +224,13 @@ def before_request():
     from flask import request as req
 
     # Skip ALL heavy middleware for health checks — must respond fast
-    if req.path == '/api/v2/health':
+    if req.path == "/api/v2/health":
         g.user_context = {"user_id": "healthcheck", "role": "system", "department": "system"}
         g.rate_limit_remaining = 999
         return  # Skip auth, rate limiting, DB lookups
 
     # Skip auth for login page, static files, and auth API endpoints
-    skip_auth_paths = ['/login', '/static/', '/api/v2/auth/', '/api/v2/notifications/stream']
+    skip_auth_paths = ["/login", "/static/", "/api/v2/auth/", "/api/v2/notifications/stream"]
     current_path = req.path
 
     if any(current_path.startswith(p) for p in skip_auth_paths):
@@ -241,17 +258,20 @@ def before_request():
             g.rate_limit_remaining = 999
         else:
             # Determine rate limit based on endpoint
-            limit = 30 if '/api/v2/auth/' in req.path else 200
+            limit = 30 if "/api/v2/auth/" in req.path else 200
             is_allowed, remaining = rate_limiter.is_allowed(client_ip, limit=limit)
 
             if not is_allowed:
                 logger.warning(f"Rate limit exceeded for IP: {client_ip}")
                 from flask import jsonify
-                response = jsonify({
-                    "success": False,
-                    "error": "Rate limit exceeded. Please try again later.",
-                    "retry_after": 60
-                })
+
+                response = jsonify(
+                    {
+                        "success": False,
+                        "error": "Rate limit exceeded. Please try again later.",
+                        "retry_after": 60,
+                    }
+                )
                 response.status_code = 429
                 response.headers["Retry-After"] = "60"
                 return response
@@ -264,17 +284,18 @@ def before_request():
         # Continue without rate limiting if there's an error
 
     # --- Resolve authenticated user from token or role header ---
-    auth_header = req.headers.get('Authorization', '')
-    custom_role = req.headers.get('X-User-Role', '').strip().lower()
+    auth_header = req.headers.get("Authorization", "")
+    custom_role = req.headers.get("X-User-Role", "").strip().lower()
 
     # Default context
     g.user_context = {"user_id": "unknown", "role": "employee", "department": "Engineering"}
 
     # Try to verify JWT Bearer token
-    if auth_header.startswith('Bearer '):
+    if auth_header.startswith("Bearer "):
         token = auth_header[7:].strip()
         try:
             from src.middleware.auth import AuthService, AuthError
+
             auth_svc = AuthService()
             payload = auth_svc.verify_token(token)
             # JWT verified — populate context from token claims
@@ -290,6 +311,7 @@ def before_request():
             # Optionally enrich with employee name from DB
             try:
                 from src.core.database import SessionLocal, Employee
+
                 if SessionLocal and g.user_context.get("employee_id"):
                     db = SessionLocal()
                     try:
@@ -302,11 +324,12 @@ def before_request():
                 pass
         except Exception:
             # JWT verification failed — fall back to legacy token_{id}_{ts} format
-            parts = token.split('_')
+            parts = token.split("_")
             if len(parts) >= 2:
                 try:
                     emp_id = int(parts[1])
                     from src.core.database import SessionLocal, Employee
+
                     if SessionLocal:
                         db = SessionLocal()
                         try:
@@ -326,8 +349,9 @@ def before_request():
                     logger.debug("Could not parse employee id from legacy token")
 
     # X-User-Role header can override role (for the account-switcher UI)
-    if custom_role and custom_role in ('employee', 'manager', 'hr_admin'):
+    if custom_role and custom_role in ("employee", "manager", "hr_admin"):
         g.user_context["role"] = custom_role
+
 
 @app.after_request
 def after_request(response):
@@ -335,101 +359,115 @@ def after_request(response):
     elapsed_ms = (time.time() - g.request_start_time) * 1000
     request_id = g.request_id
 
-    logger.info(
-        f"REQUEST {request_id}: {elapsed_ms:.1f}ms "
-        f"{response.status_code}"
-    )
+    logger.info(f"REQUEST {request_id}: {elapsed_ms:.1f}ms " f"{response.status_code}")
 
-    response.headers['X-Request-ID'] = request_id
+    response.headers["X-Request-ID"] = request_id
 
     # Add rate limit headers if available
-    if hasattr(g, 'rate_limit_remaining'):
-        response.headers['X-RateLimit-Remaining'] = str(g.rate_limit_remaining)
-        response.headers['X-RateLimit-Limit'] = '60'
+    if hasattr(g, "rate_limit_remaining"):
+        response.headers["X-RateLimit-Remaining"] = str(g.rate_limit_remaining)
+        response.headers["X-RateLimit-Limit"] = "60"
 
     return response
 
+
 # ==================== ERROR HANDLERS ====================
+
 
 @app.errorhandler(404)
 def handle_404(error):
     """Handle 404 Not Found errors."""
-    return jsonify({
-        "success": False,
-        "error": "Endpoint not found",
-        "status": 404
-    }), 404
+    return jsonify({"success": False, "error": "Endpoint not found", "status": 404}), 404
+
 
 @app.errorhandler(500)
 def handle_500(error):
     """Handle 500 Internal Server errors."""
-    request_id = g.get('request_id', 'unknown')
+    request_id = g.get("request_id", "unknown")
     logger.error(f"500 error in request {request_id}: {error}")
 
-    return jsonify({
-        "success": False,
-        "error": "Internal server error",
-        "request_id": request_id,
-        "status": 500
-    }), 500
+    return (
+        jsonify(
+            {
+                "success": False,
+                "error": "Internal server error",
+                "request_id": request_id,
+                "status": 500,
+            }
+        ),
+        500,
+    )
+
 
 # ==================== ROUTES ====================
 
 # --- Frontend Page Routes ---
 
-@app.route('/', methods=['GET'])
+
+@app.route("/", methods=["GET"])
 def root():
     """Serve the dashboard (main page)."""
-    return render_template('dashboard.html', current_page='dashboard', user='Guest')
+    return render_template("dashboard.html", current_page="dashboard", user="Guest")
 
-@app.route('/dashboard', methods=['GET'])
+
+@app.route("/dashboard", methods=["GET"])
 def dashboard_page():
     """Dashboard page."""
-    return render_template('dashboard.html', current_page='dashboard', user='Guest')
+    return render_template("dashboard.html", current_page="dashboard", user="Guest")
 
-@app.route('/chat', methods=['GET'])
+
+@app.route("/chat", methods=["GET"])
 def chat_page():
     """Chat page."""
-    return render_template('chat.html', current_page='chat', user='Guest')
+    return render_template("chat.html", current_page="chat", user="Guest")
 
-@app.route('/leave', methods=['GET'])
+
+@app.route("/leave", methods=["GET"])
 def leave_page():
     """Leave management page."""
-    return render_template('leave.html', current_page='leave', user='Guest')
+    return render_template("leave.html", current_page="leave", user="Guest")
 
-@app.route('/workflows', methods=['GET'])
+
+@app.route("/workflows", methods=["GET"])
 def workflows_page():
     """Workflows page."""
-    return render_template('workflows.html', current_page='workflows', user='Guest')
+    return render_template("workflows.html", current_page="workflows", user="Guest")
 
-@app.route('/directory', methods=['GET'])
+
+@app.route("/directory", methods=["GET"])
 def directory_page():
     """Employee directory page."""
-    return render_template('directory.html', current_page='directory', user='Guest')
+    return render_template("directory.html", current_page="directory", user="Guest")
 
-@app.route('/documents', methods=['GET'])
+
+@app.route("/documents", methods=["GET"])
 def documents_page():
     """Documents page."""
-    return render_template('documents.html', current_page='documents', user='Guest')
+    return render_template("documents.html", current_page="documents", user="Guest")
 
-@app.route('/analytics', methods=['GET'])
+
+@app.route("/analytics", methods=["GET"])
 def analytics_page():
     """Analytics page."""
-    return render_template('analytics.html', current_page='analytics', user='Guest')
+    return render_template("analytics.html", current_page="analytics", user="Guest")
 
-@app.route('/settings', methods=['GET'])
+
+@app.route("/settings", methods=["GET"])
 def settings_page():
     """Settings page."""
-    return render_template('settings.html', current_page='settings', user='Guest')
+    return render_template("settings.html", current_page="settings", user="Guest")
 
-@app.route('/login', methods=['GET'])
+
+@app.route("/login", methods=["GET"])
 def login_page():
     """Login page."""
-    return render_template('login.html')
+    return render_template("login.html")
+
 
 # --- Account / Profile API Endpoints ---
 
-@app.route('/api/v2/profile', methods=['GET'])
+
+@app.route("/api/v2/profile", methods=["GET"])
 def get_profile():
     """Get the current user's profile (based on role switcher or token)."""
     role = g.user_context.get("role", "employee")
@@ -442,34 +480,39 @@ def get_profile():
     email = role_to_email.get(role, "john.smith@company.com")
     try:
         from src.core.database import SessionLocal, Employee
+
         if SessionLocal:
             db = SessionLocal()
             try:
                 emp = db.query(Employee).filter_by(email=email).first()
                 if emp:
-                    return jsonify({
-                        "success": True,
-                        "data": {
-                            "id": emp.id,
-                            "first_name": emp.first_name,
-                            "last_name": emp.last_name,
-                            "email": emp.email,
-                            "department": emp.department,
-                            "role_level": emp.role_level,
-                            "hris_id": emp.hris_id,
-                            "status": emp.status,
+                    return jsonify(
+                        {
+                            "success": True,
+                            "data": {
+                                "id": emp.id,
+                                "first_name": emp.first_name,
+                                "last_name": emp.last_name,
+                                "email": emp.email,
+                                "department": emp.department,
+                                "role_level": emp.role_level,
+                                "hris_id": emp.hris_id,
+                                "status": emp.status,
+                            },
                         }
-                    })
+                    )
             finally:
                 db.close()
     except Exception as e:
         logger.error(f"Error fetching profile: {e}")
     return jsonify({"success": False, "error": "Profile not found"}), 404
 
-@app.route('/api/v2/profile', methods=['PUT'])
+
+@app.route("/api/v2/profile", methods=["PUT"])
 def update_profile():
     """Update the current user's profile."""
     from flask import request as req
+
     data = req.get_json() or {}
     role = g.user_context.get("role", "employee")
     role_to_email = {
@@ -480,6 +523,7 @@ def update_profile():
     email = role_to_email.get(role, "john.smith@company.com")
     try:
         from src.core.database import SessionLocal, Employee
+
         if SessionLocal:
             db = SessionLocal()
             try:
@@ -499,7 +543,8 @@ def update_profile():
         logger.error(f"Error updating profile: {e}")
     return jsonify({"success": False, "error": "Failed to update profile"}), 500
 
-@app.route('/api/v2/employees', methods=['GET'])
+
+@app.route("/api/v2/employees", methods=["GET"])
 def list_employees():
     """List all employees (HR Admin only). Always returns fresh data."""
     role = g.user_context.get("role", "employee")
@@ -507,24 +552,30 @@ def list_employees():
         return jsonify({"success": False, "error": "Access denied. HR Admin role required."}), 403
     try:
         from src.core.database import SessionLocal, Employee
+
         if SessionLocal:
             db = SessionLocal()
             try:
                 employees = db.query(Employee).all()
-                resp = jsonify({
-                    "success": True,
-                    "data": [{
-                        "id": e.id,
-                        "first_name": e.first_name,
-                        "last_name": e.last_name,
-                        "email": e.email,
-                        "department": e.department,
-                        "role_level": e.role_level,
-                        "hris_id": e.hris_id,
-                        "status": e.status,
-                    } for e in employees]
-                })
-                resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                resp = jsonify(
+                    {
+                        "success": True,
+                        "data": [
+                            {
+                                "id": e.id,
+                                "first_name": e.first_name,
+                                "last_name": e.last_name,
+                                "email": e.email,
+                                "department": e.department,
+                                "role_level": e.role_level,
+                                "hris_id": e.hris_id,
+                                "status": e.status,
+                            }
+                            for e in employees
+                        ],
+                    }
+                )
+                resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
                 return resp
             finally:
                 db.close()
@@ -532,16 +583,19 @@ def list_employees():
         logger.error(f"Error listing employees: {e}")
     return jsonify({"success": False, "error": "Failed to list employees"}), 500
 
-@app.route('/api/v2/employees/<int:emp_id>', methods=['PUT'])
+
+@app.route("/api/v2/employees/<int:emp_id>", methods=["PUT"])
 def update_employee(emp_id):
     """Update an employee's details (HR Admin only)."""
     role = g.user_context.get("role", "employee")
     if role != "hr_admin":
         return jsonify({"success": False, "error": "Access denied. HR Admin role required."}), 403
     from flask import request as req
+
     data = req.get_json() or {}
     try:
         from src.core.database import SessionLocal, Employee
+
         if SessionLocal:
             db = SessionLocal()
             try:
@@ -556,42 +610,60 @@ def update_employee(emp_id):
                     emp.email = data["email"]
                 if "department" in data:
                     emp.department = data["department"]
-                if "role_level" in data and data["role_level"] in ("employee", "manager", "hr_admin"):
+                if "role_level" in data and data["role_level"] in (
+                    "employee",
+                    "manager",
+                    "hr_admin",
+                ):
                     emp.role_level = data["role_level"]
                 if "status" in data and data["status"] in ("active", "inactive"):
                     emp.status = data["status"]
                 db.commit()
-                return jsonify({"success": True, "message": f"Employee {emp_id} updated successfully"})
+                return jsonify(
+                    {"success": True, "message": f"Employee {emp_id} updated successfully"}
+                )
             finally:
                 db.close()
     except Exception as e:
         logger.error(f"Error updating employee {emp_id}: {e}")
     return jsonify({"success": False, "error": "Failed to update employee"}), 500
 
+
 # --- Documents API ---
 
-@app.route('/api/v2/documents/recent', methods=['GET'])
+
+@app.route("/api/v2/documents/recent", methods=["GET"])
 def get_recent_documents():
     """Get recent generated documents from DB."""
     try:
         from src.core.database import SessionLocal, GeneratedDocument, Employee
+
         if SessionLocal:
             db = SessionLocal()
             try:
-                docs = db.query(GeneratedDocument).order_by(GeneratedDocument.id.desc()).limit(20).all()
+                docs = (
+                    db.query(GeneratedDocument)
+                    .order_by(GeneratedDocument.id.desc())
+                    .limit(20)
+                    .all()
+                )
                 result = []
                 for doc in docs:
                     emp = db.query(Employee).filter_by(id=doc.employee_id).first()
                     emp_name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
-                    file_name = f"{doc.template_name.replace(' ', '_')}_{emp_name.replace(' ', '_')}.pdf"
-                    result.append({
-                        "id": doc.id,
-                        "file_name": file_name,
-                        "employee_name": emp_name,
-                        "template_name": doc.template_name,
-                        "status": doc.status,
-                        "created_at": doc.created_at.isoformat() if doc.created_at else None,
-                    })
+                    file_name = (
+                        f"{doc.template_name.replace(' ', '_')}_{emp_name.replace(' ', '_')}.pdf"
+                    )
+                    result.append(
+                        {
+                            "id": doc.id,
+                            "file_name": file_name,
+                            "employee_name": emp_name,
+                            "template_name": doc.template_name,
+                            "status": doc.status,
+                            "created_at": doc.created_at.isoformat() if doc.created_at else None,
+                        }
+                    )
                 return jsonify({"success": True, "data": result})
             finally:
                 db.close()
@@ -599,33 +671,48 @@ def get_recent_documents():
         logger.error(f"Recent documents error: {e}")
     return jsonify({"success": True, "data": []})
 
-@app.route('/api/v2/employees/names', methods=['GET'])
+
+@app.route("/api/v2/employees/names", methods=["GET"])
 def list_employee_names():
     """List employee names for dropdowns (any authenticated role)."""
     try:
         from src.core.database import SessionLocal, Employee
+
         if SessionLocal:
             db = SessionLocal()
             try:
-                employees = db.query(Employee).filter_by(status="active").order_by(Employee.first_name).all()
-                return jsonify({
-                    "success": True,
-                    "data": [{"id": e.id, "first_name": e.first_name, "last_name": e.last_name} for e in employees]
-                })
+                employees = (
+                    db.query(Employee)
+                    .filter_by(status="active")
+                    .order_by(Employee.first_name)
+                    .all()
+                )
+                return jsonify(
+                    {
+                        "success": True,
+                        "data": [
+                            {"id": e.id, "first_name": e.first_name, "last_name": e.last_name}
+                            for e in employees
+                        ],
+                    }
+                )
             finally:
                 db.close()
     except Exception as e:
         logger.error(f"Employee names error: {e}")
     return jsonify({"success": True, "data": []})
 
+
 # --- Workflows API ---
 
-@app.route('/api/v2/workflows/active', methods=['GET'])
+
+@app.route("/api/v2/workflows/active", methods=["GET"])
 def get_active_workflows():
     """Get all leave requests as active workflows (real DB data)."""
     try:
         from src.core.database import SessionLocal, Employee
         from src.core.database import LeaveRequest as LR
+
         if SessionLocal:
             db = SessionLocal()
             try:
@@ -636,32 +723,64 @@ def get_active_workflows():
                     name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
 
                     # Build timeline steps
-                    steps = [{"title": "Request Submitted", "status": "completed", "date": req.created_at.strftime("%b %d") if req.created_at else ""}]
+                    steps = [
+                        {
+                            "title": "Request Submitted",
+                            "status": "completed",
+                            "date": req.created_at.strftime("%b %d") if req.created_at else "",
+                        }
+                    ]
 
                     if req.status == "pending":
-                        steps.append({"title": "Manager Approval", "status": "in-progress", "date": "Awaiting review"})
-                        steps.append({"title": "HR Approval", "status": "pending", "date": "Pending"})
+                        steps.append(
+                            {
+                                "title": "Manager Approval",
+                                "status": "in-progress",
+                                "date": "Awaiting review",
+                            }
+                        )
+                        steps.append(
+                            {"title": "HR Approval", "status": "pending", "date": "Pending"}
+                        )
                         wf_status = "in-progress"
                     elif req.status == "approved":
-                        steps.append({"title": "Manager Approval", "status": "completed", "date": req.approved_at.strftime("%b %d") if req.approved_at else "Done"})
-                        steps.append({"title": "HR Approval", "status": "completed", "date": "Approved"})
+                        steps.append(
+                            {
+                                "title": "Manager Approval",
+                                "status": "completed",
+                                "date": req.approved_at.strftime("%b %d")
+                                if req.approved_at
+                                else "Done",
+                            }
+                        )
+                        steps.append(
+                            {"title": "HR Approval", "status": "completed", "date": "Approved"}
+                        )
                         wf_status = "completed"
                     elif req.status == "rejected":
-                        steps.append({"title": "Manager Review", "status": "completed", "date": "Reviewed"})
+                        steps.append(
+                            {"title": "Manager Review", "status": "completed", "date": "Reviewed"}
+                        )
                         steps.append({"title": "Rejected", "status": "rejected", "date": "Denied"})
                         wf_status = "rejected"
                     else:
                         wf_status = "pending"
 
-                    leave_label = {"vacation": "Vacation", "sick": "Sick Leave", "personal": "Personal"}.get(req.leave_type, req.leave_type)
-                    workflows.append({
-                        "id": req.id,
-                        "title": f"{leave_label} — {name}",
-                        "type": "Leave Request",
-                        "status": wf_status,
-                        "detail": f"{req.start_date} to {req.end_date}",
-                        "steps": steps,
-                    })
+                    leave_label = {
+                        "vacation": "Vacation",
+                        "sick": "Sick Leave",
+                        "personal": "Personal",
+                    }.get(req.leave_type, req.leave_type)
+                    workflows.append(
+                        {
+                            "id": req.id,
+                            "title": f"{leave_label} — {name}",
+                            "type": "Leave Request",
+                            "status": wf_status,
+                            "detail": f"{req.start_date} to {req.end_date}",
+                            "steps": steps,
+                        }
+                    )
 
                 return jsonify({"success": True, "data": workflows})
             finally:
@@ -670,26 +789,31 @@ def get_active_workflows():
         logger.error(f"Active workflows error: {e}")
     return jsonify({"success": True, "data": []})
 
+
 # --- API Info Endpoint ---
 
-@app.route('/api', methods=['GET'])
+
+@app.route("/api", methods=["GET"])
 def api_info():
     """API overview endpoint."""
-    return jsonify({
-        "message": "HR Multi-Agent Platform v2",
-        "status": "running",
-        "version": "2.0.0",
-        "endpoints": {
-            "v2_health": "/api/v2/health",
-            "v2_query": "/api/v2/query",
-            "v2_metrics": "/api/v2/metrics",
-            "v2_agents": "/api/v2/agents",
-            "v2_rag_stats": "/api/v2/rag/stats",
-            "v2_rag_ingest": "/api/v2/rag/ingest",
+    return jsonify(
+        {
+            "message": "HR Multi-Agent Platform v2",
+            "status": "running",
+            "version": "2.0.0",
+            "endpoints": {
+                "v2_health": "/api/v2/health",
+                "v2_query": "/api/v2/query",
+                "v2_metrics": "/api/v2/metrics",
+                "v2_agents": "/api/v2/agents",
+                "v2_rag_stats": "/api/v2/rag/stats",
+                "v2_rag_ingest": "/api/v2/rag/ingest",
+            },
         }
-    })
+    )
 
-@app.route('/api/v2/health', methods=['GET'])
+
+@app.route("/api/v2/health", methods=["GET"])
 def health():
     """Health check endpoint.
 
@@ -700,33 +824,45 @@ def health():
 
     # Quick check: is the DB engine even initialized yet?
     if SessionLocal is None:
-        return jsonify({
-            "success": True,
-            "status": "starting",
-            "message": "Database still initializing",
-            "checks": {
-                "database": "initializing",
-                "redis": "unknown",
-                "llm": "unknown",
-            }
-        }), 200  # Return 200 so Cloud Run doesn't mark us as down
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "status": "starting",
+                    "message": "Database still initializing",
+                    "checks": {
+                        "database": "initializing",
+                        "redis": "unknown",
+                        "llm": "unknown",
+                    },
+                }
+            ),
+            200,
+        )  # Return 200 so Cloud Run doesn't mark us as down
 
     db_ok = health_check_database()
 
     # Redis and LLM are optional — don't block health on them
     status = "healthy" if db_ok else "degraded"
 
-    return jsonify({
-        "success": True,
-        "status": status,
-        "checks": {
-            "database": "ok" if db_ok else "failed",
-            "redis": "skipped",
-            "llm": "skipped",
-        }
-    }), 200
+    return (
+        jsonify(
+            {
+                "success": True,
+                "status": status,
+                "checks": {
+                    "database": "ok" if db_ok else "failed",
+                    "redis": "skipped",
+                    "llm": "skipped",
+                },
+            }
+        ),
+        200,
+    )
+
 
 # ==================== API V2 BLUEPRINT REGISTRATION ====================
+
 
 def register_api_v2():
     """Register API v2 blueprint."""
@@ -741,18 +877,23 @@ def register_api_v2():
 
     logger.info("✅ API v2 blueprint registered at /api/v2/")
 
+
 # ==================== LEGACY BLUEPRINT REGISTRATION ====================
+
 
 def register_legacy_api():
     """Register legacy API blueprint for backward compatibility."""
     try:
         from src.api.routes import agent_routes
+
         app.register_blueprint(agent_routes.bp)
         logger.info("✅ Legacy API blueprint registered for backward compatibility")
     except Exception as e:
         logger.warning(f"⚠️  Legacy API not available: {e}")
 
+
 # ==================== STARTUP BANNER ====================
+
 
 def print_startup_banner():
     """Print startup banner with endpoint information."""
@@ -796,9 +937,11 @@ def print_startup_banner():
 """
     print(banner)
 
+
 # ==================== APP INITIALIZATION ====================
 
 _app_initialized = False  # Guard against double initialization
+
 
 def create_app():
     """Factory function to create and configure Flask app.
@@ -824,10 +967,12 @@ def create_app():
     # Initialize database and seed demo data
     try:
         from src.core.database import init_db, seed_demo_data
+
         init_db()
         seed_demo_data()
         # Expanded org (67 employees across 7 departments)
         from src.core.seed_org import seed_expanded_org
+
         seed_expanded_org()
         logger.info("✅ Database initialized and seeded (expanded org)")
     except Exception as e:
@@ -843,11 +988,12 @@ def create_app():
     _app_initialized = True
     return app
 
+
 # ==================== MAIN ENTRY POINT ====================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Verify environment
-    if not os.getenv('GOOGLE_API_KEY'):
+    if not os.getenv("GOOGLE_API_KEY"):
         logger.warning("⚠️  WARNING: GOOGLE_API_KEY not found in environment!")
         logger.warning("Create a .env file with: GOOGLE_API_KEY=your-key-here")
 
@@ -862,7 +1008,7 @@ if __name__ == '__main__':
 
     # Start Flask server
     app.run(
-        host='0.0.0.0',
+        host="0.0.0.0",
         port=5050,
         debug=False,
         use_reloader=False,

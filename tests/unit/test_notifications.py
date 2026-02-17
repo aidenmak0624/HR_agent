@@ -22,11 +22,8 @@ class TestSendNotification:
         notification = service.send_notification(
             recipient_id="emp-001",
             template_id="workflow_submitted",
-            context={
-                "entity_type": "Promotion",
-                "approver_role": "Manager"
-            },
-            priority=NotificationPriority.NORMAL
+            context={"entity_type": "Promotion", "approver_role": "Manager"},
+            priority=NotificationPriority.NORMAL,
         )
 
         assert notification.recipient_id == "emp-001"
@@ -45,7 +42,7 @@ class TestSendNotification:
             channel=NotificationChannel.EMAIL,
             subject_template="Subject: $title",
             body_template="Body: $content",
-            variables=["title", "content"]
+            variables=["title", "content"],
         )
         service.register_template(template)
 
@@ -53,7 +50,7 @@ class TestSendNotification:
             recipient_id="emp-002",
             template_id="email_template",
             context={"title": "Test", "content": "Test Content"},
-            channel=NotificationChannel.EMAIL
+            channel=NotificationChannel.EMAIL,
         )
 
         assert notification.channel == NotificationChannel.EMAIL
@@ -68,7 +65,7 @@ class TestSendNotification:
             channel=NotificationChannel.WEBHOOK,
             subject_template="Event: $event_type",
             body_template="Data: $payload",
-            variables=["event_type", "payload"]
+            variables=["event_type", "payload"],
         )
         service.register_template(template)
 
@@ -76,7 +73,7 @@ class TestSendNotification:
             recipient_id="emp-003",
             template_id="webhook_template",
             context={"event_type": "user_created", "payload": "{}"},
-            channel=NotificationChannel.WEBHOOK
+            channel=NotificationChannel.WEBHOOK,
         )
 
         assert notification.channel == NotificationChannel.WEBHOOK
@@ -91,7 +88,7 @@ class TestSendNotification:
             channel=NotificationChannel.SLACK,
             subject_template="Slack: $message",
             body_template="Channel: $channel",
-            variables=["message", "channel"]
+            variables=["message", "channel"],
         )
         service.register_template(template)
 
@@ -99,7 +96,7 @@ class TestSendNotification:
             recipient_id="emp-004",
             template_id="slack_template",
             context={"message": "Test message", "channel": "#general"},
-            channel=NotificationChannel.SLACK
+            channel=NotificationChannel.SLACK,
         )
 
         assert notification.channel == NotificationChannel.SLACK
@@ -110,11 +107,7 @@ class TestSendNotification:
         service = NotificationService()
 
         with pytest.raises(ValueError, match="Template not found"):
-            service.send_notification(
-                recipient_id="emp-005",
-                template_id="nonexistent",
-                context={}
-            )
+            service.send_notification(recipient_id="emp-005", template_id="nonexistent", context={})
 
     def test_send_notification_sets_metadata(self):
         """send_notification includes context in metadata."""
@@ -122,9 +115,7 @@ class TestSendNotification:
         context = {"entity_type": "Promotion", "approver_role": "HR"}
 
         notification = service.send_notification(
-            recipient_id="emp-006",
-            template_id="workflow_submitted",
-            context=context
+            recipient_id="emp-006", template_id="workflow_submitted", context=context
         )
 
         assert notification.metadata["template_id"] == "workflow_submitted"
@@ -139,7 +130,7 @@ class TestSendNotification:
             recipient_id="emp-007",
             template_id="workflow_submitted",
             context={"entity_type": "Leave", "approver_role": "Manager"},
-            channel=NotificationChannel.EMAIL
+            channel=NotificationChannel.EMAIL,
         )
 
         assert notification.channel == NotificationChannel.EMAIL
@@ -157,7 +148,7 @@ class TestNotificationTemplates:
             channel=NotificationChannel.IN_APP,
             subject_template="Subject: $var1",
             body_template="Body: $var2",
-            variables=["var1", "var2"]
+            variables=["var1", "var2"],
         )
 
         template_id = service.register_template(template)
@@ -175,8 +166,8 @@ class TestNotificationTemplates:
                 "leave_type": "Vacation",
                 "start_date": "2024-01-01",
                 "end_date": "2024-01-05",
-                "approver_name": "John Doe"
-            }
+                "approver_name": "John Doe",
+            },
         )
 
         assert notification.subject is not None
@@ -227,7 +218,7 @@ class TestNotificationTemplates:
             channel=NotificationChannel.IN_APP,
             subject_template="Event: $event_name for $employee_name",
             body_template="Details: $event_details",
-            variables=["event_name", "employee_name", "event_details"]
+            variables=["event_name", "employee_name", "event_details"],
         )
 
         service.register_template(template)
@@ -242,9 +233,7 @@ class TestNotificationPreferences:
         service = NotificationService()
 
         preference = service.set_preference(
-            employee_id="emp-010",
-            channel=NotificationChannel.EMAIL,
-            enabled=True
+            employee_id="emp-010", channel=NotificationChannel.EMAIL, enabled=True
         )
 
         assert preference.employee_id == "emp-010"
@@ -260,7 +249,7 @@ class TestNotificationPreferences:
             channel=NotificationChannel.EMAIL,
             enabled=True,
             quiet_hours_start="18:00",
-            quiet_hours_end="09:00"
+            quiet_hours_end="09:00",
         )
 
         assert preference.quiet_hours_start == "18:00"
@@ -326,7 +315,7 @@ class TestBulkNotifications:
             recipient_ids=recipients,
             template_id="workflow_submitted",
             context={"entity_type": "Policy", "approver_role": "HR Manager"},
-            priority=NotificationPriority.HIGH
+            priority=NotificationPriority.HIGH,
         )
 
         assert len(notifications) == 3
@@ -343,7 +332,7 @@ class TestBulkNotifications:
         notifications = service.send_bulk(
             recipient_ids=[],
             template_id="workflow_submitted",
-            context={"entity_type": "Test", "approver_role": "Manager"}
+            context={"entity_type": "Test", "approver_role": "Manager"},
         )
 
         assert notifications == []
@@ -356,7 +345,7 @@ class TestBulkNotifications:
             recipient_ids=["emp-018", "emp-019"],
             template_id="workflow_submitted",
             context={"entity_type": "Urgent", "approver_role": "CEO"},
-            priority=NotificationPriority.URGENT
+            priority=NotificationPriority.URGENT,
         )
 
         assert all(n.priority == NotificationPriority.URGENT for n in notifications)
@@ -369,7 +358,7 @@ class TestBulkNotifications:
         notifications = service.send_bulk(
             recipient_ids=recipients,
             template_id="policy_reminder",
-            context={"policy_name": "Code of Conduct", "policy_url": "https://example.com"}
+            context={"policy_name": "Code of Conduct", "policy_url": "https://example.com"},
         )
 
         assert len(notifications) == 100
@@ -384,7 +373,7 @@ class TestMarkAsRead:
         notification = service.send_notification(
             recipient_id="emp-020",
             template_id="workflow_submitted",
-            context={"entity_type": "Test", "approver_role": "Manager"}
+            context={"entity_type": "Test", "approver_role": "Manager"},
         )
 
         updated = service.mark_as_read(notification.id)
@@ -398,7 +387,7 @@ class TestMarkAsRead:
         notification = service.send_notification(
             recipient_id="emp-021",
             template_id="workflow_submitted",
-            context={"entity_type": "Test", "approver_role": "Manager"}
+            context={"entity_type": "Test", "approver_role": "Manager"},
         )
         before = datetime.utcnow()
 
@@ -420,12 +409,12 @@ class TestMarkAsRead:
         notif1 = service.send_notification(
             recipient_id="emp-022",
             template_id="workflow_submitted",
-            context={"entity_type": "Test1", "approver_role": "Manager"}
+            context={"entity_type": "Test1", "approver_role": "Manager"},
         )
         notif2 = service.send_notification(
             recipient_id="emp-022",
             template_id="workflow_approved",
-            context={"entity_type": "Test2"}
+            context={"entity_type": "Test2"},
         )
 
         service.mark_as_read(notif1.id)
@@ -447,12 +436,12 @@ class TestNotificationFiltering:
         notif1 = service.send_notification(
             recipient_id="emp-023",
             template_id="workflow_submitted",
-            context={"entity_type": "Test1", "approver_role": "Manager"}
+            context={"entity_type": "Test1", "approver_role": "Manager"},
         )
         notif2 = service.send_notification(
             recipient_id="emp-023",
             template_id="workflow_submitted",
-            context={"entity_type": "Test2", "approver_role": "Manager"}
+            context={"entity_type": "Test2", "approver_role": "Manager"},
         )
         service.mark_as_read(notif1.id)
 
@@ -472,7 +461,7 @@ class TestNotificationFiltering:
             service.send_notification(
                 recipient_id="emp-024",
                 template_id="workflow_submitted",
-                context={"entity_type": f"Test{i}", "approver_role": "Manager"}
+                context={"entity_type": f"Test{i}", "approver_role": "Manager"},
             )
 
         notifications = service.get_notifications("emp-024", limit=50)
@@ -486,12 +475,12 @@ class TestNotificationFiltering:
         notif1 = service.send_notification(
             recipient_id="emp-025",
             template_id="workflow_submitted",
-            context={"entity_type": "First", "approver_role": "Manager"}
+            context={"entity_type": "First", "approver_role": "Manager"},
         )
         notif2 = service.send_notification(
             recipient_id="emp-025",
             template_id="workflow_submitted",
-            context={"entity_type": "Second", "approver_role": "Manager"}
+            context={"entity_type": "Second", "approver_role": "Manager"},
         )
 
         notifications = service.get_notifications("emp-025")
@@ -507,13 +496,13 @@ class TestNotificationFiltering:
             recipient_id="emp-026",
             template_id="workflow_submitted",
             context={"entity_type": "Normal", "approver_role": "Manager"},
-            priority=NotificationPriority.NORMAL
+            priority=NotificationPriority.NORMAL,
         )
         service.send_notification(
             recipient_id="emp-026",
             template_id="workflow_submitted",
             context={"entity_type": "Urgent", "approver_role": "Manager"},
-            priority=NotificationPriority.URGENT
+            priority=NotificationPriority.URGENT,
         )
 
         notifications = service.get_notifications("emp-026")
@@ -552,7 +541,7 @@ class TestEventListeners:
         notification = service.trigger_event(
             event_type="promotion_approved",
             recipient_id="emp-027",
-            context={"entity_type": "Promotion"}
+            context={"entity_type": "Promotion"},
         )
 
         assert notification is not None
@@ -564,9 +553,7 @@ class TestEventListeners:
         service = NotificationService()
 
         notification = service.trigger_event(
-            event_type="unknown_event",
-            recipient_id="emp-028",
-            context={}
+            event_type="unknown_event", recipient_id="emp-028", context={}
         )
 
         assert notification is None
@@ -580,7 +567,7 @@ class TestEventListeners:
             event_type="urgent_action",
             recipient_id="emp-029",
             context={"entity_type": "Urgent", "approver_role": "CEO"},
-            priority=NotificationPriority.URGENT
+            priority=NotificationPriority.URGENT,
         )
 
         assert notification.priority == NotificationPriority.URGENT
@@ -616,8 +603,8 @@ class TestEventListeners:
                 "leave_type": "Vacation",
                 "start_date": "2024-02-01",
                 "end_date": "2024-02-05",
-                "approver_name": "Jane Doe"
-            }
+                "approver_name": "Jane Doe",
+            },
         )
 
         assert "Vacation" in notification.body

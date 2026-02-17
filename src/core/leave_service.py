@@ -188,9 +188,7 @@ class LeaveRequestService:
 
         # Validate no overlap
         if not self._validate_no_overlap(employee_id, start_date, end_date):
-            raise ValueError(
-                "Overlapping leave request exists for this date range"
-            )
+            raise ValueError("Overlapping leave request exists for this date range")
 
         # Validate business rules
         errors = self._validate_business_rules(leave_type, start_date, end_date)
@@ -225,9 +223,7 @@ class LeaveRequestService:
 
             # Submit for approval
             self.workflow_engine.submit_for_approval(workflow_id)
-            logger.info(
-                f"Created leave request {request.request_id} with workflow {workflow_id}"
-            )
+            logger.info(f"Created leave request {request.request_id} with workflow {workflow_id}")
 
         except Exception as e:
             logger.error(f"Failed to create approval workflow: {e}")
@@ -243,9 +239,7 @@ class LeaveRequestService:
             "business_days": business_days,
         }
 
-    def cancel_request(
-        self, request_id: str, employee_id: str
-    ) -> Dict[str, Any]:
+    def cancel_request(self, request_id: str, employee_id: str) -> Dict[str, Any]:
         """
         Cancel a leave request.
 
@@ -269,9 +263,7 @@ class LeaveRequestService:
             )
 
         if request.status != LeaveStatus.PENDING:
-            raise ValueError(
-                f"Cannot cancel request with status {request.status.value}"
-            )
+            raise ValueError(f"Cannot cancel request with status {request.status.value}")
 
         # Cancel workflow
         if request.workflow_id:
@@ -335,11 +327,7 @@ class LeaveRequestService:
         Returns:
             List of request dictionaries
         """
-        requests = [
-            r
-            for r in self.requests.values()
-            if r.employee_id == employee_id
-        ]
+        requests = [r for r in self.requests.values() if r.employee_id == employee_id]
 
         if status_filter:
             requests = [r for r in requests if r.status == status_filter]
@@ -386,8 +374,7 @@ class LeaveRequestService:
         request.updated_at = datetime.utcnow()
 
         logger.info(
-            f"Approved leave request {request.request_id} "
-            f"for {request.business_days} days"
+            f"Approved leave request {request.request_id} " f"for {request.business_days} days"
         )
 
         # Deduct balance from HRIS
@@ -424,9 +411,7 @@ class LeaveRequestService:
             "approved_at": request.updated_at.isoformat(),
         }
 
-    def on_rejection(
-        self, workflow_id: str, reason: str = ""
-    ) -> Dict[str, Any]:
+    def on_rejection(self, workflow_id: str, reason: str = "") -> Dict[str, Any]:
         """
         Handle rejection of a leave request workflow.
 
@@ -456,9 +441,7 @@ class LeaveRequestService:
         request.rejection_reason = reason
         request.updated_at = datetime.utcnow()
 
-        logger.info(
-            f"Rejected leave request {request.request_id}: {reason}"
-        )
+        logger.info(f"Rejected leave request {request.request_id}: {reason}")
 
         # Notify employee
         if self.notification_service:
@@ -481,9 +464,7 @@ class LeaveRequestService:
             "rejected_at": request.updated_at.isoformat(),
         }
 
-    def _validate_balance(
-        self, employee_id: str, leave_type: LeaveType, days: int
-    ) -> bool:
+    def _validate_balance(self, employee_id: str, leave_type: LeaveType, days: int) -> bool:
         """
         Validate employee has sufficient leave balance.
 
@@ -501,13 +482,9 @@ class LeaveRequestService:
                 if balance.leave_type == leave_type:
                     available = balance.available_days
                     if available >= days:
-                        logger.debug(
-                            f"Balance check passed: {available} >= {days}"
-                        )
+                        logger.debug(f"Balance check passed: {available} >= {days}")
                         return True
-                    logger.warning(
-                        f"Insufficient balance: {available} < {days}"
-                    )
+                    logger.warning(f"Insufficient balance: {available} < {days}")
                     return False
             logger.warning(f"No balance found for leave type {leave_type}")
             return False
@@ -538,9 +515,7 @@ class LeaveRequestService:
 
             # Check for overlap
             if start_date <= req.end_date and end_date >= req.start_date:
-                logger.warning(
-                    f"Overlap detected with request {req.request_id}"
-                )
+                logger.warning(f"Overlap detected with request {req.request_id}")
                 return False
 
         return True
@@ -569,23 +544,17 @@ class LeaveRequestService:
         business_days = self._calculate_business_days(start_date, end_date)
         max_days = self.settings["max_consecutive_days"]
         if business_days > max_days:
-            errors.append(
-                f"Leave request exceeds maximum of {max_days} consecutive days"
-            )
+            errors.append(f"Leave request exceeds maximum of {max_days} consecutive days")
 
         # Additional rules for certain leave types
         if leave_type == LeaveType.UNPAID:
             # Unpaid leave might have stricter rules
             if business_days > max_days * 0.5:
-                errors.append(
-                    "Unpaid leave limited to 10 consecutive days"
-                )
+                errors.append("Unpaid leave limited to 10 consecutive days")
 
         return errors
 
-    def _calculate_business_days(
-        self, start_date: datetime, end_date: datetime
-    ) -> int:
+    def _calculate_business_days(self, start_date: datetime, end_date: datetime) -> int:
         """
         Calculate business days (Mon-Fri) between dates (inclusive).
 
@@ -631,17 +600,13 @@ class LeaveRequestService:
         )
 
         # Phone pattern (US format)
-        text = re.sub(
-            r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "[PHONE]", text
-        )
+        text = re.sub(r"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", "[PHONE]", text)
 
         # SSN pattern
         text = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "[SSN]", text)
 
         # Common date of birth patterns
-        text = re.sub(
-            r"\b\d{1,2}/\d{1,2}/\d{2,4}\b", "[DOB]", text
-        )
+        text = re.sub(r"\b\d{1,2}/\d{1,2}/\d{2,4}\b", "[DOB]", text)
 
         return text
 

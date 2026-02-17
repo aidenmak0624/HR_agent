@@ -5,14 +5,14 @@ import os
 from unittest.mock import MagicMock
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Set environment variables for testing
-os.environ.setdefault('JWT_SECRET', 'test-secret-key-for-testing-only')
-os.environ.setdefault('DATABASE_URL', 'sqlite:///test.db')
-os.environ.setdefault('GOOGLE_API_KEY', 'test-key')
-os.environ.setdefault('REDIS_URL', 'redis://localhost:6379/0')
-os.environ.setdefault('BAMBOOHR_API_KEY', 'test-bamboo-key')
+os.environ.setdefault("JWT_SECRET", "test-secret-key-for-testing-only")
+os.environ.setdefault("DATABASE_URL", "sqlite:///test.db")
+os.environ.setdefault("GOOGLE_API_KEY", "test-key")
+os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+os.environ.setdefault("BAMBOOHR_API_KEY", "test-bamboo-key")
 
 
 @pytest.fixture
@@ -49,7 +49,7 @@ def sample_user_context():
         "user_id": "emp-001",
         "role": "employee",
         "email": "john.doe@company.com",
-        "department": "Engineering"
+        "department": "Engineering",
     }
 
 
@@ -60,7 +60,7 @@ def sample_manager_context():
         "user_id": "mgr-001",
         "role": "manager",
         "email": "jane.smith@company.com",
-        "department": "Engineering"
+        "department": "Engineering",
     }
 
 
@@ -71,5 +71,5 @@ def sample_hr_admin_context():
         "user_id": "hr-001",
         "role": "hr_admin",
         "email": "alice.admin@company.com",
-        "department": "Human Resources"
+        "department": "Human Resources",
     }

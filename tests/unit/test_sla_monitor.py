@@ -637,7 +637,7 @@ class TestGetSLATrends:
                 value=99.0 + i,
                 is_within_target=True,
                 target_value=99.0,
-                timestamp=now - timedelta(days=9-i),
+                timestamp=now - timedelta(days=9 - i),
             )
             service.measurements.append(measurement)
         trends = service.get_sla_trends(metric=SLAMetric.UPTIME, period_days=30)
@@ -654,7 +654,7 @@ class TestGetSLATrends:
                 value=100 + i * 10,
                 is_within_target=True,
                 target_value=500.0,
-                timestamp=now - timedelta(days=9-i),
+                timestamp=now - timedelta(days=9 - i),
             )
             service.measurements.append(measurement)
         trends = service.get_sla_trends(

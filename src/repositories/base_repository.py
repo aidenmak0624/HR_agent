@@ -83,7 +83,9 @@ class BaseRepository(ABC, Generic[T]):
             logger.error(f"Error getting {self.model_class.__name__} by ID {entity_id}: {str(e)}")
             return None
 
-    def list(self, filters: Optional[Dict[str, Any]] = None, limit: int = 100, offset: int = 0) -> List[T]:
+    def list(
+        self, filters: Optional[Dict[str, Any]] = None, limit: int = 100, offset: int = 0
+    ) -> List[T]:
         """
         List entities with optional filters.
 
@@ -126,7 +128,9 @@ class BaseRepository(ABC, Generic[T]):
                 entity = self.model_class(**data)
                 session.add(entity)
                 session.flush()
-                logger.info(f"Created {self.model_class.__name__}: id={getattr(entity, 'id', 'unknown')}")
+                logger.info(
+                    f"Created {self.model_class.__name__}: id={getattr(entity, 'id', 'unknown')}"
+                )
                 return entity
         except Exception as e:
             logger.error(f"Error creating {self.model_class.__name__}: {str(e)}")
@@ -223,6 +227,7 @@ class BaseRepository(ABC, Generic[T]):
         try:
             with self._get_session() as session:
                 from sqlalchemy import func
+
                 stmt = select(func.count(self.model_class.id))
 
                 if filters:

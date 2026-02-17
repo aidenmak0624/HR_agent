@@ -8,16 +8,16 @@ from typing import Any, Dict, List, Optional
 from unittest.mock import MagicMock
 
 # Add project root to path for imports
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Setup environment variables for integration tests
-os.environ.setdefault('JWT_SECRET', 'integration-test-secret-key')
-os.environ.setdefault('DATABASE_URL', 'sqlite:///test_integration.db')
-os.environ.setdefault('REDIS_URL', 'redis://localhost:6379/1')
-os.environ.setdefault('JWT_ALGORITHM', 'HS256')
-os.environ.setdefault('LOG_LEVEL', 'DEBUG')
+os.environ.setdefault("JWT_SECRET", "integration-test-secret-key")
+os.environ.setdefault("DATABASE_URL", "sqlite:///test_integration.db")
+os.environ.setdefault("REDIS_URL", "redis://localhost:6379/1")
+os.environ.setdefault("JWT_ALGORITHM", "HS256")
+os.environ.setdefault("LOG_LEVEL", "DEBUG")
 
 # Import core modules - using absolute imports
 try:
@@ -67,60 +67,60 @@ class MockHRISConnector:
     def _seed_employees(self) -> Dict[str, Dict[str, Any]]:
         """Create seed employee data."""
         return {
-            'emp-001': {
-                'id': 'emp-001',
-                'name': 'John Doe',
-                'email': 'john.doe@company.com',
-                'department': 'Engineering',
-                'role': 'engineer',
-                'manager_id': 'mgr-001',
-                'salary': 120000,
-                'status': 'active',
-                'hire_date': '2020-01-15',
+            "emp-001": {
+                "id": "emp-001",
+                "name": "John Doe",
+                "email": "john.doe@company.com",
+                "department": "Engineering",
+                "role": "engineer",
+                "manager_id": "mgr-001",
+                "salary": 120000,
+                "status": "active",
+                "hire_date": "2020-01-15",
             },
-            'emp-002': {
-                'id': 'emp-002',
-                'name': 'Jane Smith',
-                'email': 'jane.smith@company.com',
-                'department': 'Engineering',
-                'role': 'senior_engineer',
-                'manager_id': 'mgr-001',
-                'salary': 150000,
-                'status': 'active',
-                'hire_date': '2019-06-01',
+            "emp-002": {
+                "id": "emp-002",
+                "name": "Jane Smith",
+                "email": "jane.smith@company.com",
+                "department": "Engineering",
+                "role": "senior_engineer",
+                "manager_id": "mgr-001",
+                "salary": 150000,
+                "status": "active",
+                "hire_date": "2019-06-01",
             },
-            'emp-003': {
-                'id': 'emp-003',
-                'name': 'Alice Johnson',
-                'email': 'alice.johnson@company.com',
-                'department': 'Human Resources',
-                'role': 'hr_specialist',
-                'manager_id': 'mgr-002',
-                'salary': 95000,
-                'status': 'active',
-                'hire_date': '2021-03-10',
+            "emp-003": {
+                "id": "emp-003",
+                "name": "Alice Johnson",
+                "email": "alice.johnson@company.com",
+                "department": "Human Resources",
+                "role": "hr_specialist",
+                "manager_id": "mgr-002",
+                "salary": 95000,
+                "status": "active",
+                "hire_date": "2021-03-10",
             },
-            'emp-004': {
-                'id': 'emp-004',
-                'name': 'Bob Wilson',
-                'email': 'bob.wilson@company.com',
-                'department': 'Sales',
-                'role': 'sales_rep',
-                'manager_id': 'mgr-003',
-                'salary': 85000,
-                'status': 'active',
-                'hire_date': '2022-01-20',
+            "emp-004": {
+                "id": "emp-004",
+                "name": "Bob Wilson",
+                "email": "bob.wilson@company.com",
+                "department": "Sales",
+                "role": "sales_rep",
+                "manager_id": "mgr-003",
+                "salary": 85000,
+                "status": "active",
+                "hire_date": "2022-01-20",
             },
-            'emp-005': {
-                'id': 'emp-005',
-                'name': 'Carol Martinez',
-                'email': 'carol.martinez@company.com',
-                'department': 'Sales',
-                'role': 'sales_manager',
-                'manager_id': None,
-                'salary': 110000,
-                'status': 'active',
-                'hire_date': '2018-09-05',
+            "emp-005": {
+                "id": "emp-005",
+                "name": "Carol Martinez",
+                "email": "carol.martinez@company.com",
+                "department": "Sales",
+                "role": "sales_manager",
+                "manager_id": None,
+                "salary": 110000,
+                "status": "active",
+                "hire_date": "2018-09-05",
             },
         }
 
@@ -130,17 +130,11 @@ class MockHRISConnector:
 
     def get_employees_by_department(self, department: str) -> List[Dict[str, Any]]:
         """Get employees in a department."""
-        return [
-            emp for emp in self.employees.values()
-            if emp['department'] == department
-        ]
+        return [emp for emp in self.employees.values() if emp["department"] == department]
 
     def get_team_members(self, manager_id: str) -> List[Dict[str, Any]]:
         """Get direct reports for a manager."""
-        return [
-            emp for emp in self.employees.values()
-            if emp['manager_id'] == manager_id
-        ]
+        return [emp for emp in self.employees.values() if emp["manager_id"] == manager_id]
 
     def health_check(self) -> bool:
         """Check connector health."""
@@ -183,6 +177,7 @@ class MockCacheService:
 
 # ===== PYTEST FIXTURES =====
 
+
 @pytest.fixture
 def mock_hris_connector() -> MockHRISConnector:
     """Provide mock HRIS connector with seed employees."""
@@ -215,32 +210,23 @@ def auth_tokens(auth_service: AuthService) -> Dict[str, str]:
     """Provide pre-generated authentication tokens."""
     # Employee token
     emp_token = auth_service.generate_token(
-        user_id='emp-001',
-        email='john.doe@company.com',
-        role='employee',
-        department='Engineering'
+        user_id="emp-001", email="john.doe@company.com", role="employee", department="Engineering"
     )
 
     # Manager token
     mgr_token = auth_service.generate_token(
-        user_id='mgr-001',
-        email='manager@company.com',
-        role='manager',
-        department='Engineering'
+        user_id="mgr-001", email="manager@company.com", role="manager", department="Engineering"
     )
 
     # HR Admin token
     hr_token = auth_service.generate_token(
-        user_id='hr-001',
-        email='admin@company.com',
-        role='hr_admin',
-        department='Human Resources'
+        user_id="hr-001", email="admin@company.com", role="hr_admin", department="Human Resources"
     )
 
     return {
-        'employee': emp_token['access_token'],
-        'manager': mgr_token['access_token'],
-        'hr_admin': hr_token['access_token'],
+        "employee": emp_token["access_token"],
+        "manager": mgr_token["access_token"],
+        "hr_admin": hr_token["access_token"],
     }
 
 
@@ -274,20 +260,16 @@ def quality_assessor():
 def rag_pipeline():
     """Provide RAG pipeline instance."""
     pipeline = MagicMock()
-    pipeline.retrieve = MagicMock(return_value=[
-        {
-            'content': 'Sample policy document',
-            'metadata': {'source': 'test'},
-            'score': 0.95
-        }
-    ])
-    pipeline.search = MagicMock(return_value=[
-        {
-            'content': 'Relevant information',
-            'metadata': {'source': 'test'},
-            'score': 0.85
-        }
-    ])
+    pipeline.retrieve = MagicMock(
+        return_value=[
+            {"content": "Sample policy document", "metadata": {"source": "test"}, "score": 0.95}
+        ]
+    )
+    pipeline.search = MagicMock(
+        return_value=[
+            {"content": "Relevant information", "metadata": {"source": "test"}, "score": 0.85}
+        ]
+    )
     return pipeline
 
 
@@ -295,16 +277,20 @@ def rag_pipeline():
 def router_agent(rag_pipeline, mock_cache):
     """Provide router agent instance."""
     router = MagicMock()
-    router.classify_intent = MagicMock(return_value={
-        'intent': 'leave_request',
-        'confidence': 0.95,
-        'slots': {'leave_type': 'annual'}
-    })
-    router.route = MagicMock(return_value={
-        'agent': 'leave_agent',
-        'confidence': 0.92,
-        'reason': 'Intent matched leave request pattern'
-    })
+    router.classify_intent = MagicMock(
+        return_value={
+            "intent": "leave_request",
+            "confidence": 0.95,
+            "slots": {"leave_type": "annual"},
+        }
+    )
+    router.route = MagicMock(
+        return_value={
+            "agent": "leave_agent",
+            "confidence": 0.92,
+            "reason": "Intent matched leave request pattern",
+        }
+    )
     return router
 
 
@@ -321,13 +307,13 @@ def workflow_engine(mock_hris_connector):
 def sample_workflow_data() -> Dict[str, Any]:
     """Provide sample workflow data."""
     return {
-        'entity_type': 'compensation_change',
-        'entity_id': 'comp-001',
-        'created_by': 'emp-001',
-        'initiator_role': 'employee',
-        'amount': 5000,
-        'effective_date': (datetime.utcnow() + timedelta(days=30)).isoformat(),
-        'reason': 'Annual merit increase',
+        "entity_type": "compensation_change",
+        "entity_id": "comp-001",
+        "created_by": "emp-001",
+        "initiator_role": "employee",
+        "amount": 5000,
+        "effective_date": (datetime.utcnow() + timedelta(days=30)).isoformat(),
+        "reason": "Annual merit increase",
     }
 
 
@@ -336,14 +322,14 @@ def sample_workflow_steps() -> List[WorkflowStep]:
     """Provide sample workflow approval steps."""
     return [
         WorkflowStep(
-            approver_role='manager',
-            approver_id='mgr-001',
+            approver_role="manager",
+            approver_id="mgr-001",
             escalate_after_hours=24,
         ),
         WorkflowStep(
-            approver_role='hr_admin',
-            approver_id='hr-001',
+            approver_role="hr_admin",
+            approver_id="hr-001",
             escalate_after_hours=48,
-            next_level_role='executive',
+            next_level_role="executive",
         ),
     ]

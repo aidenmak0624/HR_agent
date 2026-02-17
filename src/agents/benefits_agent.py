@@ -22,8 +22,10 @@ logger.setLevel(logging.INFO)
 
 # ==================== Enums & Dataclasses ====================
 
+
 class LifeEventType(str, Enum):
     """Types of qualifying life events."""
+
     MARRIAGE = "marriage"
     DIVORCE = "divorce"
     BIRTH = "birth"
@@ -36,6 +38,7 @@ class LifeEventType(str, Enum):
 
 class EnrollmentStatus(str, Enum):
     """Enrollment status."""
+
     NOT_ENROLLED = "not_enrolled"
     ENROLLED = "enrolled"
     WAIVED = "waived"
@@ -45,6 +48,7 @@ class EnrollmentStatus(str, Enum):
 
 class CoverageLevel(str, Enum):
     """Coverage levels."""
+
     EMPLOYEE = "employee"
     EMPLOYEE_SPOUSE = "employee_spouse"
     EMPLOYEE_CHILDREN = "employee_children"
@@ -54,6 +58,7 @@ class CoverageLevel(str, Enum):
 @dataclass
 class BenefitsEnrollment:
     """Employee benefits enrollment record."""
+
     enrollment_id: str
     employee_id: str
     plan_id: str
@@ -71,6 +76,7 @@ class BenefitsEnrollment:
 @dataclass
 class EnrollmentWindow:
     """Benefits enrollment period."""
+
     window_id: str
     name: str  # "Open Enrollment 2024", "New Hire Enrollment"
     window_type: str  # "open_enrollment", "new_hire", "life_event"
@@ -88,6 +94,7 @@ class EnrollmentWindow:
 @dataclass
 class CompensationBand:
     """Salary compensation band by role/level/location."""
+
     band_id: str
     role_title: str
     job_level: str  # "entry", "mid", "senior", "lead", "manager"
@@ -103,6 +110,7 @@ class CompensationBand:
 @dataclass
 class LifeEvent:
     """Qualifying life event record."""
+
     event_id: str
     employee_id: str
     event_type: LifeEventType
@@ -119,6 +127,7 @@ class LifeEvent:
 @dataclass
 class HSAFSAAccount:
     """Health Savings Account or Flexible Spending Account."""
+
     account_id: str
     employee_id: str
     account_type: str  # "hsa", "fsa"
@@ -133,6 +142,7 @@ class HSAFSAAccount:
 @dataclass
 class PlanComparison:
     """Plan comparison for decision making."""
+
     comparison_id: str
     employee_id: str
     plans: List[Dict[str, Any]] = field(default_factory=list)
@@ -144,6 +154,7 @@ class PlanComparison:
 
 
 # ==================== Benefits Agent ====================
+
 
 class BenefitsAgent(BaseAgent):
     """
@@ -248,14 +259,14 @@ class BenefitsAgent(BaseAgent):
 
                 # Get current enrollments
                 employee_enrollments = [
-                    e for e in self.enrollments.values()
-                    if e.employee_id == employee_id
+                    e for e in self.enrollments.values() if e.employee_id == employee_id
                 ]
 
                 # Filter by plan type if specified
                 if plan_type:
                     employee_enrollments = [
-                        e for e in employee_enrollments
+                        e
+                        for e in employee_enrollments
                         if e.plan_type.value.lower() == plan_type.lower()
                     ]
 
@@ -267,7 +278,9 @@ class BenefitsAgent(BaseAgent):
                             "plan_type": e.plan_type.value,
                             "status": e.status.value,
                             "coverage_level": e.coverage_level.value,
-                            "effective_date": e.effective_date.isoformat() if e.effective_date else None,
+                            "effective_date": e.effective_date.isoformat()
+                            if e.effective_date
+                            else None,
                         }
                         for e in employee_enrollments
                     ],
@@ -314,14 +327,19 @@ class BenefitsAgent(BaseAgent):
 
                 # Get enrollment status
                 employee_enrollments = [
-                    e for e in self.enrollments.values()
-                    if e.employee_id == employee_id
+                    e for e in self.enrollments.values() if e.employee_id == employee_id
                 ]
 
                 status_breakdown = {
-                    "enrolled": len([e for e in employee_enrollments if e.status == EnrollmentStatus.ENROLLED]),
-                    "waived": len([e for e in employee_enrollments if e.status == EnrollmentStatus.WAIVED]),
-                    "pending": len([e for e in employee_enrollments if e.status == EnrollmentStatus.PENDING]),
+                    "enrolled": len(
+                        [e for e in employee_enrollments if e.status == EnrollmentStatus.ENROLLED]
+                    ),
+                    "waived": len(
+                        [e for e in employee_enrollments if e.status == EnrollmentStatus.WAIVED]
+                    ),
+                    "pending": len(
+                        [e for e in employee_enrollments if e.status == EnrollmentStatus.PENDING]
+                    ),
                 }
 
                 return {
@@ -391,6 +409,7 @@ class BenefitsAgent(BaseAgent):
                             }
 
                 from uuid import uuid4
+
                 comparison_id = f"comparison_{uuid4().hex[:8]}"
 
                 comparison = PlanComparison(
@@ -406,7 +425,9 @@ class BenefitsAgent(BaseAgent):
                     "employee_id": employee_id,
                     "plan_count": len(plans_data),
                     "cost_estimates": costs,
-                    "lowest_cost_plan": min(costs.items(), key=lambda x: x[1]["monthly"])[0] if costs else None,
+                    "lowest_cost_plan": min(costs.items(), key=lambda x: x[1]["monthly"])[0]
+                    if costs
+                    else None,
                     "health_profile": employee_health_profile,
                     "source": "comparison_system",
                 }
@@ -439,18 +460,25 @@ class BenefitsAgent(BaseAgent):
                 Salary band information
             """
             try:
-                logger.info(f"COMPENSATION_CALCULATOR: Looking up band for {role_title}/{job_level}/{location}")
+                logger.info(
+                    f"COMPENSATION_CALCULATOR: Looking up band for {role_title}/{job_level}/{location}"
+                )
 
                 # Search compensation bands
                 matching_bands = [
-                    b for b in self.compensation_bands.values()
-                    if (b.role_title.lower() == role_title.lower() and
-                        b.job_level.lower() == job_level.lower() and
-                        b.location.lower() == location.lower())
+                    b
+                    for b in self.compensation_bands.values()
+                    if (
+                        b.role_title.lower() == role_title.lower()
+                        and b.job_level.lower() == job_level.lower()
+                        and b.location.lower() == location.lower()
+                    )
                 ]
 
                 if not matching_bands:
-                    return {"error": f"No compensation band found for {role_title}/{job_level} in {location}"}
+                    return {
+                        "error": f"No compensation band found for {role_title}/{job_level} in {location}"
+                    }
 
                 band = matching_bands[0]
 
@@ -506,6 +534,7 @@ class BenefitsAgent(BaseAgent):
 
                 # Create life event
                 from uuid import uuid4
+
                 event_id = f"event_{uuid4().hex[:8]}"
 
                 # Enrollment window: typically 30 days from event

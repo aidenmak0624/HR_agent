@@ -15,7 +15,12 @@ from uuid import uuid4
 from .base_agent import BaseAgent, BaseAgentState
 from ..connectors.hris_interface import HRISConnector
 from ..core.multi_jurisdiction import MultiJurisdictionEngine, Jurisdiction
-from ..core.notifications import NotificationService, NotificationPriority, NotificationTemplate, NotificationChannel
+from ..core.notifications import (
+    NotificationService,
+    NotificationPriority,
+    NotificationTemplate,
+    NotificationChannel,
+)
 from ..middleware.pii_stripper import PIIStripper
 from ..repositories.gdpr_repository import DSARRepository, GDPRRepository, RetentionPolicyRepository
 
@@ -262,20 +267,24 @@ class ComplianceAgent(BaseAgent):
                             results["employee_name"] = f"{emp.first_name} {emp.last_name}"
                     except Exception:
                         pass
-                results["steps"].append({
-                    "step": "identity_verification",
-                    "status": "passed" if identity_verified else "manual_review_required",
-                })
+                results["steps"].append(
+                    {
+                        "step": "identity_verification",
+                        "status": "passed" if identity_verified else "manual_review_required",
+                    }
+                )
                 dsar["steps_completed"].append("identity_verification")
 
                 # Step 2: Data discovery — catalog all data locations
                 data_locations = self._discover_employee_data(employee_id)
-                results["steps"].append({
-                    "step": "data_discovery",
-                    "status": "completed",
-                    "data_locations": len(data_locations),
-                    "categories": list(data_locations.keys()),
-                })
+                results["steps"].append(
+                    {
+                        "step": "data_discovery",
+                        "status": "completed",
+                        "data_locations": len(data_locations),
+                        "categories": list(data_locations.keys()),
+                    }
+                )
                 dsar["steps_completed"].append("data_discovery")
 
                 # Step 3: PII scan across discovered data
@@ -285,62 +294,80 @@ class ComplianceAgent(BaseAgent):
                         if isinstance(item, str):
                             masked_text, pii_map = self.pii_stripper.strip(item)
                             if pii_map:
-                                pii_findings.append({
-                                    "category": category,
-                                    "pii_types": list(pii_map.keys()) if isinstance(pii_map, dict) else ["detected"],
-                                })
+                                pii_findings.append(
+                                    {
+                                        "category": category,
+                                        "pii_types": list(pii_map.keys())
+                                        if isinstance(pii_map, dict)
+                                        else ["detected"],
+                                    }
+                                )
 
-                results["steps"].append({
-                    "step": "pii_scan",
-                    "status": "completed",
-                    "pii_locations_found": len(pii_findings),
-                })
+                results["steps"].append(
+                    {
+                        "step": "pii_scan",
+                        "status": "completed",
+                        "pii_locations_found": len(pii_findings),
+                    }
+                )
                 dsar["steps_completed"].append("pii_scan")
 
                 # Step 4: Execute request
                 if request_type == "access":
                     # Generate data export
                     export_data = self._generate_data_export(employee_id, data_locations)
-                    results["steps"].append({
-                        "step": "data_export",
-                        "status": "completed",
-                        "format": "JSON",
-                        "categories_exported": list(export_data.keys()),
-                    })
-                    results["export_summary"] = {k: len(v) if isinstance(v, list) else 1 for k, v in export_data.items()}
+                    results["steps"].append(
+                        {
+                            "step": "data_export",
+                            "status": "completed",
+                            "format": "JSON",
+                            "categories_exported": list(export_data.keys()),
+                        }
+                    )
+                    results["export_summary"] = {
+                        k: len(v) if isinstance(v, list) else 1 for k, v in export_data.items()
+                    }
 
                 elif request_type == "erasure":
                     # Check retention policies before erasure
                     retention_blocks = self._check_retention_policies(employee_id)
                     if retention_blocks:
-                        results["steps"].append({
-                            "step": "erasure_check",
-                            "status": "partial",
-                            "retention_blocks": retention_blocks,
-                            "message": "Some data must be retained per legal requirements",
-                        })
+                        results["steps"].append(
+                            {
+                                "step": "erasure_check",
+                                "status": "partial",
+                                "retention_blocks": retention_blocks,
+                                "message": "Some data must be retained per legal requirements",
+                            }
+                        )
                     else:
-                        results["steps"].append({
-                            "step": "erasure",
-                            "status": "completed",
-                            "message": "All eligible data marked for erasure",
-                        })
+                        results["steps"].append(
+                            {
+                                "step": "erasure",
+                                "status": "completed",
+                                "message": "All eligible data marked for erasure",
+                            }
+                        )
 
                 elif request_type == "portability":
                     export_data = self._generate_data_export(employee_id, data_locations)
-                    results["steps"].append({
-                        "step": "data_portability_export",
-                        "status": "completed",
-                        "format": "JSON (machine-readable)",
-                        "categories": list(export_data.keys()),
-                    })
+                    results["steps"].append(
+                        {
+                            "step": "data_portability_export",
+                            "status": "completed",
+                            "format": "JSON (machine-readable)",
+                            "categories": list(export_data.keys()),
+                        }
+                    )
 
                 elif request_type == "rectification":
-                    results["steps"].append({
-                        "step": "rectification",
-                        "status": "awaiting_input",
-                        "message": "Please specify which data to correct",
-                    })
+                    results["steps"].append(
+                        {
+                            "step": "rectification",
+                            "status": "awaiting_input",
+                            "message": "Please specify which data to correct",
+                        }
+                    )
 
                 dsar["steps_completed"].append(f"{request_type}_execution")
 
@@ -351,18 +378,24 @@ class ComplianceAgent(BaseAgent):
                         data={"employee_id": employee_id, "request_type": request_type},
                         jurisdictions=[jurisdiction],
                     )
-                    results["steps"].append({
-                        "step": "compliance_validation",
-                        "status": "completed",
-                        "checks_passed": len([r for r in compliance_results if r.status.value == "compliant"]),
-                        "total_checks": len(compliance_results),
-                    })
+                    results["steps"].append(
+                        {
+                            "step": "compliance_validation",
+                            "status": "completed",
+                            "checks_passed": len(
+                                [r for r in compliance_results if r.status.value == "compliant"]
+                            ),
+                            "total_checks": len(compliance_results),
+                        }
+                    )
                 except Exception as comp_err:
-                    results["steps"].append({
-                        "step": "compliance_validation",
-                        "status": "warning",
-                        "message": str(comp_err),
-                    })
+                    results["steps"].append(
+                        {
+                            "step": "compliance_validation",
+                            "status": "warning",
+                            "message": str(comp_err),
+                        }
+                    )
                 dsar["steps_completed"].append("compliance_validation")
 
                 # Update DSAR status
@@ -437,7 +470,9 @@ class ComplianceAgent(BaseAgent):
                     "days_remaining": max(0, days_remaining),
                     "is_overdue": days_remaining < 0,
                     "steps_completed": dsar["steps_completed"],
-                    "steps_remaining": [s for s in dsar["steps_remaining"] if s not in dsar["steps_completed"]],
+                    "steps_remaining": [
+                        s for s in dsar["steps_remaining"] if s not in dsar["steps_completed"]
+                    ],
                     "source": "compliance_system",
                 }
 
@@ -494,19 +529,23 @@ class ComplianceAgent(BaseAgent):
 
                 formatted_results = []
                 for result in results:
-                    formatted_results.append({
-                        "jurisdiction": result.jurisdiction.value,
-                        "requirement": result.requirement,
-                        "status": result.status.value,
-                        "findings": result.findings,
-                        "recommendations": result.recommendations,
-                    })
+                    formatted_results.append(
+                        {
+                            "jurisdiction": result.jurisdiction.value,
+                            "requirement": result.requirement,
+                            "status": result.status.value,
+                            "findings": result.findings,
+                            "recommendations": result.recommendations,
+                        }
+                    )
 
                 return {
                     "action": action,
                     "jurisdictions_checked": [j.value for j in jurisdictions],
                     "results": formatted_results,
-                    "overall_compliant": all(r["status"] == "compliant" for r in formatted_results) if formatted_results else True,
+                    "overall_compliant": all(r["status"] == "compliant" for r in formatted_results)
+                    if formatted_results
+                    else True,
                     "source": "compliance_system",
                 }
 
@@ -539,7 +578,9 @@ class ComplianceAgent(BaseAgent):
                     "pii_detected": pii_found,
                     "masked_text": masked_text,
                     "pii_categories": list(pii_map.keys()) if isinstance(pii_map, dict) else [],
-                    "pii_count": len(pii_map) if isinstance(pii_map, dict) else (1 if pii_found else 0),
+                    "pii_count": len(pii_map)
+                    if isinstance(pii_map, dict)
+                    else (1 if pii_found else 0),
                     "source": "pii_system",
                 }
 
@@ -580,7 +621,9 @@ class ComplianceAgent(BaseAgent):
             ("access", "us_california"): "CCPA Section 1798.100 - Right to Know",
             ("erasure", "us_california"): "CCPA Section 1798.105 - Right to Delete",
         }
-        return bases.get((request_type, jurisdiction), f"Applicable privacy regulation ({jurisdiction})")
+        return bases.get(
+            (request_type, jurisdiction), f"Applicable privacy regulation ({jurisdiction})"
+        )
 
     def _discover_employee_data(self, employee_id: str) -> Dict[str, List[str]]:
         """Discover all data locations for an employee."""
@@ -606,7 +649,7 @@ class ComplianceAgent(BaseAgent):
                 # Check leave records
                 try:
                     leaves = self.hris_connector.get_leave_requests(employee_id)
-                    for leave in (leaves or []):
+                    for leave in leaves or []:
                         data_locations["leave_records"].append(
                             f"Leave: {leave.leave_type.value} from {leave.start_date} to {leave.end_date}"
                         )
@@ -616,7 +659,7 @@ class ComplianceAgent(BaseAgent):
                 # Check leave balances
                 try:
                     balances = self.hris_connector.get_leave_balance(employee_id)
-                    for bal in (balances or []):
+                    for bal in balances or []:
                         data_locations["leave_records"].append(
                             f"Balance: {bal.leave_type.value} = {bal.available_days} days"
                         )
@@ -628,7 +671,9 @@ class ComplianceAgent(BaseAgent):
 
         return data_locations
 
-    def _generate_data_export(self, employee_id: str, data_locations: Dict[str, List[str]]) -> Dict[str, Any]:
+    def _generate_data_export(
+        self, employee_id: str, data_locations: Dict[str, List[str]]
+    ) -> Dict[str, Any]:
         """Generate structured data export for DSAR access/portability request."""
         export = {
             "export_metadata": {
@@ -647,16 +692,20 @@ class ComplianceAgent(BaseAgent):
         """Check which data is blocked from erasure by retention policies."""
         # Standard retention blocks
         blocks = []
-        blocks.append({
-            "category": "tax_records",
-            "reason": "Legal retention: 7 years per IRS requirements",
-            "regulation": "26 USC § 6001",
-        })
-        blocks.append({
-            "category": "employment_verification",
-            "reason": "I-9 retention: 3 years after hire or 1 year after termination",
-            "regulation": "8 CFR § 274a.2",
-        })
+        blocks.append(
+            {
+                "category": "tax_records",
+                "reason": "Legal retention: 7 years per IRS requirements",
+                "regulation": "26 USC § 6001",
+            }
+        )
+        blocks.append(
+            {
+                "category": "employment_verification",
+                "reason": "I-9 retention: 3 years after hire or 1 year after termination",
+                "regulation": "8 CFR § 274a.2",
+            }
+        )
         return blocks
 
     def _register_compliance_templates(self) -> None:

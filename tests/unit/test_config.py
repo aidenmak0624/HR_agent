@@ -9,6 +9,7 @@ from config.settings_test import TestSettings, get_test_settings
 
 # ==================== PRODUCTION SETTINGS TESTS ====================
 
+
 class TestProductionSettings:
     """Tests for production configuration."""
 
@@ -20,7 +21,7 @@ class TestProductionSettings:
     def test_production_log_level_warning(self):
         """Production settings use WARNING log level."""
         settings = ProductionSettings()
-        assert settings.LOG_LEVEL == 'WARNING'
+        assert settings.LOG_LEVEL == "WARNING"
 
     def test_production_secure_jwt_expiration(self):
         """Production JWT has long expiration (72 hours)."""
@@ -43,7 +44,7 @@ class TestProductionSettings:
         """Production CORS is restrictive."""
         settings = ProductionSettings()
         assert len(settings.CORS_ORIGINS) > 0
-        assert 'localhost' not in str(settings.CORS_ORIGINS).lower()
+        assert "localhost" not in str(settings.CORS_ORIGINS).lower()
 
     def test_production_ssl_verification_enabled(self):
         """Production has SSL verification enabled."""
@@ -98,6 +99,7 @@ class TestProductionSettings:
 
 # ==================== DEVELOPMENT SETTINGS TESTS ====================
 
+
 class TestDevelopmentSettings:
     """Tests for development configuration."""
 
@@ -109,7 +111,7 @@ class TestDevelopmentSettings:
     def test_development_log_level_debug(self):
         """Development settings use DEBUG log level."""
         settings = DevelopmentSettings()
-        assert settings.LOG_LEVEL == 'DEBUG'
+        assert settings.LOG_LEVEL == "DEBUG"
 
     def test_development_jwt_expiration_long(self):
         """Development JWT has longer expiration (168 hours/7 days)."""
@@ -119,13 +121,13 @@ class TestDevelopmentSettings:
     def test_development_uses_sqlite_fallback(self):
         """Development settings use SQLite by default."""
         settings = DevelopmentSettings()
-        assert 'sqlite' in settings.DATABASE_URL.lower()
+        assert "sqlite" in settings.DATABASE_URL.lower()
 
     def test_development_relaxed_cors(self):
         """Development CORS is relaxed for localhost."""
         settings = DevelopmentSettings()
         cors_str = str(settings.CORS_ORIGINS).lower()
-        assert 'localhost' in cors_str or '127.0.0.1' in cors_str
+        assert "localhost" in cors_str or "127.0.0.1" in cors_str
 
     def test_development_ssl_verification_disabled(self):
         """Development has SSL verification disabled."""
@@ -151,13 +153,13 @@ class TestDevelopmentSettings:
         """Development get_database_url returns SQLite URL."""
         settings = DevelopmentSettings()
         db_url = settings.get_database_url()
-        assert 'sqlite' in db_url.lower()
+        assert "sqlite" in db_url.lower()
 
     def test_development_get_async_database_url(self):
         """Development get_async_database_url returns aiosqlite URL."""
         settings = DevelopmentSettings()
         async_url = settings.get_async_database_url()
-        assert 'aiosqlite' in async_url
+        assert "aiosqlite" in async_url
 
     def test_development_is_production_returns_false(self):
         """Development is_production() returns False."""
@@ -172,7 +174,7 @@ class TestDevelopmentSettings:
     def test_development_hris_provider_custom(self):
         """Development uses custom DB as HRIS provider."""
         settings = DevelopmentSettings()
-        assert settings.HRIS_PROVIDER == 'custom_db'
+        assert settings.HRIS_PROVIDER == "custom_db"
 
     def test_development_get_development_settings_caches(self):
         """get_development_settings caches instance."""
@@ -182,6 +184,7 @@ class TestDevelopmentSettings:
 
 
 # ==================== TEST SETTINGS TESTS ====================
+
 
 class TestTestEnvironmentSettings:
     """Tests for test configuration."""
@@ -194,7 +197,7 @@ class TestTestEnvironmentSettings:
     def test_test_log_level_info(self):
         """Test settings use INFO log level."""
         settings = TestSettings()
-        assert settings.LOG_LEVEL == 'INFO'
+        assert settings.LOG_LEVEL == "INFO"
 
     def test_test_jwt_expiration_short(self):
         """Test JWT has short expiration (1 hour)."""
@@ -244,7 +247,7 @@ class TestTestEnvironmentSettings:
         settings = TestSettings()
         async_url = settings.get_async_database_url()
         assert async_url is not None
-        assert 'aiosqlite' in async_url
+        assert "aiosqlite" in async_url
 
     def test_test_is_production_returns_false(self):
         """Test is_production() returns False."""
@@ -254,7 +257,7 @@ class TestTestEnvironmentSettings:
     def test_test_mock_llm_model(self):
         """Test uses mock LLM model."""
         settings = TestSettings()
-        assert 'mock' in settings.LLM_DEFAULT_MODEL.lower()
+        assert "mock" in settings.LLM_DEFAULT_MODEL.lower()
 
     def test_test_session_timeout_reasonable(self):
         """Test session timeout is reasonable (60 minutes)."""
@@ -279,6 +282,7 @@ class TestTestEnvironmentSettings:
 
 
 # ==================== SETTINGS COMPARISON TESTS ====================
+
 
 class TestSettingsComparison:
     """Tests comparing settings across environments."""
@@ -318,7 +322,7 @@ class TestSettingsComparison:
         assert dev.DEBUG is True
 
         # Verbose logging
-        assert dev.LOG_LEVEL == 'DEBUG'
+        assert dev.LOG_LEVEL == "DEBUG"
 
         # Relaxed rate limiting
         assert dev.RATE_LIMIT_PER_MINUTE >= 100
@@ -335,28 +339,29 @@ class TestSettingsComparison:
 
 # ==================== SETTINGS INITIALIZATION TESTS ====================
 
+
 class TestSettingsInitialization:
     """Tests for settings initialization behavior."""
 
     def test_production_settings_loads_from_env_file(self):
         """ProductionSettings loads from .env.prod file."""
         settings = ProductionSettings()
-        assert settings.model_config['env_file'] == '.env.prod'
+        assert settings.model_config["env_file"] == ".env.prod"
 
     def test_development_settings_loads_from_env_file(self):
         """DevelopmentSettings loads from .env.dev file."""
         settings = DevelopmentSettings()
-        assert settings.model_config['env_file'] == '.env.dev'
+        assert settings.model_config["env_file"] == ".env.dev"
 
     def test_test_settings_loads_from_env_file(self):
         """TestSettings loads from .env.test file."""
         settings = TestSettings()
-        assert settings.model_config['env_file'] == '.env.test'
+        assert settings.model_config["env_file"] == ".env.test"
 
     def test_production_settings_are_case_insensitive(self):
         """ProductionSettings are case insensitive."""
         settings = ProductionSettings()
-        assert settings.model_config['case_sensitive'] is False
+        assert settings.model_config["case_sensitive"] is False
 
     def test_all_settings_ignore_extra_fields(self):
         """All settings ignore extra fields."""
@@ -364,12 +369,13 @@ class TestSettingsInitialization:
         dev = DevelopmentSettings()
         test = TestSettings()
 
-        assert prod.model_config['extra'] == 'ignore'
-        assert dev.model_config['extra'] == 'ignore'
-        assert test.model_config['extra'] == 'ignore'
+        assert prod.model_config["extra"] == "ignore"
+        assert dev.model_config["extra"] == "ignore"
+        assert test.model_config["extra"] == "ignore"
 
 
 # ==================== SETTINGS VALIDATION TESTS ====================
+
 
 class TestSettingsValidation:
     """Tests for settings validation and defaults."""
@@ -436,30 +442,31 @@ class TestSettingsValidation:
 
 # ==================== ENVIRONMENT-SPECIFIC TESTS ====================
 
+
 class TestEnvironmentSpecificSettings:
     """Tests for environment-specific configuration."""
 
     def test_production_hris_provider_bamboohr(self):
         """Production uses BambooHR as HRIS provider."""
         prod = ProductionSettings()
-        assert prod.HRIS_PROVIDER == 'bamboohr'
+        assert prod.HRIS_PROVIDER == "bamboohr"
 
     def test_development_hris_provider_custom(self):
         """Development uses custom DB as HRIS provider."""
         dev = DevelopmentSettings()
-        assert dev.HRIS_PROVIDER == 'custom_db'
+        assert dev.HRIS_PROVIDER == "custom_db"
 
     def test_test_hris_provider_custom(self):
         """Test uses custom DB as HRIS provider."""
         test = TestSettings()
-        assert test.HRIS_PROVIDER == 'custom_db'
+        assert test.HRIS_PROVIDER == "custom_db"
 
     def test_production_requires_external_apis(self):
         """Production expects external API keys to be configured."""
         prod = ProductionSettings()
         # In production, these would be set via environment
-        assert hasattr(prod, 'GOOGLE_API_KEY')
-        assert hasattr(prod, 'BAMBOOHR_API_KEY')
+        assert hasattr(prod, "GOOGLE_API_KEY")
+        assert hasattr(prod, "BAMBOOHR_API_KEY")
 
     def test_test_uses_test_api_keys(self):
         """Test settings have test/configured API keys."""
@@ -478,7 +485,7 @@ class TestEnvironmentSpecificSettings:
         assert prod.SSL_VERIFY is True
 
         # Restrictive CORS
-        assert 'localhost' not in str(prod.CORS_ORIGINS).lower()
+        assert "localhost" not in str(prod.CORS_ORIGINS).lower()
 
         # High confidence threshold
         assert prod.CONFIDENCE_THRESHOLD >= 0.7

@@ -4,6 +4,7 @@ from typing import TypedDict, Annotated, List, Dict, Any, Optional
 import operator
 from langchain_core.messages import BaseMessage
 
+
 class AgentState(TypedDict):
     """
     State passed between LangGraph nodes.
@@ -17,14 +18,14 @@ class AgentState(TypedDict):
     difficulty: str  # "beginner" | "intermediate" | "advanced"
 
     # ----- Planning -----
-    plan: List[str]          # steps to execute
-    current_step: int        # index into plan
+    plan: List[str]  # steps to execute
+    current_step: int  # index into plan
 
     # ----- Execution -----
     # Use a list here so operator.add can concatenate message buffers.
     messages: Annotated[List[BaseMessage], operator.add]
-    tool_calls: List[Dict[str, Any]]     # history of tool invocations
-    tool_results: Dict[str, Any]         # latest results per tool name
+    tool_calls: List[Dict[str, Any]]  # history of tool invocations
+    tool_results: Dict[str, Any]  # latest results per tool name
 
     # ----- Reflection -----
     needs_more_info: bool
@@ -40,4 +41,4 @@ class AgentState(TypedDict):
     # ----- Output -----
     final_answer: str
     sources_used: List[str]
-    reasoning_trace: List[str]           # brief, user-safe trace
+    reasoning_trace: List[str]  # brief, user-safe trace

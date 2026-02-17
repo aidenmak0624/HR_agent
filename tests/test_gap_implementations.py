@@ -127,7 +127,9 @@ class TestMCPServer:
 
     def test_initialize(self):
         server = self._make_server()
-        resp = server.handle_request({"jsonrpc": "2.0", "method": "initialize", "id": 1, "params": {}})
+        resp = server.handle_request(
+            {"jsonrpc": "2.0", "method": "initialize", "id": 1, "params": {}}
+        )
         assert resp["id"] == 1
         assert "result" in resp
         assert resp["result"]["serverInfo"]["name"] == "test-server"
@@ -135,7 +137,9 @@ class TestMCPServer:
 
     def test_tools_list(self):
         server = self._make_server()
-        resp = server.handle_request({"jsonrpc": "2.0", "method": "tools/list", "id": 2, "params": {}})
+        resp = server.handle_request(
+            {"jsonrpc": "2.0", "method": "tools/list", "id": 2, "params": {}}
+        )
         assert resp["id"] == 2
         tools = resp["result"]["tools"]
         assert len(tools) == 1
@@ -143,16 +147,22 @@ class TestMCPServer:
 
     def test_tools_call(self):
         server = self._make_server()
-        resp = server.handle_request({
-            "jsonrpc": "2.0", "method": "tools/call", "id": 3,
-            "params": {"name": "mock.greet", "arguments": {"query": "world"}}
-        })
+        resp = server.handle_request(
+            {
+                "jsonrpc": "2.0",
+                "method": "tools/call",
+                "id": 3,
+                "params": {"name": "mock.greet", "arguments": {"query": "world"}},
+            }
+        )
         assert resp["id"] == 3
         assert resp["result"]["isError"] is False
 
     def test_invalid_method(self):
         server = self._make_server()
-        resp = server.handle_request({"jsonrpc": "2.0", "method": "nonexistent", "id": 4, "params": {}})
+        resp = server.handle_request(
+            {"jsonrpc": "2.0", "method": "nonexistent", "id": 4, "params": {}}
+        )
         assert "error" in resp
         assert resp["error"]["code"] == -32601
 
@@ -387,10 +397,12 @@ class TestOutputGuardrails:
         from src.core.guardrails import Guardrails
 
         g = Guardrails()
-        result = g.validate_output({
-            "answer": "Employee SSN: 123-45-6789",
-            "confidence": 0.9,
-        })
+        result = g.validate_output(
+            {
+                "answer": "Employee SSN: 123-45-6789",
+                "confidence": 0.9,
+            }
+        )
         assert result.pii_detected is True
         assert "SSN-REDACTED" in result.sanitized_response
         assert "123-45-6789" not in result.sanitized_response
@@ -399,10 +411,12 @@ class TestOutputGuardrails:
         from src.core.guardrails import Guardrails
 
         g = Guardrails()
-        result = g.validate_output({
-            "answer": "Card: 4111-1111-1111-1111",
-            "confidence": 0.9,
-        })
+        result = g.validate_output(
+            {
+                "answer": "Card: 4111-1111-1111-1111",
+                "confidence": 0.9,
+            }
+        )
         assert result.pii_detected is True
         assert "CC-REDACTED" in result.sanitized_response
 
@@ -410,10 +424,12 @@ class TestOutputGuardrails:
         from src.core.guardrails import Guardrails
 
         g = Guardrails()
-        result = g.validate_output({
-            "answer": "Contact john@example.com for details",
-            "confidence": 0.9,
-        })
+        result = g.validate_output(
+            {
+                "answer": "Contact john@example.com for details",
+                "confidence": 0.9,
+            }
+        )
         assert result.pii_detected is True
         assert "EMAIL-REDACTED" in result.sanitized_response
 

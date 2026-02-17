@@ -39,16 +39,12 @@ class MetricsConfig(BaseModel):
     """Metrics configuration model."""
 
     prefix: str = Field(default="hr_platform", description="Metrics prefix")
-    enable_default_metrics: bool = Field(
-        default=True, description="Enable default metrics"
-    )
+    enable_default_metrics: bool = Field(default=True, description="Enable default metrics")
     histogram_buckets: List[float] = Field(
         default=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0],
         description="Histogram bucket boundaries",
     )
-    enable_process_metrics: bool = Field(
-        default=True, description="Enable process-level metrics"
-    )
+    enable_process_metrics: bool = Field(default=True, description="Enable process-level metrics")
 
     model_config = ConfigDict(frozen=False)
 
@@ -230,9 +226,7 @@ class Histogram:
 
         logger.debug(f"Histogram created: {name} with {len(buckets)} buckets")
 
-    def observe(
-        self, value: float, labels: Optional[Dict[str, str]] = None
-    ) -> None:
+    def observe(self, value: float, labels: Optional[Dict[str, str]] = None) -> None:
         """
         Record observation in histogram.
 
@@ -425,17 +419,13 @@ class MetricsRegistry:
             elif isinstance(metric, Histogram):
                 for label_key, buckets in metric.bucket_counts.items():
                     label_suffix = (
-                        ""
-                        if label_key == "default"
-                        else "{" + label_key.replace(",", ", ") + "}"
+                        "" if label_key == "default" else "{" + label_key.replace(",", ", ") + "}"
                     )
                     for bucket, count in buckets.items():
                         if bucket == float("inf"):
                             lines.append(f'{name}_bucket{{le="+Inf"{label_suffix}}} {count}')
                         else:
-                            lines.append(
-                                f'{name}_bucket{{le="{bucket}"{label_suffix}}} {count}'
-                            )
+                            lines.append(f'{name}_bucket{{le="{bucket}"{label_suffix}}} {count}')
 
                     lines.append(f"{name}_sum{label_suffix} {metric.sums[label_key]}")
                     lines.append(f"{name}_count{label_suffix} {metric.counts[label_key]}")

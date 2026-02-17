@@ -25,6 +25,7 @@ from src.api.admin_routes import (
 # AdminConfig Tests
 # ============================================================================
 
+
 class TestAdminConfig:
     """Tests for AdminConfig model."""
 
@@ -43,7 +44,7 @@ class TestAdminConfig:
             max_users=500,
             audit_log_retention_days=180,
             session_timeout_minutes=30,
-            allowed_roles=["admin", "user"]
+            allowed_roles=["admin", "user"],
         )
 
         assert config.max_users == 500
@@ -68,16 +69,14 @@ class TestAdminConfig:
 # UserRecord Tests
 # ============================================================================
 
+
 class TestUserRecord:
     """Tests for UserRecord model."""
 
     def test_user_record_defaults(self):
         """Test UserRecord with default values."""
         user = UserRecord(
-            username="john_doe",
-            email="john@example.com",
-            role="employee",
-            department="Engineering"
+            username="john_doe", email="john@example.com", role="employee", department="Engineering"
         )
 
         assert isinstance(user.user_id, UUID)
@@ -100,7 +99,7 @@ class TestUserRecord:
             department="Management",
             is_active=False,
             permissions=["user:read", "user:create"],
-            metadata={"phone": "555-1234"}
+            metadata={"phone": "555-1234"},
         )
 
         assert user.user_id == user_id
@@ -112,16 +111,10 @@ class TestUserRecord:
     def test_user_record_uuid_generation(self):
         """Test UserRecord generates unique UUIDs."""
         user1 = UserRecord(
-            username="user1",
-            email="user1@example.com",
-            role="employee",
-            department="Engineering"
+            username="user1", email="user1@example.com", role="employee", department="Engineering"
         )
         user2 = UserRecord(
-            username="user2",
-            email="user2@example.com",
-            role="employee",
-            department="Engineering"
+            username="user2", email="user2@example.com", role="employee", department="Engineering"
         )
 
         assert user1.user_id != user2.user_id
@@ -134,7 +127,7 @@ class TestUserRecord:
             email="manager@example.com",
             role="manager",
             department="Management",
-            permissions=permissions
+            permissions=permissions,
         )
 
         assert user.permissions == permissions
@@ -145,6 +138,7 @@ class TestUserRecord:
 # RoleDefinition Tests
 # ============================================================================
 
+
 class TestRoleDefinition:
     """Tests for RoleDefinition model."""
 
@@ -153,7 +147,7 @@ class TestRoleDefinition:
         role = RoleDefinition(
             name="custom_role",
             description="A custom role",
-            permissions=["user:read", "user:update"]
+            permissions=["user:read", "user:update"],
         )
 
         assert isinstance(role.role_id, UUID)
@@ -173,7 +167,7 @@ class TestRoleDefinition:
             permissions=["user:read", "user:create", "user:update"],
             is_system_role=False,
             created_at=created_at,
-            created_by="admin_user"
+            created_by="admin_user",
         )
 
         assert role.role_id == role_id
@@ -187,7 +181,7 @@ class TestRoleDefinition:
             description="Admin role",
             permissions=[],
             is_system_role=True,
-            created_by="SYSTEM"
+            created_by="SYSTEM",
         )
 
         assert system_role.is_system_role is True
@@ -198,15 +192,13 @@ class TestRoleDefinition:
 # AuditLogEntry Tests
 # ============================================================================
 
+
 class TestAuditLogEntry:
     """Tests for AuditLogEntry model."""
 
     def test_audit_log_entry_defaults(self):
         """Test AuditLogEntry with default values."""
-        entry = AuditLogEntry(
-            action="user_created",
-            resource="user:123"
-        )
+        entry = AuditLogEntry(action="user_created", resource="user:123")
 
         assert isinstance(entry.entry_id, UUID)
         assert isinstance(entry.timestamp, datetime)
@@ -227,7 +219,7 @@ class TestAuditLogEntry:
             resource="user:456",
             details={"field": "role", "old": "employee", "new": "manager"},
             ip_address="192.168.1.1",
-            status="success"
+            status="success",
         )
 
         assert entry.user_id == "admin_user"
@@ -237,17 +229,9 @@ class TestAuditLogEntry:
 
     def test_audit_log_entry_status_field(self):
         """Test AuditLogEntry status field."""
-        success_entry = AuditLogEntry(
-            action="user_created",
-            resource="user:789",
-            status="success"
-        )
+        success_entry = AuditLogEntry(action="user_created", resource="user:789", status="success")
 
-        failure_entry = AuditLogEntry(
-            action="user_created",
-            resource="user:999",
-            status="failure"
-        )
+        failure_entry = AuditLogEntry(action="user_created", resource="user:999", status="failure")
 
         assert success_entry.status == "success"
         assert failure_entry.status == "failure"
@@ -257,16 +241,13 @@ class TestAuditLogEntry:
 # SystemConfig Tests
 # ============================================================================
 
+
 class TestSystemConfig:
     """Tests for SystemConfig model."""
 
     def test_system_config_defaults(self):
         """Test SystemConfig with default values."""
-        config = SystemConfig(
-            key="app_name",
-            value="HR Agent",
-            category="general"
-        )
+        config = SystemConfig(key="app_name", value="HR Agent", category="general")
 
         assert isinstance(config.config_id, UUID)
         assert config.key == "app_name"
@@ -285,7 +266,7 @@ class TestSystemConfig:
             category="security",
             updated_at=updated_at,
             updated_by="admin_user",
-            is_sensitive=True
+            is_sensitive=True,
         )
 
         assert config.config_id == config_id
@@ -295,17 +276,11 @@ class TestSystemConfig:
     def test_system_config_is_sensitive(self):
         """Test SystemConfig is_sensitive field."""
         sensitive_config = SystemConfig(
-            key="db_password",
-            value="secret_password",
-            category="database",
-            is_sensitive=True
+            key="db_password", value="secret_password", category="database", is_sensitive=True
         )
 
         non_sensitive_config = SystemConfig(
-            key="app_version",
-            value="1.0.0",
-            category="general",
-            is_sensitive=False
+            key="app_version", value="1.0.0", category="general", is_sensitive=False
         )
 
         assert sensitive_config.is_sensitive is True
@@ -315,6 +290,7 @@ class TestSystemConfig:
 # ============================================================================
 # AdminService Tests
 # ============================================================================
+
 
 class TestAdminServiceInit:
     """Tests for AdminService initialization."""
@@ -350,6 +326,7 @@ class TestAdminServiceInit:
 # ============================================================================
 # List Users Tests
 # ============================================================================
+
 
 class TestListUsers:
     """Tests for AdminService.list_users()."""
@@ -393,6 +370,7 @@ class TestListUsers:
 # Create User Tests
 # ============================================================================
 
+
 class TestCreateUser:
     """Tests for AdminService.create_user()."""
 
@@ -433,6 +411,7 @@ class TestCreateUser:
 # Update User Tests
 # ============================================================================
 
+
 class TestUpdateUser:
     """Tests for AdminService.update_user()."""
 
@@ -468,6 +447,7 @@ class TestUpdateUser:
 # Deactivate/Activate User Tests
 # ============================================================================
 
+
 class TestDeactivateActivateUser:
     """Tests for AdminService deactivate/activate user."""
 
@@ -502,6 +482,7 @@ class TestDeactivateActivateUser:
 # ============================================================================
 # List Roles Tests
 # ============================================================================
+
 
 class TestListRoles:
     """Tests for AdminService.list_roles()."""
@@ -539,6 +520,7 @@ class TestListRoles:
 # Create Role Tests
 # ============================================================================
 
+
 class TestCreateRole:
     """Tests for AdminService.create_role()."""
 
@@ -563,7 +545,7 @@ class TestCreateRole:
         service = AdminService()
         role = service.create_role("auditor", "Auditor role", ["audit:read", "audit:export"])
 
-        retrieved = service.get_flag(role.name) if hasattr(service, 'get_flag') else None
+        retrieved = service.get_flag(role.name) if hasattr(service, "get_flag") else None
         roles = service.list_roles()
         stored_role = [r for r in roles if r.role_id == role.role_id]
 
@@ -573,6 +555,7 @@ class TestCreateRole:
 # ============================================================================
 # Delete Role Tests
 # ============================================================================
+
 
 class TestDeleteRole:
     """Tests for AdminService.delete_role()."""
@@ -607,6 +590,7 @@ class TestDeleteRole:
 # ============================================================================
 # Get Audit Logs Tests
 # ============================================================================
+
 
 class TestGetAuditLogs:
     """Tests for AdminService.get_audit_logs()."""
@@ -649,6 +633,7 @@ class TestGetAuditLogs:
 # ============================================================================
 # Export Audit Logs Tests
 # ============================================================================
+
 
 class TestExportAuditLogs:
     """Tests for AdminService.export_audit_logs()."""
@@ -698,6 +683,7 @@ class TestExportAuditLogs:
 # ============================================================================
 # Get System Stats Tests
 # ============================================================================
+
 
 class TestGetSystemStats:
     """Tests for AdminService.get_system_stats()."""

@@ -22,6 +22,7 @@ from src.core.feature_flags import (
 # FlagType Enum Tests
 # ============================================================================
 
+
 class TestFlagType:
     """Tests for FlagType enum."""
 
@@ -47,6 +48,7 @@ class TestFlagType:
 # FlagStatus Enum Tests
 # ============================================================================
 
+
 class TestFlagStatus:
     """Tests for FlagStatus enum."""
 
@@ -71,15 +73,14 @@ class TestFlagStatus:
 # FeatureFlag Tests
 # ============================================================================
 
+
 class TestFeatureFlag:
     """Tests for FeatureFlag model."""
 
     def test_feature_flag_defaults(self):
         """Test FeatureFlag with default values."""
         flag = FeatureFlag(
-            name="test_feature",
-            description="Test feature flag",
-            flag_type=FlagType.BOOLEAN
+            name="test_feature", description="Test feature flag", flag_type=FlagType.BOOLEAN
         )
 
         assert isinstance(flag.flag_id, UUID)
@@ -101,7 +102,7 @@ class TestFeatureFlag:
             enabled=True,
             percentage=50.0,
             created_at=created_at,
-            created_by="admin"
+            created_by="admin",
         )
 
         assert flag.flag_id == flag_id
@@ -111,16 +112,8 @@ class TestFeatureFlag:
 
     def test_feature_flag_uuid_generation(self):
         """Test FeatureFlag generates unique UUIDs."""
-        flag1 = FeatureFlag(
-            name="flag1",
-            description="First flag",
-            flag_type=FlagType.BOOLEAN
-        )
-        flag2 = FeatureFlag(
-            name="flag2",
-            description="Second flag",
-            flag_type=FlagType.BOOLEAN
-        )
+        flag1 = FeatureFlag(name="flag1", description="First flag", flag_type=FlagType.BOOLEAN)
+        flag2 = FeatureFlag(name="flag2", description="Second flag", flag_type=FlagType.BOOLEAN)
 
         assert flag1.flag_id != flag2.flag_id
 
@@ -130,7 +123,7 @@ class TestFeatureFlag:
             name="pct_flag",
             description="Percentage flag",
             flag_type=FlagType.PERCENTAGE,
-            percentage=75.5
+            percentage=75.5,
         )
 
         assert flag.percentage == 75.5
@@ -141,16 +134,13 @@ class TestFeatureFlag:
 # FlagEvaluation Tests
 # ============================================================================
 
+
 class TestFlagEvaluation:
     """Tests for FlagEvaluation model."""
 
     def test_flag_evaluation_defaults(self):
         """Test FlagEvaluation with default values."""
-        evaluation = FlagEvaluation(
-            flag_name="test_flag",
-            result=True,
-            reason="Flag enabled"
-        )
+        evaluation = FlagEvaluation(flag_name="test_flag", result=True, reason="Flag enabled")
 
         assert evaluation.flag_name == "test_flag"
         assert evaluation.result is True
@@ -165,7 +155,7 @@ class TestFlagEvaluation:
             user_id="user123",
             result=False,
             reason="User not in allowed list",
-            evaluated_at=eval_time
+            evaluated_at=eval_time,
         )
 
         assert evaluation.user_id == "user123"
@@ -174,17 +164,9 @@ class TestFlagEvaluation:
 
     def test_flag_evaluation_result(self):
         """Test FlagEvaluation result field."""
-        enabled_eval = FlagEvaluation(
-            flag_name="flag1",
-            result=True,
-            reason="Enabled"
-        )
+        enabled_eval = FlagEvaluation(flag_name="flag1", result=True, reason="Enabled")
 
-        disabled_eval = FlagEvaluation(
-            flag_name="flag1",
-            result=False,
-            reason="Disabled"
-        )
+        disabled_eval = FlagEvaluation(flag_name="flag1", result=False, reason="Disabled")
 
         assert enabled_eval.result is True
         assert disabled_eval.result is False
@@ -193,6 +175,7 @@ class TestFlagEvaluation:
 # ============================================================================
 # FeatureFlagConfig Tests
 # ============================================================================
+
 
 class TestFeatureFlagConfig:
     """Tests for FeatureFlagConfig model."""
@@ -209,10 +192,7 @@ class TestFeatureFlagConfig:
     def test_feature_flag_config_custom_values(self):
         """Test FeatureFlagConfig with custom values."""
         config = FeatureFlagConfig(
-            cache_ttl_seconds=120,
-            default_enabled=True,
-            audit_evaluations=True,
-            max_flags=1000
+            cache_ttl_seconds=120, default_enabled=True, audit_evaluations=True, max_flags=1000
         )
 
         assert config.cache_ttl_seconds == 120
@@ -230,6 +210,7 @@ class TestFeatureFlagConfig:
 # ============================================================================
 # FeatureFlagService Init Tests
 # ============================================================================
+
 
 class TestFeatureFlagServiceInit:
     """Tests for FeatureFlagService initialization."""
@@ -262,17 +243,14 @@ class TestFeatureFlagServiceInit:
 # Create Flag Tests
 # ============================================================================
 
+
 class TestCreateFlag:
     """Tests for FeatureFlagService.create_flag()."""
 
     def test_create_flag_creates_boolean(self):
         """Test create_flag creates boolean flag."""
         service = FeatureFlagService()
-        flag = service.create_flag(
-            "new_feature",
-            "New feature flag",
-            FlagType.BOOLEAN
-        )
+        flag = service.create_flag("new_feature", "New feature flag", FlagType.BOOLEAN)
 
         assert flag.name == "new_feature"
         assert flag.flag_type == FlagType.BOOLEAN
@@ -281,10 +259,7 @@ class TestCreateFlag:
         """Test create_flag creates percentage flag."""
         service = FeatureFlagService()
         flag = service.create_flag(
-            "rollout_feature",
-            "Percentage rollout",
-            FlagType.PERCENTAGE,
-            percentage=25.0
+            "rollout_feature", "Percentage rollout", FlagType.PERCENTAGE, percentage=25.0
         )
 
         assert flag.flag_type == FlagType.PERCENTAGE
@@ -297,7 +272,7 @@ class TestCreateFlag:
             "beta_feature",
             "Beta feature for users",
             FlagType.USER_LIST,
-            allowed_users=["user1", "user2"]
+            allowed_users=["user1", "user2"],
         )
 
         assert flag.flag_type == FlagType.USER_LIST
@@ -314,7 +289,7 @@ class TestCreateFlag:
             "Time-based feature",
             FlagType.SCHEDULE,
             schedule_start=start,
-            schedule_end=end
+            schedule_end=end,
         )
 
         assert flag.flag_type == FlagType.SCHEDULE
@@ -324,6 +299,7 @@ class TestCreateFlag:
 # ============================================================================
 # Get Flag Tests
 # ============================================================================
+
 
 class TestGetFlag:
     """Tests for FeatureFlagService.get_flag()."""
@@ -358,6 +334,7 @@ class TestGetFlag:
 # Update Flag Tests
 # ============================================================================
 
+
 class TestUpdateFlag:
     """Tests for FeatureFlagService.update_flag()."""
 
@@ -367,8 +344,7 @@ class TestUpdateFlag:
         service.create_flag("flag1", "Original", FlagType.BOOLEAN)
 
         updated = service.update_flag(
-            "flag1",
-            {"description": "Updated description", "enabled": True}
+            "flag1", {"description": "Updated description", "enabled": True}
         )
 
         assert updated.description == "Updated description"
@@ -379,10 +355,7 @@ class TestUpdateFlag:
         service = FeatureFlagService()
         service.create_flag("flag2", "Original", FlagType.BOOLEAN)
 
-        updated = service.update_flag(
-            "flag2",
-            {"status": FlagStatus.ACTIVE}
-        )
+        updated = service.update_flag("flag2", {"status": FlagStatus.ACTIVE})
 
         assert updated.status == FlagStatus.ACTIVE
 
@@ -397,6 +370,7 @@ class TestUpdateFlag:
 # ============================================================================
 # Delete Flag Tests
 # ============================================================================
+
 
 class TestDeleteFlag:
     """Tests for FeatureFlagService.delete_flag()."""
@@ -431,6 +405,7 @@ class TestDeleteFlag:
 # Archive Flag Tests
 # ============================================================================
 
+
 class TestArchiveFlag:
     """Tests for FeatureFlagService.archive_flag()."""
 
@@ -464,6 +439,7 @@ class TestArchiveFlag:
 # Is Enabled Tests
 # ============================================================================
 
+
 class TestIsEnabled:
     """Tests for FeatureFlagService.is_enabled()."""
 
@@ -471,11 +447,7 @@ class TestIsEnabled:
         """Test is_enabled with boolean flag enabled."""
         service = FeatureFlagService()
         service.create_flag(
-            "bool_flag",
-            "Boolean",
-            FlagType.BOOLEAN,
-            enabled=True,
-            status=FlagStatus.ACTIVE
+            "bool_flag", "Boolean", FlagType.BOOLEAN, enabled=True, status=FlagStatus.ACTIVE
         )
 
         result = service.is_enabled("bool_flag")
@@ -495,11 +467,7 @@ class TestIsEnabled:
         """Test is_enabled with percentage flag."""
         service = FeatureFlagService()
         service.create_flag(
-            "pct_flag",
-            "Percentage",
-            FlagType.PERCENTAGE,
-            enabled=True,
-            percentage=50.0
+            "pct_flag", "Percentage", FlagType.PERCENTAGE, enabled=True, percentage=50.0
         )
 
         result = service.is_enabled("pct_flag", user_id="user123")
@@ -515,7 +483,7 @@ class TestIsEnabled:
             FlagType.USER_LIST,
             enabled=True,
             status=FlagStatus.ACTIVE,
-            allowed_users=["user1", "user2"]
+            allowed_users=["user1", "user2"],
         )
 
         result1 = service.is_enabled("user_flag", user_id="user1")
@@ -529,6 +497,7 @@ class TestIsEnabled:
 # Evaluate Flag Tests
 # ============================================================================
 
+
 class TestEvaluateFlag:
     """Tests for FeatureFlagService.evaluate_flag()."""
 
@@ -536,11 +505,7 @@ class TestEvaluateFlag:
         """Test evaluate_flag with boolean flag."""
         service = FeatureFlagService()
         service.create_flag(
-            "eval_flag",
-            "Eval",
-            FlagType.BOOLEAN,
-            enabled=True,
-            status=FlagStatus.ACTIVE
+            "eval_flag", "Eval", FlagType.BOOLEAN, enabled=True, status=FlagStatus.ACTIVE
         )
 
         evaluation = service.evaluate_flag("eval_flag")
@@ -552,11 +517,7 @@ class TestEvaluateFlag:
         """Test evaluate_flag with percentage flag."""
         service = FeatureFlagService()
         service.create_flag(
-            "pct_eval",
-            "Percent",
-            FlagType.PERCENTAGE,
-            enabled=True,
-            percentage=50.0
+            "pct_eval", "Percent", FlagType.PERCENTAGE, enabled=True, percentage=50.0
         )
 
         evaluation = service.evaluate_flag("pct_eval", user_id="user_test")
@@ -573,7 +534,7 @@ class TestEvaluateFlag:
             FlagType.USER_LIST,
             enabled=True,
             status=FlagStatus.ACTIVE,
-            allowed_users=["alice", "bob"]
+            allowed_users=["alice", "bob"],
         )
 
         eval_alice = service.evaluate_flag("user_eval", user_id="alice")
@@ -595,7 +556,7 @@ class TestEvaluateFlag:
             FlagType.SCHEDULE,
             enabled=True,
             schedule_start=start,
-            schedule_end=end
+            schedule_end=end,
         )
 
         evaluation = service.evaluate_flag("schedule_eval")
@@ -607,6 +568,7 @@ class TestEvaluateFlag:
 # ============================================================================
 # List Flags Tests
 # ============================================================================
+
 
 class TestListFlags:
     """Tests for FeatureFlagService.list_flags()."""
@@ -646,6 +608,7 @@ class TestListFlags:
 # Bulk Evaluate Tests
 # ============================================================================
 
+
 class TestBulkEvaluate:
     """Tests for FeatureFlagService.bulk_evaluate()."""
 
@@ -653,11 +616,7 @@ class TestBulkEvaluate:
         """Test bulk_evaluate evaluates multiple flags."""
         service = FeatureFlagService()
         service.create_flag(
-            "flag1",
-            "First",
-            FlagType.BOOLEAN,
-            enabled=True,
-            status=FlagStatus.ACTIVE
+            "flag1", "First", FlagType.BOOLEAN, enabled=True, status=FlagStatus.ACTIVE
         )
         service.create_flag("flag2", "Second", FlagType.BOOLEAN, enabled=False)
 
@@ -691,6 +650,7 @@ class TestBulkEvaluate:
 # ============================================================================
 # Get Stats Tests
 # ============================================================================
+
 
 class TestGetStats:
     """Tests for FeatureFlagService.get_stats()."""

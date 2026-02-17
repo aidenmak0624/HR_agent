@@ -56,7 +56,7 @@ class TestCacheEntry:
             value={"id": 123, "name": "John"},
             access_count=5,
             size_bytes=256,
-            tags=["employee", "profile"]
+            tags=["employee", "profile"],
         )
         assert entry.key == "employee:123"
         assert entry.access_count == 5
@@ -70,11 +70,7 @@ class TestCacheEntry:
 
     def test_cache_entry_tags_list(self):
         """Test tags list field."""
-        entry = CacheEntry(
-            key="key1",
-            value="value1",
-            tags=["tag1", "tag2", "tag3"]
-        )
+        entry = CacheEntry(key="key1", value="value1", tags=["tag1", "tag2", "tag3"])
         assert len(entry.tags) == 3
         assert "tag1" in entry.tags
 
@@ -96,10 +92,7 @@ class TestCacheConfig:
     def test_cache_config_custom_values(self):
         """Test custom values in CacheConfig."""
         config = CacheConfig(
-            strategy=CacheStrategy.LFU,
-            max_entries=500,
-            default_ttl_seconds=600,
-            redis_enabled=True
+            strategy=CacheStrategy.LFU, max_entries=500, default_ttl_seconds=600, redis_enabled=True
         )
         assert config.strategy == CacheStrategy.LFU
         assert config.max_entries == 500
@@ -113,10 +106,7 @@ class TestCacheConfig:
 
     def test_cache_config_redis_settings(self):
         """Test redis configuration settings."""
-        config = CacheConfig(
-            redis_enabled=True,
-            redis_url="redis://localhost:6379/1"
-        )
+        config = CacheConfig(redis_enabled=True, redis_url="redis://localhost:6379/1")
         assert config.redis_enabled is True
         assert config.redis_url == "redis://localhost:6379/1"
 
@@ -144,7 +134,7 @@ class TestCacheStats:
             total_entries=425,
             memory_used_mb=128.5,
             evictions_count=125,
-            avg_response_time_ms=2.3
+            avg_response_time_ms=2.3,
         )
         assert stats.total_hits == 1500
         assert stats.total_misses == 300
@@ -153,21 +143,12 @@ class TestCacheStats:
 
     def test_cache_stats_hit_rate_calculation(self):
         """Test hit rate calculation field."""
-        stats = CacheStats(
-            total_hits=800,
-            total_misses=200,
-            hit_rate=0.8
-        )
+        stats = CacheStats(total_hits=800, total_misses=200, hit_rate=0.8)
         assert stats.hit_rate == 0.8
 
     def test_cache_stats_zero_state(self):
         """Test zero state statistics."""
-        stats = CacheStats(
-            total_hits=0,
-            total_misses=0,
-            hit_rate=0.0,
-            total_entries=0
-        )
+        stats = CacheStats(total_hits=0, total_misses=0, hit_rate=0.0, total_entries=0)
         assert stats.total_hits == 0
         assert stats.hit_rate == 0.0
 
@@ -236,6 +217,7 @@ class TestGet:
         service.set("key1", "value1", ttl=1)
 
         import time
+
         time.sleep(1.1)
 
         result = service.get("key1")
@@ -345,6 +327,7 @@ class TestExists:
         service.set("key1", "value1", ttl=0)
 
         import time
+
         time.sleep(0.1)
 
         # Might be expired depending on timing
@@ -443,6 +426,7 @@ class TestGetOrSet:
         service = QueryCacheService(config)
 
         called = []
+
         def factory():
             called.append(True)
             return "computed_value"
@@ -691,6 +675,7 @@ class TestEvict:
             service.set(f"key{i}", f"value{i}", ttl=3600)  # Longer TTLs
 
         import time
+
         time.sleep(0.1)
 
         service.set("key10", "value10", ttl=3600)

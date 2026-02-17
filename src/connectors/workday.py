@@ -70,9 +70,9 @@ class WorkdayConnector(HRISConnector):
         """
         settings = get_settings()
 
-        self.client_id = client_id or getattr(settings, 'WORKDAY_CLIENT_ID', None)
-        self.client_secret = client_secret or getattr(settings, 'WORKDAY_CLIENT_SECRET', None)
-        self.tenant_url = tenant_url or getattr(settings, 'WORKDAY_TENANT_URL', None)
+        self.client_id = client_id or getattr(settings, "WORKDAY_CLIENT_ID", None)
+        self.client_secret = client_secret or getattr(settings, "WORKDAY_CLIENT_SECRET", None)
+        self.tenant_url = tenant_url or getattr(settings, "WORKDAY_TENANT_URL", None)
         self.api_version = api_version
 
         if not all([self.client_id, self.client_secret, self.tenant_url]):
@@ -124,17 +124,19 @@ class WorkdayConnector(HRISConnector):
             Configured requests.Session with retry logic
         """
         session = requests.Session()
-        session.headers.update({
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        })
+        session.headers.update(
+            {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
+        )
 
         # Retry strategy for rate limits and transient errors
         retry_strategy = Retry(
             total=3,
             backoff_factor=2,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["GET", "POST", "PUT", "DELETE"]
+            allowed_methods=["GET", "POST", "PUT", "DELETE"],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("http://", adapter)
@@ -152,7 +154,11 @@ class WorkdayConnector(HRISConnector):
         Raises:
             AuthenticationError: If token acquisition fails
         """
-        if self._access_token and self._token_expires_at and datetime.utcnow() < self._token_expires_at:
+        if (
+            self._access_token
+            and self._token_expires_at
+            and datetime.utcnow() < self._token_expires_at
+        ):
             logger.debug("Using cached access token")
             return self._access_token
 
@@ -224,11 +230,7 @@ class WorkdayConnector(HRISConnector):
             logger.warning(f"Rate limit: {self._rate_limit_remaining} requests remaining")
 
     def _make_request(
-        self,
-        method: str,
-        endpoint: str,
-        max_retries: int = 3,
-        **kwargs
+        self, method: str, endpoint: str, max_retries: int = 3, **kwargs
     ) -> Dict[str, Any]:
         """
         Make API request with exponential backoff retry logic.
@@ -275,15 +277,17 @@ class WorkdayConnector(HRISConnector):
                     raise NotFoundError(f"Resource not found: {endpoint}")
 
                 if response.status_code == 429:
-                    wait_seconds = min(2 ** attempt, 60)
+                    wait_seconds = min(2**attempt, 60)
                     logger.warning(f"Rate limited, retrying in {wait_seconds}s")
                     time.sleep(wait_seconds)
                     continue
 
                 if response.status_code >= 500:
                     if attempt < max_retries - 1:
-                        wait_seconds = min(2 ** attempt, 60)
-                        logger.warning(f"Server error ({response.status_code}), retrying in {wait_seconds}s")
+                        wait_seconds = min(2**attempt, 60)
+                        logger.warning(
+                            f"Server error ({response.status_code}), retrying in {wait_seconds}s"
+                        )
                         time.sleep(wait_seconds)
                         continue
                     else:
@@ -294,7 +298,7 @@ class WorkdayConnector(HRISConnector):
 
             except requests.exceptions.Timeout as e:
                 if attempt < max_retries - 1:
-                    wait_seconds = min(2 ** attempt, 60)
+                    wait_seconds = min(2**attempt, 60)
                     logger.warning(f"Request timeout, retrying in {wait_seconds}s")
                     time.sleep(wait_seconds)
                     continue
@@ -302,7 +306,7 @@ class WorkdayConnector(HRISConnector):
 
             except requests.exceptions.ConnectionError as e:
                 if attempt < max_retries - 1:
-                    wait_seconds = min(2 ** attempt, 60)
+                    wait_seconds = min(2**attempt, 60)
                     logger.warning(f"Connection error, retrying in {wait_seconds}s")
                     time.sleep(wait_seconds)
                     continue
@@ -487,8 +491,7 @@ class WorkdayConnector(HRISConnector):
             for item in data_list:
                 try:
                     leave_type = leave_type_map.get(
-                        item.get("leave_type", "").lower(),
-                        LeaveType.OTHER
+                        item.get("leave_type", "").lower(), LeaveType.OTHER
                     )
                     balance = LeaveBalance(
                         employee_id=employee_id,
@@ -554,15 +557,11 @@ class WorkdayConnector(HRISConnector):
                         id=item.get("id"),
                         employee_id=employee_id,
                         leave_type=leave_type_map.get(
-                            item.get("leave_type", "").lower(),
-                            LeaveType.OTHER
+                            item.get("leave_type", "").lower(), LeaveType.OTHER
                         ),
                         start_date=datetime.fromisoformat(item.get("start_date")),
                         end_date=datetime.fromisoformat(item.get("end_date")),
-                        status=status_map.get(
-                            item.get("status", "").lower(),
-                            LeaveStatus.PENDING
-                        ),
+                        status=status_map.get(item.get("status", "").lower(), LeaveStatus.PENDING),
                         reason=item.get("reason"),
                         approver_id=item.get("approver_id"),
                         submitted_at=datetime.fromisoformat(item.get("submitted_at")),
@@ -592,7 +591,9 @@ class WorkdayConnector(HRISConnector):
         try:
             payload = {
                 "employee_id": request.employee_id,
-                "leave_type": request.leave_type.value if isinstance(request.leave_type, LeaveType) else request.leave_type,
+                "leave_type": request.leave_type.value
+                if isinstance(request.leave_type, LeaveType)
+                else request.leave_type,
                 "start_date": request.start_date.isoformat(),
                 "end_date": request.end_date.isoformat(),
                 "reason": request.reason,
@@ -601,14 +602,14 @@ class WorkdayConnector(HRISConnector):
 
             logger.debug(f"Submitting leave request for {request.employee_id}")
             response = self._make_request(
-                "POST",
-                f"employees/{request.employee_id}/leave-requests",
-                json=payload
+                "POST", f"employees/{request.employee_id}/leave-requests", json=payload
             )
 
             # Assign ID from response
             request.id = response.get("id") or str(uuid.uuid4())
-            request.submitted_at = datetime.fromisoformat(response.get("submitted_at", datetime.utcnow().isoformat()))
+            request.submitted_at = datetime.fromisoformat(
+                response.get("submitted_at", datetime.utcnow().isoformat())
+            )
 
             logger.info(f"Leave request submitted: {request.id}")
             return request
@@ -690,8 +691,7 @@ class WorkdayConnector(HRISConnector):
                         id=item.get("id"),
                         name=item.get("name", ""),
                         plan_type=plan_type_map.get(
-                            item.get("plan_type", "").lower(),
-                            PlanType.OTHER
+                            item.get("plan_type", "").lower(), PlanType.OTHER
                         ),
                         coverage_level=item.get("coverage_level", ""),
                         employee_cost=float(item.get("employee_cost", 0)),

@@ -40,9 +40,7 @@ class Alert(BaseModel):
     title: str = Field(description="Alert title")
     message: str = Field(description="Alert message")
     source: str = Field(default="", description="Alert source")
-    timestamp: datetime = Field(
-        default_factory=datetime.now, description="Alert timestamp"
-    )
+    timestamp: datetime = Field(default_factory=datetime.now, description="Alert timestamp")
     metadata: Dict = Field(default={}, description="Additional metadata")
     acknowledged: bool = Field(default=False, description="Whether alert is acknowledged")
 
@@ -58,9 +56,7 @@ class AlertRule(BaseModel):
     window_seconds: int = Field(default=300, description="Time window in seconds")
     severity: AlertSeverity = Field(description="Alert severity when triggered")
     channels: List[AlertChannel] = Field(description="Delivery channels")
-    cooldown_seconds: int = Field(
-        default=600, description="Cooldown between alerts in seconds"
-    )
+    cooldown_seconds: int = Field(default=600, description="Cooldown between alerts in seconds")
     enabled: bool = Field(default=True, description="Whether rule is enabled")
 
     model_config = ConfigDict(frozen=False)
@@ -73,15 +69,9 @@ class AlertingConfig(BaseModel):
     default_channels: List[AlertChannel] = Field(
         default=[AlertChannel.LOG], description="Default alert channels"
     )
-    slack_webhook_url: str = Field(
-        default="", description="Slack webhook URL for alerts"
-    )
-    pagerduty_routing_key: str = Field(
-        default="", description="PagerDuty routing key"
-    )
-    email_recipients: List[str] = Field(
-        default=[], description="Email recipients for alerts"
-    )
+    slack_webhook_url: str = Field(default="", description="Slack webhook URL for alerts")
+    pagerduty_routing_key: str = Field(default="", description="PagerDuty routing key")
+    email_recipients: List[str] = Field(default=[], description="Email recipients for alerts")
     rules: List[AlertRule] = Field(default=[], description="Alert rules")
 
     model_config = ConfigDict(frozen=False)

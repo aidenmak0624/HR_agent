@@ -32,9 +32,7 @@ class CORSConfig(BaseModel):
         description="Headers exposed to client",
     )
     max_age: int = Field(default=3600, description="Preflight cache duration in seconds")
-    allow_credentials: bool = Field(
-        default=True, description="Allow credentials in CORS requests"
-    )
+    allow_credentials: bool = Field(default=True, description="Allow credentials in CORS requests")
 
     model_config = ConfigDict(frozen=False)
 
@@ -47,15 +45,11 @@ class CSPConfig(BaseModel):
         default="'self' 'unsafe-inline' https://cdn.jsdelivr.net",
         description="Script source policy",
     )
-    style_src: str = Field(
-        default="'self' 'unsafe-inline'", description="Style source policy"
-    )
+    style_src: str = Field(default="'self' 'unsafe-inline'", description="Style source policy")
     img_src: str = Field(default="'self' data:", description="Image source policy")
     font_src: str = Field(default="'self'", description="Font source policy")
     connect_src: str = Field(default="'self'", description="Connect source policy")
-    frame_ancestors: str = Field(
-        default="'none'", description="Frame ancestors policy"
-    )
+    frame_ancestors: str = Field(default="'none'", description="Frame ancestors policy")
     base_uri: str = Field(default="'self'", description="Base URI policy")
     form_action: str = Field(default="'self'", description="Form action policy")
 
@@ -287,8 +281,6 @@ class CORSMiddleware:
             "origins_blocked": self.origins_blocked,
             "preflights_handled": self.preflights_handled,
             "block_rate": (
-                self.origins_blocked / self.requests_processed
-                if self.requests_processed > 0
-                else 0
+                self.origins_blocked / self.requests_processed if self.requests_processed > 0 else 0
             ),
         }

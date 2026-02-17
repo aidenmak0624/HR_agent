@@ -23,9 +23,7 @@ class TestConsentManagement:
         service = GDPRComplianceService()
 
         record = service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         assert isinstance(record, ConsentRecord)
@@ -40,9 +38,7 @@ class TestConsentManagement:
         service = GDPRComplianceService()
 
         record = service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.ANALYTICS,
-            granted=False
+            employee_id="emp_001", purpose=ConsentPurpose.ANALYTICS, granted=False
         )
 
         assert record.granted is False
@@ -53,15 +49,12 @@ class TestConsentManagement:
 
         # First, grant consent
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.MARKETING, granted=True
         )
 
         # Then revoke it
         revoked_record = service.revoke_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING
+            employee_id="emp_001", purpose=ConsentPurpose.MARKETING
         )
 
         assert revoked_record.revoked_at is not None
@@ -71,10 +64,7 @@ class TestConsentManagement:
         service = GDPRComplianceService()
 
         with pytest.raises(ValueError, match="No consent records"):
-            service.revoke_consent(
-                employee_id="emp_001",
-                purpose=ConsentPurpose.MARKETING
-            )
+            service.revoke_consent(employee_id="emp_001", purpose=ConsentPurpose.MARKETING)
 
     def test_revoke_already_revoked_consent_raises(self):
         """revoke_consent raises error if already revoked."""
@@ -82,21 +72,13 @@ class TestConsentManagement:
 
         # Record and revoke
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.MARKETING, granted=True
         )
-        service.revoke_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING
-        )
+        service.revoke_consent(employee_id="emp_001", purpose=ConsentPurpose.MARKETING)
 
         # Try to revoke again
         with pytest.raises(ValueError, match="No active consent"):
-            service.revoke_consent(
-                employee_id="emp_001",
-                purpose=ConsentPurpose.MARKETING
-            )
+            service.revoke_consent(employee_id="emp_001", purpose=ConsentPurpose.MARKETING)
 
 
 class TestConsentVerification:
@@ -107,14 +89,11 @@ class TestConsentVerification:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         has_consent = service.check_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING
         )
 
         assert has_consent is True
@@ -124,15 +103,10 @@ class TestConsentVerification:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.ANALYTICS,
-            granted=False
+            employee_id="emp_001", purpose=ConsentPurpose.ANALYTICS, granted=False
         )
 
-        has_consent = service.check_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.ANALYTICS
-        )
+        has_consent = service.check_consent(employee_id="emp_001", purpose=ConsentPurpose.ANALYTICS)
 
         assert has_consent is False
 
@@ -141,20 +115,12 @@ class TestConsentVerification:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.MARKETING, granted=True
         )
 
-        service.revoke_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING
-        )
+        service.revoke_consent(employee_id="emp_001", purpose=ConsentPurpose.MARKETING)
 
-        has_consent = service.check_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING
-        )
+        has_consent = service.check_consent(employee_id="emp_001", purpose=ConsentPurpose.MARKETING)
 
         assert has_consent is False
 
@@ -163,8 +129,7 @@ class TestConsentVerification:
         service = GDPRComplianceService()
 
         has_consent = service.check_consent(
-            employee_id="emp_999",
-            purpose=ConsentPurpose.HR_PROCESSING
+            employee_id="emp_999", purpose=ConsentPurpose.HR_PROCESSING
         )
 
         assert has_consent is False
@@ -174,15 +139,11 @@ class TestConsentVerification:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.ANALYTICS,
-            granted=False
+            employee_id="emp_001", purpose=ConsentPurpose.ANALYTICS, granted=False
         )
 
         history = service.get_consent_history("emp_001")
@@ -197,11 +158,7 @@ class TestDSARProcessing:
         """DSARRequest can be created with required fields."""
         due_date = datetime.utcnow() + timedelta(days=30)
 
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         assert request.employee_id == "emp_001"
         assert request.type == DSARType.ACCESS
@@ -213,11 +170,7 @@ class TestDSARProcessing:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         result = service.process_dsar(request)
 
@@ -234,11 +187,7 @@ class TestDSARProcessing:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ERASURE,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ERASURE, due_date=due_date)
 
         result = service.process_dsar(request)
 
@@ -250,11 +199,7 @@ class TestDSARProcessing:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.PORTABILITY,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.PORTABILITY, due_date=due_date)
 
         result = service.process_dsar(request)
 
@@ -267,11 +212,7 @@ class TestDSARProcessing:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.RECTIFICATION,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.RECTIFICATION, due_date=due_date)
 
         result = service.process_dsar(request)
 
@@ -283,11 +224,7 @@ class TestDSARProcessing:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         assert request.status == DSARStatus.PENDING
 
@@ -305,11 +242,7 @@ class TestDSARDeadlines:
         now = datetime.utcnow()
         due_date = now + timedelta(days=30)
 
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         # Calculate days between submitted and due
         # The due_date should be 30 days from submitted_at
@@ -326,11 +259,7 @@ class TestDSARDeadlines:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         before = datetime.utcnow()
         service.process_dsar(request)
@@ -348,9 +277,7 @@ class TestRetentionPolicies:
         service = GDPRComplianceService()
 
         policy = service.add_retention_policy(
-            data_category=DataCategory.PERSONAL,
-            retention_days=365,
-            action=RetentionAction.ARCHIVE
+            data_category=DataCategory.PERSONAL, retention_days=365, action=RetentionAction.ARCHIVE
         )
 
         assert isinstance(policy, RetentionPolicy)
@@ -363,9 +290,7 @@ class TestRetentionPolicies:
         service = GDPRComplianceService()
 
         policy = service.add_retention_policy(
-            data_category=DataCategory.SENSITIVE,
-            retention_days=730,
-            action=RetentionAction.DELETE
+            data_category=DataCategory.SENSITIVE, retention_days=730, action=RetentionAction.DELETE
         )
 
         assert policy.action == RetentionAction.DELETE
@@ -375,15 +300,11 @@ class TestRetentionPolicies:
         service = GDPRComplianceService()
 
         service.add_retention_policy(
-            data_category=DataCategory.PERSONAL,
-            retention_days=365,
-            action=RetentionAction.ARCHIVE
+            data_category=DataCategory.PERSONAL, retention_days=365, action=RetentionAction.ARCHIVE
         )
 
         service.add_retention_policy(
-            data_category=DataCategory.SENSITIVE,
-            retention_days=730,
-            action=RetentionAction.DELETE
+            data_category=DataCategory.SENSITIVE, retention_days=730, action=RetentionAction.DELETE
         )
 
         result = service.enforce_retention_policies()
@@ -398,9 +319,7 @@ class TestRetentionPolicies:
         service = GDPRComplianceService()
 
         service.add_retention_policy(
-            data_category=DataCategory.HEALTH,
-            retention_days=365,
-            action=RetentionAction.ARCHIVE
+            data_category=DataCategory.HEALTH, retention_days=365, action=RetentionAction.ARCHIVE
         )
 
         result = service.enforce_retention_policies()
@@ -539,9 +458,7 @@ class TestAuditTrail:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         trail = service.get_audit_trail(employee_id="emp_001")
@@ -554,15 +471,10 @@ class TestAuditTrail:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.MARKETING, granted=True
         )
 
-        service.revoke_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.MARKETING
-        )
+        service.revoke_consent(employee_id="emp_001", purpose=ConsentPurpose.MARKETING)
 
         trail = service.get_audit_trail(employee_id="emp_001")
 
@@ -573,11 +485,7 @@ class TestAuditTrail:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         service.process_dsar(request)
 
@@ -590,15 +498,10 @@ class TestAuditTrail:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
-        trail = service.get_audit_trail(
-            employee_id="emp_001",
-            action_type="consent_recorded"
-        )
+        trail = service.get_audit_trail(employee_id="emp_001", action_type="consent_recorded")
 
         assert all(entry["action"] == "consent_recorded" for entry in trail)
 
@@ -607,20 +510,14 @@ class TestAuditTrail:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         now = datetime.utcnow()
         start = now - timedelta(hours=1)
         end = now + timedelta(hours=1)
 
-        trail = service.get_audit_trail(
-            employee_id="emp_001",
-            start_date=start,
-            end_date=end
-        )
+        trail = service.get_audit_trail(employee_id="emp_001", start_date=start, end_date=end)
 
         assert len(trail) > 0
 
@@ -629,9 +526,7 @@ class TestAuditTrail:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         trail = service.get_audit_trail(employee_id="emp_001")
@@ -648,8 +543,7 @@ class TestComplianceReporting:
         service = GDPRComplianceService()
 
         report = service.generate_compliance_report(
-            start_date=datetime.utcnow() - timedelta(days=30),
-            end_date=datetime.utcnow()
+            start_date=datetime.utcnow() - timedelta(days=30), end_date=datetime.utcnow()
         )
 
         assert "report_period" in report
@@ -661,14 +555,11 @@ class TestComplianceReporting:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         report = service.generate_compliance_report(
-            start_date=datetime.utcnow() - timedelta(days=30),
-            end_date=datetime.utcnow()
+            start_date=datetime.utcnow() - timedelta(days=30), end_date=datetime.utcnow()
         )
 
         assert "actions_by_type" in report
@@ -679,14 +570,11 @@ class TestComplianceReporting:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.HR_PROCESSING,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.HR_PROCESSING, granted=True
         )
 
         report = service.generate_compliance_report(
-            start_date=datetime.utcnow() - timedelta(days=30),
-            end_date=datetime.utcnow()
+            start_date=datetime.utcnow() - timedelta(days=30), end_date=datetime.utcnow()
         )
 
         assert "actions_by_legal_basis" in report
@@ -696,17 +584,12 @@ class TestComplianceReporting:
         service = GDPRComplianceService()
 
         due_date = datetime.utcnow() + timedelta(days=30)
-        request = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
         service.process_dsar(request)
 
         report = service.generate_compliance_report(
-            start_date=datetime.utcnow() - timedelta(days=30),
-            end_date=datetime.utcnow()
+            start_date=datetime.utcnow() - timedelta(days=30), end_date=datetime.utcnow()
         )
 
         assert "dsar_summary" in report
@@ -718,14 +601,11 @@ class TestComplianceReporting:
         service = GDPRComplianceService()
 
         service.record_consent(
-            employee_id="emp_001",
-            purpose=ConsentPurpose.ANALYTICS,
-            granted=True
+            employee_id="emp_001", purpose=ConsentPurpose.ANALYTICS, granted=True
         )
 
         report = service.generate_compliance_report(
-            start_date=datetime.utcnow() - timedelta(days=30),
-            end_date=datetime.utcnow()
+            start_date=datetime.utcnow() - timedelta(days=30), end_date=datetime.utcnow()
         )
 
         assert "consent_summary" in report
@@ -736,14 +616,11 @@ class TestComplianceReporting:
         service = GDPRComplianceService()
 
         service.add_retention_policy(
-            data_category=DataCategory.PERSONAL,
-            retention_days=365,
-            action=RetentionAction.ARCHIVE
+            data_category=DataCategory.PERSONAL, retention_days=365, action=RetentionAction.ARCHIVE
         )
 
         report = service.generate_compliance_report(
-            start_date=datetime.utcnow() - timedelta(days=30),
-            end_date=datetime.utcnow()
+            start_date=datetime.utcnow() - timedelta(days=30), end_date=datetime.utcnow()
         )
 
         assert "retention_policies" in report
@@ -759,14 +636,14 @@ class TestConsentRecord:
             employee_id="emp_001",
             purpose=ConsentPurpose.HR_PROCESSING,
             granted=True,
-            granted_at=datetime.utcnow()
+            granted_at=datetime.utcnow(),
         )
 
         record2 = ConsentRecord(
             employee_id="emp_001",
             purpose=ConsentPurpose.ANALYTICS,
             granted=True,
-            granted_at=datetime.utcnow()
+            granted_at=datetime.utcnow(),
         )
 
         assert record1.consent_id != record2.consent_id
@@ -779,17 +656,9 @@ class TestDSARRequest:
         """DSARRequest generates unique request IDs."""
         due_date = datetime.utcnow() + timedelta(days=30)
 
-        request1 = DSARRequest(
-            employee_id="emp_001",
-            type=DSARType.ACCESS,
-            due_date=due_date
-        )
+        request1 = DSARRequest(employee_id="emp_001", type=DSARType.ACCESS, due_date=due_date)
 
-        request2 = DSARRequest(
-            employee_id="emp_002",
-            type=DSARType.ERASURE,
-            due_date=due_date
-        )
+        request2 = DSARRequest(employee_id="emp_002", type=DSARType.ERASURE, due_date=due_date)
 
         assert request1.request_id != request2.request_id
 
@@ -800,15 +669,11 @@ class TestRetentionPolicy:
     def test_retention_policy_has_unique_id(self):
         """RetentionPolicy generates unique policy IDs."""
         policy1 = RetentionPolicy(
-            data_category=DataCategory.PERSONAL,
-            retention_days=365,
-            action=RetentionAction.ARCHIVE
+            data_category=DataCategory.PERSONAL, retention_days=365, action=RetentionAction.ARCHIVE
         )
 
         policy2 = RetentionPolicy(
-            data_category=DataCategory.SENSITIVE,
-            retention_days=730,
-            action=RetentionAction.DELETE
+            data_category=DataCategory.SENSITIVE, retention_days=730, action=RetentionAction.DELETE
         )
 
         assert policy1.policy_id != policy2.policy_id

@@ -23,9 +23,7 @@ class TestDashboardCreation:
     def test_create_dashboard(self, dashboard_service):
         """create_dashboard creates new dashboard."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="HR Analytics",
-            description="Main HR dashboard",
-            owner_id="user-001"
+            name="HR Analytics", description="Main HR dashboard", owner_id="user-001"
         )
 
         assert dashboard_id in dashboard_service.dashboards
@@ -36,9 +34,7 @@ class TestDashboardCreation:
     def test_create_dashboard_minimal(self, dashboard_service):
         """create_dashboard works with minimal parameters."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="Simple Dashboard",
-            description="",
-            owner_id="user-002"
+            name="Simple Dashboard", description="", owner_id="user-002"
         )
 
         assert dashboard_id in dashboard_service.dashboards
@@ -46,9 +42,7 @@ class TestDashboardCreation:
     def test_get_dashboard(self, dashboard_service):
         """get_dashboard retrieves dashboard by ID."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="Test Dashboard",
-            description="",
-            owner_id="user-003"
+            name="Test Dashboard", description="", owner_id="user-003"
         )
 
         dashboard = dashboard_service.get_dashboard(dashboard_id)
@@ -65,9 +59,7 @@ class TestDashboardCreation:
     def test_delete_dashboard(self, dashboard_service):
         """delete_dashboard removes dashboard."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="To Delete",
-            description="",
-            owner_id="user-004"
+            name="To Delete", description="", owner_id="user-004"
         )
 
         result = dashboard_service.delete_dashboard(dashboard_id)
@@ -93,7 +85,7 @@ class TestWidgetManagement:
             title="Headcount",
             widget_type="kpi",
             metric_type=MetricType.COUNT,
-            config={"metric": "total_employees"}
+            config={"metric": "total_employees"},
         )
 
         dashboard = dashboard_service.get_dashboard(dashboard_id)
@@ -108,7 +100,7 @@ class TestWidgetManagement:
             title="Turnover Trend",
             widget_type="chart",
             chart_type=ChartType.LINE,
-            config={"metric": "turnover_rate_over_time"}
+            config={"metric": "turnover_rate_over_time"},
         )
 
         widget = dashboard_service.get_dashboard(dashboard_id).widgets[widget_id]
@@ -118,18 +110,14 @@ class TestWidgetManagement:
         """add_widget raises for nonexistent dashboard."""
         with pytest.raises(ValueError, match="Dashboard not found"):
             dashboard_service.add_widget(
-                dashboard_id="nonexistent",
-                title="Widget",
-                widget_type="metric"
+                dashboard_id="nonexistent", title="Widget", widget_type="metric"
             )
 
     def test_update_widget_data(self, dashboard_service):
         """update_widget_data updates widget content."""
         dashboard_id = dashboard_service.create_dashboard("Test", "", owner_id="user-007")
         widget_id = dashboard_service.add_widget(
-            dashboard_id=dashboard_id,
-            title="Metric",
-            widget_type="metric"
+            dashboard_id=dashboard_id, title="Metric", widget_type="metric"
         )
 
         data = {"value": 150, "unit": "employees"}
@@ -167,10 +155,11 @@ class TestHRMetrics:
         assert 0 <= metrics["turnover_rate"] <= 100
         assert metrics["new_hires_this_year"] >= 0
 
-    @patch('src.platform.dashboard.get_data_scope')
+    @patch("src.platform.dashboard.get_data_scope")
     def test_hr_metrics_rbac_own_scope(self, mock_scope, dashboard_service):
         """get_hr_metrics respects OWN data scope."""
         from src.core.rbac import DataScope
+
         mock_scope.return_value = DataScope.OWN
 
         metrics = dashboard_service.get_hr_metrics(user_role="employee")
@@ -178,10 +167,11 @@ class TestHRMetrics:
         assert "restricted" in metrics
         assert metrics["restricted"] is True
 
-    @patch('src.platform.dashboard.get_data_scope')
+    @patch("src.platform.dashboard.get_data_scope")
     def test_hr_metrics_rbac_team_scope(self, mock_scope, dashboard_service):
         """get_hr_metrics respects TEAM data scope."""
         from src.core.rbac import DataScope
+
         mock_scope.return_value = DataScope.TEAM
 
         metrics = dashboard_service.get_hr_metrics(user_role="manager")
@@ -244,9 +234,7 @@ class TestLeaveAnalytics:
         end = datetime.utcnow()
 
         analytics = dashboard_service.get_leave_analytics(
-            user_role="hr_admin",
-            start_date=start,
-            end_date=end
+            user_role="hr_admin", start_date=start, end_date=end
         )
 
         period_start = datetime.fromisoformat(analytics["period"]["start"])
@@ -338,14 +326,10 @@ class TestExport:
     def test_export_metrics_json(self, dashboard_service):
         """export_metrics_json exports dashboard as JSON."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="Export Test",
-            description="",
-            owner_id="user-009"
+            name="Export Test", description="", owner_id="user-009"
         )
         dashboard_service.add_widget(
-            dashboard_id=dashboard_id,
-            title="Test Widget",
-            widget_type="metric"
+            dashboard_id=dashboard_id, title="Test Widget", widget_type="metric"
         )
 
         export_data = dashboard_service.export_metrics_json(dashboard_id)
@@ -363,19 +347,13 @@ class TestExport:
     def test_export_metrics_csv(self, dashboard_service):
         """export_metrics_csv exports dashboard as CSV."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="CSV Export",
-            description="",
-            owner_id="user-010"
+            name="CSV Export", description="", owner_id="user-010"
         )
         widget_id = dashboard_service.add_widget(
-            dashboard_id=dashboard_id,
-            title="Headcount",
-            widget_type="metric"
+            dashboard_id=dashboard_id, title="Headcount", widget_type="metric"
         )
         dashboard_service.update_widget_data(
-            dashboard_id,
-            widget_id,
-            {"total": 150, "new_hires": 25}
+            dashboard_id, widget_id, {"total": 150, "new_hires": 25}
         )
 
         output_path = dashboard_service.export_metrics_csv(dashboard_id)
@@ -387,14 +365,11 @@ class TestExport:
     def test_export_metrics_csv_with_custom_path(self, dashboard_service):
         """export_metrics_csv respects custom output path."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="Custom Path",
-            description="",
-            owner_id="user-011"
+            name="Custom Path", description="", owner_id="user-011"
         )
 
         output_path = dashboard_service.export_metrics_csv(
-            dashboard_id,
-            output_path="/tmp/custom_dashboard.csv"
+            dashboard_id, output_path="/tmp/custom_dashboard.csv"
         )
 
         assert output_path == "/tmp/custom_dashboard.csv"
@@ -403,7 +378,7 @@ class TestExport:
 class TestRBAC:
     """Tests for visibility filtering by role."""
 
-    @patch('src.platform.dashboard.get_data_scope')
+    @patch("src.platform.dashboard.get_data_scope")
     def test_hr_metrics_visibility_by_role(self, mock_scope, dashboard_service):
         """Different roles see different metrics."""
         from src.core.rbac import DataScope
@@ -469,9 +444,7 @@ class TestDashboardLifecycle:
         """Complete dashboard lifecycle."""
         # Create
         dashboard_id = dashboard_service.create_dashboard(
-            name="Lifecycle Test",
-            description="",
-            owner_id="user-015"
+            name="Lifecycle Test", description="", owner_id="user-015"
         )
 
         # Add widgets
@@ -479,15 +452,11 @@ class TestDashboardLifecycle:
             dashboard_id=dashboard_id,
             title="Key Metric",
             widget_type="kpi",
-            metric_type=MetricType.COUNT
+            metric_type=MetricType.COUNT,
         )
 
         # Update widget
-        dashboard_service.update_widget_data(
-            dashboard_id,
-            widget_id,
-            {"current_value": 42}
-        )
+        dashboard_service.update_widget_data(dashboard_id, widget_id, {"current_value": 42})
 
         # Export
         export = dashboard_service.export_metrics_json(dashboard_id)
@@ -498,18 +467,14 @@ class TestDashboardLifecycle:
     def test_multiple_widgets_lifecycle(self, dashboard_service):
         """Add multiple widgets and verify all tracked."""
         dashboard_id = dashboard_service.create_dashboard(
-            name="Multi Widget",
-            description="",
-            owner_id="user-016"
+            name="Multi Widget", description="", owner_id="user-016"
         )
 
         # Add multiple widgets
         widgets = []
         for i in range(5):
             widget_id = dashboard_service.add_widget(
-                dashboard_id=dashboard_id,
-                title=f"Widget {i}",
-                widget_type="metric"
+                dashboard_id=dashboard_id, title=f"Widget {i}", widget_type="metric"
             )
             widgets.append(widget_id)
 

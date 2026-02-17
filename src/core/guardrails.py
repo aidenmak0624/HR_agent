@@ -56,7 +56,10 @@ INJECTION_PATTERNS = [
     re.compile(r"<\s*system\s*>", re.IGNORECASE),
     re.compile(r"act\s+as\s+(?:a|an)\s+(?:different|new)", re.IGNORECASE),
     re.compile(r"reveal\s+(?:your\s+)?(?:system|hidden)\s+(?:prompt|instructions)", re.IGNORECASE),
-    re.compile(r"(?:print|show|display|output)\s+(?:your\s+)?(?:system|initial)\s+(?:prompt|message)", re.IGNORECASE),
+    re.compile(
+        r"(?:print|show|display|output)\s+(?:your\s+)?(?:system|initial)\s+(?:prompt|message)",
+        re.IGNORECASE,
+    ),
     re.compile(r"ADMIN\s*OVERRIDE", re.IGNORECASE),
     re.compile(r"jailbreak", re.IGNORECASE),
     re.compile(r"DAN\s+mode", re.IGNORECASE),
@@ -85,6 +88,7 @@ class InputValidationResult:
         pii_found: List of PII types detected in input
         injection_detected: True if prompt injection was detected
     """
+
     passed: bool = True
     sanitized_query: str = ""
     blocked_reason: Optional[str] = None
@@ -106,6 +110,7 @@ class OutputValidationResult:
         confidence_ok: True if response confidence meets threshold
         warnings: Non-blocking issues detected
     """
+
     passed: bool = True
     sanitized_response: str = ""
     pii_detected: bool = False
@@ -322,12 +327,14 @@ class Guardrails:
         findings = []
         for pii_type, pattern in PII_PATTERNS.items():
             for match in pattern.finditer(text):
-                findings.append({
-                    "pii_type": pii_type,
-                    "value": match.group(),
-                    "start": match.start(),
-                    "end": match.end(),
-                })
+                findings.append(
+                    {
+                        "pii_type": pii_type,
+                        "value": match.group(),
+                        "start": match.start(),
+                        "end": match.end(),
+                    }
+                )
         return findings
 
     def mask_pii(self, text: str) -> str:

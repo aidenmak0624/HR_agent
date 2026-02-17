@@ -68,13 +68,13 @@ class AuthService:
         self.settings = get_settings()
 
         # Get JWT secret from environment variable, with settings fallback
-        self.jwt_secret = os.environ.get(
-            "JWT_SECRET",
-            self.settings.JWT_SECRET
-        )
+        self.jwt_secret = os.environ.get("JWT_SECRET", self.settings.JWT_SECRET)
 
         # Warn if using default JWT secret (security risk in production)
-        if self.jwt_secret == "your-secret-key-change-in-production" or self.jwt_secret == "hr-platform-secret-key-change-in-production":
+        if (
+            self.jwt_secret == "your-secret-key-change-in-production"
+            or self.jwt_secret == "hr-platform-secret-key-change-in-production"
+        ):
             logger.warning(
                 "⚠️  WARNING: Using default JWT_SECRET! This is a security risk in production. "
                 "Set the JWT_SECRET environment variable to a secure value."
@@ -114,9 +114,7 @@ class AuthService:
                 "jti": jti,
                 "type": self.TOKEN_TYPE_ACCESS,
             }
-            access_token = jwt.encode(
-                access_payload, self.jwt_secret, algorithm=self.jwt_algorithm
-            )
+            access_token = jwt.encode(access_payload, self.jwt_secret, algorithm=self.jwt_algorithm)
 
             # Generate refresh token with different JTI
             refresh_jti = str(uuid.uuid4())
@@ -160,9 +158,7 @@ class AuthService:
             InvalidTokenError: If token is invalid or malformed
         """
         try:
-            payload = jwt.decode(
-                token, self.jwt_secret, algorithms=[self.jwt_algorithm]
-            )
+            payload = jwt.decode(token, self.jwt_secret, algorithms=[self.jwt_algorithm])
         except jwt.ExpiredSignatureError:
             raise TokenExpiredError("Token has expired")
         except jwt.InvalidTokenError as e:

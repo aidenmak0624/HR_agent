@@ -25,8 +25,10 @@ logger = logging.getLogger(__name__)
 # Enums
 # ============================================================================
 
+
 class PayrollProvider(str, Enum):
     """Supported payroll providers."""
+
     WORKDAY = "workday"
     ADP = "adp"
     PAYCHEX = "paychex"
@@ -37,8 +39,10 @@ class PayrollProvider(str, Enum):
 # Pydantic Models
 # ============================================================================
 
+
 class PayrollConfig(BaseModel):
     """Payroll connector configuration."""
+
     provider: PayrollProvider = Field(..., description="Payroll provider type")
     base_url: str = Field(..., description="API base URL")
     api_key: Optional[str] = Field(None, description="API key for authentication")
@@ -53,7 +57,10 @@ class PayrollConfig(BaseModel):
 
 class PayrollRecord(BaseModel):
     """Individual payroll record for an employee pay period."""
-    record_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique record ID")
+
+    record_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()), description="Unique record ID"
+    )
     employee_id: str = Field(..., description="Employee ID")
     pay_period_start: datetime = Field(..., description="Pay period start date")
     pay_period_end: datetime = Field(..., description="Pay period end date")
@@ -70,6 +77,7 @@ class PayrollRecord(BaseModel):
 
 class PayrollSummary(BaseModel):
     """Summary of payroll data for an employee over a period."""
+
     employee_id: str = Field(..., description="Employee ID")
     period: str = Field(..., description="Period identifier (e.g., '2024-Q1')")
     total_gross: float = Field(..., description="Total gross pay in period")
@@ -84,6 +92,7 @@ class PayrollSummary(BaseModel):
 # ============================================================================
 # Payroll Connector
 # ============================================================================
+
 
 class PayrollConnector:
     """
@@ -126,16 +135,18 @@ class PayrollConnector:
             Configured requests.Session with retry logic
         """
         session = requests.Session()
-        session.headers.update({
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        })
+        session.headers.update(
+            {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
+        )
 
         retry_strategy = Retry(
             total=self.config.retry_attempts,
             backoff_factor=2,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["GET"]
+            allowed_methods=["GET"],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         session.mount("http://", adapter)
@@ -157,9 +168,7 @@ class PayrollConnector:
             if self.config.client_id and self.config.client_secret:
                 return self._authenticate_oauth2()
             elif self.config.api_key:
-                self._session.headers.update({
-                    'Authorization': f'Bearer {self.config.api_key}'
-                })
+                self._session.headers.update({"Authorization": f"Bearer {self.config.api_key}"})
                 logger.info("Authenticated with API key")
                 return True
             else:
@@ -179,7 +188,11 @@ class PayrollConnector:
         Raises:
             ValueError: If token acquisition fails
         """
-        if self._access_token and self._token_expires_at and datetime.utcnow() < self._token_expires_at:
+        if (
+            self._access_token
+            and self._token_expires_at
+            and datetime.utcnow() < self._token_expires_at
+        ):
             logger.debug("Using cached access token")
             return True
 
@@ -190,10 +203,7 @@ class PayrollConnector:
             PayrollProvider.GENERIC: f"{self.config.base_url}/oauth2/token",
         }
 
-        token_url = token_endpoints.get(
-            self.provider,
-            f"{self.config.base_url}/oauth2/token"
-        )
+        token_url = token_endpoints.get(self.provider, f"{self.config.base_url}/oauth2/token")
 
         payload = {
             "grant_type": "client_credentials",
@@ -211,9 +221,7 @@ class PayrollConnector:
             expires_in = data.get("expires_in", 3600)
             self._token_expires_at = datetime.utcnow() + timedelta(seconds=expires_in - 60)
 
-            self._session.headers.update({
-                'Authorization': f'Bearer {self._access_token}'
-            })
+            self._session.headers.update({"Authorization": f"Bearer {self._access_token}"})
 
             logger.info("Successfully obtained OAuth2 access token")
             return True
@@ -222,7 +230,9 @@ class PayrollConnector:
             logger.error(f"OAuth2 token acquisition failed: {e}")
             raise ValueError(f"Failed to obtain access token: {e}")
 
-    def _make_request(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def _make_request(
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Make HTTP GET request to payroll API with retry logic.
 
@@ -242,26 +252,24 @@ class PayrollConnector:
         for attempt in range(self.config.retry_attempts):
             try:
                 logger.debug(f"GET {url} (attempt {attempt + 1}/{self.config.retry_attempts})")
-                response = self._session.get(
-                    url,
-                    params=params,
-                    timeout=self.config.timeout
-                )
+                response = self._session.get(url, params=params, timeout=self.config.timeout)
 
                 # Update rate limit info
                 if "X-Rate-Limit-Remaining" in response.headers:
                     self._rate_limit_remaining = int(response.headers["X-Rate-Limit-Remaining"])
 
                 if response.status_code == 429:
-                    wait_seconds = min(2 ** attempt, 60)
+                    wait_seconds = min(2**attempt, 60)
                     logger.warning(f"Rate limited, retrying in {wait_seconds}s")
                     time.sleep(wait_seconds)
                     continue
 
                 if response.status_code >= 500:
                     if attempt < self.config.retry_attempts - 1:
-                        wait_seconds = min(2 ** attempt, 60)
-                        logger.warning(f"Server error ({response.status_code}), retrying in {wait_seconds}s")
+                        wait_seconds = min(2**attempt, 60)
+                        logger.warning(
+                            f"Server error ({response.status_code}), retrying in {wait_seconds}s"
+                        )
                         time.sleep(wait_seconds)
                         continue
                     else:
@@ -272,15 +280,17 @@ class PayrollConnector:
 
             except requests.exceptions.Timeout as e:
                 if attempt < self.config.retry_attempts - 1:
-                    wait_seconds = min(2 ** attempt, 60)
+                    wait_seconds = min(2**attempt, 60)
                     logger.warning(f"Request timeout, retrying in {wait_seconds}s")
                     time.sleep(wait_seconds)
                     continue
-                raise ValueError(f"Request timeout after {self.config.retry_attempts} attempts: {e}")
+                raise ValueError(
+                    f"Request timeout after {self.config.retry_attempts} attempts: {e}"
+                )
 
             except requests.exceptions.RequestException as e:
                 if attempt < self.config.retry_attempts - 1:
-                    wait_seconds = min(2 ** attempt, 60)
+                    wait_seconds = min(2**attempt, 60)
                     logger.warning(f"Connection error, retrying in {wait_seconds}s")
                     time.sleep(wait_seconds)
                     continue
@@ -305,55 +315,55 @@ class PayrollConnector:
         try:
             if self.provider == PayrollProvider.WORKDAY:
                 return {
-                    'employee_id': raw_data.get('workdayID'),
-                    'pay_period_start': self._parse_date(raw_data.get('periodStartDate')),
-                    'pay_period_end': self._parse_date(raw_data.get('periodEndDate')),
-                    'gross_pay': float(raw_data.get('grossPay', 0)),
-                    'net_pay': float(raw_data.get('netPay', 0)),
-                    'deductions': raw_data.get('deductions', {}),
-                    'taxes': raw_data.get('taxes', {}),
-                    'benefits': raw_data.get('benefits', {}),
-                    'status': raw_data.get('paymentStatus', 'completed'),
-                    'currency': raw_data.get('currency', 'USD'),
+                    "employee_id": raw_data.get("workdayID"),
+                    "pay_period_start": self._parse_date(raw_data.get("periodStartDate")),
+                    "pay_period_end": self._parse_date(raw_data.get("periodEndDate")),
+                    "gross_pay": float(raw_data.get("grossPay", 0)),
+                    "net_pay": float(raw_data.get("netPay", 0)),
+                    "deductions": raw_data.get("deductions", {}),
+                    "taxes": raw_data.get("taxes", {}),
+                    "benefits": raw_data.get("benefits", {}),
+                    "status": raw_data.get("paymentStatus", "completed"),
+                    "currency": raw_data.get("currency", "USD"),
                 }
             elif self.provider == PayrollProvider.ADP:
                 return {
-                    'employee_id': raw_data.get('employeeId'),
-                    'pay_period_start': self._parse_date(raw_data.get('payPeriodStartDate')),
-                    'pay_period_end': self._parse_date(raw_data.get('payPeriodEndDate')),
-                    'gross_pay': float(raw_data.get('grossAmount', 0)),
-                    'net_pay': float(raw_data.get('netAmount', 0)),
-                    'deductions': raw_data.get('deductionBreakdown', {}),
-                    'taxes': raw_data.get('taxBreakdown', {}),
-                    'benefits': raw_data.get('benefitBreakdown', {}),
-                    'status': raw_data.get('payCheckStatus', 'completed'),
-                    'currency': raw_data.get('currencyCode', 'USD'),
+                    "employee_id": raw_data.get("employeeId"),
+                    "pay_period_start": self._parse_date(raw_data.get("payPeriodStartDate")),
+                    "pay_period_end": self._parse_date(raw_data.get("payPeriodEndDate")),
+                    "gross_pay": float(raw_data.get("grossAmount", 0)),
+                    "net_pay": float(raw_data.get("netAmount", 0)),
+                    "deductions": raw_data.get("deductionBreakdown", {}),
+                    "taxes": raw_data.get("taxBreakdown", {}),
+                    "benefits": raw_data.get("benefitBreakdown", {}),
+                    "status": raw_data.get("payCheckStatus", "completed"),
+                    "currency": raw_data.get("currencyCode", "USD"),
                 }
             elif self.provider == PayrollProvider.PAYCHEX:
                 return {
-                    'employee_id': raw_data.get('empID'),
-                    'pay_period_start': self._parse_date(raw_data.get('checkPeriodStartDate')),
-                    'pay_period_end': self._parse_date(raw_data.get('checkPeriodEndDate')),
-                    'gross_pay': float(raw_data.get('grossPayAmount', 0)),
-                    'net_pay': float(raw_data.get('netPayAmount', 0)),
-                    'deductions': raw_data.get('deductionsDetail', {}),
-                    'taxes': raw_data.get('taxesDetail', {}),
-                    'benefits': raw_data.get('benefitsDetail', {}),
-                    'status': raw_data.get('checkStatus', 'completed'),
-                    'currency': raw_data.get('currency', 'USD'),
+                    "employee_id": raw_data.get("empID"),
+                    "pay_period_start": self._parse_date(raw_data.get("checkPeriodStartDate")),
+                    "pay_period_end": self._parse_date(raw_data.get("checkPeriodEndDate")),
+                    "gross_pay": float(raw_data.get("grossPayAmount", 0)),
+                    "net_pay": float(raw_data.get("netPayAmount", 0)),
+                    "deductions": raw_data.get("deductionsDetail", {}),
+                    "taxes": raw_data.get("taxesDetail", {}),
+                    "benefits": raw_data.get("benefitsDetail", {}),
+                    "status": raw_data.get("checkStatus", "completed"),
+                    "currency": raw_data.get("currency", "USD"),
                 }
             else:  # GENERIC
                 return {
-                    'employee_id': raw_data.get('employee_id'),
-                    'pay_period_start': self._parse_date(raw_data.get('pay_period_start')),
-                    'pay_period_end': self._parse_date(raw_data.get('pay_period_end')),
-                    'gross_pay': float(raw_data.get('gross_pay', 0)),
-                    'net_pay': float(raw_data.get('net_pay', 0)),
-                    'deductions': raw_data.get('deductions', {}),
-                    'taxes': raw_data.get('taxes', {}),
-                    'benefits': raw_data.get('benefits', {}),
-                    'status': raw_data.get('status', 'completed'),
-                    'currency': raw_data.get('currency', 'USD'),
+                    "employee_id": raw_data.get("employee_id"),
+                    "pay_period_start": self._parse_date(raw_data.get("pay_period_start")),
+                    "pay_period_end": self._parse_date(raw_data.get("pay_period_end")),
+                    "gross_pay": float(raw_data.get("gross_pay", 0)),
+                    "net_pay": float(raw_data.get("net_pay", 0)),
+                    "deductions": raw_data.get("deductions", {}),
+                    "taxes": raw_data.get("taxes", {}),
+                    "benefits": raw_data.get("benefits", {}),
+                    "status": raw_data.get("status", "completed"),
+                    "currency": raw_data.get("currency", "USD"),
                 }
         except Exception as e:
             logger.error(f"Field mapping failed: {e}")
@@ -406,8 +416,7 @@ class PayrollConnector:
         try:
             logger.debug(f"Fetching payroll record for {employee_id} in {pay_period}")
             response = self._make_request(
-                f"payroll/employees/{employee_id}/records",
-                params={'period': pay_period}
+                f"payroll/employees/{employee_id}/records", params={"period": pay_period}
             )
 
             if not response:
@@ -424,10 +433,7 @@ class PayrollConnector:
             raise ValueError(f"Failed to fetch payroll record: {e}")
 
     def get_payroll_history(
-        self,
-        employee_id: str,
-        start_date: datetime,
-        end_date: datetime
+        self, employee_id: str, start_date: datetime, end_date: datetime
     ) -> List[PayrollRecord]:
         """
         Retrieve payroll history for employee over date range.
@@ -441,17 +447,19 @@ class PayrollConnector:
             List of PayrollRecord objects
         """
         try:
-            logger.debug(f"Fetching payroll history for {employee_id} from {start_date} to {end_date}")
+            logger.debug(
+                f"Fetching payroll history for {employee_id} from {start_date} to {end_date}"
+            )
             response = self._make_request(
                 f"payroll/employees/{employee_id}/history",
                 params={
-                    'start_date': start_date.isoformat(),
-                    'end_date': end_date.isoformat(),
-                }
+                    "start_date": start_date.isoformat(),
+                    "end_date": end_date.isoformat(),
+                },
             )
 
             records = []
-            data_list = response.get('data', []) if isinstance(response, dict) else response
+            data_list = response.get("data", []) if isinstance(response, dict) else response
 
             for item in data_list:
                 try:
@@ -483,8 +491,7 @@ class PayrollConnector:
         try:
             logger.debug(f"Fetching payroll summary for {employee_id} for year {year}")
             response = self._make_request(
-                f"payroll/employees/{employee_id}/summary",
-                params={'year': year}
+                f"payroll/employees/{employee_id}/summary", params={"year": year}
             )
 
             if not response:
@@ -494,11 +501,11 @@ class PayrollConnector:
             summary = PayrollSummary(
                 employee_id=employee_id,
                 period=f"{year}",
-                total_gross=float(response.get('totalGross', 0)),
-                total_net=float(response.get('totalNet', 0)),
-                total_deductions=float(response.get('totalDeductions', 0)),
-                total_taxes=float(response.get('totalTaxes', 0)),
-                records_count=int(response.get('recordCount', 0)),
+                total_gross=float(response.get("totalGross", 0)),
+                total_net=float(response.get("totalNet", 0)),
+                total_deductions=float(response.get("totalDeductions", 0)),
+                total_taxes=float(response.get("totalTaxes", 0)),
+                records_count=int(response.get("recordCount", 0)),
             )
             logger.info(f"Retrieved payroll summary for {employee_id}")
             return summary
@@ -521,11 +528,10 @@ class PayrollConnector:
         try:
             logger.debug(f"Fetching deduction breakdown for {employee_id} in {pay_period}")
             response = self._make_request(
-                f"payroll/employees/{employee_id}/deductions",
-                params={'period': pay_period}
+                f"payroll/employees/{employee_id}/deductions", params={"period": pay_period}
             )
 
-            deductions = response.get('deductions', {}) if isinstance(response, dict) else {}
+            deductions = response.get("deductions", {}) if isinstance(response, dict) else {}
             logger.info(f"Retrieved deduction breakdown for {employee_id}")
             return deductions
 
@@ -547,8 +553,7 @@ class PayrollConnector:
         try:
             logger.debug(f"Fetching tax summary for {employee_id} for year {year}")
             response = self._make_request(
-                f"payroll/employees/{employee_id}/taxes",
-                params={'year': year}
+                f"payroll/employees/{employee_id}/taxes", params={"year": year}
             )
 
             tax_summary = response if isinstance(response, dict) else {}
@@ -570,13 +575,13 @@ class PayrollConnector:
             logger.debug("Validating payroll connector connection")
             response = self._make_request("health")
 
-            is_healthy = response.get('status') == 'healthy' or response.get('success') is True
+            is_healthy = response.get("status") == "healthy" or response.get("success") is True
 
             result = {
-                'connected': is_healthy,
-                'provider': self.provider.value,
-                'status': 'connected' if is_healthy else 'disconnected',
-                'timestamp': datetime.utcnow().isoformat(),
+                "connected": is_healthy,
+                "provider": self.provider.value,
+                "status": "connected" if is_healthy else "disconnected",
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             logger.info(f"Connection validation: {result}")
@@ -585,11 +590,11 @@ class PayrollConnector:
         except Exception as e:
             logger.error(f"Connection validation failed: {e}")
             return {
-                'connected': False,
-                'provider': self.provider.value,
-                'status': 'error',
-                'error': str(e),
-                'timestamp': datetime.utcnow().isoformat(),
+                "connected": False,
+                "provider": self.provider.value,
+                "status": "error",
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
     def get_pay_periods(self, year: int) -> List[Dict[str, Any]]:
@@ -604,12 +609,9 @@ class PayrollConnector:
         """
         try:
             logger.debug(f"Fetching pay periods for year {year}")
-            response = self._make_request(
-                "payroll/pay-periods",
-                params={'year': year}
-            )
+            response = self._make_request("payroll/pay-periods", params={"year": year})
 
-            periods = response.get('periods', []) if isinstance(response, dict) else response
+            periods = response.get("periods", []) if isinstance(response, dict) else response
             logger.info(f"Retrieved {len(periods)} pay periods for year {year}")
             return periods
 
@@ -629,13 +631,10 @@ class PayrollConnector:
         """
         try:
             logger.debug(f"Searching payroll records with filters: {filters}")
-            response = self._make_request(
-                "payroll/records/search",
-                params=filters
-            )
+            response = self._make_request("payroll/records/search", params=filters)
 
             records = []
-            data_list = response.get('data', []) if isinstance(response, dict) else response
+            data_list = response.get("data", []) if isinstance(response, dict) else response
 
             for item in data_list:
                 try:

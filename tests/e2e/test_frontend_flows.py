@@ -149,9 +149,9 @@ class TestChatFlow:
             badge_text = agent_badge.text_content()
             assert badge_text, "Agent badge has no text"
             # Verify badge contains agent type
-            assert any(agent in badge_text.lower() for agent in [
-                "router", "leave", "policy", "assistant"
-            ])
+            assert any(
+                agent in badge_text.lower() for agent in ["router", "leave", "policy", "assistant"]
+            )
 
             logger.info("Agent type badge found: %s", badge_text)
         else:
@@ -195,7 +195,7 @@ class TestLeaveFlow:
             assert content, "Balance card has no content"
 
             # Check for numeric content (balance number)
-            assert re.search(r'\d+', content), "Balance card has no numeric content"
+            assert re.search(r"\d+", content), "Balance card has no numeric content"
 
             logger.info("Leave balance cards rendered successfully")
         else:
@@ -246,7 +246,10 @@ class TestAnalyticsFlow:
         authenticated_page.wait_for_load_state("networkidle")
 
         # Verify page loaded
-        assert "analytics" in authenticated_page.url.lower() or "report" in authenticated_page.url.lower()
+        assert (
+            "analytics" in authenticated_page.url.lower()
+            or "report" in authenticated_page.url.lower()
+        )
 
         page_content = authenticated_page.content()
         assert len(page_content) > 100

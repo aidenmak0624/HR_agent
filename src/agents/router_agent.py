@@ -22,29 +22,29 @@ logger.setLevel(logging.INFO)
 class RouterState(TypedDict, total=False):
     """
     State for routing decisions and multi-agent orchestration.
-    
+
     Tracks:
     - Input: query, user_context
     - Classification: intent, confidence, target_agents
     - Execution: agent_results
     - Output: final_response
     """
-    
+
     # Input
     query: str
     user_context: Dict[str, Any]
     conversation_history: List[Dict[str, str]]
-    
+
     # Classification
     intent: str
     confidence: float
     target_agents: List[str]
     requires_clarification: bool
     clarification_question: Optional[str]
-    
+
     # Execution
     agent_results: List[Dict[str, Any]]
-    
+
     # Output
     final_response: Dict[str, Any]
 
@@ -52,15 +52,15 @@ class RouterState(TypedDict, total=False):
 class RouterAgent:
     """
     Supervisor agent that orchestrates specialist agents.
-    
+
     NOT extending BaseAgent - this is a coordinator, not a specialist.
-    
+
     Responsibilities:
     1. Intent classification (query -> intent category)
     2. Permission checking (user_context + intent -> allowed?)
     3. Agent dispatch (intent -> specialist agent)
     4. Response merging (multi-agent results -> unified response)
-    
+
     Intent Categories:
     - employee_info: Employee directory, profiles, compensation
     - policy: HR policies, compliance, procedures
@@ -72,22 +72,54 @@ class RouterAgent:
     - unclear: Ambiguous queries requiring clarification
     - multi_intent: Query spans multiple categories
     """
-    
+
     # Intent categories with examples
     INTENT_CATEGORIES = {
         "employee_info": ["who is", "employee profile", "contact", "department", "report to"],
         "policy": ["policy", "procedure", "compliance", "guideline", "rule"],
-        "leave": ["leave balance", "time off balance", "remaining pto", "how many days",
-                  "sick leave", "vacation", "time off", "annual leave", "maternity leave",
-                  "paternity leave", "bereavement leave", "leave request", "pto"],
-        "leave_request": ["request leave", "submit leave", "take time off", "book vacation", "request pto", "apply for leave"],
+        "leave": [
+            "leave balance",
+            "time off balance",
+            "remaining pto",
+            "how many days",
+            "sick leave",
+            "vacation",
+            "time off",
+            "annual leave",
+            "maternity leave",
+            "paternity leave",
+            "bereavement leave",
+            "leave request",
+            "pto",
+        ],
+        "leave_request": [
+            "request leave",
+            "submit leave",
+            "take time off",
+            "book vacation",
+            "request pto",
+            "apply for leave",
+        ],
         "onboarding": ["onboarding", "new hire", "orientation", "induction", "welcome"],
         "benefits": ["benefits", "health", "insurance", "retirement", "401k", "pto"],
         "performance": ["performance", "review", "goal", "feedback", "evaluation"],
         "analytics": ["report", "analytics", "statistics", "trend", "dashboard", "headcount"],
-        "compliance": ["gdpr", "dsar", "data subject", "data request", "erasure", "right to be forgotten",
-                       "data portability", "pii", "personal data", "privacy", "data protection",
-                       "ccpa", "consent", "data breach"],
+        "compliance": [
+            "gdpr",
+            "dsar",
+            "data subject",
+            "data request",
+            "erasure",
+            "right to be forgotten",
+            "data portability",
+            "pii",
+            "personal data",
+            "privacy",
+            "data protection",
+            "ccpa",
+            "consent",
+            "data breach",
+        ],
     }
 
     # Agent registry: intent -> agent class name
@@ -102,34 +134,34 @@ class RouterAgent:
         "analytics": "PerformanceAgent",  # Analytics handled by performance agent (no standalone analytics agent)
         "compliance": "ComplianceAgent",
     }
-    
+
     def __init__(self, llm: Any):
         """
         Initialize router agent.
-        
+
         Args:
             llm: Language model instance (e.g., ChatGoogleGenerativeAI)
         """
         self.llm = llm
         self.agent_cache = {}  # Cache instantiated agents
-    
+
     # ==================== Intent Classification ====================
-    
+
     def classify_intent(self, query: str) -> tuple[str, float]:
         """
         Classify user query intent using fast LLM classification.
-        
+
         Fast implementation: checks keywords first, then uses LLM if ambiguous.
-        
+
         Args:
             query: User query/question
-            
+
         Returns:
             Tuple of (intent, confidence) where intent is one of INTENT_CATEGORIES,
             confidence is 0.0-1.0
         """
         logger.info(f"CLASSIFY: Analyzing query: {query[:60]}...")
-        
+
         query_lower = query.lower()
 
         # Quick keyword matching — longer keyword phrases get bonus weight
@@ -164,7 +196,7 @@ class RouterAgent:
             if max_score >= 1:
                 logger.info(f"CLASSIFY: Keyword tie-break → {max_intent} (confidence=0.7)")
                 return (max_intent, 0.7)
-        
+
         # Use LLM for ambiguous/complex queries
         logger.info("CLASSIFY: Ambiguous query, using LLM")
         classification_prompt = f"""Classify the HR query intent.
@@ -187,47 +219,47 @@ Return JSON:
   "confidence": 0.0-1.0,
   "reasoning": "brief explanation"
 }}"""
-        
+
         messages = [
             SystemMessage(content="You are an HR query classification expert."),
             HumanMessage(content=classification_prompt),
         ]
-        
+
         try:
             response = self.llm.invoke(messages)
             raw = getattr(response, "content", str(response))
             data = self._parse_json_response(raw)
-            
+
             intent = data.get("intent", "unclear")
             confidence = float(data.get("confidence", 0.5))
-            
+
             # Validate intent
             if intent not in self.INTENT_CATEGORIES and intent != "unclear":
                 logger.warning(f"CLASSIFY: Invalid intent '{intent}', using 'unclear'")
                 intent = "unclear"
-            
+
             logger.info(f"CLASSIFY: LLM → {intent} (confidence={confidence})")
             return (intent, confidence)
-            
+
         except Exception as e:
             logger.error(f"CLASSIFY: LLM failed: {e}")
             return ("unclear", 0.3)
-    
+
     # ==================== Permission Checking ====================
-    
+
     def check_permissions(self, user_context: Dict[str, Any], intent: str) -> bool:
         """
         Check if user has permission for intent using RBAC.
-        
+
         Args:
             user_context: Dict with user_id, role, department, etc.
             intent: Intent category
-            
+
         Returns:
             True if allowed, False otherwise
         """
         role = user_context.get("role", "employee").lower()
-        
+
         # Permission matrix: intent -> required role
         required_roles = {
             "employee_info": ["employee", "manager", "hr_generalist", "hr_admin"],
@@ -241,41 +273,38 @@ Return JSON:
             "compliance": ["employee", "manager", "hr_generalist", "hr_admin"],
             "unclear": ["employee", "manager", "hr_generalist", "hr_admin"],
         }
-        
+
         allowed_roles = required_roles.get(intent, ["employee"])
-        
+
         if role in allowed_roles:
             logger.info(f"PERMISSION: {role} allowed for {intent}")
             return True
-        
+
         logger.warning(f"PERMISSION: {role} denied for {intent}")
         return False
-    
+
     # ==================== Agent Dispatch ====================
-    
+
     def dispatch_to_agent(
-        self,
-        intent: str,
-        query: str,
-        user_context: Dict[str, Any]
+        self, intent: str, query: str, user_context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Dispatch query to appropriate specialist agent.
-        
+
         Instantiates agent if not cached, then runs it.
-        
+
         Args:
             intent: Intent category
             query: User query
             user_context: User info
-            
+
         Returns:
             Dict with agent result (answer, sources, confidence, etc.)
         """
         logger.info(f"DISPATCH: {intent} agent for query: {query[:50]}...")
-        
+
         agent_class_name = self.AGENT_REGISTRY.get(intent)
-        
+
         if not agent_class_name:
             logger.warning(f"DISPATCH: No agent for intent '{intent}'")
             return {
@@ -284,7 +313,7 @@ Return JSON:
                 "agent_type": "none",
                 "error": "No agent registered",
             }
-        
+
         # Try to get or create agent instance
         try:
             if agent_class_name not in self.agent_cache:
@@ -316,66 +345,65 @@ Return JSON:
         except Exception as e:
             logger.error(f"DISPATCH: Failed to dispatch: {e}")
             return self._llm_fallback(intent, query, user_context)
-    
+
     # ==================== Multi-Intent Handling ====================
-    
+
     def handle_multi_intent(
-        self,
-        intents: List[tuple[str, float]],
-        query: str,
-        user_context: Dict[str, Any]
+        self, intents: List[tuple[str, float]], query: str, user_context: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """
         Handle queries that span multiple intents.
-        
+
         Dispatches to multiple agents and collects results.
-        
+
         Args:
             intents: List of (intent, confidence) tuples, sorted by confidence
             query: User query
             user_context: User info
-            
+
         Returns:
             List of agent results
         """
         logger.info(f"MULTI_INTENT: Handling {len(intents)} intents")
-        
+
         results = []
-        
+
         for intent, confidence in intents:
             if confidence < 0.4:
                 logger.info(f"MULTI_INTENT: Skipping {intent} (confidence={confidence})")
                 continue
-            
+
             if not self.check_permissions(user_context, intent):
                 logger.warning(f"MULTI_INTENT: Permission denied for {intent}")
-                results.append({
-                    "intent": intent,
-                    "error": "Permission denied",
-                    "confidence": 0.0,
-                })
+                results.append(
+                    {
+                        "intent": intent,
+                        "error": "Permission denied",
+                        "confidence": 0.0,
+                    }
+                )
                 continue
-            
+
             result = self.dispatch_to_agent(intent, query, user_context)
             result["intent"] = intent
             results.append(result)
-        
+
         return results
-    
+
     # ==================== Response Merging ====================
-    
+
     def merge_responses(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Merge multi-agent results into unified response.
-        
+
         Args:
             results: List of agent results
-            
+
         Returns:
             Merged response dict
         """
         logger.info(f"MERGE: Combining {len(results)} agent results")
-        
+
         if not results:
             return {
                 "answer": "No results to merge",
@@ -383,35 +411,35 @@ Return JSON:
                 "agents_used": [],
                 "confidence": 0.0,
             }
-        
+
         if len(results) == 1:
             return results[0]
-        
+
         # Merge multiple results
         merged_answer = "Based on multiple analyses:\n\n"
         all_sources = []
         agents_used = []
         confidence_sum = 0.0
-        
+
         for i, result in enumerate(results, 1):
             answer = result.get("answer", f"Agent {i} response")
             merged_answer += f"{i}. {answer}\n"
-            
+
             all_sources.extend(result.get("sources", []))
             agents_used.append(result.get("agent_type", "unknown"))
             confidence_sum += result.get("confidence", 0.0)
-        
+
         avg_confidence = confidence_sum / len(results) if results else 0.0
-        
+
         return {
             "answer": merged_answer,
             "sources": list({str(s) for s in all_sources}),  # Deduplicate
             "agents_used": agents_used,
             "confidence": avg_confidence,
         }
-    
+
     # ==================== Public Interface ====================
-    
+
     def run(
         self,
         query: str,
@@ -420,14 +448,14 @@ Return JSON:
     ) -> Dict[str, Any]:
         """
         Run router agent to process query and dispatch to specialists.
-        
+
         Main entry point for multi-agent orchestration.
-        
+
         Args:
             query: User question/request
             user_context: User info (id, role, department, etc.)
             conversation_history: Prior conversation context
-            
+
         Returns:
             Dict with keys:
             - answer: Final response from specialist agent(s)
@@ -443,13 +471,13 @@ Return JSON:
                 "role": "employee",
                 "department": "unknown",
             }
-        
+
         logger.info(f"ROUTER: Processing query: {query[:60]}...")
-        
+
         # Step 1: Classify intent(s)
         intent, confidence = self.classify_intent(query)
         intents = [(intent, confidence)]
-        
+
         # Step 2: Check if clarification needed
         if confidence < 0.5:
             logger.info(f"ROUTER: Low confidence ({confidence}), seeking clarification")
@@ -461,7 +489,7 @@ Return JSON:
                 "agent_type": "router",
                 "intents": intents,
             }
-        
+
         # Step 3: Check permissions
         if not self.check_permissions(user_context, intent):
             return {
@@ -471,7 +499,7 @@ Return JSON:
                 "error": "Permission denied",
                 "intents": intents,
             }
-        
+
         # Step 4: Dispatch and execute
         if intent == "multi_intent":
             results = self.handle_multi_intent(intents, query, user_context)
@@ -484,7 +512,7 @@ Return JSON:
             result["agent_type"] = "router"
             result["intents"] = intents
             return result
-    
+
     # ==================== Helper Methods ====================
 
     def _import_agent(self, intent: str, class_name: str):
@@ -510,6 +538,7 @@ Return JSON:
         try:
             import importlib
             import inspect
+
             mod = importlib.import_module(module_path)
             agent_cls = getattr(mod, class_name, None)
             if agent_cls:
@@ -520,6 +549,7 @@ Return JSON:
                 if "hris_connector" in sig.parameters:
                     try:
                         from src.connectors.local_db import LocalDBConnector
+
                         kwargs["hris_connector"] = LocalDBConnector()
                         logger.info(f"DISPATCH: Injecting LocalDBConnector into {class_name}")
                     except Exception as conn_err:
@@ -529,15 +559,19 @@ Return JSON:
                 if "notification_service" in sig.parameters:
                     try:
                         from src.core.notifications import NotificationService
+
                         kwargs["notification_service"] = NotificationService()
                         logger.info(f"DISPATCH: Injecting NotificationService into {class_name}")
                     except Exception as notif_err:
-                        logger.warning(f"DISPATCH: Could not inject NotificationService: {notif_err}")
+                        logger.warning(
+                            f"DISPATCH: Could not inject NotificationService: {notif_err}"
+                        )
 
                 # Inject BiasAuditor
                 if "bias_auditor" in sig.parameters:
                     try:
                         from src.core.bias_audit import BiasAuditor
+
                         kwargs["bias_auditor"] = BiasAuditor()
                         logger.info(f"DISPATCH: Injecting BiasAuditor into {class_name}")
                     except Exception as bias_err:
@@ -547,6 +581,7 @@ Return JSON:
                 if "compliance_engine" in sig.parameters:
                     try:
                         from src.core.multi_jurisdiction import MultiJurisdictionEngine
+
                         kwargs["compliance_engine"] = MultiJurisdictionEngine()
                         logger.info(f"DISPATCH: Injecting ComplianceEngine into {class_name}")
                     except Exception as comp_err:
@@ -556,6 +591,7 @@ Return JSON:
                 if "rag_pipeline" in sig.parameters:
                     try:
                         from src.core.rag_pipeline import RAGPipeline
+
                         kwargs["rag_pipeline"] = RAGPipeline()
                         logger.info(f"DISPATCH: Injecting RAGPipeline into {class_name}")
                     except Exception as rag_err:
@@ -565,6 +601,7 @@ Return JSON:
                 if "pii_stripper" in sig.parameters:
                     try:
                         from src.middleware.pii_stripper import PIIStripper
+
                         kwargs["pii_stripper"] = PIIStripper()
                         logger.info(f"DISPATCH: Injecting PIIStripper into {class_name}")
                     except Exception as pii_err:
@@ -574,6 +611,7 @@ Return JSON:
                 if "dsar_repository" in sig.parameters:
                     try:
                         from src.repositories.gdpr_repository import DSARRepository
+
                         kwargs["dsar_repository"] = DSARRepository()
                         logger.info(f"DISPATCH: Injecting DSARRepository into {class_name}")
                     except Exception as dsar_err:
@@ -583,6 +621,7 @@ Return JSON:
                 if "gdpr_repository" in sig.parameters:
                     try:
                         from src.repositories.gdpr_repository import GDPRRepository
+
                         kwargs["gdpr_repository"] = GDPRRepository()
                         logger.info(f"DISPATCH: Injecting GDPRRepository into {class_name}")
                     except Exception as gdpr_err:
@@ -647,17 +686,26 @@ Return JSON:
         db_context = ""
         try:
             from src.connectors.local_db import LocalDBConnector
+
             connector = LocalDBConnector()
             uid = user_context.get("user_id", "")
 
             if intent in ("leave", "leave_request") and uid and uid != "unknown":
                 balances = connector.get_leave_balance(uid)
                 if balances:
-                    bal_lines = [f"  - {b.leave_type.value}: {b.available_days:.0f} of {b.total_days:.0f} days remaining" for b in balances]
-                    db_context += f"\n\nCurrent leave balances for this employee:\n" + "\n".join(bal_lines)
+                    bal_lines = [
+                        f"  - {b.leave_type.value}: {b.available_days:.0f} of {b.total_days:.0f} days remaining"
+                        for b in balances
+                    ]
+                    db_context += f"\n\nCurrent leave balances for this employee:\n" + "\n".join(
+                        bal_lines
+                    )
                 requests = connector.get_leave_requests(uid)
                 if requests:
-                    req_lines = [f"  - {r.leave_type.value} {r.start_date.strftime('%Y-%m-%d')} to {r.end_date.strftime('%Y-%m-%d')} ({r.status.value})" for r in requests[:5]]
+                    req_lines = [
+                        f"  - {r.leave_type.value} {r.start_date.strftime('%Y-%m-%d')} to {r.end_date.strftime('%Y-%m-%d')} ({r.status.value})"
+                        for r in requests[:5]
+                    ]
                     db_context += f"\n\nRecent leave requests:\n" + "\n".join(req_lines)
 
             elif intent == "employee_info" and uid and uid != "unknown":
@@ -667,13 +715,21 @@ Return JSON:
 
             elif intent == "analytics":
                 from src.core.database import SessionLocal, Employee as DBEmp
+
                 if SessionLocal:
                     s = SessionLocal()
                     try:
                         total = s.query(DBEmp).filter_by(status="active").count()
-                        depts = s.query(DBEmp.department, sa_func.count()).filter_by(status="active").group_by(DBEmp.department).all()
+                        depts = (
+                            s.query(DBEmp.department, sa_func.count())
+                            .filter_by(status="active")
+                            .group_by(DBEmp.department)
+                            .all()
+                        )
                         dept_str = ", ".join(f"{d}: {c}" for d, c in depts[:8])
-                        db_context += f"\n\nCurrent org: {total} active employees. By department: {dept_str}."
+                        db_context += (
+                            f"\n\nCurrent org: {total} active employees. By department: {dept_str}."
+                        )
                     except Exception:
                         pass
                     finally:
@@ -706,10 +762,10 @@ Return JSON:
     def _generate_clarification(self, query: str) -> str:
         """
         Generate clarification question for ambiguous queries.
-        
+
         Args:
             query: Original query
-            
+
         Returns:
             Clarification question string
         """
@@ -718,47 +774,47 @@ Return JSON:
 QUERY: {query}
 
 Return a natural clarification question (1-2 sentences) to help narrow the request."""
-        
+
         messages = [
             SystemMessage(content="You are an HR assistant."),
             HumanMessage(content=clarification_prompt),
         ]
-        
+
         try:
             response = self.llm.invoke(messages)
             return getattr(response, "content", str(response))
         except Exception as e:
             logger.error(f"Clarification generation failed: {e}")
             return f"Could you clarify your question about: {query[:30]}...?"
-    
+
     @staticmethod
     def _parse_json_response(text: str) -> Dict[str, Any]:
         """
         Parse JSON from LLM response.
-        
+
         Args:
             text: Response text
-            
+
         Returns:
             Parsed JSON dict
-            
+
         Raises:
             ValueError: If no valid JSON found
         """
         import re
-        
+
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             pass
-        
+
         match = re.search(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", text)
         if match:
             try:
                 return json.loads(match.group(0))
             except json.JSONDecodeError:
                 pass
-        
+
         raise ValueError(f"No valid JSON found in response")
 
 

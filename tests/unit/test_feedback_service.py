@@ -340,13 +340,8 @@ class TestListFeedback:
             feedback_type=FeedbackType.ACCURACY,
             rating=5,
         )
-        result = service.list_feedback(
-            filters={"feedback_type": FeedbackType.RESPONSE_QUALITY}
-        )
-        assert all(
-            e.feedback_type == FeedbackType.RESPONSE_QUALITY
-            for e in result["entries"]
-        )
+        result = service.list_feedback(filters={"feedback_type": FeedbackType.RESPONSE_QUALITY})
+        assert all(e.feedback_type == FeedbackType.RESPONSE_QUALITY for e in result["entries"])
 
     def test_list_feedback_pagination(self):
         """Test list_feedback pagination."""

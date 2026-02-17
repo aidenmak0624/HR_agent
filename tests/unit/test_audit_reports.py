@@ -405,6 +405,7 @@ class TestGetReport:
         """Test get_report returns None for missing report."""
         service = AuditReportService()
         from uuid import uuid4
+
         result = service.get_report(uuid4())
         assert result is None
 
@@ -559,6 +560,7 @@ class TestAddFinding:
         """Test add_finding validates input."""
         service = AuditReportService()
         from uuid import uuid4
+
         finding = AuditFinding(
             severity="info",
             category="test",
@@ -612,6 +614,7 @@ class TestUpdateFindingStatus:
             end_date=datetime(2024, 1, 31),
         )
         from uuid import uuid4
+
         result = service.update_finding_status(
             report.report_id,
             uuid4(),

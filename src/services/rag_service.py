@@ -74,16 +74,18 @@ class RAGService:
                         top_k=top_k,
                         min_score=min_score,
                     )
-                    results.extend([
-                        {
-                            "content": r.content,
-                            "source": r.source,
-                            "score": r.score,
-                            "metadata": r.metadata,
-                            "collection": collection,
-                        }
-                        for r in col_results
-                    ])
+                    results.extend(
+                        [
+                            {
+                                "content": r.content,
+                                "source": r.source,
+                                "score": r.score,
+                                "metadata": r.metadata,
+                                "collection": collection,
+                            }
+                            for r in col_results
+                        ]
+                    )
             else:
                 # Search all collections
                 all_results = self.rag_pipeline.search(
