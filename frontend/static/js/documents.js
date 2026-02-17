@@ -243,10 +243,10 @@ async function generateDocument(event) {
     event.preventDefault();
 
     const templateSlug = document.getElementById('selected-template').value;
-    const employeeSlug = document.getElementById('employee-select').value;
+    const employeeId = document.getElementById('employee-select').value;
     const variables = document.getElementById('doc-variables').value;
 
-    if (!templateSlug || !employeeSlug) {
+    if (!templateSlug || !employeeId) {
         showToast('Please select template and employee', 'error');
         return;
     }
@@ -265,7 +265,7 @@ async function generateDocument(event) {
 
     // Get employee display name from the dropdown selection
     const employeeSelect = document.getElementById('employee-select');
-    const employeeName = employeeSelect.options[employeeSelect.selectedIndex]?.text || employeeSlug;
+    const employeeName = employeeSelect.options[employeeSelect.selectedIndex]?.text || '';
 
     const submitBtn = event.target.querySelector('button[type="submit"]');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Generating...'; }
@@ -275,7 +275,7 @@ async function generateDocument(event) {
             method: 'POST',
             body: JSON.stringify({
                 template_id: templateId,
-                employee_id: employeeSlug,
+                employee_id: employeeId,
                 parameters: { variables: variables, employee_name: employeeName }
             })
         });
@@ -598,9 +598,8 @@ async function loadEmployeeDropdown() {
         if (response && response.data && response.data.length > 0) {
             select.innerHTML = '<option value="">Select an employee</option>';
             response.data.forEach(emp => {
-                const slug = `${emp.first_name}-${emp.last_name}`.toLowerCase().replace(/\s+/g, '-');
                 const opt = document.createElement('option');
-                opt.value = slug;
+                opt.value = emp.id;
                 opt.textContent = `${emp.first_name} ${emp.last_name}`;
                 select.appendChild(opt);
             });

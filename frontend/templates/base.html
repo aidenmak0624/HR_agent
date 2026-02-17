@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
     <title>{% block title %}HR Intelligence Platform{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <!-- Chart.js 4.4.1 (local) -->
@@ -34,7 +35,7 @@
                     <span class="nav-icon">📋</span>
                     <span class="nav-label">Workflows</span>
                 </a>
-                <a href="/documents" class="nav-item nav-role-gated {% if current_page == 'documents' %}active{% endif %}" data-page="documents" data-min-role="hr_admin">
+                <a href="/documents" class="nav-item nav-role-gated {% if current_page == 'documents' %}active{% endif %}" data-page="documents" data-min-role="employee">
                     <span class="nav-icon">📄</span>
                     <span class="nav-label">Documents</span>
                 </a>

@@ -2431,10 +2431,20 @@ class APIGateway:
                 )
 
             try:
-                from src.core.database import GeneratedDocument
+                from src.core.database import Employee, GeneratedDocument
 
-                employee, role = self._get_current_employee(session)
-                emp_id = employee.id if employee else 1
+                # Use employee_id from request body (selected employee)
+                # instead of the logged-in user
+                requested_emp_id = data.get("employee_id")
+                if requested_emp_id:
+                    try:
+                        target_emp = session.query(Employee).filter_by(id=int(requested_emp_id)).first()
+                    except (ValueError, TypeError):
+                        target_emp = None
+                    emp_id = target_emp.id if target_emp else 1
+                else:
+                    employee, role = self._get_current_employee(session)
+                    emp_id = employee.id if employee else 1
 
                 doc = GeneratedDocument(
                     employee_id=emp_id,
