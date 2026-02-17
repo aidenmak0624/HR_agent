@@ -300,9 +300,9 @@ async function generateDocument(event) {
     }
 }
 
-// Download document — generates a PDF from the demo data in the table
-function downloadDocument(docId) {
-    // Map demo doc IDs to metadata from the table
+// Download document — generates an HTML file from the document metadata
+function downloadDocument(docId, fileName, employeeName, templateName) {
+    // Legacy hardcoded demo IDs
     const docMeta = {
         'emp-cert-001': { name: 'Employment_Certificate_John_Smith.pdf', employee: 'John Smith', type: 'Employment Certificate' },
         'offer-001':    { name: 'Offer_Letter_Alice_Johnson.pdf', employee: 'Alice Johnson', type: 'Offer Letter' },
@@ -310,10 +310,28 @@ function downloadDocument(docId) {
         'exp-001':      { name: 'Experience_Letter_Carol_White.pdf', employee: 'Carol White', type: 'Experience Letter' },
     };
 
-    const meta = docMeta[docId];
+    let meta = docMeta[docId];
+
+    // If not a hardcoded demo doc, build meta from the arguments or from the table row
     if (!meta) {
-        showToast('Document not found', 'error');
-        return;
+        if (fileName && employeeName && templateName) {
+            meta = { name: fileName, employee: employeeName, type: templateName };
+        } else {
+            // Try to extract from the table row that triggered this call
+            const btn = event && event.target ? event.target.closest('button') : null;
+            const row = btn ? btn.closest('tr') : null;
+            if (row) {
+                const cells = row.querySelectorAll('td');
+                meta = {
+                    name: cells[0] ? cells[0].textContent.trim() : `Document_${docId}.pdf`,
+                    employee: cells[1] ? cells[1].textContent.trim() : 'Employee',
+                    type: cells[2] ? cells[2].textContent.trim() : 'Document',
+                };
+            } else {
+                showToast('Document not found', 'error');
+                return;
+            }
+        }
     }
 
     showToast(`Preparing ${meta.name}...`, 'info');
@@ -452,6 +470,79 @@ function _getDocumentBody(type, employee) {
             'HR Director',
             companyName,
         ],
+        'Termination Letter': [
+            `Dear ${employee},`,
+            '',
+            `This letter is to formally notify you that your employment with ${companyName} ` +
+            `will be terminated effective ${today}.`,
+            '',
+            `Details:`,
+            `- Last day of work: ${today}`,
+            `- Final paycheck: Will include all accrued and unused vacation time`,
+            `- Benefits: Coverage continues through the end of the current month`,
+            `- COBRA: Information will be mailed within 14 days`,
+            '',
+            `Please return all company property (laptop, badge, keys) to HR by your last day.`,
+            '',
+            `Your final paycheck and separation documents will be provided on your last day. ` +
+            `If you have questions about your benefits continuation or 401(k) rollover options, ` +
+            `please contact benefits@technova.com.`,
+            '',
+            `We wish you the best in your future endeavors.`,
+            '',
+            '',
+            'Sincerely,',
+            'Emily Rodriguez',
+            'HR Director',
+            companyName,
+        ],
+        'Separation Letter': [
+            `Dear ${employee},`,
+            '',
+            `This letter confirms the end of your employment with ${companyName} ` +
+            `effective ${today}.`,
+            '',
+            `Final compensation and benefits details:`,
+            `- Final paycheck includes all earned wages and accrued PTO`,
+            `- Health benefits continue through end of month`,
+            `- COBRA election information will be mailed within 14 days`,
+            `- 401(k) rollover options available — contact Fidelity at 1-800-343-3548`,
+            '',
+            `Please return all company property by your last day.`,
+            '',
+            '',
+            'Sincerely,',
+            'Emily Rodriguez',
+            'HR Director',
+            companyName,
+        ],
+        'Salary Slip': [
+            `SALARY SLIP — ${today}`,
+            '',
+            `Employee: ${employee}`,
+            `Department: Engineering`,
+            `Pay Period: Current Month`,
+            '',
+            `Earnings:`,
+            `- Basic Salary: $10,416.67`,
+            `- Housing Allowance: $1,500.00`,
+            `- Transport Allowance: $500.00`,
+            `- Total Earnings: $12,416.67`,
+            '',
+            `Deductions:`,
+            `- Federal Tax: $2,083.33`,
+            `- State Tax: $625.00`,
+            `- Social Security: $646.73`,
+            `- Medicare: $179.84`,
+            `- 401(k) Contribution: $625.00`,
+            `- Health Insurance: $180.00`,
+            `- Total Deductions: $4,339.90`,
+            '',
+            `Net Pay: $8,076.77`,
+            '',
+            'This is a system-generated document.',
+            companyName,
+        ],
     };
 
     return bodies[type] || [`${type} for ${employee}`, '', `Generated on ${today} by ${companyName}.`];
@@ -476,13 +567,16 @@ async function loadRecentDocuments() {
             tbody.innerHTML = '';
             response.data.forEach(doc => {
                 const dateStr = doc.created_at ? new Date(doc.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+                const escapedFileName = (doc.file_name || '').replace(/'/g, "\\'");
+                const escapedEmpName = (doc.employee_name || '').replace(/'/g, "\\'");
+                const escapedTemplate = (doc.template_name || '').replace(/'/g, "\\'");
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${doc.file_name}</td>
                     <td>${doc.employee_name}</td>
                     <td>${doc.template_name}</td>
                     <td>${dateStr}</td>
-                    <td><button class="action-link" onclick="downloadDocument('doc-${doc.id}')">⬇️ Download</button></td>
+                    <td><button class="action-link" onclick="downloadDocument('doc-${doc.id}', '${escapedFileName}', '${escapedEmpName}', '${escapedTemplate}')">⬇️ Download</button></td>
                 `;
                 tbody.appendChild(tr);
             });
