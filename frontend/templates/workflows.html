@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Workflows - HR Intelligence Platform{% endblock %}
+{% block page_title %}Workflows{% endblock %}
+
+{% block content %}
+<div class="workflows-page">
+    <!-- Pending Approvals (for managers) -->
+    <section class="pending-approvals-section">
+        <div class="section-header-row">
+            <h3 class="section-title">Pending Approvals</h3>
+            <button class="btn-secondary" onclick="loadPendingApprovals()" style="font-size:12px;">Refresh</button>
+        </div>
+        <div class="approval-cards" id="approval-cards-container">
+            <div class="loading-text" style="padding:32px;text-align:center;color:var(--text-secondary);">Loading pending approvals...</div>
+        </div>
+    </section>
+
+    <!-- Active Workflows — loaded from API -->
+    <section class="active-workflows-section">
+        <div class="section-header-row">
+            <h3 class="section-title">Active Workflows</h3>
+            <button class="btn-secondary" onclick="loadActiveWorkflows()" style="font-size:12px;">Refresh</button>
+        </div>
+        <div class="workflow-cards" id="workflow-cards-container">
+            <div class="loading-text" style="padding:32px;text-align:center;color:var(--text-secondary);">Loading workflows...</div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/workflows.js"></script>
+{% endblock %}

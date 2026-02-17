@@ -3,7 +3,7 @@
 from typing import Dict, Any
 import os
 import requests
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,16 +16,16 @@ class WebSearchTool:
     """
     
     name = "web_search"
-    description = """Search the web for human rights information when local documents 
-    are insufficient. Use this when RAG search quality is low or query is outside 
-    document scope."""
+    description = """Search the web for HR policy and employment law information when
+    local documents are insufficient. Use this when RAG search quality is low or
+    query is outside document scope."""
     
     def __init__(self):
         self.search_api_key = os.getenv("GOOGLE_SEARCH_API_KEY")
         self.search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
-            google_api_key=os.getenv("GOOGLE_API_KEY"),
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            api_key=os.getenv("OPENAI_API_KEY", ""),
             temperature=0.3
         )
         
@@ -99,8 +99,8 @@ class WebSearchTool:
         """
         url = "https://www.googleapis.com/customsearch/v1"
         
-        # Enhance query with human rights context
-        enhanced_query = f"{query} human rights"
+        # Enhance query with HR context
+        enhanced_query = f"{query} employment HR policy"
         
         params = {
             "key": self.search_api_key,
@@ -130,42 +130,42 @@ class WebSearchTool:
     def _fallback_search(self, query: str) -> list:
         """
         Fallback search for development/testing without API keys.
-        Returns realistic-looking results with human rights focus.
+        Returns realistic-looking results with HR policy focus.
         """
         logger.info("Using fallback search (no API keys configured)")
         
         # Provide helpful fallback results pointing to authoritative sources
         fallback_results = [
             {
-                "title": f"Human Rights Information: {query}",
+                "title": f"Employment Law Information: {query}",
                 "snippet": (
-                    "The Universal Declaration of Human Rights (UDHR) is a milestone document "
-                    "in the history of human rights. For real-time search results, configure "
-                    "GOOGLE_SEARCH_API_KEY in your environment."
+                    "The U.S. Department of Labor provides comprehensive information on federal "
+                    "employment laws including FMLA, FLSA, ADA, and more. For real-time search "
+                    "results, configure GOOGLE_SEARCH_API_KEY in your environment."
                 ),
-                "url": "https://www.ohchr.org/en/human-rights/universal-declaration/translations/english",
-                "source": "ohchr.org",
-                "published": "UN Office of the High Commissioner"
+                "url": "https://www.dol.gov/agencies/whd",
+                "source": "dol.gov",
+                "published": "U.S. Department of Labor"
             },
             {
-                "title": "Universal Declaration of Human Rights",
+                "title": "EEOC - Employment Discrimination Laws",
                 "snippet": (
-                    "The UDHR sets out fundamental human rights to be universally protected. "
-                    "It has been translated into over 500 languages."
+                    "The Equal Employment Opportunity Commission enforces federal laws prohibiting "
+                    "employment discrimination based on race, color, religion, sex, and more."
                 ),
-                "url": "https://www.un.org/en/about-us/universal-declaration-of-human-rights",
-                "source": "un.org",
-                "published": "United Nations"
+                "url": "https://www.eeoc.gov/statutes/laws-enforced-eeoc",
+                "source": "eeoc.gov",
+                "published": "EEOC"
             },
             {
-                "title": "Human Rights Resources",
+                "title": "SHRM - HR Resources and Policies",
                 "snippet": (
-                    "Access comprehensive human rights documentation, treaties, and educational "
-                    "materials from the UN Human Rights Office."
+                    "Access comprehensive HR policy templates, compliance guides, and best practices "
+                    "from the Society for Human Resource Management."
                 ),
-                "url": "https://www.ohchr.org/en/resources",
-                "source": "ohchr.org",
-                "published": "OHCHR Resources"
+                "url": "https://www.shrm.org/topics-tools",
+                "source": "shrm.org",
+                "published": "SHRM"
             }
         ]
         
@@ -194,7 +194,7 @@ class WebSearchTool:
             for i, r in enumerate(results[:5])
         ])
         
-        prompt = f"""You are a human rights expert synthesizing web search results.
+        prompt = f"""You are an HR policy expert synthesizing web search results.
 
 **Original Query:** "{query}"
 
@@ -204,7 +204,7 @@ class WebSearchTool:
 **Task:** Provide a clear, factual summary (2-3 paragraphs) that:
 1. Directly answers the query based on the search results
 2. Integrates information from multiple sources
-3. Maintains human rights education focus
+3. Maintains HR policy and employment focus
 4. Uses natural language (not bullet points)
 5. Mentions sources naturally when relevant
 
@@ -216,7 +216,7 @@ class WebSearchTool:
             from langchain_core.messages import HumanMessage, SystemMessage
             
             messages = [
-                SystemMessage(content="You are a human rights education expert."),
+                SystemMessage(content="You are an HR policy and employment expert."),
                 HumanMessage(content=prompt)
             ]
             
@@ -249,7 +249,7 @@ if __name__ == "__main__":
     tool = WebSearchTool()
     
     try:
-        result = tool.run("What are the rights of children?", num_results=3)
+        result = tool.run("What is FMLA leave eligibility?", num_results=3)
         
         print(f"Success: {result.get('success', False)}")
         print(f"Mode: {result.get('mode', 'unknown')}")

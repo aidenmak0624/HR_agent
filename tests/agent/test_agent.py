@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Automated Test Suite for Human Rights Agent
+Automated Test Suite for HR Assistant Agent
 Tests the RAG → Web Search prioritization system
 """
 
@@ -102,8 +102,8 @@ class AgentTester:
         self.print_header("TEST 2: RAG-Only Query (High Quality)")
         
         payload = {
-            "query": "What are human rights?",
-            "topic": "foundational_rights"
+            "query": "What is the PTO policy?",
+            "topic": "benefits"
         }
         
         print(f"Query: '{payload['query']}'")
@@ -151,8 +151,8 @@ class AgentTester:
         self.print_header("TEST 3: RAG + Web Search Query (Quality Threshold)")
         
         payload = {
-            "query": "What are the latest human rights developments in 2024?",
-            "topic": "foundational_rights"
+            "query": "What are the latest employment law changes in 2024?",
+            "topic": "employment_law"
         }
         
         print(f"Query: '{payload['query']}'")
@@ -205,7 +205,7 @@ class AgentTester:
         
         payload = {
             "query": "How does blockchain technology relate to freedom of expression?",
-            "topic": "foundational_rights"
+            "topic": "benefits"
         }
         
         print(f"Query: '{payload['query']}'")
@@ -388,7 +388,7 @@ class AgentTester:
 def main():
     """Main entry point"""
     print(f"{Colors.BOLD}{'='*60}{Colors.END}")
-    print(f"{Colors.BOLD}Human Rights Agent - Automated Test Suite{Colors.END}")
+    print(f"{Colors.BOLD}HR Assistant Agent - Automated Test Suite{Colors.END}")
     print(f"{Colors.BOLD}{'='*60}{Colors.END}")
     print(f"\n{Colors.BLUE}Testing RAG → Web Search prioritization system{Colors.END}")
     print(f"{Colors.BLUE}Make sure the Flask server is running on http://localhost:5050{Colors.END}")

@@ -1,0 +1,138 @@
+PAYROLL, TAX WITHHOLDING, AND COMPLIANCE GUIDE
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+SECTION 1: PAY SCHEDULE AND DIRECT DEPOSIT
+
+PAY FREQUENCY
+- Salaried employees: Semi-monthly (24 pay periods per year)
+  - Pay dates: 15th and last business day of each month
+  - If pay date falls on a weekend or holiday, payment is issued on the preceding business day
+- Hourly/non-exempt employees: Bi-weekly (26 pay periods per year)
+  - Pay dates: Every other Friday
+
+DIRECT DEPOSIT
+- TechNova strongly encourages direct deposit for all employees
+- Setup: Complete the Direct Deposit Authorization Form (available on the HR portal)
+- Changes: Allow 1-2 pay cycles for new direct deposit setup or changes to take effect
+- Multiple accounts: You may split deposits across up to 3 bank accounts
+- Paper checks: Available upon request but may take 1-2 additional business days
+
+PAY STUBS
+- Available electronically via the payroll portal (ADP Workforce Now)
+- Accessible within 2 days of each pay date
+- Shows: Gross pay, deductions (taxes, benefits, 401k), net pay, YTD totals
+- Paper stubs mailed upon request
+
+---
+
+SECTION 2: TAX WITHHOLDING
+
+FORM W-4 (FEDERAL)
+- Must be completed by all employees at hire
+- Determines federal income tax withholding from each paycheck
+- Update anytime your personal/financial situation changes (marriage, divorce, new dependents, second job)
+- If claiming exempt status, a new W-4 must be submitted by February 15 each year
+- TechNova cannot advise on how to complete your W-4; consult a tax professional or use the IRS Tax Withholding Estimator at www.irs.gov/individuals/tax-withholding-estimator
+
+STATE TAX WITHHOLDING
+- Employees working in states with income tax must complete the applicable state W-4 form
+- States with no income tax: Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington, Wyoming
+- Remote employees: Withholding is based on the state where work is performed
+- Multi-state employees: May require withholding in multiple states
+
+FORM W-2
+- TechNova issues W-2 forms by January 31 each year for the prior tax year
+- Available electronically on the payroll portal and mailed to your address on file
+- If you do not receive your W-2 by February 15, contact payroll@technova.com
+- W-2 shows: Total wages, federal/state/local taxes withheld, Social Security and Medicare wages, pre-tax deductions
+
+FICA TAXES (NON-NEGOTIABLE DEDUCTIONS)
+- Social Security tax: 6.2% on earnings up to $168,600 (2026 wage base - subject to annual adjustment)
+- Medicare tax: 1.45% on all earnings (no wage cap)
+- Additional Medicare tax: 0.9% on earnings over $200,000 (employee only; no employer match)
+- TechNova matches the employer portion: 6.2% Social Security + 1.45% Medicare
+
+---
+
+SECTION 3: WORKERS' COMPENSATION
+
+COVERAGE
+- TechNova carries workers' compensation insurance as required by law
+- Covers all employees from the first day of employment
+- Coverage includes: Medical bills, lost wages (typically 66.7% of average weekly wage), rehabilitation, death benefits
+
+WHAT TO DO IF INJURED AT WORK
+1. Seek immediate medical attention if needed (call 911 for emergencies)
+2. Report the injury to your manager within 24 hours
+3. Complete an Incident Report Form (available on the HR portal or from your manager)
+4. HR files the workers' compensation claim with our insurance carrier
+5. Follow your doctor's treatment plan and provide any work restriction documentation to HR
+6. Return-to-work clearance required from your healthcare provider before resuming full duties
+
+REMOTE WORKER INJURIES
+- Work-related injuries that occur in your home office during work hours may be covered
+- You must be able to demonstrate the injury occurred during the course of performing work duties
+- Report any injury to your manager and HR immediately
+
+---
+
+SECTION 4: EMPLOYMENT VERIFICATION AND RECORDS
+
+FORM I-9 (EMPLOYMENT ELIGIBILITY VERIFICATION)
+- Required for ALL new employees regardless of citizenship
+- Section 1: Completed by employee no later than the first day of work
+- Section 2: Completed by TechNova HR within 3 business days of start date
+- Acceptable documents: US Passport (List A), OR Driver's License (List B) + Social Security Card (List C), OR other combinations per the I-9 instructions
+- TechNova uses E-Verify to confirm employment eligibility electronically
+- I-9 records retained for 3 years after hire date or 1 year after termination, whichever is later
+
+NEW HIRE REPORTING
+- TechNova reports all new and rehired employees to the state within 20 days as required by federal law
+- Information reported: Employee name, address, SSN, hire date; Employer name and FEIN
+- Used by the state for child support enforcement
+
+BACKGROUND CHECKS
+- TechNova conducts background checks for all new hires after a conditional offer of employment
+- Checks may include: Criminal history, education verification, employment history, professional license verification
+- Process follows FCRA (Fair Credit Reporting Act) requirements:
+  - Written consent obtained before ordering the check
+  - Pre-adverse action notice with copy of the report if potentially negative decision
+  - 5 business days for the candidate to respond
+  - Final adverse action notice if the decision stands
+- Individualized assessment: Considers nature of offense, time elapsed, and relevance to the position
+- Clean Slate Laws: TechNova complies with state laws regarding sealed/expunged records
+
+EMPLOYEE RECORDS
+- Personnel files maintained securely by HR
+- Employees may request to review their own file with 24 hours notice
+- Medical records kept in separate, confidential files
+- Records retained per TechNova's retention schedule and applicable law (minimum 3 years post-separation)
+
+---
+
+SECTION 5: EXPENSE REIMBURSEMENT
+
+PROCESS
+1. Submit expenses via the expense portal within 30 days of incurring the expense
+2. Attach receipts for all expenses over $25
+3. Manager approval required for all submissions
+4. Reimbursement processed within 2 pay cycles of approval
+
+COMMON REIMBURSABLE EXPENSES
+- Business travel (flights, hotels, ground transportation, meals)
+- Client entertainment (with prior approval)
+- Professional development materials
+- Home office supplies (per Remote Work Policy)
+- Mileage: Reimbursed at the IRS standard rate ($0.70/mile for 2026)
+
+CORPORATE CREDIT CARD
+- Available for managers and above, and employees with frequent travel
+- Must be used for business expenses only
+- Reconciled monthly with receipts
+
+CONTACT
+Payroll Department: payroll@technova.com | Phone: ext. 2200
+Tax Questions: Consult your personal tax advisor or use IRS.gov resources
+Workers' Comp Claims: hr@technova.com | Phone: ext. 2100
+Expense Reimbursement: expense@technova.com

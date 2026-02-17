@@ -1,0 +1,152 @@
+GENERAL DATA PROTECTION REGULATION (GDPR) COMPLIANCE POLICY
+=============================================================
+
+Effective Date: January 1, 2024
+Last Updated: January 15, 2025
+Policy Number: HR-POL-005
+
+1. PURPOSE
+This policy establishes the company's commitment to protecting personal data of employees, candidates, and contractors in compliance with the EU General Data Protection Regulation (GDPR), UK GDPR, and applicable data protection laws.
+
+2. SCOPE
+This policy applies to:
+- All personal data processed in connection with employment
+- Employee records, payroll data, benefits information, performance reviews
+- Candidate data collected during recruitment
+- Contractor and vendor personal data
+- Data processed in any EU/EEA country or relating to EU/EEA residents
+
+3. DATA PROTECTION PRINCIPLES
+The company processes personal data in accordance with these principles:
+a) Lawfulness, Fairness, and Transparency: Data is processed lawfully, fairly, and transparently
+b) Purpose Limitation: Data is collected for specified, explicit, and legitimate purposes
+c) Data Minimization: Only data adequate, relevant, and necessary for the purpose is collected
+d) Accuracy: Personal data is kept accurate and up-to-date
+e) Storage Limitation: Data is kept only as long as necessary for the purpose
+f) Integrity and Confidentiality: Data is processed securely with appropriate technical and organizational measures
+g) Accountability: The company demonstrates compliance with these principles
+
+4. LAWFUL BASIS FOR PROCESSING
+Employee data is processed under these lawful bases:
+- Contract: Necessary for the employment contract (payroll, benefits administration)
+- Legal Obligation: Required by law (tax reporting, workplace safety records)
+- Legitimate Interest: Necessary for business operations (performance management, internal communications)
+- Consent: Where no other basis applies (optional surveys, marketing communications)
+- Vital Interest: Emergency contact information and medical data in emergencies
+
+5. EMPLOYEE RIGHTS (DATA SUBJECT RIGHTS)
+Employees have the following rights regarding their personal data:
+
+5.1 Right of Access (Article 15)
+- Request a copy of all personal data held about them
+- Receive information about how their data is processed
+- Response provided within 30 days of request
+
+5.2 Right to Rectification (Article 16)
+- Request correction of inaccurate personal data
+- Request completion of incomplete personal data
+
+5.3 Right to Erasure ("Right to Be Forgotten") (Article 17)
+- Request deletion of personal data when:
+  - Data is no longer necessary for its original purpose
+  - Consent has been withdrawn
+  - Data has been unlawfully processed
+- Note: May be limited by legal retention requirements
+
+5.4 Right to Restriction of Processing (Article 18)
+- Request restriction of data processing in certain circumstances
+- Data is stored but not further processed while restriction applies
+
+5.5 Right to Data Portability (Article 20)
+- Receive personal data in a structured, commonly used, machine-readable format
+- Have data transmitted directly to another controller where technically feasible
+
+5.6 Right to Object (Article 21)
+- Object to processing based on legitimate interest
+- Object to processing for direct marketing purposes (absolute right)
+
+6. DATA SUBJECT ACCESS REQUESTS (DSAR)
+6.1 Submission Process:
+- Submit requests to the Data Protection Officer (DPO) or HR
+- Requests can be made verbally or in writing
+- Identity verification required before processing
+
+6.2 Response Timeline:
+- Acknowledgment within 3 business days
+- Full response within 30 calendar days
+- Extension of up to 60 additional days for complex requests (with notification)
+
+6.3 Automated Processing:
+- The HR platform automatically catalogs employee data locations
+- PII detection identifies all personal data across systems
+- Data export generated in structured format (JSON/CSV)
+- Compliance validation ensures completeness before delivery
+
+7. CROSS-BORDER DATA TRANSFERS
+- Data transfers outside the EU/EEA require appropriate safeguards:
+  - Standard Contractual Clauses (SCCs)
+  - Binding Corporate Rules (BCRs)
+  - Adequacy decisions by the European Commission
+- Transfer Impact Assessments conducted for high-risk transfers
+- Records maintained of all cross-border transfers
+
+8. DATA BREACH NOTIFICATION
+8.1 Internal Reporting:
+- All suspected breaches must be reported to the DPO within 4 hours
+- DPO assesses severity and scope within 24 hours
+
+8.2 Supervisory Authority Notification:
+- Notifiable breaches reported within 72 hours of awareness
+- Unless unlikely to result in risk to data subjects' rights
+
+8.3 Data Subject Notification:
+- Required when breach is likely to result in high risk
+- Communicated in clear, plain language
+- Includes description, likely consequences, and remedial measures
+
+9. DATA PROTECTION IMPACT ASSESSMENTS (DPIA)
+- Required before implementing new processing activities that may result in high risk
+- HR conducts DPIAs for new HR systems, monitoring tools, or profiling activities
+- Results reviewed by DPO before proceeding
+
+10. DATA RETENTION SCHEDULE
+- Employment records: Duration of employment + 7 years
+- Payroll records: Duration of employment + 7 years
+- Recruitment data (unsuccessful candidates): 6 months after decision
+- Performance reviews: Duration of employment + 3 years
+- Training records: Duration of employment + 2 years
+- Health and safety records: Duration of employment + 40 years
+- Disciplinary records: Per policy, typically 12-24 months
+
+11. SPECIAL CATEGORIES OF DATA
+Processing of sensitive data (health, biometrics, trade union membership, etc.) requires:
+- Explicit consent or other specific legal basis
+- Additional security measures
+- Data Protection Impact Assessment
+- Limited access on a need-to-know basis
+
+12. DATA PROTECTION OFFICER (DPO)
+- Contact: dpo@company.com
+- The DPO is responsible for:
+  - Monitoring compliance with GDPR
+  - Advising on data protection obligations
+  - Cooperating with supervisory authorities
+  - Serving as the contact point for data subjects
+
+13. EMPLOYEE OBLIGATIONS
+All employees must:
+- Only access personal data necessary for their role
+- Report any suspected data breaches immediately
+- Complete annual data protection training
+- Follow data handling procedures and policies
+- Not transfer personal data outside approved systems
+
+14. PENALTIES
+Non-compliance with GDPR may result in:
+- Administrative fines up to €20 million or 4% of global annual turnover
+- Employee disciplinary action for policy violations
+- Reputational damage and loss of customer trust
+
+---
+Note: This policy complies with Regulation (EU) 2016/679 (GDPR).
+For questions, contact the Data Protection Officer at dpo@company.com.

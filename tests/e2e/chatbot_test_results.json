@@ -1,0 +1,792 @@
+{
+  "test_run_info": {
+    "timestamp": "2026-02-08T02:41:57.689911",
+    "api_url": "http://localhost:5050/api/v2/query",
+    "total_tests": 60,
+    "passed_tests": 60,
+    "failed_tests": 0,
+    "pass_rate": 100.0
+  },
+  "results": [
+    {
+      "category": "Greetings",
+      "query": "Hello",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 1.8732547760009766,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "Hi there",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 0.9098052978515625,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "Hey",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 0.8497238159179688,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "What's up",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 0.820159912109375,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "Good morning",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 0.7088184356689453,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "What do you do?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.6766319274902344,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "Help me",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.6520748138427734,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "What can you help with?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.8883476257324219,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "Tell me about your capabilities",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.8015632629394531,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "What are you able to do?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.7498264312744141,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "Who are you?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.69427490234375,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "What are you?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.6203651428222656,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "Who is this?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.6346702575683594,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "What is your name?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.6866455078125,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Farewell",
+      "query": "Bye",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Goodbye! Feel free to come back anytime you need HR assistance. Have a great day!"
+      },
+      "response_time_ms": 0.7045269012451172,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "Goodbye",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Goodbye! Feel free to come back anytime you need HR assistance. Have a great day!"
+      },
+      "response_time_ms": 0.8642673492431641,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "Thanks",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "You're welcome! Is there anything else I can help you with? I'm here to assist with leave requests, benefits questions, company policies, payroll inquiries, and more."
+      },
+      "response_time_ms": 0.7009506225585938,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "Thank you",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "You're welcome! Is there anything else I can help you with? I'm here to assist with leave requests, benefits questions, company policies, payroll inquiries, and more."
+      },
+      "response_time_ms": 0.6718635559082031,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "See you later",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Goodbye! Feel free to come back anytime you need HR assistance. Have a great day!"
+      },
+      "response_time_ms": 0.6093978881835938,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Leave Queries",
+      "query": "How many vacation days do I have?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Vacation Policy:\n\n\u2022 0-2 years tenure: 15 days/year (1.25 days/month)\n\u2022 2-5 years: 20 days/year (1.67 days/month)\n\u2022 5+ years or manager level: 25 days/year (2.08 days/month)\n\u2022 Tenure bonus: +1"
+      },
+      "response_time_ms": 1.1589527130126953,
+      "agent_type": "leave_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Leave Queries",
+      "query": "Can I take sick leave?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova PTO Policy:\n\n\u2022 Vacation: 15 days/year (0-2 yrs), 20 days (2-5 yrs), 25 days (5+ yrs or manager level)\n\u2022 Sick Leave: 10 days/year (available from Day 1; medical cert required for 3+ consecutiv"
+      },
+      "response_time_ms": 0.8771419525146484,
+      "agent_type": "leave_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Leave Queries",
+      "query": "What is the leave policy?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Company Policies Overview:\n\n\u2022 Remote Work: Hybrid model \u2014 Tue/Wed/Thu in-office, Mon/Fri remote. Core hours 10am-4pm.\n\u2022 Dress Code: Business casual (Tue-Thu in office); professional for clien"
+      },
+      "response_time_ms": 0.7963180541992188,
+      "agent_type": "policy_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Leave Queries",
+      "query": "I want to apply for leave",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova PTO Policy:\n\n\u2022 Vacation: 15 days/year (0-2 yrs), 20 days (2-5 yrs), 25 days (5+ yrs or manager level)\n\u2022 Sick Leave: 10 days/year (available from Day 1; medical cert required for 3+ consecutiv"
+      },
+      "response_time_ms": 0.9932518005371094,
+      "agent_type": "leave_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Leave Queries",
+      "query": "How much PTO do I have left?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Paid Time Off (PTO) Summary:\n\nVacation: 15 days (0-2 yrs), 20 days (2-5 yrs), 25 days (5+ yrs/manager). +1 day per 2 yrs tenure.\nSick: 10 days/year. Personal: 3 days (employee), 5 days (manag"
+      },
+      "response_time_ms": 0.9901523590087891,
+      "agent_type": "leave_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Leave Queries",
+      "query": "When can I take vacation?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Vacation Policy:\n\n\u2022 0-2 years tenure: 15 days/year (1.25 days/month)\n\u2022 2-5 years: 20 days/year (1.67 days/month)\n\u2022 5+ years or manager level: 25 days/year (2.08 days/month)\n\u2022 Tenure bonus: +1"
+      },
+      "response_time_ms": 0.6783008575439453,
+      "agent_type": "leave_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Do we have health insurance?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Health Insurance Plans (2026):\n\nPPO (Blue Cross Blue Shield):\n\u2022 Premium: $180/mo employee, $520/mo family (TechNova pays 82%/76%)\n\u2022 Deductible: $500 individual / $1,000 family\n\u2022 Copays: $25 P"
+      },
+      "response_time_ms": 0.667572021484375,
+      "agent_type": "benefits_agent",
+      "confidence": 0.92
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "What about 401k?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova 401(k) Retirement Plan:\n\n\u2022 Provider: Fidelity Investments\n\u2022 Match: Dollar-for-dollar on first 4% + 50\u00a2 on next 2% = up to 5% employer match\n\u2022 Auto-enrollment: 6% contribution rate (to maximiz"
+      },
+      "response_time_ms": 0.6537437438964844,
+      "agent_type": "benefits_agent",
+      "confidence": 0.92
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Do you cover dental?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Dental Coverage (Delta Dental PPO):\n\n\u2022 Premium: $25/month employee-only (TechNova pays 100%); $65/month family (TechNova pays 75%)\n\u2022 Preventive (cleanings, exams, X-rays): 100% covered, 2 vis"
+      },
+      "response_time_ms": 0.6670951843261719,
+      "agent_type": "benefits_agent",
+      "confidence": 0.88
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Tell me about benefits",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Benefits Summary (2026):\n\nHealth Insurance (3 plans):\n\u2022 PPO: $180/mo employee ($520 family), $500 deductible, BCBS network\n\u2022 HMO: $120/mo employee ($380 family), $250 deductible, Kaiser netwo"
+      },
+      "response_time_ms": 0.6535053253173828,
+      "agent_type": "benefits_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Health insurance options",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Health Insurance Plans (2026):\n\nPPO (Blue Cross Blue Shield):\n\u2022 Premium: $180/mo employee, $520/mo family (TechNova pays 82%/76%)\n\u2022 Deductible: $500 individual / $1,000 family\n\u2022 Copays: $25 P"
+      },
+      "response_time_ms": 0.6031990051269531,
+      "agent_type": "benefits_agent",
+      "confidence": 0.92
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Retirement benefits",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova 401(k) Retirement Plan:\n\n\u2022 Provider: Fidelity Investments\n\u2022 Match: Dollar-for-dollar on first 4% + 50\u00a2 on next 2% = up to 5% employer match\n\u2022 Auto-enrollment: 6% contribution rate (to maximiz"
+      },
+      "response_time_ms": 0.6606578826904297,
+      "agent_type": "benefits_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Can I work remotely?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Remote Work Policy:\n\n\u2022 Hybrid model: 3 days in-office (Tue/Wed/Thu), 2 days remote (Mon/Fri)\n\u2022 Eligibility: After 6 months with satisfactory performance\n\u2022 Core hours: 10:00 AM - 4:00 PM local"
+      },
+      "response_time_ms": 0.8668899536132812,
+      "agent_type": "policy_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Policy Queries",
+      "query": "What are the working hours?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Working Hours:\n\n\u2022 Core hours: 10:00 AM - 4:00 PM (must be available)\n\u2022 Flexible start: Between 7:00 AM and 10:00 AM\n\u2022 Flexible end: Between 4:00 PM and 7:00 PM\n\u2022 Standard work week: 40 hours\n"
+      },
+      "response_time_ms": 0.621795654296875,
+      "agent_type": "policy_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Policy Queries",
+      "query": "What's the dress code?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Dress Code:\n\n\u2022 Office days (Tue-Thu): Business casual (collared shirts, blouses, slacks, clean denim)\n\u2022 Remote/Fridays: No formal code; professional attire for video meetings with clients\n\u2022 C"
+      },
+      "response_time_ms": 0.6453990936279297,
+      "agent_type": "policy_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Remote work policy",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Company Policies Overview:\n\n\u2022 Remote Work: Hybrid model \u2014 Tue/Wed/Thu in-office, Mon/Fri remote. Core hours 10am-4pm.\n\u2022 Dress Code: Business casual (Tue-Thu in office); professional for clien"
+      },
+      "response_time_ms": 0.6961822509765625,
+      "agent_type": "policy_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Are pets allowed in office?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Pet Policy:\n\n\u2022 Pets are generally not permitted in the office\n\u2022 Service animals always welcome with documentation\n\u2022 Occasional 'Bring Your Dog' days coordinated by department\n\u2022 Allergies and "
+      },
+      "response_time_ms": 0.6380081176757812,
+      "agent_type": "policy_agent",
+      "confidence": 0.75
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Parental leave policy",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Parental Leave:\n\n\u2022 Birth parent: 16 weeks fully paid (may start up to 4 weeks before due date)\n\u2022 Non-birth parent: 8 weeks fully paid\n\u2022 Adoption/foster: 16 weeks (primary caregiver), 8 weeks "
+      },
+      "response_time_ms": 0.6172657012939453,
+      "agent_type": "policy_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "When is payday?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Pay Schedule:\n\n\u2022 Salaried: Semi-monthly (15th and last business day) \u2014 24 periods/year\n\u2022 Hourly: Bi-weekly (every other Friday) \u2014 26 periods/year\n\u2022 If pay date falls on weekend/holiday, paid "
+      },
+      "response_time_ms": 0.6194114685058594,
+      "agent_type": "payroll_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "How do I set up direct deposit?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Setting Up Direct Deposit at TechNova:\n\n1. Log into ADP Workforce Now (payroll portal)\n2. Go to Pay > Direct Deposit\n3. Enter bank routing number and account number\n4. You can split deposits across up"
+      },
+      "response_time_ms": 0.5676746368408203,
+      "agent_type": "payroll_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "What's my salary?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Compensation Information:\n\n\u2022 Annual reviews: September (annual cycle)\n\u2022 Merit increases effective January 1:\n  - Meets expectations: 3-5%\n  - Exceeds: 5-7%\n  - Exceptional: 7-10% + equity ref"
+      },
+      "response_time_ms": 0.629425048828125,
+      "agent_type": "payroll_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "Can I get a pay stub?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Pay Schedule:\n\n\u2022 Salaried: Semi-monthly (15th and last business day) \u2014 24 periods/year\n\u2022 Hourly: Bi-weekly (every other Friday) \u2014 26 periods/year\n\u2022 If pay date falls on weekend/holiday, paid "
+      },
+      "response_time_ms": 1.7993450164794922,
+      "agent_type": "payroll_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "Tax withholding information",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Tax and Withholding at TechNova:\n\n\u2022 Form W-4: Complete at hire; update anytime your situation changes (marriage, new dependents, etc.)\n\u2022 State taxes: Withheld based on your work state. No state tax in"
+      },
+      "response_time_ms": 0.7569789886474609,
+      "agent_type": "payroll_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "I'm a new employee, what do I do?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Welcome to TechNova! Here's your getting-started guide:\n\n1. Complete pre-hire paperwork (I-9, W-4, direct deposit, NDA)\n2. Day 1: HR orientation, IT setup, team introductions, buddy assignment\n3. Week"
+      },
+      "response_time_ms": 0.7610321044921875,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.88
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "What's required for first day?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Your First Day at TechNova:\n\n8:30 AM \u2014 Arrive at office (or log into virtual onboarding)\n9:00 AM \u2014 Welcome from your hiring manager\n9:30 AM \u2014 HR orientation: Company overview, benefits walkthrough, I-"
+      },
+      "response_time_ms": 0.6482601165771484,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.88
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "How do I get onboarded?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova New Employee Onboarding:\n\nBefore Day 1: Complete I-9, W-4, direct deposit, benefits enrollment, background check, sign NDA/Code of Conduct.\n\nDay 1: 9am welcome, HR orientation, I-9 verificati"
+      },
+      "response_time_ms": 0.8370876312255859,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.88
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "New employee checklist",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Welcome to TechNova! Here's your getting-started guide:\n\n1. Complete pre-hire paperwork (I-9, W-4, direct deposit, NDA)\n2. Day 1: HR orientation, IT setup, team introductions, buddy assignment\n3. Week"
+      },
+      "response_time_ms": 0.972747802734375,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.88
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "First day orientation",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova New Employee Orientation:\n\nDay 1 AM: Company overview, mission, values, HR orientation, benefits enrollment walkthrough, I-9 verification.\nDay 1 PM: IT setup, department intro, meet your budd"
+      },
+      "response_time_ms": 0.6201267242431641,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Document Queries",
+      "query": "Can I get an employment certificate?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "To request an employment certificate or verification letter:\n\nSelf-service: Go to Documents page > Employment Certificate > Generate.\nOfficial requests: Contact hr@technova.com for signed/sealed lette"
+      },
+      "response_time_ms": 0.8957386016845703,
+      "agent_type": "hr_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Document Queries",
+      "query": "I need my offer letter",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova HR letter templates:\n\n\u2022 Offer Letter \u2022 Employment Certificate \u2022 Promotion Letter\n\u2022 Reference Letter \u2022 Experience Letter \u2022 Separation Letter\n\nGenerate via the Documents page. Official signed c"
+      },
+      "response_time_ms": 0.6513595581054688,
+      "agent_type": "hr_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Document Queries",
+      "query": "Can I request my employment records?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Employee Records at TechNova:\n\n\u2022 Personnel files: Maintained by HR; you may review yours with 24 hours notice\n\u2022 Pay stubs: ADP Workforce Now (payroll portal)\n\u2022 Tax documents (W-2): ADP portal + mailed"
+      },
+      "response_time_ms": 0.6620883941650391,
+      "agent_type": "hr_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Document Queries",
+      "query": "How do I get a reference letter?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova HR letter templates:\n\n\u2022 Offer Letter \u2022 Employment Certificate \u2022 Promotion Letter\n\u2022 Reference Letter \u2022 Experience Letter \u2022 Separation Letter\n\nGenerate via the Documents page. Official signed c"
+      },
+      "response_time_ms": 0.6191730499267578,
+      "agent_type": "hr_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Edge Cases",
+      "query": "asfghjkl zxcvbnm qwerty",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: asfghjkl zxcvbnm qwerty...?"
+      },
+      "response_time_ms": 3.7658214569091797,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "Can I have a query with many many many many many words Can I have a query with many many many many many words Can I have a query with many many many many many words Can I have a query with many many many many many words Can I have a query with many many many many many words ",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: Can I have a query with many m...?"
+      },
+      "response_time_ms": 1.0883808135986328,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "Query with special chars: !@#$%^&*()",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: Query with special chars: !@#$...?"
+      },
+      "response_time_ms": 0.8146762847900391,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "123456789 0987654321",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: 123456789 0987654321...?"
+      },
+      "response_time_ms": 0.7932186126708984,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "SELECT * FROM users DROP TABLE;",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: SELECT * FROM users DROP TABLE...?"
+      },
+      "response_time_ms": 0.9896755218505859,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "I want to take vacation and know about health insurance",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Health Insurance Plans (2026):\n\nPPO (Blue Cross Blue Shield):\n\u2022 Premium: $180/mo employee, $520/mo family (TechNova pays 82%/76%)\n\u2022 Deductible: $500 individual / $1,000 family\n\u2022 Copays: $25 P"
+      },
+      "response_time_ms": 0.8630752563476562,
+      "agent_type": "benefits_agent",
+      "confidence": 0.92
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "What's the leave policy and remote work policy?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Company Policies Overview:\n\n\u2022 Remote Work: Hybrid model \u2014 Tue/Wed/Thu in-office, Mon/Fri remote. Core hours 10am-4pm.\n\u2022 Dress Code: Business casual (Tue-Thu in office); professional for clien"
+      },
+      "response_time_ms": 0.6823539733886719,
+      "agent_type": "policy_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "Can I apply for leave and also get my pay stub?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova PTO Policy:\n\n\u2022 Vacation: 15 days/year (0-2 yrs), 20 days (2-5 yrs), 25 days (5+ yrs or manager level)\n\u2022 Sick Leave: 10 days/year (available from Day 1; medical cert required for 3+ consecutiv"
+      },
+      "response_time_ms": 0.7615089416503906,
+      "agent_type": "leave_agent",
+      "confidence": 0.9
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "Tell me about benefits and onboarding process",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "TechNova Benefits Summary (2026):\n\nHealth Insurance (3 plans):\n\u2022 PPO: $180/mo employee ($520 family), $500 deductible, BCBS network\n\u2022 HMO: $120/mo employee ($380 family), $250 deductible, Kaiser netwo"
+      },
+      "response_time_ms": 0.7801055908203125,
+      "agent_type": "benefits_agent",
+      "confidence": 0.9
+    }
+  ]
+}

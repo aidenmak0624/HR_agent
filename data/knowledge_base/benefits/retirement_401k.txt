@@ -1,0 +1,90 @@
+401(K) RETIREMENT PLAN AND STOCK COMPENSATION
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+SECTION 1: 401(K) RETIREMENT PLAN
+
+PLAN OVERVIEW
+TechNova offers a 401(k) retirement savings plan to help employees build long-term financial security. The plan is administered by Fidelity Investments and offers a generous employer match.
+
+ELIGIBILITY
+- All full-time and part-time employees working 20+ hours per week
+- Eligible to enroll immediately upon hire (no waiting period)
+- Employer match begins after 90 days of employment
+
+CONTRIBUTION LIMITS (2026)
+- Employee contribution limit: $24,500 per year
+- Catch-up contribution (age 50+): Additional $7,500 per year (total $32,000)
+- Combined employee + employer limit: $70,000 per year
+
+EMPLOYER MATCH
+TechNova provides a dollar-for-dollar match on the first 4% of your eligible compensation, plus 50 cents on the dollar for the next 2%:
+- Contribute 1%: TechNova matches 1% (total: 2%)
+- Contribute 2%: TechNova matches 2% (total: 4%)
+- Contribute 3%: TechNova matches 3% (total: 6%)
+- Contribute 4%: TechNova matches 4% (total: 8%)
+- Contribute 5%: TechNova matches 4% + 0.5% = 4.5% (total: 9.5%)
+- Contribute 6%: TechNova matches 4% + 1% = 5% (total: 11%)
+- Maximum employer match: 5% of eligible compensation
+
+AUTO-ENROLLMENT
+New employees are automatically enrolled at a 6% contribution rate (to maximize the employer match) unless they opt out or change their rate. The default investment is the age-appropriate Target Date Fund.
+
+VESTING SCHEDULE
+- Employee contributions: 100% vested immediately (always yours)
+- Employer match: 3-year graded vesting
+  - After 1 year: 33% vested
+  - After 2 years: 67% vested
+  - After 3 years: 100% vested
+
+INVESTMENT OPTIONS
+The plan offers a range of investment options through Fidelity:
+- Target Date Funds (2030, 2035, 2040, 2045, 2050, 2055, 2060)
+- S&P 500 Index Fund (expense ratio: 0.015%)
+- Total Stock Market Index Fund (expense ratio: 0.02%)
+- International Stock Index Fund (expense ratio: 0.06%)
+- Bond Index Fund (expense ratio: 0.03%)
+- Small Cap Index Fund (expense ratio: 0.05%)
+- Company Stock Fund (limited to 10% of balance)
+- Stable Value Fund (guaranteed rate: ~3.5%)
+
+ROTH 401(K) OPTION
+Employees may choose to make some or all contributions on a Roth (after-tax) basis. Same contribution limits apply. Qualified withdrawals in retirement are tax-free.
+
+LOANS AND HARDSHIP WITHDRAWALS
+- 401(k) Loans: Borrow up to 50% of vested balance (maximum $50,000). Repayment over 1-5 years via payroll deduction. Interest rate: Prime + 1%.
+- Hardship Withdrawals: Available for immediate and heavy financial need (medical expenses, home purchase, tuition, funeral, eviction prevention). Subject to 10% early withdrawal penalty if under 59.5.
+
+ROLLOVERS
+- Incoming rollovers from previous employer plans or IRAs are accepted at any time
+- Outgoing rollovers upon separation processed within 5-7 business days
+
+---
+
+SECTION 2: EQUITY COMPENSATION
+
+RESTRICTED STOCK UNITS (RSUs) - For Eligible Employees
+- Grant Eligibility: Senior engineers, managers, directors, and above
+- Standard Vesting: 4-year schedule with 1-year cliff
+  - Year 1: 25% vests on the 1-year anniversary
+  - Years 2-4: Remaining 75% vests in equal quarterly installments (6.25% per quarter)
+- Tax Treatment: RSUs are taxed as ordinary income upon vesting
+- TechNova withholds taxes at the supplemental income rate at time of vesting
+
+STOCK OPTIONS (Early-Stage Equity)
+- Grant Type: Incentive Stock Options (ISO) where eligible; Non-Qualified Stock Options (NSO) otherwise
+- Exercise Period: 10 years from grant date
+- Post-Termination Exercise: 90 days after separation to exercise vested options
+- ISO Tax Advantage: No ordinary income tax at exercise (may trigger AMT); capital gains treatment on sale if holding period met (1 year from exercise, 2 years from grant)
+
+EMPLOYEE STOCK PURCHASE PLAN (ESPP)
+- Eligibility: All employees working 20+ hours/week after 6 months
+- Discount: Purchase TechNova stock at 15% discount from fair market value
+- Contribution: Up to 15% of base salary (maximum $25,000/year)
+- Purchase Periods: Semi-annual (January 1 and July 1)
+- Lookback Provision: Price is the lower of the start or end of the purchase period, minus 15%
+
+CONTACT
+401(k) Plan Administrator (Fidelity): 1-800-343-3548 or netbenefits.com
+TechNova Benefits: benefits@technova.com | Phone: ext. 2105
+Equity Administration: equity@technova.com

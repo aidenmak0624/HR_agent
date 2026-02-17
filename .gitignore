@@ -15,3 +15,17 @@ logs/
 .idea/
 .DS_Store
 .pytest_cache/
+
+# Large data files
+data/un_documents/
+data/processed/
+chromadb_hr/
+hr_platform.db-journal
+test_write_check
+.coverage
+*.docx
+.~lock.*
+test-results/
+test-results-old/
+playwright-report/
+node_modules/

@@ -9,8 +9,8 @@ import json
 
 # Ensure necessary paths are in system path for imports to work
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-from src.core.rag_system import SimpleRAG
-from langchain_google_genai import ChatGoogleGenerativeAI
+from src.core.rag_system import HRKnowledgeBase
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
 logger = logging.getLogger(__name__)
@@ -20,8 +20,8 @@ class EducationalPlannerTool:
     """Creates educational materials like lesson plans, quizzes, and study guides."""
     
     name = "educational_planner"
-    description = """Create educational materials (lesson plans, quizzes, study guides) 
-    for teaching human rights topics at different educational levels."""
+    description = """Create HR training materials (lesson plans, quizzes, study guides)
+    for employee training and onboarding at different levels."""
     
     def __init__(self):
         logger.info("Initializing Educational Planner Tool...")
@@ -30,10 +30,10 @@ class EducationalPlannerTool:
         if not api_key:
             logger.error("GOOGLE_API_KEY environment variable is missing for Educational Planner.")
             
-        self.rag = SimpleRAG(preload_topics=True)
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
-            google_api_key=api_key, # Uses the environment variable
+        self.rag = HRKnowledgeBase(preload_topics=True)
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            api_key=os.getenv("OPENAI_API_KEY", ""),
             temperature=0.7
         )
         logger.info("✅ Educational Planner ready")
@@ -105,7 +105,7 @@ Include: Learning Objectives, Materials, Introduction, Main Activity, Discussion
 **LESSON PLAN:**"""
         
         try:
-            messages = [SystemMessage(content="You are an expert educator, specializing in human rights curriculum design. Generate the lesson plan in clear markdown format."),
+            messages = [SystemMessage(content="You are an expert HR trainer, specializing in employee training and development. Generate the lesson plan in clear markdown format."),
                        HumanMessage(content=prompt)]
             response = self.llm.invoke(messages)
             
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     
     result = planner.run(
         content_type="lesson_plan",
-        topic="foundational_rights",
+        topic="benefits",
         level="high_school"
     )
     

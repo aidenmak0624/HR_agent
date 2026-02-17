@@ -1,0 +1,87 @@
+FAIR LABOR STANDARDS ACT (FLSA) - OVERTIME AND COMPENSATION POLICY
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+OVERVIEW
+The Fair Labor Standards Act (FLSA) establishes minimum wage, overtime pay, recordkeeping, and youth employment standards. TechNova complies fully with all federal and applicable state wage and hour laws.
+
+MINIMUM WAGE
+- Federal minimum wage: $7.25 per hour
+- TechNova's minimum starting wage: $22.00 per hour (significantly above federal and most state minimums)
+- Where state or local minimum wage is higher, TechNova pays the higher rate
+
+EXEMPT VS. NON-EXEMPT CLASSIFICATION
+Employees are classified as either exempt or non-exempt based on duties and salary:
+
+Exempt Employees (not eligible for overtime):
+- Must earn at least $684 per week ($35,568 annually) at the federal level
+- Must meet one of the duties tests: Executive, Administrative, Professional, Computer Employee, or Outside Sales
+- At TechNova, most salaried managers, senior engineers, and professional staff are classified as exempt
+- Exempt employees are paid a fixed salary regardless of hours worked
+
+Non-Exempt Employees (eligible for overtime):
+- Entitled to overtime pay at 1.5x their regular rate for hours worked over 40 in a workweek
+- At TechNova, hourly employees, junior staff, and some administrative roles are non-exempt
+- Must accurately record all hours worked
+
+OVERTIME PAY
+- Non-exempt employees earn 1.5 times their regular hourly rate for all hours worked beyond 40 in a single workweek
+- The workweek at TechNova runs Monday through Sunday
+- Overtime must be pre-approved by the employee's direct manager
+- Unauthorized overtime is still compensable but may result in disciplinary action
+- Comp time (compensatory time off) in lieu of overtime pay is NOT permitted for private-sector employees under FLSA
+
+CALCULATING REGULAR RATE
+The regular rate includes:
+- Base hourly wage
+- Non-discretionary bonuses (e.g., production bonuses)
+- Shift differentials
+The regular rate excludes:
+- Discretionary bonuses (e.g., holiday bonuses)
+- Expense reimbursements
+- Paid time off payments
+
+MEAL AND REST BREAKS
+Federal law does not require meal or rest breaks. However, TechNova provides:
+- 30-minute unpaid lunch break for shifts of 6+ hours
+- Two 15-minute paid rest breaks per 8-hour shift
+- Breaks under 20 minutes are considered paid work time per FLSA regulations
+- Nursing mothers: TechNova provides reasonable break time and a private, non-bathroom space for expressing milk for up to 1 year after the child's birth (per PUMP Act)
+
+RECORDKEEPING
+TechNova maintains the following records for all employees as required by FLSA:
+- Full name and Social Security number
+- Home address and date of birth
+- Sex and occupation
+- Time and day of week when workweek begins
+- Hours worked each day and each workweek
+- Regular hourly pay rate
+- Total overtime earnings
+- Total wages paid each pay period
+- Date of payment and pay period covered
+
+Records are retained for at least 3 years for payroll records and 2 years for basic employment records.
+
+COMMON COMPLIANCE ISSUES TO AVOID
+- Working off the clock (all work time must be recorded and compensated)
+- Misclassifying employees as exempt when they do not meet the duties test
+- Deducting pay from exempt employees for partial-day absences
+- Requiring non-exempt employees to work through lunch without compensation
+- Averaging hours over two or more workweeks
+
+STATE LAW CONSIDERATIONS
+Some states have additional requirements:
+- California: Daily overtime (over 8 hours/day) and double time (over 12 hours/day)
+- Colorado: Overtime after 12 hours/day or 40 hours/week
+- Certain states require premium pay on holidays or Sundays
+TechNova follows the law most beneficial to the employee when state and federal rules differ.
+
+HOW TO REPORT CONCERNS
+If you believe your pay is incorrect or your classification is wrong:
+1. Contact Payroll: payroll@technova.com or ext. 2200
+2. Contact HR: hr@technova.com or ext. 2100
+3. You may also file a complaint with the Department of Labor Wage and Hour Division: 1-866-487-9243
+
+CONTACT
+Payroll Department: payroll@technova.com | Phone: ext. 2200
+HR Department: hr@technova.com | Phone: ext. 2100

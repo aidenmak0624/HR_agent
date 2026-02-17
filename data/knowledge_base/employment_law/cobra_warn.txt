@@ -1,0 +1,96 @@
+COBRA CONTINUATION COVERAGE AND WARN ACT NOTICE POLICY
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+SECTION 1: COBRA (CONSOLIDATED OMNIBUS BUDGET RECONCILIATION ACT)
+
+OVERVIEW
+COBRA provides employees and their dependents who lose health benefits the right to choose to continue group health coverage for a limited period. TechNova, as an employer with 50+ employees, is subject to COBRA requirements.
+
+QUALIFYING EVENTS FOR EMPLOYEES
+The following events trigger COBRA eligibility:
+- Voluntary or involuntary termination of employment (except for gross misconduct)
+- Reduction in hours that causes loss of coverage
+
+QUALIFYING EVENTS FOR DEPENDENTS
+Spouses and dependent children may be eligible for COBRA upon:
+- Death of the covered employee
+- Divorce or legal separation from the covered employee
+- Employee becoming entitled to Medicare
+- Dependent child ceasing to be eligible under the plan (e.g., aging out)
+
+COVERAGE DURATION
+- Termination or reduction in hours: 18 months
+- Disability (Social Security determination): Up to 29 months (18 + 11 month extension)
+- Death, divorce, Medicare eligibility, or loss of dependent status: 36 months
+
+COST
+- COBRA participants pay up to 102% of the full group health plan premium (employer + employee share + 2% administrative fee)
+- Current approximate monthly COBRA premiums at TechNova:
+  - Employee only: $750/month
+  - Employee + spouse: $1,450/month
+  - Employee + family: $2,100/month
+- Payment is due on the 1st of each month with a 30-day grace period
+
+NOTICE AND ELECTION
+- TechNova will provide a COBRA election notice within 14 days of receiving notification of a qualifying event
+- Employees have 60 days from the qualifying event or the date of the COBRA notice (whichever is later) to elect COBRA coverage
+- Coverage is retroactive to the date of the qualifying event if elected
+
+HOW TO ENROLL
+1. You will receive a COBRA Election Notice via mail within 14 days of your qualifying event
+2. Complete and return the Election Form within 60 days
+3. Submit your first premium payment within 45 days of election
+4. Contact the Benefits Administrator: benefits@technova.com or ext. 2105
+
+ALTERNATIVES TO COBRA
+Before electing COBRA, consider:
+- Health Insurance Marketplace (healthcare.gov): May offer lower premiums with subsidies
+- Spouse's employer plan: Qualifying event allows special enrollment
+- Medicaid: If income qualifies
+
+---
+
+SECTION 2: WARN ACT (WORKER ADJUSTMENT AND RETRAINING NOTIFICATION ACT)
+
+OVERVIEW
+The WARN Act requires employers with 100 or more full-time employees to provide 60 calendar days advance written notice before a plant closing or mass layoff.
+
+WHEN WARN APPLIES
+- Plant Closing: Shutdown of a single site of employment resulting in 50+ employee job losses during any 30-day period
+- Mass Layoff: Job loss at a single site of 500+ employees OR 50-499 employees if they represent at least 33% of the workforce at that site
+
+NOTICE REQUIREMENTS
+TechNova will provide written notice to:
+- Affected employees or their union representatives
+- The state dislocated worker unit
+- The chief elected official of the local government
+Notice must be provided at least 60 calendar days before the event.
+
+EXCEPTIONS TO 60-DAY NOTICE
+- Faltering company: Employer actively seeking capital that would avoid layoff, and giving notice would jeopardize the effort
+- Unforeseeable business circumstances: The closing or layoff is caused by business circumstances not reasonably foreseeable at the time notice would have been required
+- Natural disaster: Earthquake, flood, drought, storm, tidal wave, or similar events
+
+PENALTIES FOR NON-COMPLIANCE
+- Back pay and benefits for each day of violation (up to 60 days) for each affected employee
+- Civil penalty of up to $500 per day to the local government (if no notice provided)
+
+STATE MINI-WARN LAWS
+Some states have additional WARN requirements with lower thresholds:
+- California: 75+ employees, any layoff of 50+ employees
+- New York: 25+ employees, layoff of 25+ employees or 33% of workforce
+- Illinois, New Jersey: Various additional requirements
+TechNova complies with the most protective applicable law.
+
+EMPLOYEE RIGHTS DURING LAYOFFS
+If a layoff occurs, affected employees receive:
+- 60 days advance written notice (or pay in lieu of notice)
+- Continuation of health benefits through COBRA
+- Outplacement assistance and career counseling
+- Severance pay per TechNova's Severance Policy (see Employee Handbook)
+- Access to EAP services for 90 days post-separation
+
+CONTACT
+HR Department: hr@technova.com | Phone: ext. 2100
+Benefits Administrator: benefits@technova.com | Phone: ext. 2105

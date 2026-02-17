@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Intelligence Platform — UI Design Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f5f7fb;
+            color: #1e293b;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1e293b;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .report-section {
+            background: #ffffff;
+            border: 1px solid rgba(0, 40, 100, 0.12);
+            border-radius: 4px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-number {
+            display: inline-block;
+            background-color: #467fcf;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        li {
+            margin-bottom: 14px;
+            padding-left: 24px;
+            position: relative;
+            color: #495057;
+            line-height: 1.7;
+        }
+
+        li:before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: #467fcf;
+            font-weight: 600;
+        }
+
+        .subsection {
+            margin-top: 28px;
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            border: 1px solid rgba(0, 40, 100, 0.12);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        td {
+            border: 1px solid rgba(0, 40, 100, 0.12);
+            padding: 12px 16px;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #f0f2f7;
+        }
+
+        .token-name {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #467fcf;
+        }
+
+        .token-value {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        .color-swatch {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 40, 100, 0.12);
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-card {
+            background-color: #f8f9fa;
+            border: 1px solid rgba(0, 40, 100, 0.12);
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: #1e293b;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0, 40, 100, 0.12);
+        }
+
+        .comparison-item {
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .icon-comparison {
+            display: grid;
+            grid-template-columns: auto 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            margin: 16px 0;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .icon-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .icon-emoji {
+            font-size: 24px;
+        }
+
+        .arrow {
+            color: #467fcf;
+            font-weight: 600;
+        }
+
+        .reference-project {
+            background-color: #eef3fc;
+            border-left: 4px solid #467fcf;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 3px;
+        }
+
+        .reference-project h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #467fcf;
+            margin-bottom: 10px;
+        }
+
+        .reference-project ul {
+            margin-left: 0;
+        }
+
+        .reference-project li {
+            font-size: 13px;
+            color: #495057;
+            padding-left: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #eef3fc;
+            color: #467fcf;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .monogram {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .monogram-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: #467fcf;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .highlight {
+            background-color: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 40, 100, 0.12);
+            color: #9aa0ac;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .icon-comparison {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .report-section {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HR Intelligence Platform — UI Design Report</h1>
+            <p class="subtitle">Minimalist White/Grey Design System Based on Tabler & shadcn/ui</p>
+        </header>
+
+        <!-- Section 1: Issues Found -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-number">1</span>
+                Issues Found in Current UI
+            </h2>
+            <ul>
+                <li><span class="highlight">Workflows section</span> has unstyled or poorly styled approval cards, timeline steps, and buttons</li>
+                <li><span class="highlight">Sidebar logo</span> "HR Intelligence" is plain text with no distinctive branding</li>
+                <li><span class="highlight">Icon collision</span> — Workflows icon (⚙️) is identical to Settings icon (⚙️), causing confusion</li>
+                <li><span class="highlight">Color scheme</span> — Current indigo/teal is too vibrant for an office/enterprise environment</li>
+                <li><span class="highlight">Sidebar design</span> — Dark gradient sidebar feels heavy; professional tools use lighter or white sidebars</li>
+            </ul>
+        </div>
+
+        <!-- Section 2: Reference Projects -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-number">2</span>
+                Reference Projects Studied
+            </h2>
+
+            <div class="reference-project">
+                <h4>Tabler (GitHub: tabler/tabler — 38k+ stars)</h4>
+                <ul>
+                    <li><strong>Body bg:</strong> #f5f7fb (very light blue-grey)</li>
+                    <li><strong>Primary:</strong> #467fcf (muted professional blue)</li>
+                    <li><strong>Grey scale:</strong> #f8f9fa → #212529 (9 steps)</li>
+                    <li><strong>Border:</strong> rgba(0, 40, 100, .12) — subtle, professional</li>
+                    <li><strong>Font:</strong> Source Sans Pro, 0.9375rem base</li>
+                    <li><strong>Border radius:</strong> 3px (minimal, crisp)</li>
+                    <li><strong>Card padding:</strong> 1.5rem</li>
+                    <li><strong>Sidebar width:</strong> 22rem</li>
+                    <li><strong>Header height:</strong> 4.5rem</li>
+                    <li><strong>Shadows:</strong> Disabled by default (enable-shadows: false)</li>
+                    <li><strong>Design philosophy:</strong> Clean, no-nonsense, Bootstrap-based</li>
+                </ul>
+            </div>
+
+            <div class="reference-project">
+                <h4>shadcn/ui (Neutral Theme)</h4>
+                <ul>
+                    <li><strong>Grey scale:</strong> Tailwind's "neutral" — slate-50 (#f8fafc) through slate-900 (#0f172a)</li>
+                    <li><strong>CSS variables:</strong> --background, --foreground, --muted, --card, --border</li>
+                    <li><strong>Border radius:</strong> 0.5rem default (minimal)</li>
+                    <li><strong>Shadows:</strong> Very subtle or none</li>
+                    <li><strong>Color system:</strong> HSL-based for flexibility</li>
+                    <li><strong>Philosophy:</strong> Extremely minimal — letting content speak</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">Design Principles from Both</h3>
+                <ul>
+                    <li><strong>White/light grey backgrounds</strong> — body: #f5f7fb or #fafafa</li>
+                    <li><strong>Subtle borders over heavy shadows</strong> — rgba borders, not drop shadows</li>
+                    <li><strong>Professional muted blues</strong> — not vibrant indigo/teal</li>
+                    <li><strong>Small border-radius</strong> — 3–6px, not 14–20px</li>
+                    <li><strong>System fonts or Source Sans Pro</strong> — readable at 14–15px</li>
+                    <li><strong>Consistent grey text hierarchy</strong> — primary: #1a1a2e, secondary: #6b7280, muted: #9aa0ac</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 3: Design Tokens -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-number">3</span>
+                Recommended Design Tokens
+            </h2>
+            <p style="margin-bottom: 20px; color: #6b7280;">CSS custom properties for consistent, scalable styling across the platform:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="token-name">--primary</span></td>
+                        <td><span class="color-swatch" style="background-color: #467fcf;"></span><span class="token-value">#467fcf</span> (Tabler blue — professional, trustworthy)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--primary-hover</span></td>
+                        <td><span class="color-swatch" style="background-color: #3a6dbf;"></span><span class="token-value">#3a6dbf</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--primary-light</span></td>
+                        <td><span class="color-swatch" style="background-color: #eef3fc;"></span><span class="token-value">#eef3fc</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--bg-body</span></td>
+                        <td><span class="color-swatch" style="background-color: #f5f7fb;"></span><span class="token-value">#f5f7fb</span> (light blue-grey, Tabler standard)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--bg-card</span></td>
+                        <td><span class="color-swatch" style="background-color: #ffffff;"></span><span class="token-value">#ffffff</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--bg-sidebar</span></td>
+                        <td><span class="color-swatch" style="background-color: #ffffff;"></span><span class="token-value">#ffffff</span> (WHITE sidebar — modern, open)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--sidebar-text</span></td>
+                        <td><span class="token-value">#495057</span> (grey-700)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--sidebar-active-bg</span></td>
+                        <td><span class="color-swatch" style="background-color: #eef3fc;"></span><span class="token-value">#eef3fc</span> (primary-light)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--sidebar-active-text</span></td>
+                        <td><span class="color-swatch" style="background-color: #467fcf;"></span><span class="token-value">#467fcf</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--sidebar-border</span></td>
+                        <td><span class="token-value">#e9ecef</span> (right border to define edge)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--text-primary</span></td>
+                        <td><span class="token-value">#1e293b</span> (slate 800)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--text-secondary</span></td>
+                        <td><span class="token-value">#64748b</span> (slate 500)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--text-muted</span></td>
+                        <td><span class="token-value">#9aa0ac</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--border-color</span></td>
+                        <td><span class="token-value">rgba(0, 40, 100, 0.12)</span> (Tabler's excellent subtle border)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--radius</span></td>
+                        <td><span class="token-value">4px</span> (crisp, minimal)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--shadow-sm</span></td>
+                        <td><span class="token-value">0 1px 3px rgba(0,0,0,0.04)</span> (very subtle)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--shadow-card</span></td>
+                        <td><span class="token-value">0 1px 2px rgba(0,0,0,0.06)</span> (barely there)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--font-family</span></td>
+                        <td><span class="token-value">'Inter', -apple-system, BlinkMacSystemFont, sans-serif</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="token-name">--font-size-base</span></td>
+                        <td><span class="token-value">0.9375rem</span> (15px)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 4: Icon Fixes -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-number">4</span>
+                Icon Fixes
+            </h2>
+            <p style="margin-bottom: 20px; color: #6b7280;">Eliminate duplicate icon confusion by assigning unique icons to each feature:</p>
+            <div class="icon-comparison">
+                <div class="icon-item">
+                    <span class="icon-emoji">⚙️</span>
+                    <span>Workflows (Current)</span>
+                </div>
+                <div class="arrow">→</div>
+                <div class="icon-item">
+                    <span class="icon-emoji">🔄</span>
+                    <span>Workflows (New)</span>
+                </div>
+            </div>
+            <div class="icon-comparison">
+                <div class="icon-item">
+                    <span class="icon-emoji">⚙️</span>
+                    <span>Settings (Current)</span>
+                </div>
+                <div class="arrow">→</div>
+                <div class="icon-item">
+                    <span class="icon-emoji">⚙️</span>
+                    <span>Settings (No Change)</span>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: #6b7280; font-size: 13px;"><strong>Result:</strong> Users can now clearly distinguish between workflow automation and application settings, improving navigation and reducing cognitive load.</p>
+        </div>
+
+        <!-- Section 5: Sidebar Logo Improvement -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-number">5</span>
+                Sidebar Logo Improvement
+            </h2>
+            <p style="margin-bottom: 24px; color: #6b7280;">Transform plain text into a branded, memorable logo:</p>
+
+            <div style="margin-bottom: 24px;">
+                <p style="font-size: 13px; color: #9aa0ac; text-transform: uppercase; font-weight: 600; margin-bottom: 12px;">Current</p>
+                <div style="padding: 16px; background-color: #f8f9fa; border-radius: 4px; font-size: 14px; color: #495057;">
+                    HR Intelligence
+                </div>
+            </div>
+
+            <div>
+                <p style="font-size: 13px; color: #9aa0ac; text-transform: uppercase; font-weight: 600; margin-bottom: 12px;">Recommended</p>
+                <div style="padding: 16px; background-color: #f8f9fa; border-radius: 4px;">
+                    <div class="monogram">
+                        <div class="monogram-badge">HRI</div>
+                        <span>HR Intelligence</span>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 20px; color: #6b7280; font-size: 13px;"><strong>Design notes:</strong> The HRI monogram creates instant brand recognition, uses the primary blue (#467fcf) for visual consistency, and scales elegantly across all interface sizes. The square badge with rounded corners (4px) matches the design system and maintains professional minimalism.</p>
+        </div>
+
+        <!-- Section 6: Key Visual Differences -->
+        <div class="report-section">
+            <h2 class="section-title">
+                <span class="section-number">6</span>
+                Key Visual Differences
+            </h2>
+
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h4>Current Design</h4>
+                    <div class="comparison-item">
+                        <span class="badge">Sidebar</span>Dark gradient, heavy appearance
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Colors</span>Vibrant indigo/teal, high saturation
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Border Radius</span>14–20px, rounded organic feel
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Shadows</span>Heavy drop shadows throughout
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Typography</span>Large bold elements, strong visual weight
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Overall</span>Creative, colorful, feels modern but less professional
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <h4>New Design (Recommended)</h4>
+                    <div class="comparison-item">
+                        <span class="badge">Sidebar</span>White background, clean and open
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Colors</span>Professional muted blue (#467fcf), grey scale
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Border Radius</span>3–4px, crisp and minimal
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Shadows</span>Minimal or subtle rgba borders
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Typography</span>Balanced hierarchy, content-focused
+                    </div>
+                    <div class="comparison-item">
+                        <span class="badge">Overall</span>Clean, trustworthy, enterprise-ready
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: #eef3fc; border-left: 4px solid #467fcf; padding: 16px; border-radius: 3px; margin-top: 24px;">
+                <p style="color: #1e293b; font-size: 14px; font-weight: 500; margin-bottom: 10px;">Why This Matters</p>
+                <p style="color: #495057; font-size: 13px; line-height: 1.7;">The new design aligns with industry-leading platforms (Tabler, shadcn/ui) that prioritize clarity and professionalism. Users expect enterprise tools to feel trustworthy and focused on content, not flashy design. A white sidebar, subtle borders, and muted colors create cognitive calm and reduce visual noise—exactly what HR professionals need for complex workflow management.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>UI Design Report — HR Intelligence Platform</p>
+            <p style="margin-top: 8px; font-size: 12px;">Based on industry standards and best practices from Tabler & shadcn/ui</p>
+        </footer>
+    </div>
+</body>
+</html>

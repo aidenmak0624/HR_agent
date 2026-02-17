@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Documents - HR Intelligence Platform{% endblock %}
+{% block page_title %}Document Management{% endblock %}
+
+{% block content %}
+<div class="documents-page">
+    <!-- File Upload Section -->
+    <section class="file-upload-section">
+        <h3 class="section-title">Upload Documents</h3>
+        <div class="upload-zone" id="upload-zone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+            <div class="upload-content">
+                <div class="upload-icon">📁</div>
+                <p class="upload-text">Drag and drop files here, or click to browse</p>
+                <p class="upload-hint">Supported: PDF, DOCX, JPG, PNG, GIF (max 10MB)</p>
+                <input type="file" id="file-input" style="display: none;" onchange="handleFileSelect(event)" accept=".pdf,.docx,.jpg,.jpeg,.png,.gif" />
+                <button type="button" class="btn-primary" onclick="document.getElementById('file-input').click()">Browse Files</button>
+            </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div id="upload-progress-container" style="display: none; margin-top: 16px;">
+            <div class="progress-item">
+                <div class="progress-filename" id="progress-filename"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-percent" id="progress-percent">0%</div>
+            </div>
+        </div>
+
+        <!-- Upload Status Messages -->
+        <div id="upload-messages" style="margin-top: 12px;"></div>
+    </section>
+
+    <!-- Document Template Gallery -->
+    <section class="templates-section">
+        <h3 class="section-title">Document Templates</h3>
+        <div class="template-grid">
+            <div class="template-card" onclick="selectTemplate('employment-cert')">
+                <div class="template-icon">📜</div>
+                <h4>Employment Certificate</h4>
+                <p>Verify employment status and tenure</p>
+            </div>
+
+            <div class="template-card" onclick="selectTemplate('offer-letter')">
+                <div class="template-icon">📧</div>
+                <h4>Offer Letter</h4>
+                <p>Employment offer with terms and benefits</p>
+            </div>
+
+            <div class="template-card" onclick="selectTemplate('promotion-letter')">
+                <div class="template-icon">🎯</div>
+                <h4>Promotion Letter</h4>
+                <p>Notification of role and salary changes</p>
+            </div>
+
+            <div class="template-card" onclick="selectTemplate('separation-letter')">
+                <div class="template-icon">👋</div>
+                <h4>Separation Letter</h4>
+                <p>Final settlement and exit documentation</p>
+            </div>
+
+            <div class="template-card" onclick="selectTemplate('experience-letter')">
+                <div class="template-icon">✅</div>
+                <h4>Experience Letter</h4>
+                <p>Detailed work history and responsibilities</p>
+            </div>
+
+            <div class="template-card" onclick="selectTemplate('salary-slip')">
+                <div class="template-icon">💰</div>
+                <h4>Salary Slip</h4>
+                <p>Monthly earnings and deductions</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Generate Document Form -->
+    <section class="generate-form-section" id="generate-form-section" style="display: none;">
+        <h3 class="section-title">Generate Document</h3>
+        <form class="generate-form" id="generate-form" onsubmit="generateDocument(event)">
+            <input type="hidden" id="selected-template" name="template">
+
+            <div class="form-group">
+                <label for="employee-select">Employee Name</label>
+                <select id="employee-select" class="form-input" required>
+                    <option value="">Loading employees...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="doc-variables">Additional Information</label>
+                <textarea id="doc-variables" class="form-input form-textarea" rows="5" placeholder="Enter any additional document variables or details..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Generate Document</button>
+                <button type="button" class="btn-secondary" onclick="cancelGenerate()">Cancel</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Uploaded Documents -->
+    <section class="uploaded-documents-section">
+        <h3 class="section-title">Uploaded Documents</h3>
+        <div id="uploaded-files-container">
+            <p style="color: var(--text-secondary); text-align: center; padding: 20px;">No documents uploaded yet</p>
+        </div>
+    </section>
+
+    <!-- Recent Documents -->
+    <section class="recent-documents-section">
+        <div class="section-header-row" style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 class="section-title" style="margin:0;">Recent Documents</h3>
+            <button class="btn-secondary" onclick="loadRecentDocuments()" style="font-size:13px;padding:6px 14px;">Refresh</button>
+        </div>
+        <div class="documents-table-wrapper">
+            <table class="documents-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Generated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-docs-tbody">
+                    <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-secondary);">Loading documents...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Upload Zone Styles */
+.file-upload-section {
+    margin-bottom: 32px;
+}
+
+.upload-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    background: var(--bg-light);
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 12px;
+}
+
+.upload-zone:hover {
+    border-color: var(--accent);
+    background: rgba(115, 196, 29, 0.05);
+}
+
+.upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(115, 196, 29, 0.1);
+    box-shadow: 0 0 0 3px rgba(115, 196, 29, 0.1);
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.upload-icon {
+    font-size: 48px;
+}
+
+.upload-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.upload-hint {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Progress Bar */
+.progress-item {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.progress-filename {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-light);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-percent {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Upload Messages */
+#upload-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upload-message {
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-message.success {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.upload-message.error {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+/* Uploaded Files Grid */
+#uploaded-files-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.uploaded-file-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    transition: var(--transition);
+}
+
+.uploaded-file-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+
+.file-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.file-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-all;
+    margin-bottom: 4px;
+}
+
+.file-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.file-action-btn {
+    flex: 1;
+    padding: 6px;
+    background: var(--bg-light);
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.file-action-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .upload-zone {
+        padding: 30px 16px;
+    }
+
+    #uploaded-files-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="/static/js/documents.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        setActivePage('documents');
+        loadUploadedFiles();
+    });
+</script>
+{% endblock %}

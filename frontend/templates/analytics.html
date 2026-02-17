@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - HR Intelligence Platform{% endblock %}
+{% block page_title %}Analytics & Insights{% endblock %}
+
+{% block content %}
+<div class="analytics-page">
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="filter-group">
+            <label for="date-range">Date Range</label>
+            <input type="date" id="date-from" class="filter-input" onchange="updateAnalytics()">
+            <span class="filter-separator">to</span>
+            <input type="date" id="date-to" class="filter-input" onchange="updateAnalytics()">
+        </div>
+
+        <div class="filter-group">
+            <label for="department-filter">Department</label>
+            <select id="department-filter" class="filter-input" onchange="updateAnalytics()">
+                <option value="">All Departments</option>
+                <option value="engineering">Engineering</option>
+                <option value="sales">Sales</option>
+                <option value="hr">Human Resources</option>
+                <option value="finance">Finance</option>
+                <option value="operations">Operations</option>
+            </select>
+        </div>
+
+        <button class="btn-secondary" onclick="exportAnalytics()">📥 Export CSV</button>
+        <button class="btn-secondary" onclick="exportAnalyticsPDF()" style="margin-left:8px;">📄 Export PDF</button>
+    </section>
+
+    <!-- Charts Grid -->
+    <section class="charts-grid">
+        <!-- Headcount by Department -->
+        <div class="chart-wrapper">
+            <h3 class="chart-title">Headcount by Department</h3>
+            <canvas id="headcountChart" class="analytics-chart"></canvas>
+        </div>
+
+        <!-- Turnover Trend -->
+        <div class="chart-wrapper">
+            <h3 class="chart-title">Turnover Trend (Last 12 Months)</h3>
+            <canvas id="turnoverChart" class="analytics-chart"></canvas>
+        </div>
+
+        <!-- Leave Utilization -->
+        <div class="chart-wrapper">
+            <h3 class="chart-title">Leave Utilization by Type</h3>
+            <canvas id="leaveChart" class="analytics-chart"></canvas>
+        </div>
+
+        <!-- Agent Performance -->
+        <div class="chart-wrapper">
+            <h3 class="chart-title">Agent Query Performance</h3>
+            <canvas id="agentChart" class="analytics-chart"></canvas>
+        </div>
+    </section>
+
+    <!-- Summary Statistics -->
+    <section class="summary-stats-section">
+        <h3 class="section-title">Key Metrics Summary</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p class="stat-label">Total Headcount</p>
+                <h3 class="stat-value">285</h3>
+                <p class="stat-change">+8 this quarter</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-label">Turnover Rate</p>
+                <h3 class="stat-value">5.2%</h3>
+                <p class="stat-change">-0.5% vs last quarter</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-label">Avg Leave Days Used</p>
+                <h3 class="stat-value">12.4</h3>
+                <p class="stat-change">+2 days vs last year</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-label">Agent Resolution Rate</p>
+                <h3 class="stat-value">87%</h3>
+                <p class="stat-change">+5% this month</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="/static/js/analytics.js"></script>
+{% endblock %}

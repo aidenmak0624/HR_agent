@@ -7,7 +7,7 @@ import json
 import logging
 
 from langgraph.graph import StateGraph, END
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.agent.agent_state import AgentState
@@ -16,7 +16,7 @@ from src.agent.tools.fact_checker import FactVerifierTool
 from src.agent.tools.comparator import ComparatorTool
 from src.agent.tools.planner import EducationalPlannerTool
 from src.agent.tools.web_search_tool import WebSearchTool
-import google.generativeai as genai
+# google.generativeai kept for RAG system compatibility
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -79,16 +79,16 @@ def _extract_comparison_items(query: str) -> tuple:
     return (item_a, item_b)
 
 
-class HumanRightsAgent:
+class HRAssistantAgent:
     """
-    Main agent that orchestrates tools to answer human rights questions.
+    Main agent that orchestrates tools to answer HR policy and employment questions.
     Uses a simple ReAct-like loop wired as a LangGraph StateGraph.
     """
 
     def __init__(self, api_key: str):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
-            google_api_key=api_key,
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            api_key=api_key,
             temperature=0.1,
         )
         self.tools: Dict[str, Any] = {
@@ -137,22 +137,22 @@ class HumanRightsAgent:
     def _plan_node(self, state: AgentState) -> AgentState:
         logger.info("PLAN: Analyzing query: %s", state.get("query"))
         
-        planning_prompt = f"""You are a human rights education expert. Analyze the query and create a MINIMAL plan.
+        planning_prompt = f"""You are an HR policy and employment expert. Analyze the query and create a MINIMAL plan.
 
     USER QUERY: {state.get('query','')}
     TOPIC: {state.get('topic','')}
     DIFFICULTY: {state.get('difficulty','intermediate')}
 
     AVAILABLE TOOLS:
-    - rag_search: Search local human rights documents/knowledge base
-    - web_search: Search the internet for current/external information  
-    - educational_planner: Create lesson plans, quizzes, study guides, curriculum
-    - comparator: Compare two concepts, documents, or rights frameworks
-    - fact_verifier: Verify specific claims about human rights facts/history
+    - rag_search: Search local HR knowledge base (policies, benefits, employment law)
+    - web_search: Search the internet for current/external HR information
+    - educational_planner: Create training materials, onboarding guides, HR curriculum
+    - comparator: Compare HR policies, benefits plans, or employment regulations
+    - fact_verifier: Verify specific claims about employment law or company policies
 
     QUERY TYPE GUIDELINES:
-    1. **Simple search queries** (e.g., "What is X?", "Who won Y?", "When did Z happen?")
-    → Use 1 tool only: web_search (for current events) OR rag_search (for human rights concepts)
+    1. **Simple search queries** (e.g., "What is X?", "How many days?", "What is the policy?")
+    → Use 1 tool only: web_search (for current events/regulations) OR rag_search (for HR policies and benefits)
 
     2. **Creation requests** (e.g., "Create a lesson plan", "Make a quiz", "Design curriculum")
     → Use educational_planner only (1 step)
@@ -183,7 +183,7 @@ class HumanRightsAgent:
     }}"""
 
         messages = [
-            SystemMessage(content="You are a planning expert for human rights education. Create MINIMAL, efficient plans."),
+            SystemMessage(content="You are a planning expert for HR policy questions. Create MINIMAL, efficient plans."),
             HumanMessage(content=planning_prompt),
         ]
 
@@ -306,13 +306,13 @@ class HumanRightsAgent:
             elif forced_tool == "rag_search":
                 tool_input = {
                     "query": state.get("query", ""),
-                    "topic": state.get("topic", "foundational_rights"),
+                    "topic": state.get("topic", "benefits"),
                     "top_k": 6
                 }
             elif forced_tool == "educational_planner":
                 tool_input = {
                     "content_type": _infer_content_type(state.get("query", "")),
-                    "topic": state.get("topic", "foundational_rights"),
+                    "topic": state.get("topic", "benefits"),
                     "level": state.get("difficulty", "intermediate")
                 }
             
@@ -322,14 +322,14 @@ class HumanRightsAgent:
                 tool_input = {
                     "item_a": item_a,
                     "item_b": item_b,
-                    "topic": state.get("topic", "foundational_rights"),
+                    "topic": state.get("topic", "benefits"),
                     "comparison_type": "general"
                 }
             
             elif forced_tool == "fact_verifier":
                 tool_input = {
                     "claim": state.get("query", ""),
-                    "topic": state.get("topic", "foundational_rights")
+                    "topic": state.get("topic", "benefits")
                 }
             
             state["current_tool"] = forced_tool
@@ -372,7 +372,7 @@ class HumanRightsAgent:
             elif suggested_tool == "educational_planner":
                 tool_input = {
                     "content_type": _infer_content_type(state.get("query", "")),
-                    "topic": state.get("topic", "foundational_rights"),
+                    "topic": state.get("topic", "benefits"),
                     "level": state.get("difficulty", "intermediate")
                 }
             
@@ -383,14 +383,14 @@ class HumanRightsAgent:
                 tool_input = {
                     "item_a": item_a,
                     "item_b": item_b,
-                    "topic": state.get("topic", "foundational_rights"),
+                    "topic": state.get("topic", "benefits"),
                     "comparison_type": "general"
                 }
             
             elif suggested_tool == "fact_verifier":
                 tool_input = {
                     "claim": state.get("query", ""),
-                    "topic": state.get("topic", "foundational_rights")
+                    "topic": state.get("topic", "benefits")
                 }
             
             else:
@@ -606,7 +606,7 @@ Return ONLY JSON:
 
     def _finish_node(self, state: AgentState) -> AgentState:
         synthesis_prompt = f"""
-You are a human rights expert. Synthesize a clear answer.
+You are an HR policy expert. Synthesize a clear answer.
 
 QUERY: {state.get('query','')}
 LEVEL: {state.get('difficulty','intermediate')}
@@ -624,7 +624,7 @@ Guidelines:
 - Match difficulty level
 """
         messages = [
-            SystemMessage(content="You are a human rights education expert."),
+            SystemMessage(content="You are an HR policy and employment expert for TechNova Inc."),
             HumanMessage(content=synthesis_prompt),
         ]
         try:

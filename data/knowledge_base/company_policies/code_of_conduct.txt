@@ -1,0 +1,115 @@
+CODE OF CONDUCT AND ETHICS
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+INTRODUCTION
+TechNova's Code of Conduct establishes the standards of behavior and ethical principles that guide our work. Every employee, contractor, and board member is expected to read, understand, and adhere to this code.
+
+CORE VALUES
+1. Integrity: We act honestly and transparently in all business dealings
+2. Respect: We treat all individuals with dignity and foster an inclusive environment
+3. Innovation: We push boundaries while maintaining ethical standards
+4. Accountability: We take responsibility for our actions and decisions
+5. Collaboration: We work together across teams and disciplines
+
+PROFESSIONAL CONDUCT
+Employees are expected to:
+- Maintain professional behavior in all work interactions (in-person, virtual, and written)
+- Treat colleagues, clients, and partners with courtesy and respect
+- Arrive on time for meetings and commitments
+- Respond to communications within 24 hours during business days
+- Dress appropriately for their work environment and scheduled meetings
+- Refrain from using profanity, making derogatory remarks, or engaging in intimidating behavior
+
+DRESS CODE
+- Office days (Tuesday-Thursday): Business casual
+  - Acceptable: Collared shirts, blouses, slacks, khakis, closed-toe shoes, clean denim
+  - Not acceptable: Athletic wear, flip-flops, tank tops, torn clothing, graphic tees with offensive content
+- Remote work: No formal dress code; professional attire expected for video meetings with clients
+- Client meetings: Business professional (suit/blazer recommended)
+
+CONFLICTS OF INTEREST
+Employees must avoid situations where personal interests conflict or appear to conflict with TechNova's interests:
+- Disclose any outside employment, board positions, or consulting arrangements to your manager and HR
+- Do not invest in or provide services to TechNova competitors or vendors without written approval
+- Romantic relationships between direct reports and managers must be disclosed to HR immediately
+- Family members working at the same company must disclose the relationship; no direct reporting relationships permitted
+
+GIFTS AND ENTERTAINMENT
+- Employees may accept modest gifts (value under $100) that are customary business courtesies
+- Gifts exceeding $100 must be reported to your manager and HR
+- Government officials: No gifts of any value without Legal department approval
+- Holiday gifts from vendors: Shared with the team; individual gifts over $100 donated to charity or returned
+- TechNova-sponsored entertainment (meals, events) with clients is acceptable with manager approval
+
+CONFIDENTIAL INFORMATION
+- Protect all proprietary, technical, financial, and strategic information
+- Do not discuss confidential matters in public places or on unsecured communications
+- Lock your computer when stepping away; use strong passwords
+- Follow data classification guidelines (Public, Internal, Confidential, Restricted)
+- Return all company materials and delete company data from personal devices upon separation
+
+INTELLECTUAL PROPERTY
+- All work product created during employment belongs to TechNova (per the Invention Assignment Agreement)
+- Do not use TechNova resources for personal projects without written approval
+- Do not use open-source code without verifying license compatibility with the Engineering team
+- Report any potential IP infringement you become aware of to the Legal department
+
+COMPANY RESOURCES
+- Use company equipment, software, and facilities for business purposes
+- Limited personal use of company internet and devices is acceptable if it does not interfere with work
+- Do not install unauthorized software on company devices
+- Company email should not be used for personal commercial activities
+- Protect company property from damage, theft, or misuse
+
+SOCIAL MEDIA
+- Personal social media accounts: Clearly state that views are your own, not TechNova's
+- Do not share confidential company information, unreleased product details, or internal communications
+- Do not speak on behalf of TechNova without authorization from the Communications team
+- Be mindful of photos/videos from the office that may reveal sensitive information on screens or whiteboards
+- Report any social media harassment or impersonation to HR immediately
+
+DRUG AND ALCOHOL POLICY
+- TechNova maintains a drug-free workplace
+- Employees may not be under the influence of illegal drugs or alcohol during work hours
+- Moderate alcohol consumption is permitted at company-sponsored social events
+- Prescription medications that may impair performance should be discussed with HR for accommodation
+- Marijuana: While legal in some states, use during work hours or on company premises is prohibited
+- Violations may result in discipline up to termination; employees are encouraged to seek help through EAP
+
+POLITICAL ACTIVITIES
+- Employees may participate in political activities on their own time
+- Do not use company resources (email, funds, equipment) for political purposes
+- Do not imply TechNova endorses any political candidate or position
+- Lobbying on behalf of TechNova requires Legal and Executive approval
+
+COMPLIANCE WITH LAWS
+- All employees must comply with applicable laws and regulations
+- If you are uncertain whether an action complies with the law, consult the Legal department
+- TechNova prohibits bribery, corruption, and violations of anti-money laundering laws
+- International employees must comply with export control and trade sanction regulations
+
+REPORTING VIOLATIONS
+Employees who become aware of violations of this Code should report them through:
+1. Direct manager
+2. HR Department: hr@technova.com or ext. 2100
+3. Legal Department: legal@technova.com
+4. Anonymous Ethics Hotline: 1-800-555-0188 (24/7)
+Reports may be made anonymously. TechNova prohibits retaliation against good-faith reporters.
+
+CONSEQUENCES OF VIOLATIONS
+Violations of this Code may result in disciplinary action, including:
+- Verbal or written warning
+- Required additional training
+- Suspension without pay
+- Demotion or reassignment
+- Termination of employment
+- Legal action where appropriate
+
+ANNUAL ACKNOWLEDGMENT
+All employees are required to acknowledge receipt and understanding of this Code of Conduct annually during the compliance training cycle (typically Q1).
+
+CONTACT
+HR Department: hr@technova.com | Phone: ext. 2100
+Legal Department: legal@technova.com | Phone: ext. 2300
+Ethics Hotline: 1-800-555-0188 (24/7, anonymous)

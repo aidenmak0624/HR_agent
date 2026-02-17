@@ -1,0 +1,106 @@
+# ============================================================================
+# Cloud Build Exclusions
+# Files to exclude when uploading to Cloud Build
+# ============================================================================
+
+# Include .dockerignore rules
+#!include:.dockerignore
+
+# ── Version Control ─────────────────────────────────────
+.git/
+.gitignore
+.github/
+
+# ── Dependencies (rebuilt in container) ──────────────────
+node_modules/
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Test Artifacts ──────────────────────────────────────
+tests/
+test_*.py
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+test-results/
+playwright-report/
+
+# ── IDE & Editor Config ─────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.editorconfig
+
+# ── Development Files ───────────────────────────────────
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+.env.dev
+.env.local
+.env.staging
+Makefile
+
+# ── Data & Databases ────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+chromadb_hr/
+chromadb/
+data/metadata/
+data/knowledge_base/
+# Keep data/policies/ — needed by RAG pipeline at runtime
+
+# ── Report & Document Files ────────────────────────────
+iteration_*/
+reports/
+*.docx
+*.doc
+*.pdf
+*.xlsx
+*.xls
+
+# ── Generated Files ─────────────────────────────────────
+generate_report.js
+generate_test_report.js
+*.log
+
+# ── Deploy scripts (not needed in image) ────────────────
+deploy/
+
+# ── Environment Files ───────────────────────────────────
+.env
+.env.example
+.env.prod
+.env.test
+
+# ── Cache ───────────────────────────────────────────────
+.mypy_cache/
+.ruff_cache/
+**/node_modules/.cache
+
+# ── Temporary & Binary Files ────────────────────────────
+*.tmp
+*.temp
+**/tmp/
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# ── OS Artifacts ────────────────────────────────────────
+Thumbs.db
+._.DS_Store
+.lock.file
+.~*

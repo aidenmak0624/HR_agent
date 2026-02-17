@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Multi-Agent Platform — Complete Architecture Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #2B5797;
+    --primary-light: #3a6fba;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --text-muted: #718096;
+    --green: #38a169;
+    --orange: #dd6b20;
+    --red: #e53e3e;
+    --purple: #805ad5;
+    --teal: #319795;
+    --blue: #3182ce;
+    --pink: #d53f8c;
+    --yellow: #d69e2e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, var(--primary), #1a3a6e); color: #fff; padding: 40px 0; text-align: center; }
+  .header h1 { font-size: 2.2rem; margin-bottom: 8px; }
+  .header p { opacity: 0.85; font-size: 1.1rem; }
+
+  /* Nav Tabs */
+  .nav { display: flex; justify-content: center; gap: 4px; background: #fff; border-bottom: 2px solid var(--border); padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .nav button { padding: 14px 22px; border: none; background: none; cursor: pointer; font-size: 0.95rem; color: var(--text-muted); font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .nav button:hover { color: var(--primary); background: #f0f4ff; }
+  .nav button.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 30px 20px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 28px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .card h2 { font-size: 1.4rem; color: var(--primary); margin-bottom: 16px; }
+  .card h3 { font-size: 1.1rem; color: #2d3748; margin: 18px 0 10px; }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* Stats */
+  .stat-card { background: var(--card); border-radius: 10px; border: 1px solid var(--border); padding: 20px; text-align: center; }
+  .stat-card .num { font-size: 2.4rem; font-weight: 700; color: var(--primary); }
+  .stat-card .label { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f7fafc; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+  .badge-green { background: #c6f6d5; color: #22543d; }
+  .badge-blue { background: #bee3f8; color: #2a4365; }
+  .badge-orange { background: #feebc8; color: #7b341e; }
+  .badge-purple { background: #e9d8fd; color: #44337a; }
+  .badge-teal { background: #b2f5ea; color: #234e52; }
+  .badge-pink { background: #fed7e2; color: #702459; }
+  .badge-yellow { background: #fefcbf; color: #744210; }
+  .badge-red { background: #fed7d7; color: #742a2a; }
+
+  /* Flow Diagram */
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+  .flow-node { padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #fff; white-space: nowrap; }
+  .flow-arrow { font-size: 1.4rem; color: var(--text-muted); padding: 0 6px; }
+
+  /* Agent Detail */
+  .agent-detail { border-left: 4px solid var(--primary); padding-left: 20px; margin: 16px 0; }
+  .fn-sig { background: #1e293b; color: #e2e8f0; padding: 12px 16px; border-radius: 8px; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 0.82rem; margin: 8px 0; overflow-x: auto; white-space: pre-wrap; }
+  .fn-sig .kw { color: #c084fc; }
+  .fn-sig .fn-name { color: #60a5fa; }
+  .fn-sig .param { color: #fbbf24; }
+  .fn-sig .ret { color: #34d399; }
+  .fn-sig .comment { color: #64748b; }
+
+  /* Chart containers */
+  .chart-container { position: relative; height: 360px; margin: 16px 0; }
+  .chart-container-sm { position: relative; height: 280px; margin: 16px 0; }
+
+  /* Collapsible */
+  .collapsible { cursor: pointer; user-select: none; }
+  .collapsible::before { content: '▸ '; color: var(--primary); }
+  .collapsible.open::before { content: '▾ '; }
+  .collapse-body { display: none; margin-top: 10px; }
+  .collapse-body.open { display: block; }
+
+  /* Event flow diagram */
+  .event-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 0.88rem; }
+  .event-src { min-width: 160px; padding: 6px 12px; background: #ebf8ff; border-radius: 6px; font-weight: 600; text-align: center; }
+  .event-type { min-width: 160px; padding: 6px 12px; background: #faf5ff; border-radius: 6px; text-align: center; }
+  .event-dest { min-width: 160px; padding: 6px 12px; background: #f0fff4; border-radius: 6px; text-align: center; }
+  .event-arrow { color: var(--primary); font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>HR Multi-Agent Intelligence Platform</h1>
+  <p>Complete Agent Architecture, Function Mapping &amp; Code Workflow Report</p>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="showTab('overview')">Overview</button>
+  <button onclick="showTab('router')">Router Agent</button>
+  <button onclick="showTab('agents')">Specialist Agents</button>
+  <button onclick="showTab('api')">API Gateway</button>
+  <button onclick="showTab('events')">Event Bus</button>
+  <button onclick="showTab('workflow')">LangGraph Workflow</button>
+  <button onclick="showTab('data')">Database Models</button>
+</div>
+
+<div class="container">
+
+<!-- ════════════════════ OVERVIEW ════════════════════ -->
+<div id="overview" class="section active">
+  <div class="grid-3">
+    <div class="stat-card"><div class="num">8</div><div class="label">Specialist Agents</div></div>
+    <div class="stat-card"><div class="num">34</div><div class="label">Agent Tool Functions</div></div>
+    <div class="stat-card"><div class="num">25</div><div class="label">API Routes</div></div>
+  </div>
+  <div class="grid-3" style="margin-top:16px">
+    <div class="stat-card"><div class="num">14</div><div class="label">Database Models</div></div>
+    <div class="stat-card"><div class="num">8</div><div class="label">Event Types</div></div>
+    <div class="stat-card"><div class="num">5</div><div class="label">LangGraph Nodes</div></div>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <h2>System Architecture Flow</h2>
+    <div class="flow">
+      <div class="flow-node" style="background:#2B5797">Frontend (React)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#4a6fa5">API Gateway</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#805ad5">Router Agent</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#319795">Specialist Agent</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#38a169">LangGraph (5 nodes)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#dd6b20">Tool Functions</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#e53e3e">Database / RAG</div>
+    </div>
+    <p style="margin-top:12px; color:var(--text-muted); font-size:0.9rem;">Every user query follows this pipeline: the API gateway authenticates and rate-limits, the Router classifies intent and checks RBAC, the specialist agent executes a 5-node LangGraph workflow calling its domain tools, and results flow back through the chain.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Tools per Agent</h2>
+      <div class="chart-container"><canvas id="chartToolsPerAgent"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Agent Categories</h2>
+      <div class="chart-container"><canvas id="chartAgentTypes"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Complete Agent Registry</h2>
+    <table>
+      <tr><th>Agent</th><th>Intent Key</th><th>Mode</th><th>Tools</th><th>DB Tables</th><th>Events</th></tr>
+      <tr><td><span class="badge badge-blue">RouterAgent</span></td><td><em>orchestrator</em></td><td><span class="badge badge-purple">Dispatch</span></td><td>classify_intent, dispatch_to_agent, check_permissions</td><td>—</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">EmployeeInfoAgent</span></td><td>employee_info</td><td><span class="badge badge-green">Read</span></td><td>hris_lookup, org_search, profile_synthesizer</td><td>Employee</td><td>—</td></tr>
+      <tr><td><span class="badge badge-teal">PolicyAgent</span></td><td>policy</td><td><span class="badge badge-green">Read</span></td><td>rag_policy_search, compliance_check, citation_generator</td><td>—</td><td>POLICY_UPDATED</td></tr>
+      <tr><td><span class="badge badge-yellow">LeaveAgent</span></td><td>leave</td><td><span class="badge badge-green">Read</span></td><td>balance_calculator, calendar_check, leave_status</td><td>LeaveRequest, LeaveBalance</td><td>—</td></tr>
+      <tr><td><span class="badge badge-orange">LeaveRequestAgent</span></td><td>leave_request</td><td><span class="badge badge-orange">Write</span></td><td>submit_leave, check_balance, team_calendar, cancel_leave, approve_leave, leave_history</td><td>LeaveRequest, LeaveBalance</td><td>LEAVE_SUBMITTED, LEAVE_APPROVED, LEAVE_REJECTED</td></tr>
+      <tr><td><span class="badge badge-pink">BenefitsAgent</span></td><td>benefits</td><td><span class="badge badge-orange">Read/Write</span></td><td>benefits_lookup, enrollment_checker, plan_comparison, compensation_calculator, life_event_processor, open_enrollment_guide</td><td>BenefitsPlan, BenefitsEnrollment</td><td>BENEFITS_ENROLLED</td></tr>
+      <tr><td><span class="badge badge-purple">OnboardingAgent</span></td><td>onboarding</td><td><span class="badge badge-orange">Write</span></td><td>checklist_generator, document_collector, task_assigner, progress_tracker, it_provisioning, buddy_assignment</td><td>OnboardingChecklist</td><td>EMPLOYEE_ONBOARDED</td></tr>
+      <tr><td><span class="badge badge-red">PerformanceAgent</span></td><td>performance, analytics</td><td><span class="badge badge-orange">Write</span></td><td>review_cycle_manager, goal_tracker, feedback_collector, rating_calculator, pip_manager, calibration_helper</td><td>PerformanceReview, PerformanceGoal</td><td>REVIEW_COMPLETED, GOAL_COMPLETED</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════ ROUTER AGENT ════════════════════ -->
+<div id="router" class="section">
+  <div class="card">
+    <h2>Router Agent — Intent Classification &amp; Dispatch</h2>
+    <p>The RouterAgent is the orchestrator. It does <strong>not</strong> extend BaseAgent and does not use LangGraph internally. Instead, it classifies the user's query into one of 8 intents, checks RBAC permissions, and dispatches to the correct specialist agent.</p>
+
+    <h3>Step-by-Step Workflow</h3>
+    <div class="flow">
+      <div class="flow-node" style="background:#805ad5">1. classify_intent(query)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#3182ce">2. check_permissions(ctx, intent)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#319795">3. dispatch_to_agent(intent, query, ctx)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#38a169">4. Return response</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="collapsible" onclick="toggle(this)">classify_intent(query: str) → tuple[str, float]</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">classify_intent</span>(<span class="param">self, query: str</span>) -> <span class="ret">tuple[str, float]</span>:
+    <span class="comment"># 1. Normalize query to lowercase</span>
+    <span class="comment"># 2. Scan INTENT_CATEGORIES dict for keyword matches</span>
+    <span class="comment">#    INTENT_CATEGORIES = {</span>
+    <span class="comment">#      "employee_info": ["employee", "staff", "who is", "contact", "directory", "org chart"],</span>
+    <span class="comment">#      "policy": ["policy", "compliance", "regulation", "handbook", "guideline"],</span>
+    <span class="comment">#      "leave": ["leave balance", "vacation days", "sick days", "time off", "pto"],</span>
+    <span class="comment">#      "leave_request": ["request leave", "submit leave", "apply for leave", "take time off"],</span>
+    <span class="comment">#      "onboarding": ["onboarding", "new hire", "orientation", "first day"],</span>
+    <span class="comment">#      "benefits": ["benefits", "insurance", "health plan", "dental", "401k", "retirement"],</span>
+    <span class="comment">#      "performance": ["performance", "review", "goal", "feedback", "rating", "pip"],</span>
+    <span class="comment">#      "analytics": ["analytics", "metrics", "dashboard", "report", "statistics"],</span>
+    <span class="comment">#    }</span>
+    <span class="comment"># 3. Score each intent by keyword hit count</span>
+    <span class="comment"># 4. If max score > 0, return (intent, confidence)</span>
+    <span class="comment"># 5. If no match & LLM available → LLM fallback classification</span>
+    <span class="comment"># 6. If still no match → return ("general", 0.3)</span></div>
+
+      <table>
+        <tr><th>Input Query Example</th><th>Matched Keywords</th><th>Classified Intent</th><th>Confidence</th></tr>
+        <tr><td>"What health insurance plans are available?"</td><td>insurance, health plan</td><td>benefits</td><td>0.85</td></tr>
+        <tr><td>"I want to request leave for next week"</td><td>request leave</td><td>leave_request</td><td>0.80</td></tr>
+        <tr><td>"Show me John's contact info"</td><td>contact</td><td>employee_info</td><td>0.75</td></tr>
+        <tr><td>"What is our remote work policy?"</td><td>policy</td><td>policy</td><td>0.80</td></tr>
+        <tr><td>"Show performance goals progress"</td><td>performance, goal</td><td>performance</td><td>0.85</td></tr>
+        <tr><td>"How many vacation days do I have?"</td><td>vacation days</td><td>leave</td><td>0.80</td></tr>
+        <tr><td>"What's my onboarding checklist?"</td><td>onboarding</td><td>onboarding</td><td>0.80</td></tr>
+        <tr><td>"Show dashboard metrics"</td><td>dashboard, metrics</td><td>analytics</td><td>0.85</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="collapsible" onclick="toggle(this)">check_permissions(user_context, intent) → bool</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">check_permissions</span>(<span class="param">self, user_context: Dict, intent: str</span>) -> <span class="ret">bool</span>:
+    <span class="comment"># RBAC_MATRIX = {</span>
+    <span class="comment">#   "employee_info": ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "policy":        ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "leave":         ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "leave_request": ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "benefits":      ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "onboarding":    ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "performance":   ["employee", "manager", "hr_admin"],</span>
+    <span class="comment">#   "analytics":     ["manager", "hr_admin"],</span>
+    <span class="comment"># }</span>
+    <span class="comment"># Extract role from user_context["role"]</span>
+    <span class="comment"># Return role in RBAC_MATRIX.get(intent, [])</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="collapsible" onclick="toggle(this)">dispatch_to_agent(intent, query, ctx) → Dict</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">dispatch_to_agent</span>(<span class="param">self, intent: str, query: str, user_context: Dict</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># AGENT_REGISTRY = {</span>
+    <span class="comment">#   "employee_info": "EmployeeInfoAgent",</span>
+    <span class="comment">#   "policy":        "PolicyAgent",</span>
+    <span class="comment">#   "leave":         "LeaveAgent",</span>
+    <span class="comment">#   "leave_request": "LeaveRequestAgent",</span>
+    <span class="comment">#   "benefits":      "BenefitsAgent",</span>
+    <span class="comment">#   "onboarding":    "OnboardingAgent",</span>
+    <span class="comment">#   "performance":   "PerformanceAgent",</span>
+    <span class="comment">#   "analytics":     "PerformanceAgent",  # no standalone analytics</span>
+    <span class="comment"># }</span>
+    <span class="comment"># 1. Look up class_name from AGENT_REGISTRY[intent]</span>
+    <span class="comment"># 2. Dynamically import: _import_agent(intent, class_name)</span>
+    <span class="comment"># 3. Instantiate agent with self.llm</span>
+    <span class="comment"># 4. Call agent.run(query, user_context=user_context)</span>
+    <span class="comment"># 5. Return agent result dict</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Intent → Agent Mapping Chart</h2>
+    <div class="chart-container"><canvas id="chartIntentMap"></canvas></div>
+  </div>
+</div>
+
+<!-- ════════════════════ SPECIALIST AGENTS ════════════════════ -->
+<div id="agents" class="section">
+  <div class="card">
+    <h2>All Specialist Agents — Tools &amp; Function Signatures</h2>
+    <p>Click any agent to expand its complete function catalog with signatures, parameters, and return types.</p>
+  </div>
+
+  <!-- Employee Info Agent -->
+  <div class="card" style="border-left: 4px solid var(--green);">
+    <h2 style="color: var(--green);">EmployeeInfoAgent <span class="badge badge-green">Read-Only</span></h2>
+    <p><strong>Intent:</strong> employee_info &nbsp;|&nbsp; <strong>3 Tools</strong> &nbsp;|&nbsp; <strong>Tables:</strong> Employee</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: hris_lookup(search_query, search_type)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">hris_lookup</span>(<span class="param">search_query: str, search_type: str = "auto"</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># search_type: "id" | "name" | "email" | "auto"</span>
+    <span class="comment"># 1. If search_type == "auto": detect type from query format</span>
+    <span class="comment">#    - Numeric → id lookup</span>
+    <span class="comment">#    - Contains '@' → email lookup</span>
+    <span class="comment">#    - Otherwise → name search</span>
+    <span class="comment"># 2. Query Employee table via SQLAlchemy</span>
+    <span class="comment"># 3. Return { employee_id, first_name, last_name, email,</span>
+    <span class="comment">#             department, role_level, manager_id, hire_date,</span>
+    <span class="comment">#             status, source: "HRIS/{id}" }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: org_search(search_query, search_type)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">org_search</span>(<span class="param">search_query: str, search_type: str = "department"</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># search_type: "department" | "manager" | "auto"</span>
+    <span class="comment"># 1. Query Employee table filtered by department or manager_id</span>
+    <span class="comment"># 2. Build org_nodes with hierarchy (who reports to whom)</span>
+    <span class="comment"># 3. Return { org_nodes: [...], direct_reports: [...] }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: profile_synthesizer(employee_data)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">profile_synthesizer</span>(<span class="param">employee_data: Dict[str, Any]</span>) -> <span class="ret">Dict[str, str]</span>:
+    <span class="comment"># 1. Takes structured employee data from hris_lookup</span>
+    <span class="comment"># 2. Generates natural language profile summary</span>
+    <span class="comment"># 3. Return { summary: "John Smith is a Senior Engineer in..." }</span></div>
+    </div>
+  </div>
+
+  <!-- Policy Agent -->
+  <div class="card" style="border-left: 4px solid var(--teal);">
+    <h2 style="color: var(--teal);">PolicyAgent <span class="badge badge-green">Read-Only</span></h2>
+    <p><strong>Intent:</strong> policy &nbsp;|&nbsp; <strong>3 Tools</strong> &nbsp;|&nbsp; <strong>Uses:</strong> RAG Pipeline</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: rag_policy_search(query, collection, top_k)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">rag_policy_search</span>(<span class="param">query: str, collection: Optional[str] = None, top_k: int = 5</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Embed query via RAGPipeline</span>
+    <span class="comment"># 2. Vector similarity search against policy documents</span>
+    <span class="comment"># 3. Return { results: [{ excerpt, source, score, page }], total_found }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: compliance_check(scenario, policy_query)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">compliance_check</span>(<span class="param">scenario: str, policy_query: Optional[str] = None</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Search relevant policies for the scenario</span>
+    <span class="comment"># 2. Evaluate scenario against policy rules</span>
+    <span class="comment"># 3. Return { compliant: bool, verdict: str, citations: [...] }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: citation_generator(rag_results)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">citation_generator</span>(<span class="param">rag_results: List[Dict[str, Any]]</span>) -> <span class="ret">Dict[str, List[str]]</span>:
+    <span class="comment"># 1. Takes RAG search results</span>
+    <span class="comment"># 2. Formats as Chicago Manual of Style citations</span>
+    <span class="comment"># 3. Return { citations: ["Policy Handbook §3.2, p.15", ...] }</span></div>
+    </div>
+  </div>
+
+  <!-- Leave Agent -->
+  <div class="card" style="border-left: 4px solid var(--yellow);">
+    <h2 style="color: var(--yellow);">LeaveAgent <span class="badge badge-green">Read-Only</span></h2>
+    <p><strong>Intent:</strong> leave &nbsp;|&nbsp; <strong>3 Tools</strong> &nbsp;|&nbsp; <strong>Tables:</strong> LeaveRequest, LeaveBalance</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: balance_calculator(employee_id)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">balance_calculator</span>(<span class="param">employee_id: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Query LeaveBalance table for employee</span>
+    <span class="comment"># 2. Calculate: available = total - used - pending</span>
+    <span class="comment"># 3. Return { vacation: {total, used, pending, available},</span>
+    <span class="comment">#             sick: {total, used, pending, available},</span>
+    <span class="comment">#             personal: {total, used, pending, available} }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: calendar_check(start_date, end_date, include_team, team_id)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">calendar_check</span>(<span class="param">start_date: Optional[str] = None, end_date: Optional[str] = None,
+                  include_team: bool = False, team_id: Optional[str] = None</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Fetch company holidays for date range</span>
+    <span class="comment"># 2. If include_team: query approved LeaveRequests for team</span>
+    <span class="comment"># 3. Return { holidays: [...], team_out: [...], date_range: {start, end} }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: leave_status(employee_id, status_filter)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">leave_status</span>(<span class="param">employee_id: str, status_filter: Optional[str] = None</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># status_filter: "pending" | "approved" | "denied" | "cancelled" | None (all)</span>
+    <span class="comment"># 1. Query LeaveRequest table filtered by employee + status</span>
+    <span class="comment"># 2. Format each with dates, type, approval info</span>
+    <span class="comment"># 3. Return { requests: [{id, type, start, end, status, approved_by}] }</span></div>
+    </div>
+  </div>
+
+  <!-- Leave Request Agent -->
+  <div class="card" style="border-left: 4px solid var(--orange);">
+    <h2 style="color: var(--orange);">LeaveRequestAgent <span class="badge badge-orange">Write Mode</span></h2>
+    <p><strong>Intent:</strong> leave_request &nbsp;|&nbsp; <strong>6 Tools</strong> &nbsp;|&nbsp; <strong>Tables:</strong> LeaveRequest, LeaveBalance &nbsp;|&nbsp; <strong>Events:</strong> LEAVE_SUBMITTED, LEAVE_APPROVED, LEAVE_REJECTED</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: submit_leave_request(query) — Primary Write</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_tool_submit_leave_request</span>(<span class="param">self, query: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Parse leave_type, start_date, end_date, reason from query</span>
+    <span class="comment"># 2. Validate leave type against LeaveType enum</span>
+    <span class="comment"># 3. Check balance: _check_balance_internal(emp_id, type, days)</span>
+    <span class="comment"># 4. Check conflicts: _check_conflicts_internal(leave_req)</span>
+    <span class="comment"># 5. Create LeaveRequest in DB with status=SUBMITTED</span>
+    <span class="comment"># 6. Trigger approval workflow via WorkflowEngine</span>
+    <span class="comment"># 7. Publish LEAVE_SUBMITTED event via EventBus</span>
+    <span class="comment"># 8. Return { request_id, status, message }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: check_leave_balance(query)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_tool_check_leave_balance</span>(<span class="param">self, query: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Extract employee_id from context</span>
+    <span class="comment"># 2. Query LeaveBalance table</span>
+    <span class="comment"># 3. Return breakdown by leave type</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: get_team_calendar(query)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_tool_get_team_calendar</span>(<span class="param">self, query: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Get team members from manager's direct reports</span>
+    <span class="comment"># 2. Find approved leave overlaps in date range</span>
+    <span class="comment"># 3. Return team availability calendar</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 4: cancel_leave(query)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_tool_cancel_leave</span>(<span class="param">self, query: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Find request by ID, verify owner</span>
+    <span class="comment"># 2. Update status to CANCELLED</span>
+    <span class="comment"># 3. Restore balance if was approved</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 5: approve_leave_request(query) — Manager Only</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_tool_approve_leave_request</span>(<span class="param">self, query: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Verify manager role via RBAC</span>
+    <span class="comment"># 2. Find pending request, update status to APPROVED</span>
+    <span class="comment"># 3. Deduct from LeaveBalance</span>
+    <span class="comment"># 4. Publish LEAVE_APPROVED event</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 6: get_leave_history(query)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_tool_get_leave_history</span>(<span class="param">self, query: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Query all LeaveRequests for employee</span>
+    <span class="comment"># 2. Sort by date descending</span>
+    <span class="comment"># 3. Return full history with status</span></div>
+    </div>
+  </div>
+
+  <!-- Benefits Agent -->
+  <div class="card" style="border-left: 4px solid var(--pink);">
+    <h2 style="color: var(--pink);">BenefitsAgent <span class="badge badge-orange">Read/Write</span></h2>
+    <p><strong>Intent:</strong> benefits &nbsp;|&nbsp; <strong>6 Tools</strong> &nbsp;|&nbsp; <strong>Tables:</strong> BenefitsPlan, BenefitsEnrollment &nbsp;|&nbsp; <strong>Events:</strong> BENEFITS_ENROLLED</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: benefits_lookup(employee_id, plan_type)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">benefits_lookup</span>(<span class="param">employee_id: str, plan_type: Optional[str] = None</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Query BenefitsEnrollment joined with BenefitsPlan</span>
+    <span class="comment"># 2. Filter by plan_type if specified (medical/dental/vision/retirement/life)</span>
+    <span class="comment"># 3. Return { current_enrollments: [...], available_plans: [...] }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: enrollment_checker(employee_id, window_type)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">enrollment_checker</span>(<span class="param">employee_id: str, window_type: Optional[str] = None</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Check current enrollment windows (open enrollment, new hire, life event)</span>
+    <span class="comment"># 2. Return { active_windows: [...], can_enroll: bool, deadline: date }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: plan_comparison(employee_id, plan_ids)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">plan_comparison</span>(<span class="param">employee_id: str, plan_ids: List[str]</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Fetch plan details for each plan_id</span>
+    <span class="comment"># 2. Calculate annual cost per plan</span>
+    <span class="comment"># 3. Compare coverage, deductibles, copays</span>
+    <span class="comment"># 4. Return { comparison: [{plan, annual_cost, coverage_details}], recommendation }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 4: compensation_calculator(role, level, location)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">compensation_calculator</span>(<span class="param">role_title: str, job_level: str, location: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Look up compensation band for role/level/location</span>
+    <span class="comment"># 2. Return { band: {min, mid, max}, currency, percentile_data }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 5: life_event_processor(employee_id, event_type, event_date)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">life_event_processor</span>(<span class="param">employee_id: str, event_type: str, event_date: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># event_type: MARRIAGE | DIVORCE | BIRTH | ADOPTION | DEATH | LOSS_OF_COVERAGE</span>
+    <span class="comment"># 1. Validate qualifying life event</span>
+    <span class="comment"># 2. Open special enrollment window (30-day)</span>
+    <span class="comment"># 3. Return { eligible_changes: [...], window_deadline }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 6: open_enrollment_guide(employee_id)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">open_enrollment_guide</span>(<span class="param">employee_id: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Get current enrollments + available plans</span>
+    <span class="comment"># 2. Generate personalized recommendations</span>
+    <span class="comment"># 3. Return { current_plans, recommendations, action_items }</span></div>
+    </div>
+  </div>
+
+  <!-- Onboarding Agent -->
+  <div class="card" style="border-left: 4px solid var(--purple);">
+    <h2 style="color: var(--purple);">OnboardingAgent <span class="badge badge-orange">Write Mode</span></h2>
+    <p><strong>Intent:</strong> onboarding &nbsp;|&nbsp; <strong>6 Tools</strong> &nbsp;|&nbsp; <strong>Tables:</strong> OnboardingChecklist &nbsp;|&nbsp; <strong>Events:</strong> EMPLOYEE_ONBOARDED</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: checklist_generator(employee_id, name, dept, title, start_date, template)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">checklist_generator</span>(<span class="param">employee_id: str, employee_name: str, department: str,
+                      job_title: str, start_date: str, template_name: str = "standard"</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># Phases: PRE_START → DAY_ONE → FIRST_WEEK → FIRST_MONTH → FIRST_QUARTER</span>
+    <span class="comment"># 1. Load template (standard, engineering, executive)</span>
+    <span class="comment"># 2. Generate tasks per phase with due dates</span>
+    <span class="comment"># 3. Assign owners (HR, manager, IT, buddy)</span>
+    <span class="comment"># 4. Store in OnboardingChecklist table</span>
+    <span class="comment"># 5. Return { checklist_id, phases: [{name, tasks, due_date}] }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: document_collector(checklist_id, doc_category, doc_list)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">document_collector</span>(<span class="param">checklist_id: str, doc_category: str, doc_list: List[str]</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Track required documents (I-9, W-4, NDA, handbook ack)</span>
+    <span class="comment"># 2. Return { collected: [...], pending: [...], completion_pct }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: task_assigner(checklist_id, task_id, assignee_id)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">task_assigner</span>(<span class="param">checklist_id: str, task_id: str, assignee_id: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Assign onboarding task to HR/manager/IT/buddy</span>
+    <span class="comment"># 2. Send notification to assignee</span>
+    <span class="comment"># 3. Return { task_id, assignee, due_date }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 4: progress_tracker(checklist_id, phase)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">progress_tracker</span>(<span class="param">checklist_id: str, phase: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Count completed vs total tasks in phase</span>
+    <span class="comment"># 2. Identify overdue tasks</span>
+    <span class="comment"># 3. Return { phase, completed, total, pct, overdue_tasks }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 5: it_provisioning_request(employee_id, equipment_list)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">it_provisioning_request</span>(<span class="param">employee_id: str, equipment_list: List[str]</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Create IT ticket for: laptop, email, VPN, badges, etc.</span>
+    <span class="comment"># 2. Return { ticket_id, items_requested, estimated_completion }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 6: buddy_assignment(employee_id, buddy_id)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">buddy_assignment</span>(<span class="param">employee_id: str, buddy_id: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Assign onboarding buddy/mentor</span>
+    <span class="comment"># 2. Notify both parties</span>
+    <span class="comment"># 3. Return { buddy_name, buddy_department, schedule }</span></div>
+    </div>
+  </div>
+
+  <!-- Performance Agent -->
+  <div class="card" style="border-left: 4px solid var(--red);">
+    <h2 style="color: var(--red);">PerformanceAgent <span class="badge badge-orange">Write Mode</span></h2>
+    <p><strong>Intent:</strong> performance, analytics &nbsp;|&nbsp; <strong>6 Tools</strong> &nbsp;|&nbsp; <strong>Tables:</strong> PerformanceReview, PerformanceGoal &nbsp;|&nbsp; <strong>Events:</strong> REVIEW_COMPLETED, GOAL_COMPLETED</p>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 1: review_cycle_manager(cycle_name, dept, start_phase, participants)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">review_cycle_manager</span>(<span class="param">cycle_name: str, department: str,
+                        start_phase: str, participants: List[str]</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># Phases: GOAL_SETTING → MID_YEAR → YEAR_END → CALIBRATION → CLOSED</span>
+    <span class="comment"># 1. Create review cycle with timeline</span>
+    <span class="comment"># 2. Assign participants and reviewers</span>
+    <span class="comment"># 3. Return { cycle_id, phases: [{name, start, end}], participants }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 2: goal_tracker(employee_id, goals)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">goal_tracker</span>(<span class="param">employee_id: str, goals: List[Dict[str, Any]]</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Create/update SMART goals with category, weight, target</span>
+    <span class="comment"># 2. Track progress percentage</span>
+    <span class="comment"># 3. If progress == 100 → publish GOAL_COMPLETED event</span>
+    <span class="comment"># 4. Return { goals: [{id, title, progress_pct, status}] }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 3: feedback_collector(review_id, feedback_type, rater_id, rating, comments)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">feedback_collector</span>(<span class="param">review_id: str, feedback_type: str,
+                       rater_id: str, rating: int, comments: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># feedback_type: SELF | MANAGER | PEER | DIRECT_REPORT | SKIP_LEVEL</span>
+    <span class="comment"># 1. Validate rating 1-5</span>
+    <span class="comment"># 2. Store feedback with strengths & development areas</span>
+    <span class="comment"># 3. Return { feedback_id, rater, type, rating }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 4: rating_calculator(review_id)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">rating_calculator</span>(<span class="param">review_id: str</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># RatingLevel: EXCEPTIONAL(5) | EXCEEDS(4) | MEETS(3) | NEEDS_IMPROVEMENT(2) | UNSATISFACTORY(1)</span>
+    <span class="comment"># 1. Aggregate all feedback for review</span>
+    <span class="comment"># 2. Weight by feedback_type (manager: 40%, self: 20%, peers: 30%, skip: 10%)</span>
+    <span class="comment"># 3. Factor in goal completion percentage</span>
+    <span class="comment"># 4. Publish REVIEW_COMPLETED event</span>
+    <span class="comment"># 5. Return { overall_rating, breakdown: {goals, feedback, final} }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 5: pip_manager(employee_id, improvement_areas, duration_days)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">pip_manager</span>(<span class="param">employee_id: str, improvement_areas: List[str],
+               duration_days: int</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># PIPStatus: CREATED → IN_PROGRESS → ON_TRACK/AT_RISK → COMPLETED_SUCCESS/UNSUCCESSFUL</span>
+    <span class="comment"># 1. Create Performance Improvement Plan</span>
+    <span class="comment"># 2. Define success criteria per area</span>
+    <span class="comment"># 3. Schedule check-in milestones</span>
+    <span class="comment"># 4. Return { pip_id, start_date, end_date, areas, milestones }</span></div>
+    </div>
+
+    <h3 class="collapsible" onclick="toggle(this)">Tool 6: calibration_helper(department, facilitator_id, participants)</h3>
+    <div class="collapse-body">
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">calibration_helper</span>(<span class="param">department: str, facilitator_id: str,
+                       participants: List[str]</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Gather all reviews for department</span>
+    <span class="comment"># 2. Show rating distribution (before calibration)</span>
+    <span class="comment"># 3. Flag outliers for discussion</span>
+    <span class="comment"># 4. Return { distribution_before, suggested_adjustments, participants }</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Tools per Agent Comparison</h2>
+    <div class="chart-container"><canvas id="chartToolRadar"></canvas></div>
+  </div>
+</div>
+
+<!-- ════════════════════ API GATEWAY ════════════════════ -->
+<div id="api" class="section">
+  <div class="card">
+    <h2>API Gateway — Route → Handler → Agent Mapping</h2>
+    <p>Every frontend HTTP request flows through the API Gateway, which authenticates, rate-limits, and routes to either a direct DB query or an agent dispatch.</p>
+  </div>
+
+  <div class="card">
+    <h2>Complete Route Registry</h2>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Handler</th><th>Calls Agent?</th><th>DB Tables</th><th>Event Published</th></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/health</td><td>_health_check</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td><span class="badge badge-blue">POST</span></td><td>/api/v2/auth/login</td><td>_auth_login</td><td>—</td><td>Employee, AuthSession</td><td>—</td></tr>
+      <tr><td><span class="badge badge-blue">POST</span></td><td>/api/v2/query</td><td>_query</td><td><strong>RouterAgent.run()</strong></td><td>Conversation</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/profile</td><td>_get_profile</td><td>—</td><td>Employee</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/employees</td><td>_list_employees</td><td>—</td><td>Employee (RBAC: hr_admin)</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/metrics</td><td>_get_metrics</td><td>—</td><td>Employee, LeaveRequest</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/leave/balance</td><td>_get_leave_balance</td><td>—</td><td>LeaveBalance</td><td>—</td></tr>
+      <tr><td><span class="badge badge-blue">POST</span></td><td>/api/v2/leave/request</td><td>_submit_leave_request</td><td>—</td><td>LeaveRequest</td><td><span class="badge badge-yellow">LEAVE_SUBMITTED</span></td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/leave/history</td><td>_get_leave_history</td><td>—</td><td>LeaveRequest</td><td>—</td></tr>
+      <tr><td><span class="badge badge-blue">POST</span></td><td>/api/v2/workflows/approve</td><td>_approve_request</td><td>—</td><td>LeaveRequest</td><td><span class="badge badge-green">LEAVE_APPROVED</span></td></tr>
+      <tr><td><span class="badge badge-blue">POST</span></td><td>/api/v2/workflows/reject</td><td>_reject_request</td><td>—</td><td>LeaveRequest</td><td><span class="badge badge-red">LEAVE_REJECTED</span></td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/benefits/plans</td><td>_get_benefits_plans</td><td>—</td><td>BenefitsPlan</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/benefits/enrollments</td><td>_get_benefits_enrollments</td><td>—</td><td>BenefitsEnrollment + Plan</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/onboarding/checklist</td><td>_get_onboarding_checklist</td><td>—</td><td>OnboardingChecklist</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/performance/reviews</td><td>_get_performance_reviews</td><td>—</td><td>PerformanceReview</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/performance/goals</td><td>_get_performance_goals</td><td>—</td><td>PerformanceGoal</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/events</td><td>_get_events</td><td>—</td><td>EventLog</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/agents</td><td>_list_agents</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td><span class="badge badge-green">GET</span></td><td>/api/v2/workflows/pending</td><td>_get_pending_approvals</td><td>—</td><td>LeaveRequest</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Routes by HTTP Method</h2>
+    <div class="chart-container-sm"><canvas id="chartRoutesByMethod"></canvas></div>
+  </div>
+</div>
+
+<!-- ════════════════════ EVENT BUS ════════════════════ -->
+<div id="events" class="section">
+  <div class="card">
+    <h2>Event Bus — Publish/Subscribe Flow</h2>
+    <p>The EventBus is a singleton pub/sub system. When an API write operation occurs, an event is published. Subscribers react independently, and every event is persisted to the EventLog table for audit.</p>
+
+    <h3>Event Type Constants</h3>
+    <table>
+      <tr><th>Constant</th><th>Value</th><th>Published By</th><th>Trigger Action</th></tr>
+      <tr><td>LEAVE_SUBMITTED</td><td>"leave.submitted"</td><td>API: _submit_leave_request</td><td>POST /leave/request</td></tr>
+      <tr><td>LEAVE_APPROVED</td><td>"leave.approved"</td><td>API: _approve_request</td><td>POST /workflows/approve</td></tr>
+      <tr><td>LEAVE_REJECTED</td><td>"leave.rejected"</td><td>API: _reject_request</td><td>POST /workflows/reject</td></tr>
+      <tr><td>EMPLOYEE_ONBOARDED</td><td>"employee.onboarded"</td><td>OnboardingAgent</td><td>Checklist 100% complete</td></tr>
+      <tr><td>REVIEW_COMPLETED</td><td>"review.completed"</td><td>PerformanceAgent</td><td>Rating calculated</td></tr>
+      <tr><td>BENEFITS_ENROLLED</td><td>"benefits.enrolled"</td><td>BenefitsAgent</td><td>Enrollment confirmed</td></tr>
+      <tr><td>POLICY_UPDATED</td><td>"policy.updated"</td><td>PolicyAgent</td><td>Policy document changed</td></tr>
+      <tr><td>GOAL_COMPLETED</td><td>"goal.completed"</td><td>PerformanceAgent</td><td>Goal reaches 100%</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Event Flow Diagram</h2>
+    <div class="event-row">
+      <div class="event-src">POST /leave/request</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">leave.submitted</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">GET /events (Frontend)</div>
+    </div>
+    <div class="event-row">
+      <div class="event-src">POST /workflows/approve</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">leave.approved</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">Notification subscribers</div>
+    </div>
+    <div class="event-row">
+      <div class="event-src">POST /workflows/reject</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">leave.rejected</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">Notification subscribers</div>
+    </div>
+    <div class="event-row">
+      <div class="event-src">OnboardingAgent</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">employee.onboarded</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">HR notification</div>
+    </div>
+    <div class="event-row">
+      <div class="event-src">PerformanceAgent</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">review.completed</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">Manager notification</div>
+    </div>
+    <div class="event-row">
+      <div class="event-src">BenefitsAgent</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">benefits.enrolled</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">Payroll update</div>
+    </div>
+    <div class="event-row">
+      <div class="event-src">PerformanceAgent</div>
+      <div class="event-arrow">→</div>
+      <div class="event-type">goal.completed</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">EventLog (DB)</div>
+      <div class="event-arrow">→</div>
+      <div class="event-dest">Recognition feed</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>EventBus Core Functions</h2>
+    <div class="fn-sig"><span class="kw">class</span> <span class="fn-name">EventBus</span>:
+    MAX_DEPTH = 3  <span class="comment"># Prevents infinite event cascades</span>
+
+    <span class="kw">def</span> <span class="fn-name">subscribe</span>(<span class="param">self, event_type: str, handler: Callable[[Event], None]</span>):
+        <span class="comment"># Registers handler for event_type. Use "*" for all events.</span>
+
+    <span class="kw">def</span> <span class="fn-name">unsubscribe</span>(<span class="param">self, event_type: str, handler: Callable</span>):
+        <span class="comment"># Removes handler from event_type.</span>
+
+    <span class="kw">def</span> <span class="fn-name">publish</span>(<span class="param">self, event: Event</span>):
+        <span class="comment"># 1. Check _publishing_depth < MAX_DEPTH (cascade guard)</span>
+        <span class="comment"># 2. Store in _recent_events memory buffer</span>
+        <span class="comment"># 3. Persist to EventLog table in database</span>
+        <span class="comment"># 4. Notify all type-specific subscribers</span>
+        <span class="comment"># 5. Notify all wildcard (*) subscribers</span>
+        <span class="comment"># 6. Catch handler errors without propagating</span>
+
+    <span class="kw">def</span> <span class="fn-name">get_recent_events</span>(<span class="param">self, event_type: Optional[str] = None, limit: int = 50</span>) -> <span class="ret">List[Event]</span>
+    <span class="kw">def</span> <span class="fn-name">get_stats</span>(<span class="param">self</span>) -> <span class="ret">Dict[str, Any]</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Events by Source</h2>
+    <div class="chart-container-sm"><canvas id="chartEventSources"></canvas></div>
+  </div>
+</div>
+
+<!-- ════════════════════ LANGGRAPH WORKFLOW ════════════════════ -->
+<div id="workflow" class="section">
+  <div class="card">
+    <h2>LangGraph 5-Node Agent Workflow</h2>
+    <p>Every specialist agent (extending BaseAgent) runs a 5-node LangGraph StateGraph. The nodes execute sequentially with conditional edges for iteration.</p>
+
+    <div class="flow" style="justify-content: center; margin: 30px 0;">
+      <div class="flow-node" style="background:#2B5797; padding: 14px 24px; font-size: 1rem;">1. PLANNER</div>
+      <div class="flow-arrow" style="font-size:1.8rem;">→</div>
+      <div class="flow-node" style="background:#805ad5; padding: 14px 24px; font-size: 1rem;">2. DECIDE TOOL</div>
+      <div class="flow-arrow" style="font-size:1.8rem;">→</div>
+      <div class="flow-node" style="background:#319795; padding: 14px 24px; font-size: 1rem;">3. EXECUTE TOOL</div>
+      <div class="flow-arrow" style="font-size:1.8rem;">→</div>
+      <div class="flow-node" style="background:#dd6b20; padding: 14px 24px; font-size: 1rem;">4. REFLECT</div>
+      <div class="flow-arrow" style="font-size:1.8rem;">→</div>
+      <div class="flow-node" style="background:#38a169; padding: 14px 24px; font-size: 1rem;">5. FINISH</div>
+    </div>
+    <div style="text-align:center; color: var(--text-muted); font-size: 0.9rem; margin-top: -16px;">
+      <em>← Reflect can loop back to Decide Tool if confidence &lt; threshold (max 5 iterations) →</em>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Node 1: _plan_node</h3>
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_plan_node</span>(<span class="param">self, state: BaseAgentState</span>) -> <span class="ret">BaseAgentState</span>:
+    <span class="comment"># 1. Read query + user_context from state</span>
+    <span class="comment"># 2. Use LLM to generate 1-4 step plan</span>
+    <span class="comment"># 3. Each step: {tool_name, parameters, reason}</span>
+    <span class="comment"># 4. Write plan to state["plan"]</span>
+    <span class="comment"># 5. Set state["current_step"] = 0</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Node 2: _decide_tool_node</h3>
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_decide_tool_node</span>(<span class="param">self, state: BaseAgentState</span>) -> <span class="ret">BaseAgentState</span>:
+    <span class="comment"># 1. Get current_step from plan</span>
+    <span class="comment"># 2. If force_next_tool set → use that</span>
+    <span class="comment"># 3. Match tool name to get_tools() dict</span>
+    <span class="comment"># 4. Set state["tool_calls"].append(tool_call)</span>
+    <span class="comment"># 5. Conditional → "execute" or "finish"</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Node 3: _execute_tool_node</h3>
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_execute_tool_node</span>(<span class="param">self, state: BaseAgentState</span>) -> <span class="ret">BaseAgentState</span>:
+    <span class="comment"># 1. Get latest tool_call from state</span>
+    <span class="comment"># 2. Call the actual tool function</span>
+    <span class="comment"># 3. Store result in state["tool_results"]</span>
+    <span class="comment"># 4. Add to state["reasoning_trace"]</span>
+    <span class="comment"># 5. Increment current_step</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Node 4: _reflect_node</h3>
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_reflect_node</span>(<span class="param">self, state: BaseAgentState</span>) -> <span class="ret">BaseAgentState</span>:
+    <span class="comment"># 1. Assess tool results quality</span>
+    <span class="comment"># 2. Update confidence_score</span>
+    <span class="comment"># 3. If confidence < threshold AND</span>
+    <span class="comment">#    iterations < max_iterations:</span>
+    <span class="comment">#    → set force_next_tool, return "continue"</span>
+    <span class="comment"># 4. Else: return "finish"</span></div>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <h3>Node 5: _finish_node</h3>
+      <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">_finish_node</span>(<span class="param">self, state: BaseAgentState</span>) -> <span class="ret">BaseAgentState</span>:
+    <span class="comment"># 1. Synthesize all tool_results into coherent answer</span>
+    <span class="comment"># 2. Compile sources_used from all tool calls</span>
+    <span class="comment"># 3. Set final state["final_answer"]</span>
+    <span class="comment"># 4. Return complete state</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>BaseAgent.run() — Main Entry Point</h3>
+    <div class="fn-sig"><span class="kw">def</span> <span class="fn-name">run</span>(<span class="param">self, query: str, user_context: Optional[UserContext] = None,
+        topic: Optional[str] = None, max_iterations: int = 5</span>) -> <span class="ret">Dict[str, Any]</span>:
+    <span class="comment"># 1. Build initial state: {query, topic, user_context, plan: [], tool_calls: [], ...}</span>
+    <span class="comment"># 2. Compile LangGraph StateGraph with 5 nodes</span>
+    <span class="comment"># 3. Add conditional edges: _should_continue, _should_iterate</span>
+    <span class="comment"># 4. Invoke graph with initial state</span>
+    <span class="comment"># 5. Extract final state</span>
+    <span class="comment"># 6. Return {</span>
+    <span class="comment">#      answer: state["final_answer"],</span>
+    <span class="comment">#      sources: state["sources_used"],</span>
+    <span class="comment">#      confidence: state["confidence_score"],</span>
+    <span class="comment">#      tools_used: [tc["name"] for tc in state["tool_calls"]],</span>
+    <span class="comment">#      reasoning_trace: state["reasoning_trace"],</span>
+    <span class="comment">#      agent_type: self.get_agent_type()</span>
+    <span class="comment">#    }</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════ DATABASE MODELS ════════════════════ -->
+<div id="data" class="section">
+  <div class="card">
+    <h2>Database Schema — All 14 Models</h2>
+    <p>SQLAlchemy ORM with mapped_column pattern. All models inherit TimestampMixin (created_at, updated_at).</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Model</th><th>Table Name</th><th>Key Columns</th><th>Foreign Keys</th><th>Used By</th></tr>
+      <tr><td><strong>Employee</strong></td><td>employees</td><td>id, hris_id, first_name, last_name, email, department, role_level, status</td><td>manager_id → employees.id</td><td>All Agents</td></tr>
+      <tr><td><strong>AuthSession</strong></td><td>auth_sessions</td><td>token_hash, role_level, ip_address, expires_at</td><td>user_id → employees.id</td><td>API Gateway</td></tr>
+      <tr><td><strong>AuditLog</strong></td><td>audit_logs</td><td>user_id, action, resource_type, resource_id, details (JSON)</td><td>—</td><td>API Gateway</td></tr>
+      <tr><td><strong>Conversation</strong></td><td>conversations</td><td>user_id, agent_type, query, confidence_score, tools_used (JSON)</td><td>—</td><td>RouterAgent</td></tr>
+      <tr><td><strong>ConversationMessage</strong></td><td>conversation_messages</td><td>role, content, tool_call (JSON)</td><td>conversation_id → conversations.id</td><td>RouterAgent</td></tr>
+      <tr><td><strong>LeaveRequest</strong></td><td>leave_requests</td><td>leave_type, start_date, end_date, reason, status, approved_by</td><td>employee_id → employees.id</td><td>LeaveAgent, LeaveRequestAgent</td></tr>
+      <tr><td><strong>LeaveBalance</strong></td><td>leave_balances</td><td>vacation_total/used, sick_total/used, personal_total/used</td><td>employee_id → employees.id (unique)</td><td>LeaveAgent, LeaveRequestAgent</td></tr>
+      <tr><td><strong>GeneratedDocument</strong></td><td>generated_documents</td><td>template_name, status, parameters (JSON)</td><td>employee_id → employees.id</td><td>API Gateway</td></tr>
+      <tr><td><strong>BenefitsPlan</strong></td><td>benefits_plans</td><td>name, plan_type, provider, premium_monthly, coverage_details (JSON)</td><td>—</td><td>BenefitsAgent</td></tr>
+      <tr><td><strong>BenefitsEnrollment</strong></td><td>benefits_enrollments</td><td>coverage_level, status, enrolled_at</td><td>employee_id, plan_id</td><td>BenefitsAgent</td></tr>
+      <tr><td><strong>OnboardingChecklist</strong></td><td>onboarding_checklists</td><td>task_name, category, description, status, due_date</td><td>employee_id → employees.id</td><td>OnboardingAgent</td></tr>
+      <tr><td><strong>PerformanceReview</strong></td><td>performance_reviews</td><td>review_period, overall_rating, strengths, development_areas</td><td>employee_id, manager_id</td><td>PerformanceAgent</td></tr>
+      <tr><td><strong>PerformanceGoal</strong></td><td>performance_goals</td><td>title, description, category, progress_pct, target_date</td><td>employee_id → employees.id</td><td>PerformanceAgent</td></tr>
+      <tr><td><strong>EventLog</strong></td><td>event_log</td><td>event_type (indexed), source, payload (JSON), correlation_id</td><td>—</td><td>EventBus</td></tr>
+    </table>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Tables by Agent</h2>
+      <div class="chart-container"><canvas id="chartTablesPerAgent"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Model Relationships</h2>
+      <div style="font-family: monospace; font-size: 0.82rem; line-height: 1.8; padding: 16px; background: #f7fafc; border-radius: 8px;">
+        Employee ─┬── LeaveRequest (1:N)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── LeaveBalance (1:1)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── BenefitsEnrollment (1:N) ──── BenefitsPlan (N:1)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── OnboardingChecklist (1:N)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── PerformanceReview (1:N)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── PerformanceGoal (1:N)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── AuthSession (1:N)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── GeneratedDocument (1:N)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Employee.manager_id (self-ref)<br>
+        <br>
+        EventLog (standalone — populated by EventBus)<br>
+        AuditLog (standalone — populated by API Gateway)<br>
+        Conversation ── ConversationMessage (1:N)
+      </div>
+    </div>
+  </div>
+</div>
+
+</div> <!-- /container -->
+
+<script>
+// ─── Tab Navigation ─────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── Collapsibles ───────────────────────────────
+function toggle(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+
+// ─── Charts ─────────────────────────────────────
+const colors = ['#2B5797','#38a169','#319795','#d69e2e','#dd6b20','#d53f8c','#805ad5','#e53e3e'];
+
+// Tools per Agent
+new Chart(document.getElementById('chartToolsPerAgent'), {
+  type: 'bar',
+  data: {
+    labels: ['EmployeeInfo', 'Policy', 'Leave', 'LeaveRequest', 'Benefits', 'Onboarding', 'Performance', 'Router'],
+    datasets: [{
+      label: 'Number of Tools',
+      data: [3, 3, 3, 6, 6, 6, 6, 3],
+      backgroundColor: colors,
+      borderRadius: 6,
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+
+// Agent Categories
+new Chart(document.getElementById('chartAgentTypes'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Read-Only Agents', 'Write Agents', 'Mixed (R/W)', 'Orchestrator'],
+    datasets: [{ data: [3, 3, 1, 1], backgroundColor: ['#38a169','#dd6b20','#805ad5','#2B5797'] }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
+});
+
+// Intent → Agent Mapping (horizontal bar)
+new Chart(document.getElementById('chartIntentMap'), {
+  type: 'bar',
+  data: {
+    labels: ['employee_info', 'policy', 'leave', 'leave_request', 'benefits', 'onboarding', 'performance', 'analytics'],
+    datasets: [
+      { label: 'Keywords', data: [6, 5, 5, 4, 6, 4, 6, 5], backgroundColor: '#bee3f8' },
+      { label: 'Tools Available', data: [3, 3, 3, 6, 6, 6, 6, 6], backgroundColor: '#2B5797' },
+    ]
+  },
+  options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true } } }
+});
+
+// Radar chart
+new Chart(document.getElementById('chartToolRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['Tools', 'DB Tables', 'Events', 'Custom Nodes', 'RBAC Roles'],
+    datasets: [
+      { label: 'EmployeeInfo', data: [3, 1, 0, 1, 3], borderColor: '#38a169', fill: false },
+      { label: 'LeaveRequest', data: [6, 2, 3, 0, 3], borderColor: '#dd6b20', fill: false },
+      { label: 'Benefits', data: [6, 2, 1, 0, 3], borderColor: '#d53f8c', fill: false },
+      { label: 'Performance', data: [6, 2, 2, 0, 3], borderColor: '#e53e3e', fill: false },
+      { label: 'Onboarding', data: [6, 1, 1, 0, 3], borderColor: '#805ad5', fill: false },
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+
+// Routes by method
+new Chart(document.getElementById('chartRoutesByMethod'), {
+  type: 'pie',
+  data: {
+    labels: ['GET', 'POST', 'PUT'],
+    datasets: [{ data: [16, 7, 2], backgroundColor: ['#38a169','#3182ce','#dd6b20'] }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
+});
+
+// Events by source
+new Chart(document.getElementById('chartEventSources'), {
+  type: 'bar',
+  data: {
+    labels: ['API Gateway', 'PerformanceAgent', 'OnboardingAgent', 'BenefitsAgent', 'PolicyAgent'],
+    datasets: [{
+      label: 'Event Types Published',
+      data: [3, 2, 1, 1, 1],
+      backgroundColor: ['#2B5797','#e53e3e','#805ad5','#d53f8c','#319795'],
+      borderRadius: 6,
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+
+// Tables per agent
+new Chart(document.getElementById('chartTablesPerAgent'), {
+  type: 'bar',
+  data: {
+    labels: ['EmployeeInfo', 'Leave/Request', 'Benefits', 'Onboarding', 'Performance', 'EventBus', 'API Gateway'],
+    datasets: [{
+      label: 'Tables Used',
+      data: [1, 2, 2, 1, 2, 1, 5],
+      backgroundColor: ['#38a169','#d69e2e','#d53f8c','#805ad5','#e53e3e','#319795','#2B5797'],
+      borderRadius: 6,
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+</script>
+
+</body>
+</html>

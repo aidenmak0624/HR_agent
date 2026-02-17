@@ -1,0 +1,54 @@
+{
+    "family": "hr-platform",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "1024",
+    "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/hr-platform-ecs-exec-role",
+    "containerDefinitions": [
+        {
+            "name": "hr-platform",
+            "image": "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/hr-platform:latest",
+            "portMappings": [
+                {
+                    "containerPort": 5050,
+                    "protocol": "tcp"
+                }
+            ],
+            "environment": [
+                { "name": "PORT", "value": "5050" },
+                { "name": "WORKERS", "value": "2" },
+                { "name": "TIMEOUT", "value": "120" },
+                { "name": "ENVIRONMENT", "value": "production" },
+                { "name": "LOG_LEVEL", "value": "INFO" },
+                { "name": "DATABASE_URL", "value": "sqlite:///hr_platform.db" }
+            ],
+            "secrets": [
+                {
+                    "name": "JWT_SECRET",
+                    "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/hr-platform/jwt-secret"
+                },
+                {
+                    "name": "OPENAI_API_KEY",
+                    "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/hr-platform/openai-api-key"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/hr-platform",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "healthCheck": {
+                "command": ["CMD-SHELL", "curl -f http://localhost:5050/api/v2/health || exit 1"],
+                "interval": 30,
+                "timeout": 10,
+                "retries": 3,
+                "startPeriod": 30
+            },
+            "essential": true
+        }
+    ]
+}

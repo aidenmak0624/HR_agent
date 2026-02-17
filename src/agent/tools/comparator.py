@@ -1,30 +1,30 @@
 # src/agent/tools/comparator.py
 
 """
-Comparator Tool - Compares different human rights frameworks, articles, or concepts
+Comparator Tool - Compares different HR policies, benefits plans, or employment regulations
 
 PURPOSE:
 Enables the agent to analyze differences and similarities between:
-- Different treaties (UDHR vs ICCPR vs ICESCR)
-- Different articles or provisions
-- Regional vs international frameworks
-- Historical vs modern interpretations
+- Different benefits plans (PPO vs HMO vs HDHP)
+- Different policy versions or departments
+- Federal vs state employment regulations
+- Different leave types or compensation structures
 
 USE CASES:
-1. "Compare Article 3 of UDHR with Article 6 of ICCPR"
-   - Finds both articles
-   - Analyzes similarities/differences
-   - Explains relationship
+1. "Compare PPO and HMO health plans"
+   - Finds both plan details
+   - Analyzes cost/coverage differences
+   - Explains trade-offs
 
-2. "What's the difference between civil-political and economic-social rights?"
-   - Retrieves examples of each
-   - Compares characteristics
-   - Explains interdependence
+2. "What's the difference between FMLA and company parental leave?"
+   - Retrieves details of each
+   - Compares eligibility and duration
+   - Explains how they interact
 
-3. "How does the European Convention differ from the UDHR?"
-   - Compares frameworks
-   - Identifies unique provisions
-   - Shows evolution of rights
+3. "How does our remote work policy differ from hybrid policy?"
+   - Compares arrangements
+   - Identifies requirements
+   - Shows flexibility options
 """
 
 from typing import Dict, Any, List, Tuple
@@ -34,9 +34,9 @@ import logging
 
 # Add parent directory to import RAG system
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-from src.core.rag_system import SimpleRAG
+from src.core.rag_system import HRKnowledgeBase
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 import os
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 class ComparatorTool:
     """
-    Compares and contrasts different human rights concepts, frameworks, or provisions.
+    Compares and contrasts different HR policies, benefits, or employment regulations.
     
     This tool helps the agent:
     1. Compare similar concepts (e.g., two articles)
@@ -61,38 +61,38 @@ class ComparatorTool:
     """
     
     name = "comparator"
-    description = """Compare and contrast two human rights concepts, articles, 
-    treaties, or frameworks. Use this when the user asks about differences, 
-    similarities, or relationships between two things. Input should specify 
-    the two items to compare."""
+    description = """Compare and contrast two HR policies, benefits plans,
+    employment regulations, or workplace concepts. Use this when the user asks
+    about differences, similarities, or relationships between two things.
+    Input should specify the two items to compare."""
     
     def __init__(self):
         """Initialize with RAG system and LLM for comparison."""
         logger.info("Initializing Comparator Tool...")
-        self.rag = SimpleRAG(preload_topics=True)
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
-            google_api_key=os.getenv("GOOGLE_API_KEY"),
+        self.rag = HRKnowledgeBase(preload_topics=True)
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            api_key=os.getenv("OPENAI_API_KEY", ""),
             temperature=0.2  # Low temperature for analytical work
         )
         logger.info("✅ Comparator ready")
     
     def run(self, item_a: str, item_b: str, 
-            topic: str = "foundational_rights",
+            topic: str = "benefits",
             comparison_type: str = "general") -> Dict[str, Any]:
         """
-        Compare two human rights concepts or provisions.
-        
+        Compare two HR policies, benefits plans, or employment provisions.
+
         Args:
-            item_a: First item to compare (e.g., "Article 3 UDHR")
-            item_b: Second item to compare (e.g., "Article 6 ICCPR")
+            item_a: First item to compare (e.g., "PPO health plan")
+            item_b: Second item to compare (e.g., "HMO health plan")
             topic: Topic area to search in
             comparison_type: Type of comparison:
                 - "general": Overall similarities and differences
                 - "scope": Compare scope and coverage
-                - "enforcement": Compare enforcement mechanisms
-                - "evolution": How one evolved from the other
-            
+                - "cost": Compare cost and value
+                - "eligibility": Compare eligibility requirements
+
         Returns:
             Dict with:
                 - similarities: list of similar aspects
@@ -101,17 +101,17 @@ class ComparatorTool:
                 - context: str providing background
                 - key_insight: str main takeaway
                 - sources: list of source documents
-        
+
         Example:
             >>> comparator.run(
-                    item_a="civil and political rights",
-                    item_b="economic, social and cultural rights"
+                    item_a="PPO health plan",
+                    item_b="HMO health plan"
                 )
             {
-                "similarities": ["Both are human rights", "Both universal"],
-                "differences": ["Implementation timelines differ", ...],
-                "relationship": "Interdependent and mutually reinforcing",
-                "key_insight": "Vienna Declaration emphasizes indivisibility"
+                "similarities": ["Both are employer-sponsored", "Both cover preventive care"],
+                "differences": ["PPO allows out-of-network", ...],
+                "relationship": "Alternative health plan options for employees",
+                "key_insight": "PPO offers more flexibility while HMO has lower costs"
             }
         """
         logger.info(f"Comparing: '{item_a}' vs '{item_b}'")
@@ -198,7 +198,7 @@ class ComparatorTool:
         content_a = self._format_content(item_a, info_a)
         content_b = self._format_content(item_b, info_b)
         
-        comparison_prompt = f"""You are a human rights expert comparing two concepts or provisions.
+        comparison_prompt = f"""You are an HR policy expert comparing two concepts or provisions.
 
 **ITEM A:**
 {content_a}
@@ -264,7 +264,7 @@ For "evolution" comparison:
             from langchain_core.messages import HumanMessage, SystemMessage
             
             messages = [
-                SystemMessage(content="You are a comparative human rights law expert."),
+                SystemMessage(content="You are a comparative HR policy and employment law expert."),
                 HumanMessage(content=comparison_prompt)
             ]
             
@@ -333,13 +333,13 @@ For "evolution" comparison:
         
         return {
             "similarities": [
-                f"Both mention: {', '.join(list(common)[:5])}" if common else "Both are human rights concepts"
+                f"Both mention: {', '.join(list(common)[:5])}" if common else "Both are HR policy topics"
             ],
             "differences": [
                 "Detailed comparison unavailable (fallback mode)",
                 f"Item A has {len(docs_a)} sources, Item B has {len(docs_b)} sources"
             ],
-            "relationship": "Both items are related to human rights (fallback analysis)",
+            "relationship": "Both items are related to HR policies (fallback analysis)",
             "context": "Detailed context unavailable in fallback mode",
             "key_insight": "Further analysis needed for comprehensive comparison",
             "nuances": ["This is a basic heuristic comparison"],
@@ -365,7 +365,7 @@ For "evolution" comparison:
         }
     
     def compare_multiple(self, items: List[str], 
-                        topic: str = "foundational_rights") -> Dict[str, Any]:
+                        topic: str = "benefits") -> Dict[str, Any]:
         """
         Compare multiple items (3 or more) simultaneously.
         
@@ -414,7 +414,7 @@ def example_usage():
     result1 = comparator.run(
         item_a="civil and political rights",
         item_b="economic, social and cultural rights",
-        topic="foundational_rights",
+        topic="benefits",
         comparison_type="general"
     )
     print(f"Similarities: {len(result1['similarities'])}")
@@ -426,7 +426,7 @@ def example_usage():
     result2 = comparator.run(
         item_a="Article 3 UDHR right to life",
         item_b="Article 6 ICCPR right to life",
-        topic="foundational_rights",
+        topic="benefits",
         comparison_type="scope"
     )
     print(f"Relationship: {result2['relationship'][:150]}...")
@@ -436,7 +436,7 @@ def example_usage():
     result3 = comparator.run(
         item_a="Universal Declaration of Human Rights",
         item_b="International Covenant on Civil and Political Rights",
-        topic="foundational_rights",
+        topic="benefits",
         comparison_type="evolution"
     )
     print(f"Context: {result3['context'][:200]}...")

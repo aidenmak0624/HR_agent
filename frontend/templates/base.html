@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HR Intelligence Platform{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <!-- Chart.js 4.4.1 (local) -->
+    <script src="/static/js/chart.min.js"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="app-logo">HR Intelligence</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item {% if current_page == 'dashboard' %}active{% endif %}" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="/chat" class="nav-item {% if current_page == 'chat' %}active{% endif %}" data-page="chat">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Chat</span>
+                </a>
+                <a href="/leave" class="nav-item {% if current_page == 'leave' %}active{% endif %}" data-page="leave">
+                    <span class="nav-icon">🏖️</span>
+                    <span class="nav-label">Leave</span>
+                </a>
+                <a href="/workflows" class="nav-item nav-role-gated {% if current_page == 'workflows' %}active{% endif %}" data-page="workflows" data-min-role="manager">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">Workflows</span>
+                </a>
+                <a href="/documents" class="nav-item nav-role-gated {% if current_page == 'documents' %}active{% endif %}" data-page="documents" data-min-role="hr_admin">
+                    <span class="nav-icon">📄</span>
+                    <span class="nav-label">Documents</span>
+                </a>
+                <a href="/analytics" class="nav-item nav-role-gated {% if current_page == 'analytics' %}active{% endif %}" data-page="analytics" data-min-role="manager">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">Analytics</span>
+                </a>
+                <a href="/settings" class="nav-item {% if current_page == 'settings' %}active{% endif %}" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Settings</span>
+                </a>
+            </nav>
+        </aside>
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Toggle navigation">☰</button>
+                    <h1 class="page-title">{% block page_title %}HR Intelligence Platform{% endblock %}</h1>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode (Ctrl+Shift+D)">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+
+                    <div class="notification-bell">
+                        <button class="bell-btn" onclick="toggleNotifications()">
+                            🔔
+                            <span class="notification-badge" style="display:none;"></span>
+                        </button>
+                    </div>
+
+                    <div class="user-profile" onclick="toggleAccountSwitcher()" style="cursor:pointer;position:relative;">
+                        <div class="user-info">
+                            <p class="user-name">{% block user_name %}John Smith{% endblock %}</p>
+                            <span class="user-role">{% block user_role %}Employee{% endblock %}</span>
+                        </div>
+                        <div class="role-badge">
+                            <span class="badge-text">{% block role_badge %}EMP{% endblock %}</span>
+                        </div>
+                        <span class="profile-chevron" style="margin-left:6px;font-size:10px;color:#6B7280;">&#9660;</span>
+                    </div>
+
+                    <!-- Account Switcher Dropdown -->
+                    <div id="account-switcher" class="account-switcher hidden">
+                        <div class="switcher-header">Switch Account</div>
+                        <div class="switcher-option" data-role="employee" onclick="quickSwitchRole('employee')">
+                            <span class="switcher-icon">👤</span>
+                            <div class="switcher-info">
+                                <span class="switcher-name">John Smith</span>
+                                <span class="switcher-title">Employee</span>
+                            </div>
+                            <span class="switcher-check" style="display:none;">&#10003;</span>
+                        </div>
+                        <div class="switcher-option" data-role="manager" onclick="quickSwitchRole('manager')">
+                            <span class="switcher-icon">👥</span>
+                            <div class="switcher-info">
+                                <span class="switcher-name">Sarah Chen</span>
+                                <span class="switcher-title">Manager</span>
+                            </div>
+                            <span class="switcher-check" style="display:none;">&#10003;</span>
+                        </div>
+                        <div class="switcher-option" data-role="hr_admin" onclick="quickSwitchRole('hr_admin')">
+                            <span class="switcher-icon">🛡️</span>
+                            <div class="switcher-info">
+                                <span class="switcher-name">Emily Rodriguez</span>
+                                <span class="switcher-title">HR Administrator</span>
+                            </div>
+                            <span class="switcher-check" style="display:none;">&#10003;</span>
+                        </div>
+                        <div class="switcher-divider"></div>
+                        <a href="/settings" class="switcher-link">Account Settings</a>
+                        <a href="#" class="switcher-link" onclick="signOut(); return false;" style="color:#E74C3C;">Sign Out</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="content-area">
+                {% block content %}
+                <div class="placeholder">
+                    <p>Content area</p>
+                </div>
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Notification Backdrop -->
+    <div id="notification-backdrop" class="notification-backdrop" onclick="toggleNotifications()"></div>
+    <!-- Notification Panel (Hidden by default) -->
+    <div id="notification-panel" class="notification-panel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="clear-all-btn" onclick="clearAllNotifications()" style="font-size:12px;color:var(--text-secondary);background:none;border:none;cursor:pointer;">Clear all</button>
+            <button class="close-btn" onclick="toggleNotifications()">✕</button>
+        </div>
+        <div class="notification-list" id="notification-list">
+            <div class="notification-empty" style="text-align:center;padding:32px 16px;color:var(--text-secondary);">
+                <p style="font-size:24px;margin-bottom:8px;">🔔</p>
+                <p style="font-weight:500;">No notifications</p>
+                <p style="font-size:12px;">You're all caught up!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Palette Overlay -->
+    <div id="command-palette-overlay" class="command-palette-overlay" onclick="closeCommandPalette(event)">
+        <div class="command-palette" onclick="event.stopPropagation()">
+            <div class="command-input">
+                <input 
+                    id="command-search" 
+                    type="text" 
+                    placeholder="Search commands or pages..." 
+                    autocomplete="off"
+                />
+            </div>
+            <div class="command-list" id="command-list">
+                <!-- Commands populated by JavaScript -->
+            </div>
+            <div class="command-hint">
+                Press <kbd>Enter</kbd> to select, <kbd>ESC</kbd> to close
+            </div>
+        </div>
+    </div>
+
+    <!-- Base Scripts -->
+    <script src="/static/js/toast.js"></script>
+    <script src="/static/js/base.js"></script>
+    <style>
+    .account-switcher {
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        width: 260px;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        z-index: 9999;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+    .account-switcher.hidden { display: none; }
+    .switcher-header {
+        padding: 12px 16px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .switcher-option {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: background 0.15s;
+        color: var(--text-primary);
+    }
+    .switcher-option:hover { background: var(--border-light); }
+    .switcher-option.active { background: rgba(91, 163, 196, 0.1); }
+    .switcher-icon { font-size: 20px; margin-right: 10px; flex-shrink: 0; }
+    .switcher-info { flex: 1; }
+    .switcher-name { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .switcher-title { display: block; font-size: 11px; color: var(--text-secondary); }
+    .switcher-check { color: var(--accent); font-weight: 700; font-size: 16px; }
+    .switcher-divider { height: 1px; background: var(--border-color); margin: 4px 0; }
+    .switcher-link {
+        display: block;
+        padding: 10px 16px;
+        font-size: 13px;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .switcher-link:hover { background: var(--border-light); }
+    </style>
+    <script>
+    // Role definitions used everywhere
+    var _roles = {
+        employee:  { name: 'John Smith',      title: 'Employee',         badge: 'EMP' },
+        manager:   { name: 'Sarah Chen',       title: 'Manager',          badge: 'MGR' },
+        hr_admin:  { name: 'Emily Rodriguez',  title: 'HR Administrator', badge: 'HR'  }
+    };
+
+    // Apply saved role on every page load
+    // Prefer localStorage values (which come from DB via loadProfile/saveProfile)
+    // over hardcoded _roles defaults so that saved profile changes persist
+    (function() {
+        var role = localStorage.getItem('hr_current_role') || 'employee';
+        var info = _roles[role] || _roles.employee;
+        var savedName = localStorage.getItem('hr_user_name');
+        var savedRole = localStorage.getItem('hr_user_role');
+        var savedBadge = localStorage.getItem('hr_role_badge');
+        document.addEventListener('DOMContentLoaded', function() {
+            var un = document.querySelector('.user-name');
+            var ur = document.querySelector('.user-role');
+            var bt = document.querySelector('.badge-text');
+            if (un) un.textContent = savedName || info.name;
+            if (ur) ur.textContent = savedRole || info.title;
+            if (bt) bt.textContent = savedBadge || info.badge;
+            // Mark the active account in the dropdown
+            _highlightActiveAccount(role);
+
+            // Fetch actual profile from DB to ensure header matches saved data
+            // (runs in background; updates header if DB has different name)
+            _refreshProfileFromDB(role);
+        });
+    })();
+
+    // Fetch the real profile from DB and sync localStorage + header
+    function _refreshProfileFromDB(role) {
+        fetch('/api/v2/profile', {
+            headers: { 'Content-Type': 'application/json', 'X-User-Role': role }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(result) {
+            if (result.success && result.data) {
+                var d = result.data;
+                var fullName = d.first_name + ' ' + d.last_name;
+                localStorage.setItem('hr_user_name', fullName);
+                var un = document.querySelector('.user-name');
+                if (un) un.textContent = fullName;
+                // Update the _roles cache so quickSwitchRole uses real names
+                if (_roles[role]) _roles[role].name = fullName;
+                // Also update the switcher dropdown label for this role
+                var switcher = document.querySelector('.switcher-option[data-role="' + role + '"] .switcher-name');
+                if (switcher) switcher.textContent = fullName;
+            }
+        })
+        .catch(function() { /* API unavailable, keep localStorage values */ });
+    }
+
+    function toggleAccountSwitcher() {
+        var panel = document.getElementById('account-switcher');
+        if (panel) panel.classList.toggle('hidden');
+    }
+
+    function quickSwitchRole(role) {
+        if (!_roles[role]) return;
+        var previousRole = localStorage.getItem('hr_current_role') || 'employee';
+        localStorage.setItem('hr_current_role', role);
+        // Set hardcoded values as immediate fallback display
+        localStorage.setItem('hr_user_name', _roles[role].name);
+        localStorage.setItem('hr_user_role', _roles[role].title);
+        localStorage.setItem('hr_role_badge', _roles[role].badge);
+        // Update header immediately with cached/hardcoded values
+        var un = document.querySelector('.user-name');
+        var ur = document.querySelector('.user-role');
+        var bt = document.querySelector('.badge-text');
+        if (un) un.textContent = _roles[role].name;
+        if (ur) ur.textContent = _roles[role].title;
+        if (bt) bt.textContent = _roles[role].badge;
+        _highlightActiveAccount(role);
+        // Close dropdown
+        var panel = document.getElementById('account-switcher');
+        if (panel) panel.classList.add('hidden');
+
+        // Apply role-based nav visibility
+        applyRoleVisibility(role);
+
+        // Fetch real profile from DB to override hardcoded values with saved data
+        _refreshProfileFromDB(role);
+
+        // If on chat page, reload so chat_v2.js picks up the new role's conversations
+        if (typeof initConversations === 'function' && previousRole !== role) {
+            initConversations();
+            // Also reset the messages area to show the new role's welcome or history
+            var container = document.getElementById('messages-container');
+            if (container && conversations.length > 0) {
+                var activeConv = conversations.find(function(c) { return c.id === activeConversationId; });
+                if (!activeConv || activeConv.messages.length === 0) {
+                    if (typeof showWelcomeMessage === 'function') showWelcomeMessage();
+                    if (typeof showSuggestedQuestions === 'function') showSuggestedQuestions();
+                }
+            }
+        }
+
+        // If on settings page, update the role cards too
+        if (typeof highlightActiveRole === 'function') {
+            highlightActiveRole(role);
+            if (typeof updateProfileForm === 'function') updateProfileForm(role);
+        }
+
+        // Show toast
+        if (typeof showToast === 'function') {
+            showToast('Signed in as ' + _roles[role].name + ' (' + _roles[role].title + ')', 'success');
+        }
+    }
+
+    function _highlightActiveAccount(role) {
+        var opts = document.querySelectorAll('.switcher-option');
+        opts.forEach(function(opt) {
+            var isActive = opt.getAttribute('data-role') === role;
+            opt.classList.toggle('active', isActive);
+            var chk = opt.querySelector('.switcher-check');
+            if (chk) chk.style.display = isActive ? 'inline' : 'none';
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        var panel = document.getElementById('account-switcher');
+        var profile = document.querySelector('.user-profile');
+        if (panel && profile && !panel.contains(e.target) && !profile.contains(e.target)) {
+            panel.classList.add('hidden');
+        }
+        // Close notification panel when clicking outside
+        var notifPanel = document.getElementById('notification-panel');
+        var backdrop = document.getElementById('notification-backdrop');
+        var bellBtn = document.querySelector('.bell-btn');
+        if (notifPanel && bellBtn && notifPanel.classList.contains('show') &&
+            !notifPanel.contains(e.target) && !bellBtn.contains(e.target)) {
+            notifPanel.classList.remove('show');
+            if (backdrop) backdrop.classList.remove('show');
+        }
+    });
+
+    // Sign out
+    function signOut() {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('hr_current_role');
+        localStorage.removeItem('hr_user_name');
+        localStorage.removeItem('hr_user_role');
+        localStorage.removeItem('hr_role_badge');
+        localStorage.removeItem('hr_user_email');
+        window.location.href = '/login';
+    }
+
+    // Role-based nav visibility
+    function applyRoleVisibility(role) {
+        var roleLevel = { 'employee': 1, 'manager': 2, 'hr_generalist': 3, 'hr_admin': 4 };
+        var userLevel = roleLevel[role] || 1;
+
+        var gatedItems = document.querySelectorAll('.nav-role-gated');
+        gatedItems.forEach(function(item) {
+            var minRole = item.getAttribute('data-min-role');
+            var minLevel = roleLevel[minRole] || 1;
+            item.style.display = userLevel >= minLevel ? '' : 'none';
+        });
+    }
+
+    // Apply on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        var role = localStorage.getItem('hr_current_role') || 'employee';
+        applyRoleVisibility(role);
+        _renderNotifications();
+    });
+
+    // ============================================
+    // NOTIFICATION SYSTEM
+    // ============================================
+    function _getNotifications() {
+        try {
+            return JSON.parse(localStorage.getItem('hr_notifications') || '[]');
+        } catch(e) { return []; }
+    }
+
+    function _saveNotifications(list) {
+        localStorage.setItem('hr_notifications', JSON.stringify(list));
+        _updateNotificationBadge(list.length);
+    }
+
+    function _updateNotificationBadge(count) {
+        var badge = document.querySelector('.notification-badge');
+        if (badge) {
+            badge.textContent = count > 0 ? count : '';
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    function _renderNotifications() {
+        var list = _getNotifications();
+        var container = document.getElementById('notification-list');
+        if (!container) return;
+        _updateNotificationBadge(list.length);
+        if (list.length === 0) {
+            container.innerHTML = '<div class="notification-empty" style="text-align:center;padding:32px 16px;color:var(--text-secondary);"><p style="font-size:24px;margin-bottom:8px;">🔔</p><p style="font-weight:500;">No notifications</p><p style="font-size:12px;">You\'re all caught up!</p></div>';
+            return;
+        }
+        container.innerHTML = '';
+        list.forEach(function(n, idx) {
+            var item = document.createElement('div');
+            item.className = 'notification-item';
+            item.innerHTML = '<div class="notification-icon">' + (n.icon || '📋') + '</div>' +
+                '<div class="notification-content">' +
+                    '<p class="notification-title">' + n.title + '</p>' +
+                    '<p class="notification-time">' + (n.detail || n.time || '') + '</p>' +
+                '</div>' +
+                '<button onclick="dismissNotification(' + idx + ')" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:4px;">&times;</button>';
+            container.appendChild(item);
+        });
+    }
+
+    function toggleNotifications() {
+        var panel = document.getElementById('notification-panel');
+        var backdrop = document.getElementById('notification-backdrop');
+        console.log('[Notification] toggleNotifications called, panel:', panel);
+        if (panel) {
+            var isOpen = panel.classList.contains('show');
+            console.log('[Notification] currently open:', isOpen, '-> toggling to:', !isOpen);
+            panel.classList.toggle('show');
+            if (backdrop) backdrop.classList.toggle('show');
+            // Re-render when opening
+            if (!isOpen) _renderNotifications();
+            // Close account switcher if open
+            var acctPanel = document.getElementById('account-switcher');
+            if (acctPanel) acctPanel.classList.add('hidden');
+        }
+    }
+
+    function addNotificationEvent(title, detail, icon) {
+        var list = _getNotifications();
+        list.unshift({
+            title: title,
+            detail: detail || '',
+            icon: icon || '📋',
+            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+        });
+        // Keep max 20
+        if (list.length > 20) list = list.slice(0, 20);
+        _saveNotifications(list);
+        _renderNotifications();
+    }
+
+    function dismissNotification(idx) {
+        var list = _getNotifications();
+        list.splice(idx, 1);
+        _saveNotifications(list);
+        _renderNotifications();
+    }
+
+    function clearAllNotifications() {
+        _saveNotifications([]);
+        _renderNotifications();
+    }
+
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

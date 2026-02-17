@@ -5,9 +5,9 @@ import sys
 from pathlib import Path
 import logging
 
-# Add parent directory to path to import SimpleRAG
+# Add parent directory to path to import HRKnowledgeBase
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-from src.core.rag_system import SimpleRAG
+from src.core.rag_system import HRKnowledgeBase
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +23,8 @@ class RAGSearchTool:
     """
     
     name = "rag_search"
-    description = """Search the local human rights document database using semantic search. 
-    This should ALWAYS be tried first before web search. Returns quality metrics to 
+    description = """Search the local HR knowledge base using semantic search.
+    This should ALWAYS be tried first before web search. Returns quality metrics to
     determine if results are sufficient or if web search is needed."""
     
     # ===== QUALITY THRESHOLDS =====
@@ -46,17 +46,17 @@ class RAGSearchTool:
     def __init__(self):
         """Initialize RAG system with preloaded topics."""
         logger.info("Initializing RAG Search Tool...")
-        self.rag = SimpleRAG(preload_topics=True)
+        self.rag = HRKnowledgeBase(preload_topics=True)
         logger.info(f"✅ RAG Tool ready with topics: {self.rag.topics}")
     
-    def run(self, query: str, topic: str = "foundational_rights", 
+    def run(self, query: str, topic: str = "benefits", 
             n_results: int = 6) -> Dict[str, Any]:
         """
         Execute RAG search with comprehensive quality assessment.
         
         Args:
             query: Search query string
-            topic: Topic category to search in (default: foundational_rights)
+            topic: Topic category to search in (default: benefits)
             n_results: Number of results to retrieve (default: 6)
             
         Returns:
@@ -334,7 +334,7 @@ if __name__ == "__main__":
     print("=" * 60)
     print("TEST 1: Known good query")
     print("=" * 60)
-    result1 = tool.run("What are human rights?", "foundational_rights")
+    result1 = tool.run("What is the PTO policy?", "benefits")
     print(f"Success: {result1['success']}")
     print(f"Sufficient: {result1['is_sufficient']}")
     print(f"Confidence: {result1['confidence']}")
@@ -346,7 +346,7 @@ if __name__ == "__main__":
     print("=" * 60)
     print("TEST 2: Edge case query")
     print("=" * 60)
-    result2 = tool.run("quantum mechanics of human rights", "foundational_rights")
+    result2 = tool.run("quantum mechanics of employment", "employment_law")
     print(f"Success: {result2['success']}")
     print(f"Sufficient: {result2['is_sufficient']}")
     print(f"Confidence: {result2['confidence']}")

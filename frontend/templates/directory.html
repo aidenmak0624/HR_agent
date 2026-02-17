@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Directory - HR Intelligence Platform{% endblock %}
+{% block page_title %}Employee Directory{% endblock %}
+
+{% block content %}
+<div class="directory-page">
+    <!-- Search and Filter Section -->
+    <section class="directory-search-section">
+        <div class="search-bar">
+            <input 
+                type="text" 
+                id="directory-search" 
+                class="search-input" 
+                placeholder="Search by name, department, or role..."
+                onkeyup="filterEmployees()"
+            >
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <div class="view-toggles">
+            <button class="view-btn active" id="grid-view-btn" onclick="switchView('grid')">
+                <span class="view-icon">⊞</span>
+                <span>Grid</span>
+            </button>
+            <button class="view-btn" id="list-view-btn" onclick="switchView('list')">
+                <span class="view-icon">☰</span>
+                <span>List</span>
+            </button>
+            <button class="view-btn" id="org-chart-btn" onclick="switchView('org')">
+                <span class="view-icon">🏢</span>
+                <span>Org Chart</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Grid View -->
+    <section class="directory-grid-section" id="grid-view">
+        <div class="employees-grid" id="employees-grid">
+            <!-- Populated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- List View -->
+    <section class="directory-list-section" id="list-view" style="display: none;">
+        <div class="list-wrapper">
+            <table class="directory-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="directory-table-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Org Chart View -->
+    <section class="directory-org-section" id="org-view" style="display: none;">
+        <div class="org-chart" id="org-chart">
+            <!-- Populated by JavaScript -->
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.directory-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Search Section */
+.directory-search-section {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(115, 196, 29, 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+/* View Toggles */
+.view-toggles {
+    display: flex;
+    gap: 8px;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.view-btn:hover {
+    background: var(--bg-light);
+    color: var(--text-primary);
+}
+
+.view-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.view-icon {
+    font-size: 16px;
+}
+
+/* Grid View */
+.employees-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.employee-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.employee-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--accent);
+}
+
+.employee-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.employee-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 12px 0 4px;
+}
+
+.employee-role {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.employee-department {
+    font-size: 12px;
+    background: var(--bg-light);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.employee-email {
+    font-size: 12px;
+    color: var(--text-secondary);
+    word-break: break-all;
+    margin-top: 8px;
+}
+
+.employee-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 6px 8px;
+    background: var(--bg-light);
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* List View */
+.directory-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-white);
+}
+
+.directory-table thead {
+    background: var(--bg-light);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.directory-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.directory-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 13px;
+}
+
+.directory-table tbody tr:hover {
+    background: var(--bg-light);
+    cursor: pointer;
+}
+
+.employee-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Org Chart View */
+.org-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+    animation: slideInUp 0.3s ease-out;
+}
+
+.org-level {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.org-level-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.org-level-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.org-node {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+.org-node.ceo {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(115, 196, 29, 0.08) 0%, rgba(115, 196, 29, 0.02) 100%);
+}
+
+.org-node:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.org-node-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.org-node-title {
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.org-node-dept {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .directory-search-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-bar {
+        flex: 1;
+        min-width: auto;
+    }
+
+    .view-toggles {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .employees-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+    }
+
+    .directory-table {
+        font-size: 12px;
+    }
+
+    .directory-table th,
+    .directory-table td {
+        padding: 8px;
+    }
+
+    .employee-name-cell {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .table-avatar {
+        display: none;
+    }
+
+    .org-level-items {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.empty-state-text {
+    font-size: 14px;
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/directory.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadEmployees();
+        setActivePage('directory');
+    });
+</script>
+{% endblock %}

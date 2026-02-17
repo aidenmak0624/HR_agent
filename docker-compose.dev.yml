@@ -1,0 +1,93 @@
+# Development override — Mount source code for hot reload
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  # ── SQLite instead of PostgreSQL for lightweight development ────
+  app:
+    build: .
+    container_name: hr_platform_app_dev
+    environment:
+      DATABASE_URL: sqlite:////app/data/hr_platform_dev.db
+      REDIS_URL: redis://redis:6379/1
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      PORT: 5050
+      WORKERS: 1
+      TIMEOUT: 300
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      LANGCHAIN_TRACING_V2: ${LANGCHAIN_TRACING_V2:-false}
+      LANGCHAIN_API_KEY: ${LANGCHAIN_API_KEY:-}
+      LANGCHAIN_PROJECT: ${LANGCHAIN_PROJECT:-hr-multi-agent-dev}
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./frontend:/app/frontend
+      - ./scripts:/app/scripts
+      - ./run.py:/app/run.py
+      - app_logs:/app/logs
+      - chroma_data:/app/data/chroma_db
+      - ./data/policies:/app/data/policies:ro
+      - ./data/documents:/app/data/documents
+      - ./data:/app/data
+    # Don't wait for postgres in dev (using SQLite)
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - hr_network
+    restart: unless-stopped
+    # Run with hot reload enabled
+    command: |
+      python -m pip install --quiet watchdog[watchmedo] &&
+      watchmedo auto-restart -d ./src -p '*.py' --recursive -- gunicorn
+      --bind 0.0.0.0:5050
+      --workers 1
+      --reload
+      --timeout 300
+      --access-logfile -
+      --error-logfile -
+      --log-level debug
+      src.app_v2:app
+
+  # Keep Redis for caching in dev
+  redis:
+    image: redis:7-alpine
+    container_name: hr_platform_redis_dev
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly no --maxmemory 256mb
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr_network
+
+  # Keep Nginx for routing in dev
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: hr_platform_nginx_dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/static:/app/frontend/static:ro
+    depends_on:
+      - app
+    networks:
+      - hr_network
+    restart: unless-stopped
+
+volumes:
+  app_logs:
+  chroma_data:
+
+networks:
+  hr_network:
+    driver: bridge

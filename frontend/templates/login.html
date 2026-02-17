@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Agent - Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Left Panel - Branding */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #73C41D 0%, #4A8C0F 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -30%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(20px);
+            }
+        }
+
+        .branding {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 40px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .branding h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .branding p {
+            font-size: 18px;
+            font-weight: 300;
+            opacity: 0.9;
+            line-height: 1.6;
+            max-width: 280px;
+        }
+
+        .illustration {
+            margin-top: 50px;
+            font-size: 120px;
+            opacity: 0.7;
+        }
+
+        /* Right Panel - Forms */
+        .right-panel {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+        }
+
+        .form-container {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .form-header {
+            margin-bottom: 40px;
+        }
+
+        .form-header h2 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .form-header p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #94a3b8;
+            position: relative;
+            transition: color 0.3s ease;
+            border: none;
+            background: none;
+        }
+
+        .tab:hover {
+            color: #73C41D;
+        }
+
+        .tab.active {
+            color: #73C41D;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #73C41D;
+        }
+
+        /* Forms */
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #73C41D;
+            box-shadow: 0 0 0 3px rgba(115, 196, 29, 0.15);
+        }
+
+        input::placeholder {
+            color: #cbd5e1;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2373C41D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+
+        /* Error Messages */
+        .error-message {
+            display: none;
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Buttons */
+        .form-group.button-group {
+            margin-top: 30px;
+            margin-bottom: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #73C41D 0%, #4A8C0F 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(115, 196, 29, 0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-loading {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .form-footer a {
+            color: #73C41D;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: #65AD19;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .left-panel {
+                padding: 40px 30px;
+            }
+
+            .right-panel {
+                padding: 40px 30px;
+            }
+
+            .branding h1 {
+                font-size: 36px;
+            }
+
+            .illustration {
+                font-size: 100px;
+                margin-top: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .left-panel {
+                padding: 40px 30px;
+                min-height: 250px;
+                border-radius: 0 0 20px 20px;
+            }
+
+            .right-panel {
+                padding: 30px 20px 40px;
+                min-height: auto;
+            }
+
+            .form-container {
+                max-width: 100%;
+            }
+
+            .branding h1 {
+                font-size: 28px;
+            }
+
+            .branding p {
+                font-size: 16px;
+            }
+
+            .illustration {
+                font-size: 80px;
+                margin-top: 20px;
+            }
+
+            .form-header h2 {
+                font-size: 24px;
+            }
+
+            .form-group.two-column {
+                grid-template-columns: 1fr;
+            }
+
+            input, select {
+                padding: 11px 13px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-panel {
+                min-height: 200px;
+                padding: 30px 20px;
+            }
+
+            .right-panel {
+                padding: 20px;
+            }
+
+            .branding h1 {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 32px;
+            }
+
+            .illustration {
+                font-size: 60px;
+            }
+
+            .form-header h2 {
+                font-size: 20px;
+            }
+
+            .form-header {
+                margin-bottom: 25px;
+            }
+
+            .tabs {
+                margin-bottom: 20px;
+            }
+
+            .tab {
+                font-size: 14px;
+                padding: 12px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="branding">
+                <div class="logo">👥</div>
+                <h1>HR Agent</h1>
+                <p>Your intelligent HR management platform for the modern workplace</p>
+                <div class="illustration">💼</div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="form-container">
+                <!-- Error Message Container -->
+                <div class="error-message" id="errorMessage"></div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="signin">Sign In</button>
+                    <button class="tab" data-tab="signup">Create Account</button>
+                </div>
+
+                <!-- Sign In Form -->
+                <div class="form-content active" id="signin" data-tab="signin">
+                    <div class="form-header">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to your account to continue</p>
+                    </div>
+
+                    <form id="signinForm" onsubmit="signIn(event)">
+                        <div class="form-group">
+                            <label for="signinEmail">Email Address</label>
+                            <input
+                                type="email"
+                                id="signinEmail"
+                                name="email"
+                                placeholder="you@example.com"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signinPassword">Password</label>
+                            <input
+                                type="password"
+                                id="signinPassword"
+                                name="password"
+                                placeholder="Enter your password"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group button-group">
+                            <button type="submit" class="btn-primary" id="signinBtn">
+                                Sign In
+                            </button>
+                        </div>
+
+                        <div class="form-footer">
+                            <a href="#">Forgot your password?</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Create Account Form -->
+                <div class="form-content" id="signup" data-tab="signup">
+                    <div class="form-header">
+                        <h2>Create Account</h2>
+                        <p>Join our platform and get started</p>
+                    </div>
+
+                    <form id="signupForm" onsubmit="createAccount(event)">
+                        <div class="form-group two-column">
+                            <div>
+                                <label for="firstName">First Name</label>
+                                <input
+                                    type="text"
+                                    id="firstName"
+                                    name="firstName"
+                                    placeholder="John"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <label for="lastName">Last Name</label>
+                                <input
+                                    type="text"
+                                    id="lastName"
+                                    name="lastName"
+                                    placeholder="Doe"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signupEmail">Email Address</label>
+                            <input
+                                type="email"
+                                id="signupEmail"
+                                name="email"
+                                placeholder="you@example.com"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input
+                                type="password"
+                                id="signupPassword"
+                                name="password"
+                                placeholder="Create a strong password"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department" name="department" required>
+                                <option value="">Select a department</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Human Resources">Human Resources</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Marketing">Marketing</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group button-group">
+                            <button type="submit" class="btn-primary" id="signupBtn">
+                                Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/login.js"></script>
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const formContents = document.querySelectorAll('.form-content');
+        const errorMessage = document.getElementById('errorMessage');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                // Remove active class from all tabs and forms
+                tabs.forEach(t => t.classList.remove('active'));
+                formContents.forEach(fc => fc.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding form
+                tab.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+
+                // Clear error message when switching tabs
+                errorMessage.classList.remove('show');
+                errorMessage.textContent = '';
+            });
+        });
+
+        // Global function to display error messages
+        window.showError = function(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Global function to clear error messages
+        window.clearError = function() {
+            errorMessage.textContent = '';
+            errorMessage.classList.remove('show');
+        };
+
+        // Global function to set button loading state
+        window.setButtonLoading = function(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<span class="btn-loading"><span class="spinner"></span>Loading...</span>';
+            } else {
+                button.disabled = false;
+                if (buttonId === 'signinBtn') {
+                    button.textContent = 'Sign In';
+                } else if (buttonId === 'signupBtn') {
+                    button.textContent = 'Create Account';
+                }
+            }
+        };
+    </script>
+</body>
+</html>

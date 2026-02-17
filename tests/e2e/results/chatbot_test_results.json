@@ -1,0 +1,792 @@
+{
+  "test_run_info": {
+    "timestamp": "2026-02-08T00:37:53.531788",
+    "api_url": "http://localhost:5050/api/v2/query",
+    "total_tests": 60,
+    "passed_tests": 60,
+    "failed_tests": 0,
+    "pass_rate": 100.0
+  },
+  "results": [
+    {
+      "category": "Greetings",
+      "query": "Hello",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 3.7736892700195312,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "Hi there",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 1.6896724700927734,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "Hey",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 1.7476081848144531,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "What's up",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 1.0528564453125,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Greetings",
+      "query": "Good morning",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Hello! I'm your HR Intelligence Assistant. I can help you with:\n\n\u2022 Leave requests and balances\n\u2022 Employee benefits information\n\u2022 Company policies and guidelines\n\u2022 Payroll and compensation questions\n\u2022 "
+      },
+      "response_time_ms": 0.9746551513671875,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "What do you do?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.9250640869140625,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "Help me",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.7836818695068359,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "What can you help with?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.6630420684814453,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "Tell me about your capabilities",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm an AI-powered HR assistant with multiple specialized agents. Here's what I can help with:\n\n\ud83c\udfd6\ufe0f **Leave Management** \u2014 Check your leave balance, submit leave requests, and understand leave policies."
+      },
+      "response_time_ms": 0.6506443023681641,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Capabilities",
+      "query": "What are you able to do?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.6573200225830078,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "Who are you?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 1.5239715576171875,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "What are you?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 1.0738372802734375,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "Who is this?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.8285045623779297,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Identity",
+      "query": "What is your name?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I'm the HR Intelligence Assistant, powered by multiple specialized AI agents. I was designed to help employees, managers, and HR administrators with a wide range of human resources tasks \u2014 from answer"
+      },
+      "response_time_ms": 0.850677490234375,
+      "agent_type": "general_assistant",
+      "confidence": 0.9
+    },
+    {
+      "category": "Farewell",
+      "query": "Bye",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Goodbye! Feel free to come back anytime you need HR assistance. Have a great day!"
+      },
+      "response_time_ms": 0.9112358093261719,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "Goodbye",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Goodbye! Feel free to come back anytime you need HR assistance. Have a great day!"
+      },
+      "response_time_ms": 0.7345676422119141,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "Thanks",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "You're welcome! Is there anything else I can help you with? I'm here to assist with leave requests, benefits questions, company policies, payroll inquiries, and more."
+      },
+      "response_time_ms": 1.0907649993896484,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "Thank you",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "You're welcome! Is there anything else I can help you with? I'm here to assist with leave requests, benefits questions, company policies, payroll inquiries, and more."
+      },
+      "response_time_ms": 0.6639957427978516,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Farewell",
+      "query": "See you later",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Goodbye! Feel free to come back anytime you need HR assistance. Have a great day!"
+      },
+      "response_time_ms": 0.8003711700439453,
+      "agent_type": "general_assistant",
+      "confidence": 0.95
+    },
+    {
+      "category": "Leave Queries",
+      "query": "How many vacation days do I have?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's what I can tell you about vacation/leave:\n\n\u2022 Annual Leave: 15 days per year for full-time employees\n\u2022 Sick Leave: 10 days per year\n\u2022 Personal Leave: 5 days per year\n\u2022 Carry Forward: Up to 5 unu"
+      },
+      "response_time_ms": 1.453399658203125,
+      "agent_type": "leave_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Leave Queries",
+      "query": "Can I take sick leave?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's what I can tell you about leave policies:\n\n\u2022 Annual Leave: 15 days per year for full-time employees\n\u2022 Sick Leave: 10 days per year (medical certificate required for 3+ consecutive days)\n\u2022 Perso"
+      },
+      "response_time_ms": 1.0559558868408203,
+      "agent_type": "leave_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Leave Queries",
+      "query": "What is the leave policy?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I can help with company policies. Here are some commonly asked about:\n\n\u2022 Remote Work: Hybrid model \u2014 3 days in-office, 2 remote per week\n\u2022 Dress Code: Business casual; casual Fridays\n\u2022 Working Hours: "
+      },
+      "response_time_ms": 1.8970966339111328,
+      "agent_type": "policy_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Leave Queries",
+      "query": "I want to apply for leave",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's what I can tell you about leave policies:\n\n\u2022 Annual Leave: 15 days per year for full-time employees\n\u2022 Sick Leave: 10 days per year (medical certificate required for 3+ consecutive days)\n\u2022 Perso"
+      },
+      "response_time_ms": 1.3484954833984375,
+      "agent_type": "leave_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Leave Queries",
+      "query": "How much PTO do I have left?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's what I can tell you about PTO (Paid Time Off):\n\n\u2022 Annual Leave: 15 days per year for full-time employees\n\u2022 Sick Leave: 10 days per year\n\u2022 Personal Leave: 5 days per year\n\u2022 Carry Forward: Up to "
+      },
+      "response_time_ms": 0.9033679962158203,
+      "agent_type": "leave_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Leave Queries",
+      "query": "When can I take vacation?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's what I can tell you about vacation/leave:\n\n\u2022 Annual Leave: 15 days per year for full-time employees\n\u2022 Sick Leave: 10 days per year\n\u2022 Personal Leave: 5 days per year\n\u2022 Carry Forward: Up to 5 unu"
+      },
+      "response_time_ms": 0.64849853515625,
+      "agent_type": "leave_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Do we have health insurance?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 1.211404800415039,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "What about 401k?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 1.8804073333740234,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Do you cover dental?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Dental coverage is included in all health plans:\n\n\u2022 Preventive care (cleanings, exams): 100% covered\n\u2022 Basic services (fillings, extractions): 80% covered\n\u2022 Major services (crowns, bridges): 50% cover"
+      },
+      "response_time_ms": 3.742694854736328,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Tell me about benefits",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 1.2917518615722656,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Health insurance options",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 1.5652179718017578,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Benefits Queries",
+      "query": "Retirement benefits",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 1.1441707611083984,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Can I work remotely?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Our remote work policy follows a hybrid model:\n\n\u2022 3 days in-office, 2 days remote per week\n\u2022 Core hours: 10am-4pm regardless of location\n\u2022 Equipment stipend: $500 for home office setup\n\u2022 VPN required "
+      },
+      "response_time_ms": 0.9348392486572266,
+      "agent_type": "policy_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Policy Queries",
+      "query": "What are the working hours?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Working hours policy:\n\n\u2022 Core hours: 10am-4pm\n\u2022 Flexible start: 7am-10am\n\u2022 Flexible end: 4pm-7pm\n\u2022 Standard work week: 40 hours\n\u2022 Overtime requires manager pre-approval\n\nTalk to your manager about any"
+      },
+      "response_time_ms": 1.1169910430908203,
+      "agent_type": "policy_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Policy Queries",
+      "query": "What's the dress code?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Dress code policy:\n\n\u2022 Monday-Thursday: Business casual\n\u2022 Fridays: Casual dress\n\u2022 Client meetings: Business professional\n\u2022 Safety attire: Required in applicable areas\n\nWhen in doubt, business casual is"
+      },
+      "response_time_ms": 1.6951560974121094,
+      "agent_type": "policy_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Remote work policy",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I can help with company policies. Here are some commonly asked about:\n\n\u2022 Remote Work: Hybrid model \u2014 3 days in-office, 2 remote per week\n\u2022 Dress Code: Business casual; casual Fridays\n\u2022 Working Hours: "
+      },
+      "response_time_ms": 1.096963882446289,
+      "agent_type": "policy_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Are pets allowed in office?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Pet policy:\n\n\u2022 Pets are generally not allowed in the office\n\u2022 Service animals are always welcome with proper documentation\n\u2022 Some departments participate in 'Bring Your Dog' days (check with your mana"
+      },
+      "response_time_ms": 1.054525375366211,
+      "agent_type": "policy_agent",
+      "confidence": 0.75
+    },
+    {
+      "category": "Policy Queries",
+      "query": "Parental leave policy",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Parental leave policy:\n\n\u2022 Birth parents: 12 weeks paid leave\n\u2022 Non-birth parents: 6 weeks paid leave\n\u2022 Adoption/Foster: 6 weeks paid leave\n\u2022 Additional unpaid FMLA leave available\n\u2022 Benefits continue "
+      },
+      "response_time_ms": 0.9329319000244141,
+      "agent_type": "policy_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "When is payday?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Pay schedule information:\n\n\u2022 Bi-weekly pay, every other Friday\n\u2022 Direct deposit is available and recommended\n\u2022 Pay stubs accessible via employee portal\n\u2022 W-2 forms distributed by January 31\n\nContact P"
+      },
+      "response_time_ms": 0.7996559143066406,
+      "agent_type": "payroll_agent",
+      "confidence": 0.78
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "How do I set up direct deposit?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "To set up or update direct deposit:\n\n1. Log into the employee portal\n2. Go to Payroll > Direct Deposit\n3. Enter your bank routing and account numbers\n4. Changes take effect in 1-2 pay cycles\n\nContact "
+      },
+      "response_time_ms": 0.8990764617919922,
+      "agent_type": "payroll_agent",
+      "confidence": 0.82
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "What's my salary?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Regarding compensation information:\n\n\u2022 Salary reviews occur annually in Q1\n\u2022 Performance-based merit increases: typically 3-8%\n\u2022 Promotion raises: typically 10-15%\n\u2022 Market adjustments reviewed annual"
+      },
+      "response_time_ms": 1.1200904846191406,
+      "agent_type": "payroll_agent",
+      "confidence": 0.75
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "Can I get a pay stub?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Pay schedule information:\n\n\u2022 Bi-weekly pay, every other Friday\n\u2022 Direct deposit is available and recommended\n\u2022 Pay stubs accessible via employee portal\n\u2022 W-2 forms distributed by January 31\n\nContact P"
+      },
+      "response_time_ms": 1.3930797576904297,
+      "agent_type": "payroll_agent",
+      "confidence": 0.78
+    },
+    {
+      "category": "Payroll Queries",
+      "query": "Tax withholding information",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Tax and withholding information:\n\n\u2022 W-4: Update via employee portal for federal withholding\n\u2022 State taxes: Deducted based on work location\n\u2022 W-2 forms: Distributed by January 31 each year\n\u2022 Pre-tax de"
+      },
+      "response_time_ms": 0.8916854858398438,
+      "agent_type": "payroll_agent",
+      "confidence": 0.78
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "I'm a new employee, what do I do?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Welcome! Here's the onboarding overview:\n\n\u2022 Week 1: Orientation, IT setup, team introductions\n\u2022 Week 2: Role-specific training, system access\n\u2022 Week 3-4: Shadowing, initial projects\n\u2022 30-day check-in "
+      },
+      "response_time_ms": 0.8976459503173828,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "What's required for first day?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "First day checklist:\n\n\u2022 Arrive at 9:00 AM, check in at reception\n\u2022 Bring photo ID and completed I-9 documents\n\u2022 IT will set up your laptop and accounts\n\u2022 Meet your manager and team\n\u2022 HR orientation (p"
+      },
+      "response_time_ms": 0.8647441864013672,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "How do I get onboarded?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Welcome! Here's the onboarding overview:\n\n\u2022 Week 1: Orientation, IT setup, team introductions\n\u2022 Week 2: Role-specific training, system access\n\u2022 Week 3-4: Shadowing, initial projects\n\u2022 30-day check-in "
+      },
+      "response_time_ms": 0.6306171417236328,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "New employee checklist",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Welcome! Here's the onboarding overview:\n\n\u2022 Week 1: Orientation, IT setup, team introductions\n\u2022 Week 2: Role-specific training, system access\n\u2022 Week 3-4: Shadowing, initial projects\n\u2022 30-day check-in "
+      },
+      "response_time_ms": 0.6134510040283203,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Onboarding Queries",
+      "query": "First day orientation",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "New employee orientation schedule:\n\n\u2022 Day 1 AM: Company overview, mission and values\n\u2022 Day 1 PM: HR policies, benefits enrollment, IT setup\n\u2022 Day 2: Department introduction, team meetings\n\u2022 Week 1: Ro"
+      },
+      "response_time_ms": 0.6306171417236328,
+      "agent_type": "onboarding_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Document Queries",
+      "query": "Can I get an employment certificate?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I can help with HR documents. Available templates include:\n\n\u2022 Employment Certificate\n\u2022 Offer Letter\n\u2022 Promotion Letter\n\u2022 Separation Letter\n\u2022 Experience Letter\n\u2022 Salary Slip\n\nGo to the Documents page t"
+      },
+      "response_time_ms": 0.6880760192871094,
+      "agent_type": "hr_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Document Queries",
+      "query": "I need my offer letter",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I can help with HR letter generation. Available templates include:\n\n\u2022 Offer Letter\n\u2022 Employment Certificate / Verification Letter\n\u2022 Promotion Letter\n\u2022 Reference Letter\n\u2022 Experience Letter\n\u2022 Separation"
+      },
+      "response_time_ms": 0.95367431640625,
+      "agent_type": "hr_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Document Queries",
+      "query": "Can I request my employment records?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "For employee records and documents:\n\n\u2022 Employment records: Available via HR request\n\u2022 Pay stubs: Accessible in the employee portal\n\u2022 Tax documents (W-2, 1099): Distributed annually\n\u2022 Performance revie"
+      },
+      "response_time_ms": 0.7772445678710938,
+      "agent_type": "hr_agent",
+      "confidence": 0.78
+    },
+    {
+      "category": "Document Queries",
+      "query": "How do I get a reference letter?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I can help with HR letter generation. Available templates include:\n\n\u2022 Offer Letter\n\u2022 Employment Certificate / Verification Letter\n\u2022 Promotion Letter\n\u2022 Reference Letter\n\u2022 Experience Letter\n\u2022 Separation"
+      },
+      "response_time_ms": 0.762939453125,
+      "agent_type": "hr_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Edge Cases",
+      "query": "asfghjkl zxcvbnm qwerty",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: asfghjkl zxcvbnm qwerty...?"
+      },
+      "response_time_ms": 1.4646053314208984,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "Can I have a query with many many many many many words Can I have a query with many many many many many words Can I have a query with many many many many many words Can I have a query with many many many many many words Can I have a query with many many many many many words ",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: Can I have a query with many m...?"
+      },
+      "response_time_ms": 0.9379386901855469,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "Query with special chars: !@#$%^&*()",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: Query with special chars: !@#$...?"
+      },
+      "response_time_ms": 0.7770061492919922,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "123456789 0987654321",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: 123456789 0987654321...?"
+      },
+      "response_time_ms": 1.3790130615234375,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Edge Cases",
+      "query": "SELECT * FROM users DROP TABLE;",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Could you clarify your question about: SELECT * FROM users DROP TABLE...?"
+      },
+      "response_time_ms": 1.2149810791015625,
+      "agent_type": "router",
+      "confidence": 0.3
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "I want to take vacation and know about health insurance",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 0.7011890411376953,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "What's the leave policy and remote work policy?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "I can help with company policies. Here are some commonly asked about:\n\n\u2022 Remote Work: Hybrid model \u2014 3 days in-office, 2 remote per week\n\u2022 Dress Code: Business casual; casual Fridays\n\u2022 Working Hours: "
+      },
+      "response_time_ms": 0.6883144378662109,
+      "agent_type": "policy_agent",
+      "confidence": 0.8
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "Can I apply for leave and also get my pay stub?",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's what I can tell you about leave policies:\n\n\u2022 Annual Leave: 15 days per year for full-time employees\n\u2022 Sick Leave: 10 days per year (medical certificate required for 3+ consecutive days)\n\u2022 Perso"
+      },
+      "response_time_ms": 0.6840229034423828,
+      "agent_type": "leave_agent",
+      "confidence": 0.85
+    },
+    {
+      "category": "Mixed Queries",
+      "query": "Tell me about benefits and onboarding process",
+      "success": true,
+      "pass": true,
+      "reason": "All checks passed",
+      "response": {
+        "answer": "Here's a summary of our employee benefits:\n\n\u2022 Health Insurance: PPO and HMO plans available, company covers 80% of premiums\n\u2022 Dental & Vision: Included in all health plans\n\u2022 401(k): Company matches up"
+      },
+      "response_time_ms": 1.0073184967041016,
+      "agent_type": "benefits_agent",
+      "confidence": 0.85
+    }
+  ]
+}

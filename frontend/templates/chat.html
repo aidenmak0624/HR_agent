@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - HR Intelligence Platform{% endblock %}
+{% block page_title %}Chat with HR Agent{% endblock %}
+
+{% block content %}
+<div class="chat-page">
+    <div class="chat-wrapper">
+        <!-- Conversation History Sidebar -->
+        <aside class="chat-sidebar">
+            <div class="sidebar-header">
+                <h3>Conversations</h3>
+                <button class="new-chat-btn" onclick="startNewChat()">+</button>
+            </div>
+            <div class="conversation-list" id="conversation-list">
+                <div class="conversation-item active">
+                    <span class="conv-title">Current Conversation</span>
+                    <span class="conv-time">Today</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+            <!-- Messages Container -->
+            <div class="messages-container" id="messages-container">
+                <!-- Welcome message populated by chat_v2.js initConversations / showWelcomeMessage -->
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <input
+                        type="text"
+                        id="chat-input"
+                        class="chat-input"
+                        placeholder="Ask me anything about HR policies, leave, benefits..."
+                        autocomplete="off"
+                    >
+                    <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                        <span class="send-icon">→</span>
+                    </button>
+                </div>
+
+                <!-- Suggested Follow-ups -->
+                <div class="suggested-questions" id="suggested-questions">
+                    <button class="suggested-btn" onclick="askQuestion('What is my leave balance?')">
+                        What is my leave balance?
+                    </button>
+                    <button class="suggested-btn" onclick="askQuestion('How do I request time off?')">
+                        How do I request time off?
+                    </button>
+                    <button class="suggested-btn" onclick="askQuestion('What are the company benefits?')">
+                        What are the company benefits?
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/chat_v2.js"></script>
+{% endblock %}

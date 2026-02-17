@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # ── PostgreSQL Database ─────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: hr_platform_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hr_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hr_password}
+      POSTGRES_DB: ${POSTGRES_DB:-hr_platform}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hr_user} -d ${POSTGRES_DB:-hr_platform}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr_network
+
+  # ── Redis Cache ─────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: hr_platform_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr_network
+
+  # ── Flask Application ───────────────────────────────────
+  app:
+    build: .
+    container_name: hr_platform_app
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-hr_user}:${POSTGRES_PASSWORD:-hr_password}@postgres:5432/${POSTGRES_DB:-hr_platform}
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      DEBUG: ${DEBUG:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PORT: 5050
+      WORKERS: ${WORKERS:-4}
+      TIMEOUT: ${TIMEOUT:-120}
+      # LLM Providers
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      # LangSmith Tracing
+      LANGCHAIN_TRACING_V2: ${LANGCHAIN_TRACING_V2:-false}
+      LANGCHAIN_API_KEY: ${LANGCHAIN_API_KEY:-}
+      LANGCHAIN_PROJECT: ${LANGCHAIN_PROJECT:-hr-multi-agent}
+    volumes:
+      - app_logs:/app/logs
+      - chroma_data:/app/data/chroma_db
+      - ./data/policies:/app/data/policies:ro
+      - ./data/documents:/app/data/documents
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hr_network
+    restart: unless-stopped
+
+  # ── Nginx Reverse Proxy ─────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: hr_platform_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/static:/app/frontend/static:ro
+    depends_on:
+      - app
+    networks:
+      - hr_network
+    restart: unless-stopped
+
+networks:
+  hr_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  app_logs:
+  chroma_data:

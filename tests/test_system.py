@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for Human Rights Education Platform
+Test script for TechNova HR Intelligence Platform
 Tests both simple RAG and agent modes
 """
 
@@ -83,17 +83,17 @@ def test_simple_rag():
     """Test simple RAG mode"""
     print_header("Testing Simple RAG Mode (/api/chat)")
     
-    query = "What are human rights?"
+    query = "What is the PTO policy?"
     print_info(f"Query: {query}")
-    
+
     try:
         start = time.time()
         response = requests.post(
             f"{API_BASE}/api/chat",
             json={
                 "query": query,
-                "topic": "foundational_rights",
-                "difficulty": "intermediate"
+                "topic": "benefits",
+                "difficulty": "detailed"
             },
             headers={"Content-Type": "application/json"},
             timeout=30
@@ -120,17 +120,17 @@ def test_agent_mode():
     """Test agent mode"""
     print_header("Testing Agent Mode (/api/agent/chat)")
     
-    query = "Explain freedom of expression"
+    query = "Explain the remote work policy"
     print_info(f"Query: {query}")
-    
+
     try:
         start = time.time()
         response = requests.post(
             f"{API_BASE}/api/agent/chat",
             json={
                 "query": query,
-                "topic": "freedom_expression",
-                "difficulty": "intermediate"
+                "topic": "company_policies",
+                "difficulty": "detailed"
             },
             headers={"Content-Type": "application/json"},
             timeout=60  # Agent may take longer
@@ -168,7 +168,7 @@ def test_error_handling():
     try:
         response = requests.post(
             f"{API_BASE}/api/chat",
-            json={"topic": "foundational_rights"},
+            json={"topic": "benefits"},
             timeout=5
         )
         if response.status_code == 400:
@@ -184,7 +184,7 @@ def test_error_handling():
             f"{API_BASE}/api/agent/chat",
             json={
                 "query": "test",
-                "topic": "foundational_rights",
+                "topic": "benefits",
                 "difficulty": "invalid"
             },
             timeout=5
@@ -199,7 +199,7 @@ def test_error_handling():
 def run_all_tests():
     """Run all tests"""
     print(f"\n{Fore.MAGENTA}{'='*60}")
-    print(f"{Fore.MAGENTA}Human Rights Platform - System Tests")
+    print(f"{Fore.MAGENTA}TechNova HR Platform - System Tests")
     print(f"{Fore.MAGENTA}{'='*60}{Style.RESET_ALL}\n")
     
     print_info("Make sure the Flask server is running on http://localhost:5050")

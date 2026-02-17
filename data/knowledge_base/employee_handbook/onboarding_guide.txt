@@ -1,0 +1,117 @@
+NEW EMPLOYEE ONBOARDING GUIDE
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+WELCOME TO TECHNOVA!
+Congratulations on joining TechNova Inc.! This guide covers everything you need to know for a smooth start.
+
+PRE-START CHECKLIST (Complete Before Day 1)
+- Accept your offer letter and return signed copy to HR
+- Complete Form I-9 Section 1 (bring valid ID documents on Day 1)
+- Complete Form W-4 (federal tax withholding)
+- Complete state tax withholding form (if applicable)
+- Complete direct deposit authorization
+- Complete benefits enrollment (you have 30 days from start date)
+- Complete background check authorization
+- Review and sign: Employment Agreement, NDA, Invention Assignment Agreement, Code of Conduct
+- Upload your professional headshot for the company directory
+
+DAY 1 SCHEDULE
+8:30 AM - Arrive at the office (or log into virtual onboarding session)
+9:00 AM - Welcome from your hiring manager
+9:30 AM - HR orientation session
+  - Company overview, mission, and values
+  - Benefits enrollment walkthrough
+  - I-9 document verification
+  - Badge/access card issuance (in-office employees)
+  - IT equipment setup and account provisioning
+10:30 AM - IT setup and systems access
+  - Laptop configuration
+  - Email setup (Google Workspace)
+  - Slack workspace access
+  - VPN and security tool installation
+  - HR portal and payroll system access
+12:00 PM - Team lunch (company-sponsored)
+1:00 PM - Meet your onboarding buddy
+1:30 PM - Department orientation with your manager
+  - Team introductions
+  - Role expectations and 30/60/90 day goals
+  - Regular meeting schedule
+  - Key stakeholders and cross-functional partners
+3:00 PM - Self-paced: Complete required online training modules
+4:30 PM - Day 1 check-in with your manager
+
+WEEK 1 MILESTONES
+- Complete all compliance training (anti-harassment, data security, code of conduct)
+- Set up 1-on-1 cadence with your manager
+- Meet key stakeholders in your department
+- Begin your 30-day learning plan
+- Access and explore the HR portal, benefits enrollment, and company intranet
+
+FIRST 30 DAYS
+- Complete all required training modules (see Training Requirements below)
+- Set your 3-5 OKRs with your manager for the first review period
+- Shadow 2-3 colleagues in related roles
+- Attend your first company all-hands meeting (first Monday of each month)
+- Enroll in benefits (deadline: 30 days from start date)
+- Complete 30-day check-in with your manager
+
+FIRST 90 DAYS
+- Deliver on your first key project or milestone
+- Complete your first performance check-in with your manager
+- Join at least one Employee Resource Group (ERG) or committee
+- Provide feedback on your onboarding experience via the survey
+- Employer match for 401(k) begins (if auto-enrolled at hire)
+
+REQUIRED TRAINING (COMPLETE WITHIN 30 DAYS)
+1. Anti-Harassment and Anti-Discrimination Training (90 minutes)
+2. Data Security and Privacy Training (60 minutes)
+3. Code of Conduct Acknowledgment (30 minutes)
+4. Emergency Procedures and Workplace Safety (30 minutes)
+5. Role-specific compliance training (varies by department)
+
+SYSTEMS AND TOOLS
+- Email: Google Workspace (Gmail, Calendar, Drive, Meet)
+- Chat: Slack (join #general, #your-department, #random, #announcements)
+- HR Portal: BambooHR (PTO requests, personal info, documents)
+- Payroll: ADP Workforce Now (pay stubs, tax forms, direct deposit)
+- Project Management: Jira (Engineering), Asana (Business teams)
+- Code Repository: GitHub (Engineering)
+- Knowledge Base: Confluence / Notion
+- Video Conferencing: Google Meet, Zoom
+- Password Manager: 1Password (mandatory for all employees)
+- VPN: Required for remote access to internal systems
+
+ONBOARDING BUDDY PROGRAM
+Every new employee is assigned an onboarding buddy from their department:
+- Your buddy will reach out before your first day
+- They are your go-to person for informal questions
+- Weekly coffee chat for the first month
+- Buddy assignment lasts 90 days
+
+KEY CONTACTS
+- Your Manager: See your offer letter
+- HR Department: hr@technova.com | Phone: ext. 2100
+- IT Help Desk: it@technova.com | Phone: ext. 3000
+- Facilities: facilities@technova.com | Phone: ext. 4000
+- Onboarding Questions: onboarding@technova.com
+- EAP (confidential support): 1-800-555-0199
+
+EMPLOYEE RESOURCE GROUPS (ERGs)
+TechNova supports the following ERGs:
+- Women in Tech
+- Black Professionals Network
+- LGBTQ+ Alliance
+- Asian Pacific Islander Network
+- Parents and Caregivers
+- Veterans Network
+- Neurodiversity Alliance
+Join via the HR portal or Slack (#erg-directory)
+
+COMPANY EVENTS
+- Monthly all-hands: First Monday of each month (virtual and in-person)
+- Quarterly town halls: January, April, July, October
+- Annual company retreat: September (location varies)
+- Team building events: Organized by department leads
+- Hackathons: Quarterly (Engineering-led, all departments welcome)
+- Lunch and Learns: Weekly, rotating topics

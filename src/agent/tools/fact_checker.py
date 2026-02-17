@@ -1,20 +1,20 @@
 # src/agent/tools/fact_checker.py
 
 """
-Fact Verifier Tool - Validates claims against authoritative human rights sources
+Fact Verifier Tool - Validates claims against authoritative HR policy and employment law sources
 
 PURPOSE:
 When the agent generates an answer, this tool can verify specific claims
-against the RAG database or web sources to ensure accuracy.
+against the HR knowledge base or web sources to ensure accuracy.
 
 USE CASES:
-1. User asks: "Is torture banned under international law?"
+1. User asks: "Is FMLA leave 12 weeks?"
    - Agent generates answer
-   - Fact checker validates against UDHR, Geneva Conventions
-   
-2. Agent makes claim: "Article 5 prohibits torture"
-   - Fact checker retrieves Article 5, confirms accuracy
-   
+   - Fact checker validates against employment law knowledge base
+
+2. Agent makes claim: "The 401k match is 5%"
+   - Fact checker retrieves benefits data, confirms accuracy
+
 3. Conflicting information detected
    - Fact checker resolves by finding authoritative source
 """
@@ -26,9 +26,9 @@ import logging
 
 # Add parent directory to import RAG system
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-from src.core.rag_system import SimpleRAG
+from src.core.rag_system import HRKnowledgeBase
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 import os
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 class FactVerifierTool:
     """
-    Verifies factual claims about human rights against authoritative sources.
+    Verifies factual claims about HR policies and employment law against authoritative sources.
     
     This tool helps the agent:
     1. Double-check its own generated answers
@@ -52,29 +52,29 @@ class FactVerifierTool:
     """
     
     name = "fact_verifier"
-    description = """Verify specific factual claims about human rights against 
-    authoritative sources (UDHR, treaties, conventions). Use this when you need 
-    to validate a specific claim or provide authoritative citation. Input should 
-    be a clear, specific claim to verify."""
+    description = """Verify specific factual claims about HR policies against
+    authoritative sources (employment law, company policies, benefits guides).
+    Use this when you need to validate a specific claim or provide authoritative
+    citation. Input should be a clear, specific claim to verify."""
     
     def __init__(self):
         """Initialize with RAG system and LLM for verification."""
         logger.info("Initializing Fact Verifier Tool...")
-        self.rag = SimpleRAG(preload_topics=True)
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
-            google_api_key=os.getenv("GOOGLE_API_KEY"),
+        self.rag = HRKnowledgeBase(preload_topics=True)
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            api_key=os.getenv("OPENAI_API_KEY", ""),
             temperature=0.0  # Very low temperature for factual verification
         )
         logger.info("✅ Fact Verifier ready")
     
-    def run(self, claim: str, topic: str = "foundational_rights") -> Dict[str, Any]:
+    def run(self, claim: str, topic: str = "benefits") -> Dict[str, Any]:
         """
         Verify a specific claim against authoritative sources.
         
         Args:
             claim: The specific claim to verify (e.g., "Article 5 prohibits torture")
-            topic: Topic area to search in (default: foundational_rights)
+            topic: Topic area to search in (default: benefits)
             
         Returns:
             Dict with:
@@ -166,7 +166,7 @@ class FactVerifierTool:
         # Combine documents with relevance scores
         evidence_text = self._format_evidence(documents, distances)
         
-        verification_prompt = f"""You are a fact-checking expert for human rights information.
+        verification_prompt = f"""You are a fact-checking expert for HR policy and employment law information.
 
 **CLAIM TO VERIFY:**
 "{claim}"
@@ -208,7 +208,7 @@ Carefully verify the claim against the source material. Return ONLY valid JSON:
             from langchain_core.messages import HumanMessage, SystemMessage
             
             messages = [
-                SystemMessage(content="You are a meticulous fact-checker specializing in human rights."),
+                SystemMessage(content="You are a meticulous fact-checker specializing in HR policies and employment law."),
                 HumanMessage(content=verification_prompt)
             ]
             
@@ -308,7 +308,7 @@ Carefully verify the claim against the source material. Return ONLY valid JSON:
             "claim": claim
         }
     
-    def batch_verify(self, claims: List[str], topic: str = "foundational_rights") -> List[Dict[str, Any]]:
+    def batch_verify(self, claims: List[str], topic: str = "benefits") -> List[Dict[str, Any]]:
         """
         Verify multiple claims at once (useful for checking an entire answer).
         
@@ -341,7 +341,7 @@ def example_usage():
     print("\n1. Verifying TRUE claim:")
     result1 = verifier.run(
         claim="The Universal Declaration of Human Rights was adopted by the UN General Assembly in 1948",
-        topic="foundational_rights"
+        topic="benefits"
     )
     print(f"Verdict: {result1['verdict']}")
     print(f"Confidence: {result1['confidence']}")
@@ -351,7 +351,7 @@ def example_usage():
     print("\n2. Verifying specific article:")
     result2 = verifier.run(
         claim="Article 5 of the UDHR prohibits torture and cruel treatment",
-        topic="foundational_rights"
+        topic="benefits"
     )
     print(f"Verdict: {result2['verdict']}")
     print(f"Confidence: {result2['confidence']}")
@@ -360,7 +360,7 @@ def example_usage():
     print("\n3. Verifying FALSE claim:")
     result3 = verifier.run(
         claim="The UDHR consists of 50 articles",
-        topic="foundational_rights"
+        topic="benefits"
     )
     print(f"Verdict: {result3['verdict']}")
     print(f"Confidence: {result3['confidence']}")

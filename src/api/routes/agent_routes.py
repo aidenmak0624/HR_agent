@@ -6,7 +6,7 @@ Handles both agent mode and simple RAG mode in one file
 """
 
 from flask import Blueprint, request, jsonify
-from src.agent.agent_brain import HumanRightsAgent
+from src.agent.agent_brain import HRAssistantAgent
 import os
 import logging
 import signal
@@ -58,8 +58,8 @@ def get_agent():
             return None
         
         try:
-            logger.info("🤖 Initializing Human Rights Agent...")
-            _agent_instance = HumanRightsAgent(api_key=api_key)
+            logger.info("🤖 Initializing HR Assistant Agent...")
+            _agent_instance = HRAssistantAgent(api_key=api_key)
             logger.info(f"✅ Agent initialized with {len(_agent_instance.tools)} tools")
             
         except Exception as e:
@@ -76,8 +76,8 @@ def get_rag():
     if _rag_instance is None:
         try:
             logger.info("📚 Initializing RAG system...")
-            from src.core.rag_system import SimpleRAG
-            _rag_instance = SimpleRAG(preload_topics=True)
+            from src.core.rag_system import HRKnowledgeBase
+            _rag_instance = HRKnowledgeBase(preload_topics=True)
             logger.info("✅ RAG system initialized")
         except Exception as e:
             logger.exception("❌ Failed to initialize RAG")
@@ -116,8 +116,8 @@ def simple_chat():
     
     Request:
     {
-        "query": "What are human rights?",
-        "topic": "foundational_rights",
+        "query": "What is our PTO policy?",
+        "topic": "benefits",
         "difficulty": "intermediate"
     }
     
@@ -136,7 +136,7 @@ def simple_chat():
             return jsonify({'error': 'Request body must be JSON'}), 400
         
         query = data.get('query')
-        topic = data.get('topic', 'foundational_rights')
+        topic = data.get('topic', 'benefits')
         difficulty = data.get('difficulty', 'intermediate')
         
         if not query:
@@ -194,8 +194,8 @@ def agent_chat():
     
     Request:
     {
-        "query": "What are human rights?",
-        "topic": "foundational_rights",
+        "query": "What is our PTO policy?",
+        "topic": "benefits",
         "difficulty": "intermediate"
     }
     
@@ -216,7 +216,7 @@ def agent_chat():
             return jsonify({'error': 'Request body must be JSON'}), 400
         
         query = data.get('query')
-        topic = data.get('topic', 'foundational_rights')
+        topic = data.get('topic', 'benefits')
         difficulty = data.get('difficulty', 'intermediate')
         
         if not query:
@@ -285,8 +285,8 @@ def agent_debug():
     try:
         data = request.json or {}
         
-        query = data.get('query', 'What are human rights?')
-        topic = data.get('topic', 'foundational_rights')
+        query = data.get('query', 'What is the PTO policy?')
+        topic = data.get('topic', 'benefits')
         difficulty = data.get('difficulty', 'intermediate')
         
         agent = get_agent()
@@ -353,34 +353,34 @@ def get_topics():
     """Get available topics (moved from topic_routes for consolidation)"""
     TOPICS = [
         {
-            "id": "foundational_rights",
-            "name": "Foundational Rights",
+            "id": "employment_law",
+            "name": "Employment Law",
             "icon": "⚖️",
-            "description": "Core human rights principles and Universal Declaration"
+            "description": "FMLA, ADA, Title VII, FLSA, and other federal employment laws"
         },
         {
-            "id": "childrens_rights",
-            "name": "Children's Rights",
-            "icon": "👶",
-            "description": "Rights specific to children and youth protection"
+            "id": "benefits",
+            "name": "Benefits & Compensation",
+            "icon": "💰",
+            "description": "Health insurance, 401(k), ESPP, leave benefits, and perks"
         },
         {
-            "id": "womens_rights",
-            "name": "Women's Rights",
-            "icon": "👩",
-            "description": "Gender equality and women's empowerment"
+            "id": "company_policies",
+            "name": "Company Policies",
+            "icon": "📋",
+            "description": "Code of conduct, remote work, performance reviews, and more"
         },
         {
-            "id": "freedom_expression",
-            "name": "Freedom of Expression",
-            "icon": "🗣️",
-            "description": "Rights to free speech and information access"
+            "id": "payroll_compliance",
+            "name": "Payroll & Compliance",
+            "icon": "📊",
+            "description": "Pay schedules, taxes, I-9 verification, and background checks"
         },
         {
-            "id": "economic_social_cultural",
-            "name": "Economic, Social & Cultural Rights",
-            "icon": "🏠",
-            "description": "Rights to education, health, work, and living standards"
+            "id": "employee_handbook",
+            "name": "Employee Handbook",
+            "icon": "📖",
+            "description": "Onboarding, workplace safety, ERGs, and company events"
         }
     ]
     

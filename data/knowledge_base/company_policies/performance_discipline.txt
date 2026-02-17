@@ -1,0 +1,131 @@
+PERFORMANCE MANAGEMENT AND PROGRESSIVE DISCIPLINE POLICY
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+SECTION 1: PERFORMANCE REVIEW PROCESS
+
+REVIEW CADENCE
+TechNova conducts performance reviews on a bi-annual basis with monthly check-ins:
+- Formal Reviews: March (mid-year) and September (annual)
+- Monthly 1-on-1s: Required between each manager and direct report (minimum 30 minutes)
+- Quarterly Goal Check-ins: January, April, July, October (lightweight alignment sessions)
+- 360-Degree Feedback: Conducted annually in August, incorporated into September review
+
+PERFORMANCE RATING SCALE
+1 - Does Not Meet Expectations: Significant gaps in performance; immediate improvement required
+2 - Partially Meets Expectations: Some areas need improvement; development plan created
+3 - Meets Expectations: Solid, consistent performance across all responsibilities
+4 - Exceeds Expectations: Frequently delivers above standard; strong contributor
+5 - Exceptional: Outstanding performance with significant business impact; top 10% of peers
+
+REVIEW COMPONENTS
+Each formal review includes:
+- Self-assessment by the employee (submitted 2 weeks before review)
+- Manager assessment with specific examples and evidence
+- Peer feedback (from 360-degree process in the annual review)
+- Goal achievement review (OKRs or SMART goals)
+- Development plan for the next review period
+- Compensation discussion (annual review only)
+
+GOAL SETTING
+- Employees set 3-5 OKRs (Objectives and Key Results) each half-year
+- Goals should be SMART: Specific, Measurable, Achievable, Relevant, Time-bound
+- At least one goal should be focused on professional development
+- Goals are entered into the HR portal and approved by the direct manager
+
+COMPENSATION ADJUSTMENTS
+Annual merit increases are determined during the September review cycle:
+- Rating 1 (Does Not Meet): 0% increase; placed on PIP
+- Rating 2 (Partially Meets): 0-2% increase
+- Rating 3 (Meets Expectations): 3-5% increase
+- Rating 4 (Exceeds): 5-7% increase
+- Rating 5 (Exceptional): 7-10% increase + potential equity refresh grant
+- Promotion increases: Typically 10-15% above current base
+
+Merit increases take effect January 1 following the review cycle.
+
+---
+
+SECTION 2: PROGRESSIVE DISCIPLINE
+
+PHILOSOPHY
+TechNova uses a progressive discipline approach designed to give employees fair warning and an opportunity to correct performance or behavioral issues before more serious action is taken. The goal is employee improvement, not punishment.
+
+STEP 1: VERBAL COUNSELING
+- Manager has a private conversation with the employee about the concern
+- Clear expectations and specific examples discussed
+- Manager documents the conversation in writing (date, topic, agreed actions)
+- Follow-up check-in scheduled within 2 weeks
+- Not placed in the official personnel file but retained by the manager
+
+STEP 2: WRITTEN WARNING
+- Issued when verbal counseling has not resolved the issue
+- Formal written notice describing the specific performance or conduct issue
+- Clear statement of expectations and timeline for improvement (typically 30 days)
+- Consequences of continued issues are stated
+- Employee acknowledges receipt (signature does not mean agreement)
+- Placed in the employee's personnel file
+- Copy to HR for tracking
+
+STEP 3: PERFORMANCE IMPROVEMENT PLAN (PIP)
+- Formal 30, 60, or 90-day plan with specific, measurable goals
+- Weekly check-in meetings between employee and manager
+- HR participates in PIP creation and monitors progress
+- Plan clearly states that failure to meet requirements may result in termination
+- Employee receives written notification and has the opportunity to provide input
+- At the end of the PIP period:
+  - Successful: PIP closed; continued monitoring for 90 days
+  - Partial improvement: PIP may be extended once (up to 30 additional days)
+  - Unsuccessful: May result in demotion, reassignment, or termination
+
+STEP 4: TERMINATION
+- Last resort after documented progressive discipline steps
+- Decision made jointly by the direct manager, HR, and senior leadership
+- Employee receives written notification including reason, effective date, and separation details
+- Exit interview conducted by HR
+- Final paycheck and accrued PTO paid per state law
+- COBRA and benefits continuation information provided
+
+EXCEPTIONS TO PROGRESSIVE DISCIPLINE
+Certain serious offenses may warrant immediate termination without prior warnings:
+- Theft, fraud, or embezzlement
+- Violence or threats of violence
+- Possession of weapons on company premises
+- Illegal drug use or distribution at work
+- Gross insubordination
+- Sexual harassment or assault
+- Intentional destruction of company property
+- Disclosure of trade secrets to competitors
+- Falsification of company records or time reporting
+
+---
+
+SECTION 3: GRIEVANCE AND COMPLAINT PROCEDURE
+
+INFORMAL RESOLUTION
+Employees are encouraged to first attempt to resolve concerns directly with the individual involved. If this is not possible or appropriate, proceed to formal reporting.
+
+FORMAL COMPLAINT PROCESS
+1. Submit a written complaint to HR (hr@technova.com) or use the online form on the HR portal
+2. Include: Date of incident, individuals involved, description of events, any witnesses
+3. HR acknowledges receipt within 2 business days
+4. HR assigns an investigator (may be external for serious matters)
+5. Investigation typically completed within 20-30 business days
+6. Both the complainant and the accused are informed of the outcome
+7. If the complaint is substantiated, appropriate remedial action is taken
+
+APPEAL PROCESS
+If an employee disagrees with the outcome:
+- Submit a written appeal to the VP of People Operations within 10 business days
+- The appeal will be reviewed by a senior leader not involved in the original investigation
+- A final decision is issued within 15 business days
+
+CONFIDENTIALITY AND NON-RETALIATION
+- Complaints are handled with strict confidentiality (need-to-know basis)
+- Retaliation against any participant in a complaint or investigation is strictly prohibited
+- Retaliation itself is a violation subject to separate disciplinary action
+
+CONTACT
+HR Department: hr@technova.com | Phone: ext. 2100
+VP People Operations: emily.rodriguez@technova.com
+Ethics Hotline: 1-800-555-0188 (24/7, anonymous)

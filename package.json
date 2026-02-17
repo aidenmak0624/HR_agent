@@ -1,0 +1,39 @@
+{
+  "name": "hr_agent",
+  "version": "1.0.0",
+  "description": "Enterprise-grade multi-agent AI system for autonomous HR operations, powered by LangGraph and OpenAI GPT-4.",
+  "main": "generate_report.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npx playwright test",
+    "test:login": "npx playwright test tests/playwright/01-login.spec.js",
+    "test:dashboard": "npx playwright test tests/playwright/02-dashboard.spec.js",
+    "test:settings": "npx playwright test tests/playwright/03-settings.spec.js",
+    "test:roles": "npx playwright test tests/playwright/04-role-switching.spec.js",
+    "test:leave": "npx playwright test tests/playwright/05-leave.spec.js",
+    "test:workflows": "npx playwright test tests/playwright/06-workflows.spec.js",
+    "test:analytics": "npx playwright test tests/playwright/07-analytics.spec.js",
+    "test:documents": "npx playwright test tests/playwright/08-documents.spec.js",
+    "test:chat": "npx playwright test tests/playwright/09-chat.spec.js",
+    "test:api": "npx playwright test tests/playwright/10-api-health.spec.js",
+    "test:playwright": "node tests/playwright/run-tests.js",
+    "test:report": "npx playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aidenmak0624/human-right-edu-agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aidenmak0624/human-right-edu-agent/issues"
+  },
+  "homepage": "https://github.com/aidenmak0624/human-right-edu-agent#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

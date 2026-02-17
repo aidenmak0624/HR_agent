@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Agent vs AI Agent Architecture — Comparison Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f172a;--card:#1e293b;--card2:#334155;--accent:#38bdf8;--accent2:#818cf8;--green:#34d399;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;--pink:#f472b6;--text:#e2e8f0;--text2:#94a3b8;--border:#475569}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,#1e293b 0%,#0f172a 50%,#1e1b4b 100%);padding:40px;text-align:center;border-bottom:2px solid var(--accent)}
+.header h1{font-size:2.2em;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.header p{color:var(--text2);font-size:1.1em}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.tab{padding:10px 18px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;border-radius:8px;font-size:0.9em;transition:all .2s}
+.tab:hover{border-color:var(--accent);color:var(--accent)}
+.tab.active{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:600}
+.content{max-width:1400px;margin:0 auto;padding:24px}
+.section{display:none}
+.section.active{display:block}
+.grid{display:grid;gap:20px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.card h3{color:var(--accent);margin-bottom:12px;font-size:1.15em}
+.card h4{color:var(--accent2);margin:12px 0 8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.78em;font-weight:600;margin:2px}
+.badge-match{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.badge-partial{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}
+.badge-gap{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.badge-info{background:rgba(56,189,248,.15);color:var(--accent);border:1px solid rgba(56,189,248,.3)}
+.compare-table{width:100%;border-collapse:collapse;margin:16px 0}
+.compare-table th{background:var(--card2);color:var(--accent);padding:12px 16px;text-align:left;border:1px solid var(--border);font-size:0.9em}
+.compare-table td{padding:12px 16px;border:1px solid var(--border);font-size:0.9em;vertical-align:top}
+.compare-table tr:nth-child(even) td{background:rgba(30,41,59,.5)}
+.compare-table .col-dim{width:18%;font-weight:600;color:var(--accent2)}
+.compare-table .col-hr{width:33%;background:rgba(56,189,248,.03)}
+.compare-table .col-dt{width:33%;background:rgba(129,140,248,.03)}
+.compare-table .col-verdict{width:16%}
+.stat-row{display:flex;gap:16px;flex-wrap:wrap;margin:20px 0}
+.stat-box{flex:1;min-width:140px;background:var(--card2);border-radius:10px;padding:16px;text-align:center}
+.stat-box .num{font-size:2em;font-weight:700;color:var(--accent)}
+.stat-box .label{font-size:0.82em;color:var(--text2);margin-top:4px}
+.flow-diagram{background:var(--card2);border-radius:10px;padding:20px;margin:16px 0;font-family:'Courier New',monospace;font-size:0.88em;line-height:1.8;overflow-x:auto;white-space:pre;color:var(--text)}
+.checklist{list-style:none;padding:0}
+.checklist li{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.checklist .icon{font-size:1.2em}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin:16px 0}
+.chart-box h4{color:var(--accent);margin-bottom:12px;text-align:center}
+canvas{max-height:350px}
+.legend-row{display:flex;gap:20px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:0.85em;color:var(--text2)}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+.section-title{font-size:1.5em;color:var(--text);margin:0 0 20px;padding-bottom:12px;border-bottom:2px solid var(--accent)}
+.ref-stack{border:1px solid var(--border);border-radius:10px;padding:16px;margin:10px 0;background:var(--card)}
+.ref-stack.highlighted{border-color:var(--green);background:rgba(52,211,153,.05)}
+.ref-stack h4{margin-bottom:8px}
+.ref-stack .match-pct{float:right;font-size:0.85em;font-weight:600}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}.tabs{overflow-x:auto;flex-wrap:nowrap}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>HR Agent Platform vs AI Agent Decision Tree</h1>
+  <p>Infrastructure Comparison Report — Architecture, Patterns, Gaps & Alignment</p>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="architecture">Architecture</button>
+  <button class="tab" data-tab="framework">Framework</button>
+  <button class="tab" data-tab="tools">MCP & Tools</button>
+  <button class="tab" data-tab="memory">Memory</button>
+  <button class="tab" data-tab="orchestration">Orchestration</button>
+  <button class="tab" data-tab="deployment">Deployment</button>
+  <button class="tab" data-tab="production">Production</button>
+  <button class="tab" data-tab="stacks">Reference Stacks</button>
+</div>
+
+<div class="content">
+
+<!-- ========== OVERVIEW ========== -->
+<div class="section active" id="overview">
+  <h2 class="section-title">Executive Overview</h2>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="num">8</div><div class="label">Decision Stages Compared</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--green)">5</div><div class="label">Strong Matches</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--yellow)">2</div><div class="label">Partial Matches</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--red)">1</div><div class="label">Gaps to Address</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--accent2)">73%</div><div class="label">Overall Alignment</div></div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="chart-box"><h4>Alignment by Decision Stage</h4><canvas id="chartOverviewBar"></canvas></div>
+    <div class="chart-box"><h4>Match Distribution</h4><canvas id="chartOverviewDoughnut"></canvas></div>
+  </div>
+
+  <table class="compare-table" style="margin-top:24px">
+    <thead><tr>
+      <th class="col-dim">Decision Stage</th>
+      <th class="col-hr">HR Agent Platform</th>
+      <th class="col-dt">Decision Tree Recommendation</th>
+      <th class="col-verdict">Verdict</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="col-dim">1. Architecture</td><td>Multi-Agent System (8 specialist agents)</td><td>Multi-Agent System — Advanced · Higher Complexity</td><td><span class="badge badge-match">✓ Match</span></td></tr>
+      <tr><td class="col-dim">2. Framework</td><td>LangGraph (graph-based state machine)</td><td>LangGraph — Complex graph workflows, branching logic</td><td><span class="badge badge-match">✓ Match</span></td></tr>
+      <tr><td class="col-dim">3. MCP & Tools</td><td>Native function calling (34 tools, no MCP)</td><td>MCP for tool portability & standardisation</td><td><span class="badge badge-gap">✗ Gap</span></td></tr>
+      <tr><td class="col-dim">4. Memory</td><td>Conversation Buffer + RAG + DB persistence</td><td>4-layer: Buffer + RAG + KG + Checkpointing</td><td><span class="badge badge-partial">~ Partial</span></td></tr>
+      <tr><td class="col-dim">5. Orchestration</td><td>Hierarchical Supervisor (RouterAgent)</td><td>Hierarchical (Supervisor) — One coordinator</td><td><span class="badge badge-match">✓ Match</span></td></tr>
+      <tr><td class="col-dim">6. Model Selection</td><td>Google Gemini (Balanced tier)</td><td>Balanced Tier — Claude 3.5 Sonnet / GPT-4o / Gemini</td><td><span class="badge badge-match">✓ Match</span></td></tr>
+      <tr><td class="col-dim">7. Deployment</td><td>Self-hosted Flask, port 5050</td><td>Self-Hosted (Docker) or Cloud-Managed</td><td><span class="badge badge-match">✓ Match</span></td></tr>
+      <tr><td class="col-dim">8. Production</td><td>Partial (testing, RBAC, audit, rate limit)</td><td>10-item readiness checklist</td><td><span class="badge badge-partial">~ Partial</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="chart-box" style="margin-top:24px"><h4>HR Agent Alignment Radar (Decision Tree Stages)</h4><canvas id="chartRadar"></canvas></div>
+</div>
+
+<!-- ========== ARCHITECTURE ========== -->
+<div class="section" id="architecture">
+  <h2 class="section-title">Stage 1 — Architecture Pattern</h2>
+  <div class="legend-row">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>HR Agent Choice</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Decision Tree Options</div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Decision Tree: 4 Architecture Patterns</h3>
+      <table class="compare-table">
+        <tr><th>Pattern</th><th>Complexity</th><th>Use Case</th></tr>
+        <tr><td>Tool-Augmented LLM</td><td>Simple</td><td>Single-purpose assistants</td></tr>
+        <tr><td>Agentic Workflow</td><td>Moderate</td><td>Multi-step pipelines</td></tr>
+        <tr style="background:rgba(52,211,153,.08)"><td><strong>Multi-Agent System ✓</strong></td><td><strong>Advanced</strong></td><td><strong>Domain-specialist teams</strong></td></tr>
+        <tr><td>Autonomous Agent</td><td>Very High</td><td>Self-directed research</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>HR Agent: Multi-Agent System</h3>
+      <h4>Why It Matches</h4>
+      <p>The HR platform uses <strong>8 specialist agents</strong>, each owning a specific HR domain (leave, benefits, onboarding, performance, etc.), coordinated by a <strong>RouterAgent supervisor</strong>. This exactly maps to the Decision Tree's "Multi-Agent System" pattern: <em>multiple specialized agents collaborate on complex tasks</em>.</p>
+      <h4>HR Agent Specifics</h4>
+      <ul style="margin-left:18px;margin-top:8px;color:var(--text2)">
+        <li>RouterAgent classifies intent → dispatches to specialist</li>
+        <li>Each specialist has its own tool set (3–6 tools each)</li>
+        <li>Agents share a common EventBus for cross-agent communication</li>
+        <li>Shared database layer with domain-specific models</li>
+      </ul>
+      <div style="margin-top:16px"><span class="badge badge-match">✓ Strong Match</span> <span class="badge badge-info">Advanced Tier</span></div>
+    </div>
+  </div>
+
+  <div class="chart-box"><h4>Architecture Complexity vs HR Agent Position</h4><canvas id="chartArchBar"></canvas></div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Key Similarities & Differences</h3>
+    <table class="compare-table">
+      <tr><th>Aspect</th><th>HR Agent</th><th>Decision Tree Ideal</th><th>Status</th></tr>
+      <tr><td>Agent count</td><td>8 specialists + 1 router</td><td>Multiple domain specialists</td><td><span class="badge badge-match">✓</span></td></tr>
+      <tr><td>Coordination</td><td>RouterAgent (supervisor)</td><td>Supervisor / orchestrator</td><td><span class="badge badge-match">✓</span></td></tr>
+      <tr><td>Inter-agent comms</td><td>EventBus (pub/sub)</td><td>Message passing / shared state</td><td><span class="badge badge-match">✓</span></td></tr>
+      <tr><td>Shared state</td><td>SQLAlchemy DB (14 models)</td><td>Shared memory / database</td><td><span class="badge badge-match">✓</span></td></tr>
+      <tr><td>Dynamic spawning</td><td>Not implemented</td><td>Optional for autonomous</td><td><span class="badge badge-info">N/A</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ========== FRAMEWORK ========== -->
+<div class="section" id="framework">
+  <h2 class="section-title">Stage 2 — Framework Selection</h2>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Decision Tree: Framework Landscape</h3>
+      <table class="compare-table">
+        <tr><th>Framework</th><th>Stars</th><th>Best For</th></tr>
+        <tr><td>LangChain</td><td>113K ⭐</td><td>Broad ecosystem, chains</td></tr>
+        <tr style="background:rgba(52,211,153,.08)"><td><strong>LangGraph ✓</strong></td><td><strong>—</strong></td><td><strong>Complex graph workflows</strong></td></tr>
+        <tr><td>CrewAI</td><td>44K ⭐</td><td>Role-based multi-agent</td></tr>
+        <tr><td>AutoGen</td><td>48K ⭐</td><td>Conversational agents</td></tr>
+        <tr><td>LlamaIndex</td><td>40K ⭐</td><td>Data-heavy RAG</td></tr>
+        <tr><td>Google ADK</td><td>20K ⭐</td><td>Google ecosystem</td></tr>
+        <tr><td>OpenAI Agents SDK</td><td>22K ⭐</td><td>Simple OpenAI integration</td></tr>
+        <tr><td>Mastra</td><td>15K ⭐</td><td>TypeScript agents</td></tr>
+        <tr><td>Agno</td><td>24K ⭐</td><td>Model-agnostic speed</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>HR Agent: LangGraph</h3>
+      <h4>Implementation Details</h4>
+      <p>The HR platform uses <strong>LangGraph StateGraph</strong> as its core workflow engine, implementing a 5-node graph for every specialist agent:</p>
+      <div class="flow-diagram">StateGraph(AgentState)
+  ├── planner        → Analyzes query, picks tools
+  ├── decide_tool    → Routes to execute or finish
+  ├── execute_tool   → Runs selected tool function
+  ├── reflect        → Validates output quality
+  └── finish         → Formats final response
+
+Conditional Edges:
+  planner    → decide_tool
+  decide_tool → execute_tool | finish
+  execute_tool → reflect
+  reflect    → decide_tool (loop) | finish</div>
+      <h4>Why LangGraph Was Right</h4>
+      <ul style="margin-left:18px;color:var(--text2)">
+        <li>Supports cyclic graphs (reflect → decide loop)</li>
+        <li>Typed state management (AgentState TypedDict)</li>
+        <li>Conditional branching (tool or finish)</li>
+        <li>Native checkpointing support</li>
+      </ul>
+      <div style="margin-top:12px"><span class="badge badge-match">✓ Strong Match</span></div>
+    </div>
+  </div>
+
+  <div class="chart-box"><h4>Framework Suitability for HR Agent Requirements</h4><canvas id="chartFrameworkRadar"></canvas></div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Decision Tree Fork: Why Not Other Frameworks?</h3>
+    <table class="compare-table">
+      <tr><th>Alternative</th><th>Why Not Chosen</th><th>What It Would Change</th></tr>
+      <tr><td>CrewAI</td><td>Role-based, less graph control</td><td>Would lose cyclic reflection loops</td></tr>
+      <tr><td>AutoGen</td><td>Conversation-centric, less structured</td><td>Better for chat, worse for tool orchestration</td></tr>
+      <tr><td>LlamaIndex</td><td>Data/RAG-focused</td><td>Great for policy RAG but overkill for leave/perf</td></tr>
+      <tr><td>Bare Python</td><td>No graph primitives</td><td>Would need custom state machine implementation</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ========== MCP & TOOLS ========== -->
+<div class="section" id="tools">
+  <h2 class="section-title">Stage 3 — MCP & Tools Integration</h2>
+
+  <div class="grid grid-2">
+    <div class="card" style="border-color:var(--red)">
+      <h3>⚠ Gap Identified: No MCP</h3>
+      <h4>Decision Tree Recommends</h4>
+      <p>The AI Agent Decision Tree recommends <strong>Model Context Protocol (MCP)</strong> for tool integration, citing benefits like:</p>
+      <ul style="margin-left:18px;color:var(--text2);margin-top:8px">
+        <li>Standardized tool interface across models</li>
+        <li>Tool portability between frameworks</li>
+        <li>Server-side tool hosting</li>
+        <li>Dynamic tool discovery</li>
+        <li>Community tool ecosystem</li>
+      </ul>
+      <h4 style="margin-top:16px">HR Agent Current Approach</h4>
+      <p>Uses <strong>native function calling</strong> with 34 Python functions directly bound to agents. Tools are tightly coupled to their owning agent.</p>
+      <div style="margin-top:12px"><span class="badge badge-gap">✗ Gap — No MCP</span></div>
+    </div>
+    <div class="card">
+      <h3>Tool Comparison</h3>
+      <table class="compare-table">
+        <tr><th>Aspect</th><th>HR Agent (Native)</th><th>MCP Standard</th></tr>
+        <tr><td>Protocol</td><td>Python functions</td><td>JSON-RPC 2.0</td></tr>
+        <tr><td>Discovery</td><td>Hardcoded registry</td><td>Dynamic via MCP server</td></tr>
+        <tr><td>Portability</td><td>Tied to LangGraph</td><td>Framework-agnostic</td></tr>
+        <tr><td>Tool count</td><td>34 tools</td><td>Unlimited via servers</td></tr>
+        <tr><td>Auth</td><td>RBAC in RouterAgent</td><td>OAuth 2.0 / API keys</td></tr>
+        <tr><td>External tools</td><td>None</td><td>DB, API, file, browser</td></tr>
+        <tr><td>Complexity</td><td>Low (direct calls)</td><td>Medium (server setup)</td></tr>
+      </table>
+      <h4 style="margin-top:16px">Upgrade Path</h4>
+      <p>Wrap each agent's tools as an MCP server. The 34 tools map to 8 MCP servers (one per agent domain). This would enable external clients and tool reuse.</p>
+    </div>
+  </div>
+
+  <div class="chart-box"><h4>Tools Per Agent — Current Native Implementation</h4><canvas id="chartToolsBar"></canvas></div>
+</div>
+
+<!-- ========== MEMORY ========== -->
+<div class="section" id="memory">
+  <h2 class="section-title">Stage 4 — Memory Strategy</h2>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Decision Tree: 4-Layer Memory</h3>
+      <table class="compare-table">
+        <tr><th>Layer</th><th>Purpose</th><th>HR Agent?</th></tr>
+        <tr><td>Conversation Buffer</td><td>Short-term chat context</td><td><span class="badge badge-match">✓ Yes</span></td></tr>
+        <tr><td>RAG (Retrieval)</td><td>Semantic search over docs</td><td><span class="badge badge-match">✓ Yes</span></td></tr>
+        <tr><td>Knowledge Graph</td><td>Entity relationships</td><td><span class="badge badge-gap">✗ No</span></td></tr>
+        <tr><td>Stateful Checkpointing</td><td>Resume interrupted flows</td><td><span class="badge badge-partial">~ Partial</span></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>HR Agent Memory Implementation</h3>
+      <h4>What's Implemented</h4>
+      <ul style="margin-left:18px;color:var(--text2)">
+        <li><strong>Conversation Buffer</strong> — AgentState carries messages[] through LangGraph</li>
+        <li><strong>RAG</strong> — PolicyAgent uses rag_policy_search for document retrieval</li>
+        <li><strong>DB Persistence</strong> — 14 SQLAlchemy models store all HR data permanently</li>
+        <li><strong>Event Log</strong> — EventBus persists all events to EventLog table</li>
+      </ul>
+      <h4>What's Missing</h4>
+      <ul style="margin-left:18px;color:var(--text2)">
+        <li><strong>Knowledge Graph</strong> — No entity-relationship graph (employee → department → manager)</li>
+        <li><strong>Checkpointing</strong> — LangGraph supports it but not explicitly configured</li>
+      </ul>
+      <div style="margin-top:12px"><span class="badge badge-partial">~ Partial Match (2.5 / 4 layers)</span></div>
+    </div>
+  </div>
+
+  <div class="chart-box"><h4>Memory Layer Coverage</h4><canvas id="chartMemoryBar"></canvas></div>
+</div>
+
+<!-- ========== ORCHESTRATION ========== -->
+<div class="section" id="orchestration">
+  <h2 class="section-title">Stage 5 — Orchestration Pattern</h2>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Decision Tree: 4 Patterns</h3>
+      <table class="compare-table">
+        <tr><th>Pattern</th><th>Description</th><th>HR Agent?</th></tr>
+        <tr><td>Sequential Pipeline</td><td>A → B → C linear flow</td><td><span class="badge badge-info">Within agents</span></td></tr>
+        <tr style="background:rgba(52,211,153,.08)"><td><strong>Hierarchical (Supervisor) ✓</strong></td><td><strong>One coordinator dispatches</strong></td><td><span class="badge badge-match">✓ Primary</span></td></tr>
+        <tr><td>Conversational</td><td>Agents debate/discuss</td><td><span class="badge badge-gap">✗ No</span></td></tr>
+        <tr><td>Graph / DAG</td><td>Conditional branching</td><td><span class="badge badge-match">✓ LangGraph</span></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>HR Agent: Hybrid Orchestration</h3>
+      <p>The HR platform uses a <strong>two-level orchestration</strong> pattern:</p>
+      <div class="flow-diagram">Level 1 — Hierarchical Supervisor:
+┌─────────────────────────────────┐
+│         RouterAgent             │
+│  classify_intent → dispatch     │
+└──┬──┬──┬──┬──┬──┬──┬──┬────────┘
+   │  │  │  │  │  │  │  │
+   ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼
+  EI PO LE LR BE ON PE  (agents)
+
+Level 2 — Graph/DAG (within each agent):
+  planner → decide → execute → reflect
+              ▲                    │
+              └────────────────────┘</div>
+      <div style="margin-top:12px"><span class="badge badge-match">✓ Strong Match</span> <span class="badge badge-info">Hierarchical + Graph hybrid</span></div>
+    </div>
+  </div>
+
+  <div class="chart-box"><h4>Orchestration Pattern Comparison</h4><canvas id="chartOrchRadar"></canvas></div>
+</div>
+
+<!-- ========== DEPLOYMENT ========== -->
+<div class="section" id="deployment">
+  <h2 class="section-title">Stage 6–7 — Model Selection & Deployment</h2>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Model Selection</h3>
+      <table class="compare-table">
+        <tr><th>Tier</th><th>Decision Tree</th><th>HR Agent</th></tr>
+        <tr><td>Frontier</td><td>Claude 3.5 Opus / GPT-4o</td><td>—</td></tr>
+        <tr style="background:rgba(52,211,153,.08)"><td><strong>Balanced ✓</strong></td><td><strong>Claude Sonnet / GPT-4o-mini / Gemini</strong></td><td><strong>Google Gemini</strong></td></tr>
+        <tr><td>Speed/Cost</td><td>Claude Haiku / GPT-4o-mini</td><td>—</td></tr>
+        <tr><td>Local/Open</td><td>Llama 3.1 / Mistral / Qwen</td><td>—</td></tr>
+      </table>
+      <div style="margin-top:12px"><span class="badge badge-match">✓ Balanced Tier</span></div>
+    </div>
+    <div class="card">
+      <h3>Deployment Strategy</h3>
+      <table class="compare-table">
+        <tr><th>Option</th><th>Decision Tree</th><th>HR Agent</th></tr>
+        <tr><td>Cloud-Managed</td><td>Vercel AI, AWS Bedrock</td><td>—</td></tr>
+        <tr style="background:rgba(52,211,153,.08)"><td><strong>Self-Hosted ✓</strong></td><td><strong>Docker, K8s</strong></td><td><strong>Flask :5050</strong></td></tr>
+        <tr><td>Enterprise</td><td>Azure OpenAI, GCP Vertex</td><td>—</td></tr>
+      </table>
+      <h4 style="margin-top:12px">HR Agent Stack</h4>
+      <ul style="margin-left:18px;color:var(--text2)">
+        <li>Flask web framework (25 API routes)</li>
+        <li>SQLite database (14 models)</li>
+        <li>Port 5050 local hosting</li>
+        <li>No Docker containerization yet</li>
+      </ul>
+      <div style="margin-top:12px"><span class="badge badge-match">✓ Match</span> <span class="badge badge-partial">~ Docker recommended</span></div>
+    </div>
+  </div>
+
+  <div class="chart-box"><h4>Deployment Maturity</h4><canvas id="chartDeployBar"></canvas></div>
+</div>
+
+<!-- ========== PRODUCTION ========== -->
+<div class="section" id="production">
+  <h2 class="section-title">Stage 8 — Production Readiness</h2>
+
+  <div class="card">
+    <h3>Decision Tree: 10-Item Production Checklist</h3>
+    <ul class="checklist">
+      <li><span class="icon">⚠️</span><strong>Observability</strong> — Tracing, logging, metrics dashboards <span class="badge badge-gap" style="margin-left:auto">Gap</span></li>
+      <li><span class="icon">⚠️</span><strong>Guardrails</strong> — Input/output validation, content filtering <span class="badge badge-gap" style="margin-left:auto">Gap</span></li>
+      <li><span class="icon">⚠️</span><strong>Human-in-the-Loop</strong> — Approval workflows for sensitive actions <span class="badge badge-gap" style="margin-left:auto">Gap</span></li>
+      <li><span class="icon">⚠️</span><strong>Error Handling</strong> — Graceful degradation, retries, fallbacks <span class="badge badge-partial" style="margin-left:auto">Partial</span></li>
+      <li><span class="icon">⚠️</span><strong>Cost Control</strong> — Token budgets, usage tracking <span class="badge badge-gap" style="margin-left:auto">Gap</span></li>
+      <li><span class="icon">✅</span><strong>Testing</strong> — Unit, integration, end-to-end tests <span class="badge badge-match" style="margin-left:auto">Done</span></li>
+      <li><span class="icon">✅</span><strong>Security</strong> — RBAC, auth, input sanitization <span class="badge badge-match" style="margin-left:auto">Done</span></li>
+      <li><span class="icon">⚠️</span><strong>Governance</strong> — Audit trails, compliance <span class="badge badge-partial" style="margin-left:auto">Partial</span></li>
+      <li><span class="icon">⚠️</span><strong>Scaling</strong> — Horizontal scaling, load balancing <span class="badge badge-gap" style="margin-left:auto">Gap</span></li>
+      <li><span class="icon">⚠️</span><strong>Monitoring</strong> — Alerting, health checks, SLOs <span class="badge badge-gap" style="margin-left:auto">Gap</span></li>
+    </ul>
+  </div>
+
+  <div class="grid grid-2" style="margin-top:20px">
+    <div class="chart-box"><h4>Production Readiness Score</h4><canvas id="chartProdBar"></canvas></div>
+    <div class="chart-box"><h4>Readiness by Category</h4><canvas id="chartProdDoughnut"></canvas></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>What HR Agent Has vs What's Missing</h3>
+    <table class="compare-table">
+      <tr><th>Category</th><th>What's Implemented</th><th>What's Needed</th></tr>
+      <tr><td>Testing</td><td>51 tests, 4-tier pyramid, 100% pass</td><td>Load testing, chaos engineering</td></tr>
+      <tr><td>Security</td><td>RBAC matrix (employee/manager/hr/admin), permission checks</td><td>JWT auth, rate limiting per user</td></tr>
+      <tr><td>Governance</td><td>EventBus audit log, EventLog table</td><td>Structured compliance reports, data retention</td></tr>
+      <tr><td>Error Handling</td><td>Try/catch in tools, error states in AgentState</td><td>Retry logic, circuit breakers, fallback agents</td></tr>
+      <tr><td>Observability</td><td>—</td><td>LangSmith/LangFuse tracing, Prometheus metrics</td></tr>
+      <tr><td>Guardrails</td><td>—</td><td>Input validation schemas, output content filtering</td></tr>
+      <tr><td>Cost Control</td><td>—</td><td>Token budgets per query, usage dashboards</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ========== REFERENCE STACKS ========== -->
+<div class="section" id="stacks">
+  <h2 class="section-title">Reference Stack Alignment</h2>
+  <p style="color:var(--text2);margin-bottom:20px">The Decision Tree defines 6 reference stacks. Here's how the HR Agent aligns with each:</p>
+
+  <div class="ref-stack">
+    <h4>Stack A — Quick Start <span class="match-pct" style="color:var(--red)">20% Match</span></h4>
+    <p style="color:var(--text2)">OpenAI Agents SDK + single model + simple tools. Too simple for multi-agent HR platform.</p>
+  </div>
+  <div class="ref-stack">
+    <h4>Stack B — Agentic Workflow <span class="match-pct" style="color:var(--yellow)">45% Match</span></h4>
+    <p style="color:var(--text2)">LangGraph + tool augmentation + basic memory. Matches framework but lacks multi-agent scope.</p>
+  </div>
+  <div class="ref-stack highlighted">
+    <h4>Stack C — Multi-Agent Team <span class="match-pct" style="color:var(--green)">82% Match ★ Best Fit</span></h4>
+    <p style="color:var(--text2)">CrewAI/LangGraph + supervisor + multiple specialists + shared state. Almost exactly matches HR platform architecture. Difference: HR uses LangGraph (not CrewAI) and lacks MCP.</p>
+  </div>
+  <div class="ref-stack">
+    <h4>Stack D — Self-Hosted <span class="match-pct" style="color:var(--yellow)">55% Match</span></h4>
+    <p style="color:var(--text2)">Ollama + local models + Docker. HR agent is self-hosted but uses cloud LLM (Gemini), not local models.</p>
+  </div>
+  <div class="ref-stack">
+    <h4>Stack E — Google Cloud <span class="match-pct" style="color:var(--yellow)">40% Match</span></h4>
+    <p style="color:var(--text2)">Google ADK + Vertex AI + Cloud Run. HR uses Gemini but not the Google cloud stack.</p>
+  </div>
+  <div class="ref-stack">
+    <h4>Stack F — Azure Enterprise <span class="match-pct" style="color:var(--red)">15% Match</span></h4>
+    <p style="color:var(--text2)">Azure OpenAI + Semantic Kernel + Azure AI Foundry. Enterprise-grade, very different from HR platform.</p>
+  </div>
+
+  <div class="chart-box" style="margin-top:24px"><h4>HR Agent Match % Against Reference Stacks</h4><canvas id="chartStacksBar"></canvas></div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+const accent='#38bdf8',accent2='#818cf8',green='#34d399',red='#f87171',yellow='#fbbf24',orange='#fb923c',pink='#f472b6';
+Chart.defaults.color='#94a3b8';
+Chart.defaults.borderColor='rgba(71,85,105,.3)';
+
+// Overview Bar
+new Chart(document.getElementById('chartOverviewBar'),{type:'bar',data:{
+  labels:['Architecture','Framework','MCP & Tools','Memory','Orchestration','Model','Deployment','Production'],
+  datasets:[{label:'Alignment %',data:[95,90,20,60,92,85,80,35],
+    backgroundColor:[green,green,red,yellow,green,green,green,yellow],borderRadius:6}]
+},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{max:100,ticks:{callback:v=>v+'%'}}}}});
+
+// Overview Doughnut
+new Chart(document.getElementById('chartOverviewDoughnut'),{type:'doughnut',data:{
+  labels:['Strong Match','Partial Match','Gap'],datasets:[{data:[5,2,1],
+    backgroundColor:[green,yellow,red],borderWidth:0}]
+},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+
+// Radar
+new Chart(document.getElementById('chartRadar'),{type:'radar',data:{
+  labels:['Architecture','Framework','Tools/MCP','Memory','Orchestration','Model','Deployment','Production'],
+  datasets:[{label:'HR Agent',data:[95,90,20,60,92,85,80,35],
+    borderColor:accent,backgroundColor:'rgba(56,189,248,.15)',pointBackgroundColor:accent},
+    {label:'Decision Tree Ideal',data:[100,100,100,100,100,100,100,100],
+    borderColor:accent2,backgroundColor:'rgba(129,140,248,.08)',pointBackgroundColor:accent2,borderDash:[5,5]}]
+},options:{responsive:true,scales:{r:{min:0,max:100,ticks:{stepSize:20,color:'#64748b'},grid:{color:'rgba(71,85,105,.3)'}}},plugins:{legend:{position:'bottom'}}}});
+
+// Architecture Bar
+new Chart(document.getElementById('chartArchBar'),{type:'bar',data:{
+  labels:['Tool-Augmented\nLLM','Agentic\nWorkflow','Multi-Agent\nSystem','Autonomous\nAgent'],
+  datasets:[{label:'Complexity Level',data:[25,50,75,95],backgroundColor:['#475569','#475569',green,'#475569'],borderRadius:6},
+    {label:'HR Agent Match',data:[10,30,95,15],backgroundColor:['rgba(56,189,248,.2)','rgba(56,189,248,.2)',accent,'rgba(56,189,248,.2)'],borderRadius:6}]
+},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{max:100}}}});
+
+// Framework Radar
+new Chart(document.getElementById('chartFrameworkRadar'),{type:'radar',data:{
+  labels:['Graph Workflows','Multi-Agent','State Mgmt','Tool Integration','Community','Python Native'],
+  datasets:[{label:'LangGraph',data:[95,85,90,80,75,95],borderColor:green,backgroundColor:'rgba(52,211,153,.1)',pointBackgroundColor:green},
+    {label:'CrewAI',data:[50,95,60,70,80,90],borderColor:accent2,backgroundColor:'rgba(129,140,248,.1)',pointBackgroundColor:accent2},
+    {label:'AutoGen',data:[40,80,50,65,75,85],borderColor:yellow,backgroundColor:'rgba(251,191,36,.1)',pointBackgroundColor:yellow}]
+},options:{responsive:true,scales:{r:{min:0,max:100}},plugins:{legend:{position:'bottom'}}}});
+
+// Tools Bar
+new Chart(document.getElementById('chartToolsBar'),{type:'bar',data:{
+  labels:['EmployeeInfo','Policy','Leave','LeaveRequest','Benefits','Onboarding','Performance','Router'],
+  datasets:[{label:'Tools (Native)',data:[3,3,3,6,6,6,6,1],backgroundColor:accent,borderRadius:6},
+    {label:'Would-be MCP Endpoints',data:[3,3,3,6,6,6,6,1],backgroundColor:'rgba(129,140,248,.4)',borderRadius:6}]
+},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'Count'}}}}});
+
+// Memory Bar
+new Chart(document.getElementById('chartMemoryBar'),{type:'bar',data:{
+  labels:['Conversation\nBuffer','RAG\nRetrieval','Knowledge\nGraph','Stateful\nCheckpointing'],
+  datasets:[{label:'Decision Tree (Required)',data:[100,100,100,100],backgroundColor:'rgba(129,140,248,.3)',borderRadius:6},
+    {label:'HR Agent (Implemented)',data:[100,100,0,40],backgroundColor:[green,green,red,yellow],borderRadius:6}]
+},options:{responsive:true,indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{max:100,ticks:{callback:v=>v+'%'}}}}});
+
+// Orchestration Radar
+new Chart(document.getElementById('chartOrchRadar'),{type:'radar',data:{
+  labels:['Sequential','Hierarchical\n(Supervisor)','Conversational','Graph/DAG'],
+  datasets:[{label:'HR Agent Usage',data:[40,95,5,90],borderColor:accent,backgroundColor:'rgba(56,189,248,.15)',pointBackgroundColor:accent},
+    {label:'Decision Tree Fit Score',data:[30,90,60,85],borderColor:accent2,backgroundColor:'rgba(129,140,248,.1)',pointBackgroundColor:accent2}]
+},options:{responsive:true,scales:{r:{min:0,max:100}},plugins:{legend:{position:'bottom'}}}});
+
+// Deployment Bar
+new Chart(document.getElementById('chartDeployBar'),{type:'bar',data:{
+  labels:['Web Framework','Database','API Routes','Containerization','CI/CD','Load Balancer'],
+  datasets:[{label:'HR Agent',data:[90,80,95,10,10,5],backgroundColor:accent,borderRadius:6},
+    {label:'Production Standard',data:[90,90,90,95,95,90],backgroundColor:'rgba(129,140,248,.3)',borderRadius:6}]
+},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{max:100,ticks:{callback:v=>v+'%'}}}}});
+
+// Production Bar
+new Chart(document.getElementById('chartProdBar'),{type:'bar',data:{
+  labels:['Observability','Guardrails','Human-Loop','Error Handle','Cost Control','Testing','Security','Governance','Scaling','Monitoring'],
+  datasets:[{label:'Readiness %',data:[5,5,5,40,5,95,85,45,10,5],
+    backgroundColor:function(){return [red,red,red,yellow,red,green,green,yellow,red,red]}(),borderRadius:6}]
+},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{max:100,ticks:{callback:v=>v+'%'}}}}});
+
+// Production Doughnut
+new Chart(document.getElementById('chartProdDoughnut'),{type:'doughnut',data:{
+  labels:['Done (2)','Partial (2)','Gap (6)'],datasets:[{data:[2,2,6],
+    backgroundColor:[green,yellow,red],borderWidth:0}]
+},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});
+
+// Stacks Bar
+new Chart(document.getElementById('chartStacksBar'),{type:'bar',data:{
+  labels:['A: Quick Start','B: Agentic Workflow','C: Multi-Agent Team','D: Self-Hosted','E: Google Cloud','F: Azure Enterprise'],
+  datasets:[{label:'Match %',data:[20,45,82,55,40,15],
+    backgroundColor:[red,yellow,green,yellow,yellow,red],borderRadius:6}]
+},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100,ticks:{callback:v=>v+'%'}}}}});
+</script>
+
+</body>
+</html>

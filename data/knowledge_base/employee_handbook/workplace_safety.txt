@@ -1,0 +1,127 @@
+WORKPLACE SAFETY AND DATA PRIVACY POLICY
+TechNova Inc. | Effective January 1, 2026
+===========================================================
+
+SECTION 1: WORKPLACE SAFETY
+
+COMMITMENT TO SAFETY
+TechNova is committed to providing a safe and healthy work environment for all employees, contractors, and visitors. We comply with all OSHA (Occupational Safety and Health Administration) requirements and applicable state safety regulations.
+
+OFFICE SAFETY
+- Ergonomic workstations: Standing desks, adjustable monitors, ergonomic keyboards and mice available upon request
+- Report any unsafe conditions (wet floors, damaged furniture, exposed wiring) to Facilities immediately
+- Keep aisles, exits, and emergency equipment access clear at all times
+- No blocking of fire exits, sprinkler heads, or fire extinguishers
+- Report any equipment malfunctions to IT or Facilities
+
+ERGONOMIC ASSESSMENT
+- All employees may request a free ergonomic workstation assessment
+- Remote employees: Receive a virtual ergonomic consultation
+- Common adjustments: Monitor height, chair positioning, keyboard/mouse placement, lighting
+- Request through: facilities@technova.com or the HR portal
+
+EMERGENCY PROCEDURES
+Fire:
+1. If you discover a fire, activate the nearest fire alarm pull station
+2. Call 911
+3. Evacuate using the nearest exit (do not use elevators)
+4. Proceed to the designated assembly area (front parking lot, Section A)
+5. Report to your floor warden for headcount
+
+Medical Emergency:
+1. Call 911 immediately
+2. Notify the front desk (ext. 0) or nearest colleague
+3. If trained in first aid/CPR, assist the person until EMS arrives
+4. AED devices located: Main lobby, 2nd floor break room, gym
+
+Severe Weather:
+1. Move to interior rooms away from windows
+2. Follow instructions from floor wardens
+3. Do not leave the building until the all-clear is given
+
+Active Threat:
+1. Run: Evacuate if a safe path exists
+2. Hide: If you cannot evacuate, hide in a secure location, lock/barricade the door
+3. Fight: As a last resort only
+
+INCIDENT REPORTING
+- All workplace injuries, near-misses, and safety concerns must be reported within 24 hours
+- Report to: Your manager AND hr@technova.com
+- Complete an Incident Report Form on the HR portal
+- TechNova will investigate and take corrective action
+- No retaliation for reporting safety concerns
+
+REMOTE WORKER SAFETY
+- Maintain a dedicated workspace free from hazards
+- Ensure proper electrical safety (no overloaded outlets, damaged cords)
+- Report any work-related injury occurring during work hours
+- TechNova provides a $1,000 home office setup stipend for ergonomic equipment
+
+---
+
+SECTION 2: DATA PRIVACY AND INFORMATION SECURITY
+
+DATA CLASSIFICATION
+TechNova classifies all data into four categories:
+1. Public: Information intended for public release (marketing materials, press releases)
+2. Internal: General company information (org charts, internal memos, meeting notes)
+3. Confidential: Sensitive business information (financial data, client contracts, product roadmaps)
+4. Restricted: Highly sensitive data (PII, health records, trade secrets, credentials)
+
+EMPLOYEE DATA PRIVACY
+TechNova collects and maintains employee personal information necessary for employment:
+- Personal details: Name, address, SSN, date of birth, emergency contacts
+- Employment data: Job title, salary, performance reviews, disciplinary records
+- Benefits data: Health plan enrollment, beneficiary designations, 401k contributions
+- Medical records: Maintained in separate confidential files, accessible only by HR
+
+Your Rights:
+- Access: You may review your personnel file with 24 hours notice to HR
+- Correction: Request correction of inaccurate information
+- Confidentiality: Your personal data is shared only on a need-to-know basis
+- California residents (CCPA): Additional rights to know, delete, and opt-out; contact privacy@technova.com
+
+INFORMATION SECURITY REQUIREMENTS
+All Employees Must:
+- Use strong, unique passwords (minimum 12 characters with complexity) via 1Password
+- Enable multi-factor authentication (MFA) on all company accounts
+- Lock your computer when leaving your desk (Ctrl+L or Cmd+L)
+- Connect via VPN when accessing company resources remotely
+- Not share credentials with anyone, including IT staff
+- Not use personal devices for company work without MDM enrollment
+- Not store company data on personal cloud storage (Google Drive personal, Dropbox, etc.)
+- Report any suspected security incident immediately to security@technova.com
+
+ACCEPTABLE USE OF TECHNOLOGY
+- Company devices and networks are for business use; limited personal use is permitted
+- TechNova reserves the right to monitor company devices, networks, and email
+- Prohibited activities: Accessing illegal content, installing unauthorized software, crypto mining, circumventing security controls
+- Personal devices on company WiFi: Must use the guest network
+
+DATA BREACH RESPONSE
+If you suspect a data breach:
+1. Do not attempt to investigate or contain the breach yourself
+2. Report immediately to security@technova.com or call ext. 3100
+3. Preserve any evidence (do not delete emails, logs, or files)
+4. TechNova's Incident Response Team will investigate and take appropriate action
+5. Affected individuals will be notified per legal requirements (typically within 72 hours)
+
+RECORD RETENTION
+- Active employee records: Maintained throughout employment
+- Post-separation retention: Minimum 3 years (7 years for payroll/tax records)
+- Medical records: Minimum 6 years post-separation
+- I-9 records: 3 years from hire date or 1 year from termination (whichever is later)
+- Destruction: Secure shredding for paper; secure deletion for electronic records
+
+OSHA PENALTY INFORMATION
+For reference, current OSHA penalty amounts (as of January 2025):
+- Serious/Other-Than-Serious Violations: Up to $16,550 per violation
+- Willful or Repeated Violations: Up to $165,514 per violation
+- Failure to Abate: Up to $16,550 per day beyond the abatement date
+
+CONTACT
+Safety Officer: safety@technova.com
+Facilities: facilities@technova.com | Phone: ext. 4000
+IT Security: security@technova.com | Phone: ext. 3100
+Privacy Officer: privacy@technova.com
+HR Department: hr@technova.com | Phone: ext. 2100

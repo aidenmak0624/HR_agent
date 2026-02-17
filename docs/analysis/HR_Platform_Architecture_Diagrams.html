@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Agent HR Platform — Architecture &amp; Roadmap Diagrams</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232733;
+    --border: #2e3345;
+    --text: #e2e4eb;
+    --text-muted: #8b8fa3;
+    --accent: #6c8aff;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --orange: #fb923c;
+    --red: #f87171;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --yellow: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .header {
+    padding: 32px 48px 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #1a1d2740, #232733);
+  }
+  .header h1 {
+    font-size: 28px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .header p { color: var(--text-muted); font-size: 14px; }
+  .tab-nav {
+    display: flex; gap: 2px; padding: 0 48px;
+    background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 14px 24px; border: none; background: transparent;
+    color: var(--text-muted); font-size: 13px; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--surface2); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface2); }
+  .tab-content { display: none; padding: 32px 48px 64px; }
+  .tab-content.active { display: block; }
+  .section-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .section-desc { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; max-width: 760px; }
+  .diagram-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 32px; margin-bottom: 32px; overflow-x: auto;
+  }
+  .diagram-wrap h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--accent); }
+  .mermaid { display: flex; justify-content: center; }
+  .mermaid svg { max-width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .comp-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  .comp-table th {
+    text-align: left; padding: 10px 14px; background: var(--surface2);
+    border-bottom: 1px solid var(--border); color: var(--text-muted);
+    font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .comp-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+  .comp-table tr:hover td { background: var(--surface2); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-green { background: #34d39920; color: var(--green); }
+  .badge-blue { background: #6c8aff20; color: var(--accent); }
+  .badge-purple { background: #a78bfa20; color: var(--accent2); }
+  .badge-orange { background: #fb923c20; color: var(--orange); }
+  .badge-red { background: #f8717120; color: var(--red); }
+  .badge-cyan { background: #22d3ee20; color: var(--cyan); }
+  .zoom-controls { display: flex; gap: 8px; margin-bottom: 16px; }
+  .zoom-btn {
+    padding: 6px 14px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.15s;
+  }
+  .zoom-btn:hover { background: var(--border); }
+  .scalable { transform-origin: top left; transition: transform 0.2s; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Multi-Agent HR Intelligence Platform</h1>
+  <p>Architecture diagrams, API communication flows, agentic workflow, and issue-based roadmap</p>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('arch', this)">High-Level Architecture</button>
+  <button class="tab-btn" onclick="showTab('api', this)">API Communication</button>
+  <button class="tab-btn" onclick="showTab('agentic', this)">Agentic Workflow</button>
+  <button class="tab-btn" onclick="showTab('state', this)">State Machine Detail</button>
+  <button class="tab-btn" onclick="showTab('data', this)">Data Architecture</button>
+  <button class="tab-btn" onclick="showTab('roadmap', this)">Roadmap (Issue-Based)</button>
+</div>
+
+<!-- ====================== TAB 1: HIGH-LEVEL ARCHITECTURE ====================== -->
+<div id="arch" class="tab-content active">
+  <h2 class="section-title">High-Level System Architecture</h2>
+  <p class="section-desc">Seven-layer architecture showing how client requests flow through the API gateway, get classified by the Router Agent, and dispatched to specialist sub-agents.</p>
+
+  <div class="diagram-wrap">
+    <h3>System Layers</h3>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom('arch-dia', 1)">100%</button>
+      <button class="zoom-btn" onclick="zoom('arch-dia', 1.3)">130%</button>
+      <button class="zoom-btn" onclick="zoom('arch-dia', 0.7)">70%</button>
+    </div>
+    <div id="arch-dia" class="scalable">
+      <pre class="mermaid">
+graph TB
+  subgraph CLIENT["Client Layer"]
+    direction LR
+    WEB["Web Dashboard\nReact SPA"]
+    SLACK["Slack Bot\nBolt SDK"]
+    TEAMS["MS Teams Bot\nBot Framework"]
+    MOBILE["Mobile PWA"]
+  end
+
+  subgraph GATEWAY["API Gateway Layer"]
+    direction LR
+    FLASK["Flask REST API\nPort 5050"]
+    JWT["JWT + SSO Auth\nSAML / OIDC"]
+    RATE["Rate Limiter\nRedis-backed"]
+    PIIMW["PII Stripping\nMiddleware"]
+  end
+
+  subgraph ROUTER["Router Agent Layer"]
+    direction LR
+    INTENT["Intent Classifier\nSmall Fast LLM"]
+    RBAC["RBAC Enforcer\n4-tier roles"]
+    CONV["Conversation\nManager"]
+  end
+
+  subgraph AGENTS["Specialist Agent Layer"]
+    direction LR
+    A1["Employee Info\nAgent"]
+    A2["Policy and\nCompliance Agent"]
+    A3["Leave and\nAttendance Agent"]
+    A4["Onboarding\nAgent"]
+    A5["Benefits and\nComp Agent"]
+    A6["Performance\nAgent"]
+    A7["Analytics and\nReporting Agent"]
+  end
+
+  subgraph CORE["Core Services Layer"]
+    direction LR
+    RAG["RAG Pipeline\nChromaDB + Embeddings"]
+    LLM_GW["LLM Gateway\nModel Router"]
+    QUALITY["Quality Assessor\nConfidence Scoring"]
+    AUDIT["Audit Logger"]
+  end
+
+  subgraph DATAL["Data Layer"]
+    direction LR
+    PG["PostgreSQL\nEmployee Data, Auth"]
+    CHROMA["ChromaDB\nPolicy Vectors"]
+    REDIS["Redis\nCache, Sessions"]
+    HRIS["HRIS Connectors"]
+  end
+
+  subgraph HRIS_INT["HRIS Integrations"]
+    direction LR
+    BAMBOO["BambooHR\nREST API"]
+    WORKDAY["Workday\nSOAP/REST"]
+    CUSTOM["Custom DB\nDirect SQL"]
+  end
+
+  CLIENT --> GATEWAY
+  GATEWAY --> ROUTER
+  ROUTER --> AGENTS
+  AGENTS --> CORE
+  CORE --> DATAL
+  DATAL --> HRIS_INT
+
+  style CLIENT fill:#1e293b,stroke:#6c8aff,color:#e2e4eb
+  style GATEWAY fill:#1e293b,stroke:#fb923c,color:#e2e4eb
+  style ROUTER fill:#1e293b,stroke:#a78bfa,color:#e2e4eb
+  style AGENTS fill:#1e293b,stroke:#34d399,color:#e2e4eb
+  style CORE fill:#1e293b,stroke:#22d3ee,color:#e2e4eb
+  style DATAL fill:#1e293b,stroke:#f472b6,color:#e2e4eb
+  style HRIS_INT fill:#1e293b,stroke:#fbbf24,color:#e2e4eb
+      </pre>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#6c8aff"></div>Client Layer</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>API Gateway</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Router Agent</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Specialist Agents</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22d3ee"></div>Core Services</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Data Layer</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>HRIS Integrations</div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Specialist Agent Responsibilities</h3>
+    <table class="comp-table">
+      <thead><tr><th>Agent</th><th>Domain</th><th>Key Tools</th><th>Data Access</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td>Employee Info Agent</td><td>Personal data, directory, org chart</td><td>HRIS Lookup, Org Search</td><td><span class="badge badge-green">Read-Only</span></td><td><span class="badge badge-red">Phase 1</span></td></tr>
+        <tr><td>Policy &amp; Compliance Agent</td><td>Company policies, legal compliance</td><td>RAG Search, Policy Diff</td><td><span class="badge badge-green">Read-Only</span></td><td><span class="badge badge-red">Phase 1</span></td></tr>
+        <tr><td>Leave &amp; Attendance Agent</td><td>PTO, sick leave, schedules</td><td>Leave Calculator, Calendar Sync</td><td><span class="badge badge-orange">Read-Write</span></td><td><span class="badge badge-red">Phase 1</span></td></tr>
+        <tr><td>Onboarding Agent</td><td>New hire workflows, checklists</td><td>Checklist Engine, Doc Generator</td><td><span class="badge badge-orange">Read-Write</span></td><td><span class="badge badge-blue">Phase 2</span></td></tr>
+        <tr><td>Benefits &amp; Comp Agent</td><td>Benefits enrollment, compensation</td><td>Benefits Comparator, Comp Analyzer</td><td><span class="badge badge-green">Read-Only</span></td><td><span class="badge badge-blue">Phase 2</span></td></tr>
+        <tr><td>Performance Agent</td><td>Reviews, goals, skill gaps</td><td>Review Summarizer, Goal Tracker</td><td><span class="badge badge-orange">Read-Write</span></td><td><span class="badge badge-purple">Phase 3</span></td></tr>
+        <tr><td>Analytics &amp; Reporting Agent</td><td>Workforce analytics, dashboards</td><td>Query Builder, Chart Generator</td><td><span class="badge badge-green">Read-Only</span></td><td><span class="badge badge-purple">Phase 3</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====================== TAB 2: API COMMUNICATION ====================== -->
+<div id="api" class="tab-content">
+  <h2 class="section-title">API Communication Flow</h2>
+  <p class="section-desc">Request lifecycle from client through authentication, intent classification, agent execution, and response delivery.</p>
+
+  <div class="diagram-wrap">
+    <h3>Request / Response Lifecycle</h3>
+    <pre class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant GW as API Gateway
+  participant AUTH as Auth Middleware
+  participant PII as PII Stripping
+  participant R as Router Agent
+  participant A as Specialist Agent
+  participant T as Agent Tools
+  participant LLM as LLM Gateway
+  participant DB as Data Layer
+
+  U->>GW: POST /api/agent/chat
+  GW->>AUTH: Validate JWT Token
+  AUTH-->>GW: User context + role
+
+  alt Unauthorized
+    GW-->>U: 401 Unauthorized
+  end
+
+  GW->>PII: Strip PII from query
+  PII->>R: Sanitized query + context
+  R->>R: Classify intent
+  R->>R: Check RBAC permissions
+
+  alt Permission Denied
+    R-->>U: 403 Forbidden
+  end
+
+  R->>A: Dispatch to specialist agent
+
+  loop LangGraph Execution Loop
+    A->>A: Plan node
+    A->>A: Decide tool node
+    A->>T: Execute tool
+    T->>DB: Query data
+    DB-->>T: Results
+    T->>LLM: Generate / synthesize
+    LLM-->>T: LLM response
+    T-->>A: Tool result
+    A->>A: Reflect node
+
+    alt Quality insufficient
+      A->>A: Force fallback tool
+    end
+  end
+
+  A->>A: Finish node
+  A-->>R: Agent result + sources + trace
+  R-->>GW: Formatted response
+  GW-->>U: 200 OK with answer
+    </pre>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>REST API Endpoints</h3>
+    <table class="comp-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th><th>Auth</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/health</code></td><td>System health check</td><td>None</td><td><span class="badge badge-green">Exists</span></td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/topics</code></td><td>List HR topic domains</td><td>None</td><td><span class="badge badge-green">Exists</span></td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/chat</code></td><td>Simple RAG mode</td><td>JWT</td><td><span class="badge badge-green">Exists</span></td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/agent/chat</code></td><td>Full agent mode</td><td>JWT + RBAC</td><td><span class="badge badge-green">Exists</span></td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/agent/debug</code></td><td>Agent with debug trace</td><td>JWT + Admin</td><td><span class="badge badge-green">Exists</span></td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/agent/tools</code></td><td>List available tools</td><td>JWT</td><td><span class="badge badge-green">Exists</span></td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/v2/agent/stream</code></td><td>WebSocket streaming</td><td>JWT + RBAC</td><td><span class="badge badge-orange">Planned</span></td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/v2/leave/request</code></td><td>Submit leave request</td><td>JWT + RBAC</td><td><span class="badge badge-orange">Planned</span></td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/v2/employee/:id</code></td><td>Employee profile</td><td>JWT + RBAC</td><td><span class="badge badge-orange">Planned</span></td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/api/v2/analytics/dashboard</code></td><td>Workforce analytics</td><td>JWT + HR Admin</td><td><span class="badge badge-orange">Planned</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Error Handling Flow</h3>
+    <pre class="mermaid">
+flowchart LR
+  REQ["Incoming Request"] --> VAL{"Valid JSON?"}
+  VAL -->|No| E400["400 Bad Request"]
+  VAL -->|Yes| AUTHC{"Auth Valid?"}
+  AUTHC -->|No| E401["401 Unauthorized"]
+  AUTHC -->|Yes| RBACC{"Has Permission?"}
+  RBACC -->|No| E403["403 Forbidden"]
+  RBACC -->|Yes| AGENTC{"Agent Ready?"}
+  AGENTC -->|No| E503["503 Unavailable"]
+  AGENTC -->|Yes| EXEC["Execute Agent"]
+  EXEC --> TMOUT{"Timed out?"}
+  TMOUT -->|Yes| E504["504 Timeout"]
+  TMOUT -->|No| RESULT{"Success?"}
+  RESULT -->|No| E500["500 Internal Error"]
+  RESULT -->|Yes| OK["200 OK"]
+
+  style E400 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style E401 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style E403 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style E500 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style E503 fill:#78350f,stroke:#fbbf24,color:#fde68a
+  style E504 fill:#78350f,stroke:#fbbf24,color:#fde68a
+  style OK fill:#064e3b,stroke:#34d399,color:#a7f3d0
+    </pre>
+  </div>
+</div>
+
+<!-- ====================== TAB 3: AGENTIC WORKFLOW ====================== -->
+<div id="agentic" class="tab-content">
+  <h2 class="section-title">AI Agentic Workflow</h2>
+  <p class="section-desc">The supervisor-worker pattern showing how the Router Agent classifies intent and dispatches to specialist agents. Each specialist runs its own LangGraph StateGraph.</p>
+
+  <div class="diagram-wrap">
+    <h3>Supervisor-Worker Multi-Agent Pattern</h3>
+    <pre class="mermaid">
+flowchart TB
+  USER["User Query"] --> ROUTER
+
+  subgraph ROUTER["ROUTER AGENT - Supervisor"]
+    direction TB
+    IC["Intent Classifier\nSmall Fast LLM"] --> CLASSIFY{"Intent Category"}
+    CLASSIFY -->|employee_info| D1["Employee Info Agent"]
+    CLASSIFY -->|policy| D2["Policy Agent"]
+    CLASSIFY -->|leave| D3["Leave Agent"]
+    CLASSIFY -->|onboarding| D4["Onboarding Agent"]
+    CLASSIFY -->|benefits| D5["Benefits Agent"]
+    CLASSIFY -->|performance| D6["Performance Agent"]
+    CLASSIFY -->|analytics| D7["Analytics Agent"]
+    CLASSIFY -->|unclear| CLARIFY["Ask Clarification"]
+    CLASSIFY -->|multi_intent| SPLIT["Split and Parallel\nDispatch"]
+  end
+
+  D1 --> WK1
+  D2 --> WK2
+  D3 --> WK3
+
+  subgraph WK1["Employee Info Agent"]
+    direction LR
+    T1A["HRIS Lookup"] --> T1B["Org Chart Search"] --> T1C["Profile Synthesizer"]
+  end
+
+  subgraph WK2["Policy Agent"]
+    direction LR
+    T2A["RAG Policy Search"] --> T2B["Compliance Check"] --> T2C["Citation Generator"]
+  end
+
+  subgraph WK3["Leave Agent"]
+    direction LR
+    T3A["Balance Calculator"] --> T3B["Calendar Check"] --> T3C["Request Processor"]
+  end
+
+  WK1 --> MERGE
+  WK2 --> MERGE
+  WK3 --> MERGE
+
+  MERGE["Response Merger\nDeduplicate + Format"] --> RESPONSE["Final Response\nanswer + sources + confidence"]
+
+  style ROUTER fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style WK1 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style WK2 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style WK3 fill:#052e16,stroke:#34d399,color:#e2e4eb
+    </pre>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>LLM Gateway - Model Routing Strategy</h3>
+    <pre class="mermaid">
+flowchart LR
+  REQ["Agent Request"] --> GW["LLM Gateway"]
+  GW --> ROUTE{"Task Type?"}
+  ROUTE -->|classification| SM["Small Fast Model\nGemini Flash\n~100ms"]
+  ROUTE -->|synthesis| LG["Large Model\nGemini Pro\n~2s"]
+  ROUTE -->|embedding| EM["Embedding Model\nSentence-Transformers\n~50ms local"]
+  ROUTE -->|compliance| SP["Specialized Model\nFine-tuned\n~3s"]
+
+  SM --> RESP["Response"]
+  LG --> RESP
+  EM --> RESP
+  SP --> RESP
+
+  style GW fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style SM fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style LG fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style EM fill:#451a03,stroke:#fb923c,color:#e2e4eb
+  style SP fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+    </pre>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Quality-Driven Fallback Mechanism</h3>
+    <pre class="mermaid">
+flowchart TB
+  QUERY["User Query"] --> RAGS["RAG Search\nChromaDB"]
+  RAGS --> ASSESS{"Quality\nScore?"}
+  ASSESS -->|"Sufficient"| USE["Use RAG Result"]
+  ASSESS -->|"Insufficient"| WEBS["Web Search\nGoogle API"]
+  WEBS --> ASSESS2{"Web Quality?"}
+  ASSESS2 -->|"Good"| MERGE["Merge RAG + Web"]
+  ASSESS2 -->|"Low"| ESCALATE["Escalate to\nHuman HR"]
+  USE --> SYNTH["LLM Synthesis"]
+  MERGE --> SYNTH
+  SYNTH --> OUT["Response with\nconfidence + sources"]
+
+  style ASSESS fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style ASSESS2 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style ESCALATE fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style OUT fill:#052e16,stroke:#34d399,color:#e2e4eb
+    </pre>
+  </div>
+</div>
+
+<!-- ====================== TAB 4: STATE MACHINE DETAIL ====================== -->
+<div id="state" class="tab-content">
+  <h2 class="section-title">LangGraph State Machine (Existing Code)</h2>
+  <p class="section-desc">Detailed view of the existing LangGraph StateGraph from agent_brain.py, showing all nodes, conditional edges, and state transitions. This is the pattern each specialist agent will follow.</p>
+
+  <div class="diagram-wrap">
+    <h3>StateGraph Node and Edge Map</h3>
+    <pre class="mermaid">
+flowchart TB
+  START(("START")) --> PLANNER
+
+  subgraph PLANNER["1. Planner Node"]
+    direction TB
+    P1["Analyze Query"] --> P2["Classify Type\nsimple_search / creation /\ncomparison / verification /\ncomplex_analysis"]
+    P2 --> P3["Create Plan\n1-4 steps max"]
+  end
+
+  PLANNER --> DECIDE
+
+  subgraph DECIDE["2. Decide Tool Node"]
+    direction TB
+    D1{"force_next_tool\nset?"} -->|Yes| D2["Use Forced Tool"]
+    D1 -->|No| D3{"current_step\ncomplete?"}
+    D3 -->|"All done"| D4["Nothing to execute"]
+    D3 -->|"Steps remain"| D5["Extract tool\nfrom plan step"]
+    D5 --> D6{"Tool type?"}
+    D6 -->|"Non-RAG tool"| D7["Use plan tool directly"]
+    D6 -->|"RAG suggested"| D8["Ask LLM: RAG vs Web?"]
+  end
+
+  DECIDE --> SHOULD_CONTINUE{"Should\ncontinue?"}
+  SHOULD_CONTINUE -->|"Steps remain"| EXECUTE
+  SHOULD_CONTINUE -->|"Plan complete\nor max iterations"| FINISH
+
+  subgraph EXECUTE["3. Execute Tool Node"]
+    direction TB
+    E1["Validate tool_calls"] --> E2["Run tool.run kwargs"]
+    E2 --> E3["Store result\nin tool_results"]
+    E3 --> E4["Increment counters\ncurrent_step + iterations"]
+  end
+
+  EXECUTE --> REFLECT
+
+  subgraph REFLECT["4. Reflect Node"]
+    direction TB
+    R1{"Last tool\n= RAG?"}
+    R1 -->|"Yes + insufficient\n+ no web yet"| R2["Force web_search\nset force_next_tool"]
+    R1 -->|"Otherwise"| R3["LLM Reflection\nassess confidence"]
+    R3 --> R4["Set confidence_score\nand needs_more_info"]
+  end
+
+  REFLECT --> SHOULD_ITERATE{"Should\niterate?"}
+  SHOULD_ITERATE -->|"Needs more or\nplan incomplete"| DECIDE
+  SHOULD_ITERATE -->|"Sufficient or\nmax iterations"| FINISH
+
+  subgraph FINISH["5. Finish Node"]
+    direction TB
+    F1["Synthesize answer\nvia LLM"] --> F2["Extract sources"]
+    F2 --> F3["Build response:\nanswer + sources +\nconfidence + trace"]
+  end
+
+  FINISH --> ENDNODE(("END"))
+
+  style PLANNER fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style DECIDE fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style EXECUTE fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style REFLECT fill:#451a03,stroke:#fb923c,color:#e2e4eb
+  style FINISH fill:#164e63,stroke:#22d3ee,color:#e2e4eb
+  style SHOULD_CONTINUE fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+  style SHOULD_ITERATE fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+    </pre>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>AgentState Schema</h3>
+    <table class="comp-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Category</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>query</code></td><td>str</td><td><span class="badge badge-blue">Input</span></td><td>User's original question</td></tr>
+        <tr><td><code>topic</code></td><td>str</td><td><span class="badge badge-blue">Input</span></td><td>HR domain category</td></tr>
+        <tr><td><code>difficulty</code></td><td>str</td><td><span class="badge badge-blue">Input</span></td><td>Response complexity level</td></tr>
+        <tr><td><code>plan</code></td><td>List[str]</td><td><span class="badge badge-purple">Planning</span></td><td>Steps to execute (max 4)</td></tr>
+        <tr><td><code>current_step</code></td><td>int</td><td><span class="badge badge-purple">Planning</span></td><td>Index into plan list</td></tr>
+        <tr><td><code>tool_calls</code></td><td>List[Dict]</td><td><span class="badge badge-orange">Execution</span></td><td>History of tool invocations</td></tr>
+        <tr><td><code>tool_results</code></td><td>Dict[str, Any]</td><td><span class="badge badge-orange">Execution</span></td><td>Results keyed by tool name</td></tr>
+        <tr><td><code>current_tool</code></td><td>Optional[str]</td><td><span class="badge badge-orange">Execution</span></td><td>Currently executing tool</td></tr>
+        <tr><td><code>needs_more_info</code></td><td>bool</td><td><span class="badge badge-cyan">Reflection</span></td><td>Whether more data needed</td></tr>
+        <tr><td><code>confidence_score</code></td><td>float</td><td><span class="badge badge-cyan">Reflection</span></td><td>0.0-1.0 confidence in answer</td></tr>
+        <tr><td><code>force_next_tool</code></td><td>Optional[str]</td><td><span class="badge badge-cyan">Reflection</span></td><td>Override next tool selection</td></tr>
+        <tr><td><code>iterations</code></td><td>int</td><td><span class="badge badge-cyan">Reflection</span></td><td>Loop counter (max 5)</td></tr>
+        <tr><td><code>final_answer</code></td><td>str</td><td><span class="badge badge-green">Output</span></td><td>Synthesized response</td></tr>
+        <tr><td><code>sources_used</code></td><td>List[str]</td><td><span class="badge badge-green">Output</span></td><td>Citations and references</td></tr>
+        <tr><td><code>reasoning_trace</code></td><td>List[str]</td><td><span class="badge badge-green">Output</span></td><td>Step-by-step reasoning log</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====================== TAB 5: DATA ARCHITECTURE ====================== -->
+<div id="data" class="tab-content">
+  <h2 class="section-title">Data Architecture</h2>
+  <p class="section-desc">How employee data, policy documents, and conversation history are stored and accessed. Shows the HRIS connector abstraction and the PII protection boundary.</p>
+
+  <div class="diagram-wrap">
+    <h3>Data Flow and PII Boundary</h3>
+    <pre class="mermaid">
+flowchart TB
+  subgraph EXTERNAL["External HRIS Systems"]
+    BAMBOO["BambooHR API"]
+    WORKDAY["Workday API"]
+    CUSTOM_DB["Custom SQL DB"]
+  end
+
+  subgraph CONNECTOR["HRISConnector Interface"]
+    direction TB
+    ADAPTER["Adapter Pattern\nget_employee\nget_leave_balance\nsubmit_leave_request"]
+    CACHE["Response Cache\nRedis TTL 5min"]
+    TRANSFORM["Data Transformer\nNormalize to unified schema"]
+  end
+
+  subgraph PII_ZONE["PII PROTECTION BOUNDARY"]
+    direction TB
+    STRIP["PII Stripper\nNames to EMP_001\nSSN to REDACTED\nSalary to Band Range"]
+    REHYDRATE["PII Rehydrator\nRestore before\nfinal response"]
+  end
+
+  subgraph STORAGE["Internal Data Stores"]
+    PGS["PostgreSQL"]
+    CHROMAS["ChromaDB"]
+    REDISS["Redis"]
+  end
+
+  subgraph PG_TABLES["PostgreSQL Tables"]
+    direction TB
+    T_EMP["employees\nid, hris_id, name,\ndept, role, manager_id"]
+    T_CONV["conversations\nid, user_id, started_at,\nagent_type, resolved"]
+    T_AUDIT["audit_log\nid, user_id, action,\nresource, timestamp"]
+    T_AUTH["auth_sessions\nuser_id, token_hash,\nrole, expires_at"]
+  end
+
+  EXTERNAL --> CONNECTOR
+  CONNECTOR --> STRIP
+  STRIP -->|Sanitized data| LLM_LAYER["LLM Layer\nNo raw PII ever\nreaches the model"]
+  LLM_LAYER --> REHYDRATE
+  REHYDRATE -->|Full response| USER_RESP["User Response"]
+  CONNECTOR --> STORAGE
+  PGS --> PG_TABLES
+  CHROMAS --> VECTORS["Policy Vectors\nSentence-Transformers\nall-MiniLM-L6-v2"]
+
+  style PII_ZONE fill:#7f1d1d20,stroke:#f87171,color:#e2e4eb,stroke-width:3px
+  style EXTERNAL fill:#1e293b,stroke:#fbbf24,color:#e2e4eb
+  style CONNECTOR fill:#1e293b,stroke:#6c8aff,color:#e2e4eb
+  style STORAGE fill:#1e293b,stroke:#f472b6,color:#e2e4eb
+  style LLM_LAYER fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+    </pre>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>RBAC Permission Matrix</h3>
+    <table class="comp-table">
+      <thead><tr><th>Capability</th><th>Employee</th><th>Manager</th><th>HR Generalist</th><th>HR Admin</th></tr></thead>
+      <tbody>
+        <tr><td>View own profile</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>View direct reports</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>Search all employees</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>View salary data</td><td><span class="badge badge-orange">Own Only</span></td><td><span class="badge badge-orange">Reports</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>Submit leave request</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>Approve leave</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>View analytics</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-orange">Team</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>Configure agents</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        <tr><td>View audit logs</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-orange">Limited</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====================== TAB 6: ISSUE-BASED ROADMAP ====================== -->
+<div id="roadmap" class="tab-content">
+  <h2 class="section-title">Issue-Based Roadmap</h2>
+  <p class="section-desc">Roadmap organized by issues and dependencies instead of fixed week timelines. Each node is a deliverable issue with directed edges showing prerequisites.</p>
+
+  <div class="diagram-wrap">
+    <h3>Phase 1 - Foundation</h3>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom('road1', 1)">100%</button>
+      <button class="zoom-btn" onclick="zoom('road1', 1.3)">130%</button>
+      <button class="zoom-btn" onclick="zoom('road1', 0.7)">70%</button>
+    </div>
+    <div id="road1" class="scalable">
+      <pre class="mermaid">
+flowchart TB
+  I1["INFRA-001\nProject Scaffolding\nRepo, CI/CD, Docker"]
+  I2["INFRA-002\nPostgreSQL Schema\nemployees, auth, audit"]
+  I3["INFRA-003\nRedis Setup\nCache, sessions, rate limit"]
+  I4["INFRA-004\nLogging and Monitoring\nStructured JSON, health checks"]
+  A1["AUTH-001\nJWT Auth Service\nToken issue/verify/refresh"]
+  A2["AUTH-002\nRBAC Engine\n4-tier role enforcement"]
+  A3["AUTH-003\nSSO Integration\nSAML + OIDC"]
+  C1["CORE-001\nRouter Agent\nIntent classification"]
+  C2["CORE-002\nLLM Gateway\nModel routing layer"]
+  C3["CORE-003\nRAG Pipeline Migration\nAdapt ChromaDB for HR"]
+  C4["CORE-004\nPII Stripping Middleware\nSanitize before LLM"]
+  C5["CORE-005\nQuality Assessor\nConfidence scoring"]
+  H1["HRIS-001\nConnector Interface\nAbstract adapter pattern"]
+  H2["HRIS-002\nBambooHR Adapter\nREST API integration"]
+  H3["HRIS-003\nCustom DB Adapter\nDirect SQL connector"]
+  AG1["AGENT-001\nEmployee Info Agent\nProfile lookup, org chart"]
+  AG2["AGENT-002\nPolicy Agent\nRAG-powered policy search"]
+  AG3["AGENT-003\nLeave Agent\nBalance check + request"]
+  CH1["CHAN-001\nWeb Chat UI\nReact dashboard"]
+  CH2["CHAN-002\nSlack Integration\nBolt SDK bot"]
+  GATE1{{"GATE 1\nFoundation Review\n3 agents working\n80pct test coverage"}}
+
+  I1 --> I2
+  I1 --> I3
+  I1 --> I4
+  I1 --> A1
+  I2 --> A2
+  A1 --> A2
+  A2 --> A3
+  I1 --> C1
+  I1 --> C2
+  A2 --> C1
+  C2 --> C3
+  I2 --> C4
+  C3 --> C5
+  I2 --> H1
+  H1 --> H2
+  H1 --> H3
+  C1 --> AG1
+  C4 --> AG1
+  H2 --> AG1
+  H3 --> AG1
+  C1 --> AG2
+  C4 --> AG2
+  C3 --> AG2
+  C1 --> AG3
+  C4 --> AG3
+  H2 --> AG3
+  AG1 --> CH1
+  AG2 --> CH1
+  AG3 --> CH1
+  AG1 --> CH2
+  AG2 --> CH2
+  AG3 --> CH2
+  CH1 --> GATE1
+  CH2 --> GATE1
+
+  style I1 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style I2 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style I3 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style I4 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style A1 fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+  style A2 fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+  style A3 fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+  style C1 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style C2 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style C3 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style C4 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style C5 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style H1 fill:#451a03,stroke:#fb923c,color:#e2e4eb
+  style H2 fill:#451a03,stroke:#fb923c,color:#e2e4eb
+  style H3 fill:#451a03,stroke:#fb923c,color:#e2e4eb
+  style AG1 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style AG2 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style AG3 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style CH1 fill:#164e63,stroke:#22d3ee,color:#e2e4eb
+  style CH2 fill:#164e63,stroke:#22d3ee,color:#e2e4eb
+  style GATE1 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+      </pre>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#6c8aff"></div>Infrastructure</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Auth and Security</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Core AI</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>HRIS Connectors</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Specialist Agents</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22d3ee"></div>Channels</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Decision Gate</div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Phase 2 - Expansion</h3>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom('road2', 1)">100%</button>
+      <button class="zoom-btn" onclick="zoom('road2', 1.3)">130%</button>
+      <button class="zoom-btn" onclick="zoom('road2', 0.7)">70%</button>
+    </div>
+    <div id="road2" class="scalable">
+      <pre class="mermaid">
+flowchart TB
+  GATE1_PASS["Gate 1 Passed"]
+  W1["WRITE-001\nApproval Workflow Engine\nMulti-step approval chains"]
+  W2["WRITE-002\nLeave Request Submission\nCreate, approve, deny flows"]
+  W3["WRITE-003\nDocument Generation\nOffer letters, contracts"]
+  AG4["AGENT-004\nOnboarding Agent\nChecklists, task tracking"]
+  AG5["AGENT-005\nBenefits Agent\nPlan comparison, enrollment"]
+  H4["HRIS-004\nWorkday Adapter\nSOAP + REST connector"]
+  P1["PLAT-001\nNo-Code Workflow Builder\nHR Admin visual editor"]
+  P2["PLAT-002\nMulti-Language Support\nTop 5 employee languages"]
+  P3["PLAT-003\nMS Teams Integration\nBot Framework connector"]
+  P4["PLAT-004\nBias Audit Framework\nAutomated fairness checks"]
+  REG1["COMP-001\nGDPR Compliance Module\nData rights, deletion"]
+  REG2["COMP-002\nAudit Trail Enhancements\nImmutable logging"]
+  GATE2{{"GATE 2\nExpansion Review\n5 agents + write ops\nBias audit passing"}}
+
+  GATE1_PASS --> W1
+  GATE1_PASS --> H4
+  GATE1_PASS --> P2
+  GATE1_PASS --> AG5
+  GATE1_PASS --> P1
+  GATE1_PASS --> P3
+  GATE1_PASS --> P4
+  GATE1_PASS --> REG1
+  GATE1_PASS --> REG2
+  W1 --> W2
+  W1 --> W3
+  W2 --> AG4
+  W3 --> AG4
+  H4 --> AG4
+  H4 --> AG5
+  P1 --> AG4
+  P4 --> AG5
+  REG1 --> GATE2
+  AG4 --> GATE2
+  AG5 --> GATE2
+  P3 --> GATE2
+  W2 --> GATE2
+
+  style GATE1_PASS fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style W1 fill:#78350f,stroke:#fbbf24,color:#e2e4eb
+  style W2 fill:#78350f,stroke:#fbbf24,color:#e2e4eb
+  style W3 fill:#78350f,stroke:#fbbf24,color:#e2e4eb
+  style AG4 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style AG5 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style H4 fill:#451a03,stroke:#fb923c,color:#e2e4eb
+  style P1 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style P2 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style P3 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style P4 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style REG1 fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+  style REG2 fill:#4a044e,stroke:#f472b6,color:#e2e4eb
+  style GATE2 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+      </pre>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Write Operations</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>New Agents</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>HRIS Expansion</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6c8aff"></div>Platform Features</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Compliance</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Decision Gate</div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Phase 3 - Intelligence</h3>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom('road3', 1)">100%</button>
+      <button class="zoom-btn" onclick="zoom('road3', 1.3)">130%</button>
+      <button class="zoom-btn" onclick="zoom('road3', 0.7)">70%</button>
+    </div>
+    <div id="road3" class="scalable">
+      <pre class="mermaid">
+flowchart TB
+  GATE2_PASS["Gate 2 Passed"]
+  AG6["AGENT-006\nPerformance Agent\nReview synthesis,\ngoal tracking"]
+  AG7["AGENT-007\nAnalytics Agent\nWorkforce dashboards,\ntrend analysis"]
+  INT1["INTEL-001\nSentiment Analysis\nConversation mood,\nauto-escalation"]
+  INT2["INTEL-002\nPredictive Analytics\nAttrition risk,\nheadcount forecast"]
+  INT3["INTEL-003\nSkills Intelligence\nGap identification,\ncareer paths"]
+  M1["MAT-001\nSelf-Learning Loop\nFine-tune on resolved tickets"]
+  M2["MAT-002\nAdmin Dashboard\nAgent performance monitoring"]
+  M3["MAT-003\nAPI v2 Stable Release\nVersioned public API"]
+  F1["FUTURE-001\nVoice Interface"]
+  F2["FUTURE-002\nSelf-Hosted Option"]
+  F3["FUTURE-003\nEmployee Graph"]
+  GATE3{{"GATE 3\nPlatform Maturity\nAll 7 agents live\n50pct ticket reduction"}}
+
+  GATE2_PASS --> AG6
+  GATE2_PASS --> AG7
+  GATE2_PASS --> INT1
+  GATE2_PASS --> M3
+  AG6 --> INT3
+  AG7 --> INT2
+  INT1 --> M1
+  INT2 --> M2
+  AG6 --> GATE3
+  AG7 --> GATE3
+  M1 --> GATE3
+  M2 --> GATE3
+  M3 --> GATE3
+  GATE3 -.-> F1
+  GATE3 -.-> F2
+  GATE3 -.-> F3
+
+  style GATE2_PASS fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style AG6 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style AG7 fill:#052e16,stroke:#34d399,color:#e2e4eb
+  style INT1 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style INT2 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style INT3 fill:#1e1b4b,stroke:#a78bfa,color:#e2e4eb
+  style M1 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style M2 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style M3 fill:#172554,stroke:#6c8aff,color:#e2e4eb
+  style F1 fill:#1c1917,stroke:#78716c,color:#a8a29e
+  style F2 fill:#1c1917,stroke:#78716c,color:#a8a29e
+  style F3 fill:#1c1917,stroke:#78716c,color:#a8a29e
+  style GATE3 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+      </pre>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Advanced Agents</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Intelligence Features</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6c8aff"></div>Platform Maturity</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#78716c"></div>Future Considerations</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Final Gate</div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Full Issue Dependency Graph - Cross-Phase</h3>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom('roadfull', 1)">100%</button>
+      <button class="zoom-btn" onclick="zoom('roadfull', 0.6)">60%</button>
+      <button class="zoom-btn" onclick="zoom('roadfull', 0.45)">45%</button>
+    </div>
+    <div id="roadfull" class="scalable">
+      <pre class="mermaid">
+flowchart LR
+  subgraph P1["PHASE 1 - Foundation"]
+    direction TB
+    I1["INFRA-001\nScaffolding"] --> I2["INFRA-002\nPostgreSQL"]
+    I1 --> I3["INFRA-003\nRedis"]
+    I1 --> A1x["AUTH-001\nJWT Auth"]
+    I2 --> A2x["AUTH-002\nRBAC"]
+    A1x --> A2x
+    A2x --> C1x["CORE-001\nRouter Agent"]
+    I1 --> C2x["CORE-002\nLLM Gateway"]
+    C2x --> C3x["CORE-003\nRAG Migration"]
+    I2 --> C4x["CORE-004\nPII Stripping"]
+    C3x --> C5x["CORE-005\nQuality Assessor"]
+    I2 --> H1x["HRIS-001\nInterface"]
+    H1x --> H2x["HRIS-002\nBambooHR"]
+    C1x --> AG1x["AGENT-001\nEmployee Info"]
+    C4x --> AG1x
+    H2x --> AG1x
+    C1x --> AG2x["AGENT-002\nPolicy"]
+    C4x --> AG2x
+    C3x --> AG2x
+    C1x --> AG3x["AGENT-003\nLeave"]
+    C4x --> AG3x
+    H2x --> AG3x
+    AG1x --> G1x{{"GATE 1"}}
+    AG2x --> G1x
+    AG3x --> G1x
+  end
+
+  subgraph P2["PHASE 2 - Expansion"]
+    direction TB
+    W1x["WRITE-001\nApprovals"] --> W2x["WRITE-002\nLeave Submit"]
+    W1x --> W3x["WRITE-003\nDoc Gen"]
+    H4x["HRIS-004\nWorkday"]
+    W2x --> AG4x["AGENT-004\nOnboarding"]
+    W3x --> AG4x
+    H4x --> AG4x
+    H4x --> AG5x["AGENT-005\nBenefits"]
+    P4x["PLAT-004\nBias Audit"] --> AG5x
+    R1x["COMP-001\nGDPR"]
+    AG4x --> G2x{{"GATE 2"}}
+    AG5x --> G2x
+    R1x --> G2x
+  end
+
+  subgraph P3["PHASE 3 - Intelligence"]
+    direction TB
+    AG6x["AGENT-006\nPerformance"]
+    AG7x["AGENT-007\nAnalytics"]
+    INT1x["INTEL-001\nSentiment"]
+    INT2x["INTEL-002\nPredictive"]
+    AG7x --> INT2x
+    INT1x --> M1x["MAT-001\nSelf-Learning"]
+    AG6x --> G3x{{"GATE 3"}}
+    AG7x --> G3x
+    M1x --> G3x
+  end
+
+  G1x --> W1x
+  G1x --> H4x
+  G1x --> P4x
+  G1x --> R1x
+  G2x --> AG6x
+  G2x --> AG7x
+  G2x --> INT1x
+
+  style P1 fill:#0f172a,stroke:#6c8aff,color:#e2e4eb
+  style P2 fill:#0f172a,stroke:#fb923c,color:#e2e4eb
+  style P3 fill:#0f172a,stroke:#a78bfa,color:#e2e4eb
+  style G1x fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style G2x fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+  style G3x fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+      </pre>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <h3>Issue Tracker Summary</h3>
+    <table class="comp-table">
+      <thead><tr><th>Issue ID</th><th>Title</th><th>Category</th><th>Phase</th><th>Depends On</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>INFRA-001</td><td>Project Scaffolding and CI/CD</td><td><span class="badge badge-blue">Infra</span></td><td>1</td><td>None</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>INFRA-002</td><td>PostgreSQL Schema Design</td><td><span class="badge badge-blue">Infra</span></td><td>1</td><td>INFRA-001</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>INFRA-003</td><td>Redis Cache and Session Setup</td><td><span class="badge badge-blue">Infra</span></td><td>1</td><td>INFRA-001</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AUTH-001</td><td>JWT Authentication Service</td><td><span class="badge badge-purple">Auth</span></td><td>1</td><td>INFRA-001</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AUTH-002</td><td>4-Tier RBAC Engine</td><td><span class="badge badge-purple">Auth</span></td><td>1</td><td>AUTH-001, INFRA-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AUTH-003</td><td>SSO Integration (SAML/OIDC)</td><td><span class="badge badge-purple">Auth</span></td><td>1</td><td>AUTH-002</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>CORE-001</td><td>Router Agent (Intent Classifier)</td><td><span class="badge badge-cyan">Core AI</span></td><td>1</td><td>AUTH-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>CORE-002</td><td>LLM Gateway (Model Routing)</td><td><span class="badge badge-cyan">Core AI</span></td><td>1</td><td>INFRA-001</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>CORE-003</td><td>RAG Pipeline Migration</td><td><span class="badge badge-cyan">Core AI</span></td><td>1</td><td>CORE-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>CORE-004</td><td>PII Stripping Middleware</td><td><span class="badge badge-cyan">Core AI</span></td><td>1</td><td>INFRA-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>CORE-005</td><td>Quality Assessor</td><td><span class="badge badge-cyan">Core AI</span></td><td>1</td><td>CORE-003</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>HRIS-001</td><td>HRIS Connector Interface</td><td><span class="badge badge-orange">HRIS</span></td><td>1</td><td>INFRA-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>HRIS-002</td><td>BambooHR Adapter</td><td><span class="badge badge-orange">HRIS</span></td><td>1</td><td>HRIS-001</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>HRIS-003</td><td>Custom DB Adapter</td><td><span class="badge badge-orange">HRIS</span></td><td>1</td><td>HRIS-001</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>AGENT-001</td><td>Employee Info Agent</td><td><span class="badge badge-green">Agent</span></td><td>1</td><td>CORE-001, CORE-004, HRIS-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AGENT-002</td><td>Policy and Compliance Agent</td><td><span class="badge badge-green">Agent</span></td><td>1</td><td>CORE-001, CORE-003, CORE-004</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AGENT-003</td><td>Leave and Attendance Agent</td><td><span class="badge badge-green">Agent</span></td><td>1</td><td>CORE-001, CORE-004, HRIS-002</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>CHAN-001</td><td>Web Chat Dashboard</td><td><span class="badge badge-cyan">Channel</span></td><td>1</td><td>AGENT-001/002/003</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>CHAN-002</td><td>Slack Bot Integration</td><td><span class="badge badge-cyan">Channel</span></td><td>1</td><td>AGENT-001/002/003</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>WRITE-001</td><td>Approval Workflow Engine</td><td><span class="badge badge-orange">Write Ops</span></td><td>2</td><td>GATE 1</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>WRITE-002</td><td>Leave Request Submission</td><td><span class="badge badge-orange">Write Ops</span></td><td>2</td><td>WRITE-001</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>WRITE-003</td><td>Document Generation</td><td><span class="badge badge-orange">Write Ops</span></td><td>2</td><td>WRITE-001</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>HRIS-004</td><td>Workday Adapter</td><td><span class="badge badge-orange">HRIS</span></td><td>2</td><td>GATE 1</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>AGENT-004</td><td>Onboarding Agent</td><td><span class="badge badge-green">Agent</span></td><td>2</td><td>WRITE-002, WRITE-003, HRIS-004</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AGENT-005</td><td>Benefits and Comp Agent</td><td><span class="badge badge-green">Agent</span></td><td>2</td><td>HRIS-004, PLAT-004</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>PLAT-001</td><td>No-Code Workflow Builder</td><td><span class="badge badge-blue">Platform</span></td><td>2</td><td>GATE 1</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>PLAT-004</td><td>Bias Audit Framework</td><td><span class="badge badge-blue">Platform</span></td><td>2</td><td>GATE 1</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>COMP-001</td><td>GDPR Compliance Module</td><td><span class="badge badge-purple">Compliance</span></td><td>2</td><td>GATE 1</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>AGENT-006</td><td>Performance Agent</td><td><span class="badge badge-green">Agent</span></td><td>3</td><td>GATE 2</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>AGENT-007</td><td>Analytics and Reporting Agent</td><td><span class="badge badge-green">Agent</span></td><td>3</td><td>GATE 2</td><td><span class="badge badge-orange">P1</span></td></tr>
+        <tr><td>INTEL-001</td><td>Sentiment Analysis</td><td><span class="badge badge-cyan">Intelligence</span></td><td>3</td><td>GATE 2</td><td><span class="badge badge-blue">P2</span></td></tr>
+        <tr><td>INTEL-002</td><td>Predictive Analytics</td><td><span class="badge badge-cyan">Intelligence</span></td><td>3</td><td>AGENT-007</td><td><span class="badge badge-blue">P2</span></td></tr>
+        <tr><td>MAT-001</td><td>Self-Learning Loop</td><td><span class="badge badge-blue">Maturity</span></td><td>3</td><td>INTEL-001</td><td><span class="badge badge-blue">P2</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  /* ---- Mermaid config ---- */
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#1a1d27',
+      primaryColor: '#6c8aff',
+      primaryTextColor: '#e2e4eb',
+      primaryBorderColor: '#6c8aff',
+      lineColor: '#4b5563',
+      secondaryColor: '#a78bfa',
+      tertiaryColor: '#1e293b',
+      fontFamily: 'Inter, sans-serif',
+      fontSize: '13px',
+      nodeBorder: '#6c8aff',
+      clusterBkg: '#1e293b',
+      clusterBorder: '#2e3345',
+      edgeLabelBackground: '#1a1d27',
+      noteBkgColor: '#232733',
+      noteTextColor: '#e2e4eb'
+    },
+    flowchart: { curve: 'basis', padding: 20, htmlLabels: true },
+    sequence: { actorMargin: 30, messageFontSize: 12 }
+  });
+
+  /* ---- Render Mermaid with all tabs visible first ---- */
+  window.addEventListener('load', function() {
+    var tabs = document.querySelectorAll('.tab-content');
+
+    /* 1. Temporarily show ALL tabs so Mermaid can measure SVG dimensions */
+    tabs.forEach(function(t) { t.style.display = 'block'; });
+
+    /* 2. Run Mermaid renderer on all diagrams */
+    mermaid.run().then(function() {
+      /* 3. Re-hide non-active tabs after rendering completes */
+      tabs.forEach(function(t) {
+        if (!t.classList.contains('active')) { t.style.display = 'none'; }
+      });
+    }).catch(function(err) {
+      console.error('Mermaid render error:', err);
+      /* Still re-hide tabs even on error */
+      tabs.forEach(function(t) {
+        if (!t.classList.contains('active')) { t.style.display = 'none'; }
+      });
+    });
+  });
+
+  /* ---- Tab switching (receives button via 'this') ---- */
+  function showTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); t.style.display = 'none'; });
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    var target = document.getElementById(id);
+    target.classList.add('active');
+    target.style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  /* ---- Zoom controls ---- */
+  function zoom(id, scale) {
+    document.getElementById(id).style.transform = 'scale(' + scale + ')';
+  }
+</script>
+</body>
+</html>

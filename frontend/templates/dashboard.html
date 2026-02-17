@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HR Intelligence Platform{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <!-- KPI Cards -->
+    <section class="kpi-section">
+        <div class="kpi-card">
+            <div class="kpi-icon">👥</div>
+            <div class="kpi-content">
+                <p class="kpi-label">Total Employees</p>
+                <h3 class="kpi-value" id="kpi-employees">--</h3>
+                <p class="kpi-change">+5 this month</p>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">📋</div>
+            <div class="kpi-content">
+                <p class="kpi-label">Open Leave Requests</p>
+                <h3 class="kpi-value" id="kpi-leave-requests">--</h3>
+                <p class="kpi-change">3 pending approval</p>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-content">
+                <p class="kpi-label">Pending Approvals</p>
+                <h3 class="kpi-value" id="kpi-approvals">--</h3>
+                <p class="kpi-change">Action required</p>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">💬</div>
+            <div class="kpi-content">
+                <p class="kpi-label">Agent Queries Today</p>
+                <h3 class="kpi-value" id="kpi-queries">--</h3>
+                <p class="kpi-change">Last 24 hours</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+        <div class="chart-container">
+            <h3 class="chart-title">Department Headcount</h3>
+            <canvas id="departmentChart" class="chart-canvas"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">Monthly Query Trend</h3>
+            <canvas id="queryTrendChart" class="chart-canvas"></canvas>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions-section">
+        <h3 class="section-title">Quick Actions</h3>
+        <div class="action-buttons">
+            <button class="action-btn" onclick="navigateTo('/leave')">
+                <span class="action-icon">📝</span>
+                <span class="action-text">New Leave Request</span>
+            </button>
+            <button class="action-btn" onclick="navigateTo('/chat')">
+                <span class="action-icon">💬</span>
+                <span class="action-text">Ask Agent</span>
+            </button>
+            <button class="action-btn" onclick="navigateTo('/documents')">
+                <span class="action-icon">📄</span>
+                <span class="action-text">Generate Document</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="activity-section">
+        <h3 class="section-title">Recent Activity</h3>
+        <div class="activity-feed" id="activity-feed">
+            <div class="activity-item">
+                <div class="activity-icon">💬</div>
+                <div class="activity-content">
+                    <p class="activity-title">Agent Query Processed</p>
+                    <p class="activity-detail">Salary inquiry - answered by Finance Agent</p>
+                    <p class="activity-time">2 hours ago</p>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">✅</div>
+                <div class="activity-content">
+                    <p class="activity-title">Leave Request Approved</p>
+                    <p class="activity-detail">5 days vacation - John Smith</p>
+                    <p class="activity-time">4 hours ago</p>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">📄</div>
+                <div class="activity-content">
+                    <p class="activity-title">Document Generated</p>
+                    <p class="activity-detail">Employment Certificate - Sarah Johnson</p>
+                    <p class="activity-time">1 day ago</p>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">⚙️</div>
+                <div class="activity-content">
+                    <p class="activity-title">Workflow Completed</p>
+                    <p class="activity-detail">Onboarding process - New hire</p>
+                    <p class="activity-time">2 days ago</p>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">💬</div>
+                <div class="activity-content">
+                    <p class="activity-title">Agent Query Processed</p>
+                    <p class="activity-detail">Benefits inquiry - answered by HR Agent</p>
+                    <p class="activity-time">3 days ago</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/dashboard.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchMetrics();
+        setInterval(fetchMetrics, 60000); // Refresh every 60 seconds
+    });
+</script>
+{% endblock %}

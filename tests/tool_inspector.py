@@ -9,7 +9,7 @@ import sys
 import os
 
 # Add the project root to path
-sys.path.insert(0, '/Users/chinweimak/Documents/gitcloneplace/human_right_edu_agent/human-rights-platform')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 print("\n" + "="*70)
 print(" TOOL SIGNATURE INSPECTOR")
@@ -77,9 +77,9 @@ try:
                 if p['name'] == 'query':
                     print(f'        "{p["name"]}": state.get("query", ""),')
                 elif p['name'] == 'topic':
-                    print(f'        "{p["name"]}": state.get("topic", "foundational_rights"),')
+                    print(f'        "{p["name"]}": state.get("topic", "benefits"),')
                 elif p['name'] == 'difficulty':
-                    print(f'        "{p["name"]}": state.get("difficulty", "intermediate"),')
+                    print(f'        "{p["name"]}": state.get("difficulty", "detailed"),')
                 elif p['default'] != 'REQUIRED':
                     print(f'        "{p["name"]}": {p["default"]},')
                 else:
@@ -126,9 +126,9 @@ if suggested_tool != "rag_search":
                 if p['name'] == 'query':
                     print(f'            "{p["name"]}": state.get("query", ""),')
                 elif p['name'] == 'topic':
-                    print(f'            "{p["name"]}": state.get("topic", "foundational_rights"),')
+                    print(f'            "{p["name"]}": state.get("topic", "benefits"),')
                 elif p['name'] == 'difficulty':
-                    print(f'            "{p["name"]}": state.get("difficulty", "intermediate"),')
+                    print(f'            "{p["name"]}": state.get("difficulty", "detailed"),')
                 elif p['default'] != 'REQUIRED':
                     print(f'            "{p["name"]}": {p["default"]},')
                 else:
@@ -152,7 +152,7 @@ if suggested_tool != "rag_search":
 except ImportError as e:
     print(f"\n❌ Failed to import tools: {e}")
     print("\nMake sure you're running this from the project root:")
-    print("  cd /path/to/human-rights-platform")
+    print("  cd /path/to/HR_agent")
     print("  python /home/claude/tool_inspector.py")
 except Exception as e:
     print(f"\n❌ Error: {e}")
