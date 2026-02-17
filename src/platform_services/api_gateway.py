@@ -2438,7 +2438,9 @@ class APIGateway:
                 requested_emp_id = data.get("employee_id")
                 if requested_emp_id:
                     try:
-                        target_emp = session.query(Employee).filter_by(id=int(requested_emp_id)).first()
+                        target_emp = (
+                            session.query(Employee).filter_by(id=int(requested_emp_id)).first()
+                        )
                     except (ValueError, TypeError):
                         target_emp = None
                     emp_id = target_emp.id if target_emp else 1
