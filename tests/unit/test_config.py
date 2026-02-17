@@ -1,11 +1,11 @@
 """Unit tests for configuration settings - Iteration 3."""
+
 import pytest
 from unittest.mock import patch, MagicMock
 
 from config.settings_prod import ProductionSettings, get_production_settings
 from config.settings_dev import DevelopmentSettings, get_development_settings
 from config.settings_test import TestSettings, get_test_settings
-
 
 # ==================== PRODUCTION SETTINGS TESTS ====================
 

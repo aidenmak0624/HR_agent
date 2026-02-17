@@ -10,7 +10,6 @@ from datetime import datetime
 
 from src.core.tracing import AgentTraceCallback, LangSmithTracer
 
-
 # ==================== AgentTraceCallback Tests ====================
 
 

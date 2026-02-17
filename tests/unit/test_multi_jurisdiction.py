@@ -1,4 +1,5 @@
 """Tests for Multi-Jurisdiction Compliance Engine (COMP-003)."""
+
 import pytest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
@@ -11,7 +12,6 @@ from src.core.multi_jurisdiction import (
     ComplianceCheckResult,
     MultiJurisdictionConfig,
 )
-
 
 # ============================================================================
 # Fixtures

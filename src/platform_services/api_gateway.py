@@ -1953,9 +1953,9 @@ class APIGateway:
                             "start_date": req.start_date,
                             "end_date": req.end_date,
                             "status": status_display.get(req.status, req.status),
-                            "requested_date": req.created_at.strftime("%Y-%m-%d")
-                            if req.created_at
-                            else "",
+                            "requested_date": (
+                                req.created_at.strftime("%Y-%m-%d") if req.created_at else ""
+                            ),
                         }
                     )
 
@@ -2043,9 +2043,9 @@ class APIGateway:
                             "type": "Leave Request",
                             "requester": requester_name,
                             "detail": f"{days} days {type_display.get(req.leave_type, req.leave_type)} — {req.start_date} to {req.end_date}",
-                            "requested_date": req.created_at.strftime("%Y-%m-%d")
-                            if req.created_at
-                            else "",
+                            "requested_date": (
+                                req.created_at.strftime("%Y-%m-%d") if req.created_at else ""
+                            ),
                             "priority": "high" if days >= 5 else "medium" if days >= 3 else "low",
                         }
                     )
@@ -2383,9 +2383,11 @@ class APIGateway:
                     "template_id": data["template_id"],
                     "template_name": doc.template_name,
                     "status": "finalized",
-                    "created_at": doc.created_at.isoformat()
-                    if doc.created_at
-                    else datetime.utcnow().isoformat(),
+                    "created_at": (
+                        doc.created_at.isoformat()
+                        if doc.created_at
+                        else datetime.utcnow().isoformat()
+                    ),
                 }
 
                 self._log_request("POST", "/api/v2/documents/generate", True)
@@ -3280,9 +3282,9 @@ class APIGateway:
                                     "id": msg.id,
                                     "role": msg.role,
                                     "content": msg.content,
-                                    "timestamp": msg.created_at.isoformat()
-                                    if msg.created_at
-                                    else None,
+                                    "timestamp": (
+                                        msg.created_at.isoformat() if msg.created_at else None
+                                    ),
                                 }
                                 for msg in messages
                             ],

@@ -1,4 +1,5 @@
 """Tests for PII stripping and redaction module."""
+
 import pytest
 from src.middleware.pii_stripper import PIIStripper, PIIResult
 

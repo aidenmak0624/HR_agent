@@ -343,9 +343,11 @@ For "evolution" comparison:
 
         return {
             "similarities": [
-                f"Both mention: {', '.join(list(common)[:5])}"
-                if common
-                else "Both are HR policy topics"
+                (
+                    f"Both mention: {', '.join(list(common)[:5])}"
+                    if common
+                    else "Both are HR policy topics"
+                )
             ],
             "differences": [
                 "Detailed comparison unavailable (fallback mode)",

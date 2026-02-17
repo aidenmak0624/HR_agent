@@ -1,4 +1,5 @@
 """Structured JSON logging configuration for the HR platform."""
+
 from __future__ import annotations
 
 import json

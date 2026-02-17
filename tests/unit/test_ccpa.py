@@ -1,4 +1,5 @@
 """Tests for CCPA Data Privacy Compliance Module (COMP-002)."""
+
 import pytest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
@@ -11,7 +12,6 @@ from src.core.ccpa import (
     ConsumerRight,
     CCPARequestStatus,
 )
-
 
 # ============================================================================
 # Fixtures

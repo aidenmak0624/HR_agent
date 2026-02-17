@@ -1,4 +1,5 @@
 """Tests for quality assessment module."""
+
 import pytest
 from src.core.quality import (
     QualityAssessor,

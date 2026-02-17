@@ -550,21 +550,21 @@ class NotificationService:
                     session = SessionLocal()
                     try:
                         session.execute(
-                            text(
-                                """
+                            text("""
                                 INSERT INTO in_app_notifications
                                 (id, recipient_id, subject, body, priority, is_read, created_at, metadata)
                                 VALUES (:id, :recipient_id, :subject, :body, :priority, :is_read, :created_at, :metadata)
-                            """
-                            ),
+                            """),
                             {
                                 "id": notification.id,
                                 "recipient_id": notification.recipient_id,
                                 "subject": notification.subject,
                                 "body": notification.body,
-                                "priority": notification.priority.value
-                                if notification.priority
-                                else "medium",
+                                "priority": (
+                                    notification.priority.value
+                                    if notification.priority
+                                    else "medium"
+                                ),
                                 "is_read": False,
                                 "created_at": notification.created_at
                                 or __import__("datetime").datetime.utcnow(),
@@ -692,16 +692,18 @@ class NotificationService:
                         "recipient": notification.recipient_id,
                         "subject": notification.subject,
                         "body": notification.body,
-                        "priority": notification.priority.value
-                        if notification.priority
-                        else "medium",
-                        "channels": [c.value for c in notification.channels]
-                        if notification.channels
-                        else [],
+                        "priority": (
+                            notification.priority.value if notification.priority else "medium"
+                        ),
+                        "channels": (
+                            [c.value for c in notification.channels]
+                            if notification.channels
+                            else []
+                        ),
                         "metadata": notification.metadata or {},
-                        "timestamp": notification.created_at.isoformat()
-                        if notification.created_at
-                        else None,
+                        "timestamp": (
+                            notification.created_at.isoformat() if notification.created_at else None
+                        ),
                     }
                 ).encode("utf-8")
 

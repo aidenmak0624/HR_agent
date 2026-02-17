@@ -1,4 +1,5 @@
 """SQLAlchemy database module with async support and connection pooling."""
+
 from __future__ import annotations
 
 import json

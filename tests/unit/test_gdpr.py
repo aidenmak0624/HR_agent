@@ -1,4 +1,5 @@
 """Tests for GDPR Data Privacy Compliance Module (COMP-001)."""
+
 import pytest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch

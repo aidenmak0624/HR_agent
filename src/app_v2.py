@@ -748,9 +748,9 @@ def get_active_workflows():
                             {
                                 "title": "Manager Approval",
                                 "status": "completed",
-                                "date": req.approved_at.strftime("%b %d")
-                                if req.approved_at
-                                else "Done",
+                                "date": (
+                                    req.approved_at.strftime("%b %d") if req.approved_at else "Done"
+                                ),
                             }
                         )
                         steps.append(

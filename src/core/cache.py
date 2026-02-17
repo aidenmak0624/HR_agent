@@ -1,4 +1,5 @@
 """Redis cache module with graceful fallback."""
+
 from __future__ import annotations
 
 import json

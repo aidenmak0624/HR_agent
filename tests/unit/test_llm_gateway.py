@@ -1,4 +1,5 @@
 """Tests for LLM Gateway module."""
+
 import pytest
 from unittest.mock import MagicMock, patch
 from src.core.llm_gateway import (

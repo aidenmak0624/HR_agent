@@ -204,7 +204,9 @@ def test_state_flow():
         print(f"  current_step: {state['current_step']}")
         print(f"  iterations: {state['iterations']}")
     else:
-        print(f"\n❌ Would NOT execute (decision={decision}, tool_calls={len(state['tool_calls'])})")
+        print(
+            f"\n❌ Would NOT execute (decision={decision}, tool_calls={len(state['tool_calls'])})"
+        )
 
 
 def test_tool_inputs():

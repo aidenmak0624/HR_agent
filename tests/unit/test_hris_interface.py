@@ -1,4 +1,5 @@
 """Tests for HRIS interface and models."""
+
 import pytest
 from datetime import datetime
 from src.connectors.hris_interface import (

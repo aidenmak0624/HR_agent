@@ -228,9 +228,11 @@ class QueryCacheService:
                             entry.last_accessed = datetime.utcnow()
                             self._redis_client.setex(
                                 full_key,
-                                int((entry.expires_at - datetime.utcnow()).total_seconds())
-                                if entry.expires_at
-                                else self.config.default_ttl_seconds,
+                                (
+                                    int((entry.expires_at - datetime.utcnow()).total_seconds())
+                                    if entry.expires_at
+                                    else self.config.default_ttl_seconds
+                                ),
                                 json.dumps(entry.model_dump(default=str)),
                             )
 

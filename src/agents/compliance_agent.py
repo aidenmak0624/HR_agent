@@ -297,9 +297,11 @@ class ComplianceAgent(BaseAgent):
                                 pii_findings.append(
                                     {
                                         "category": category,
-                                        "pii_types": list(pii_map.keys())
-                                        if isinstance(pii_map, dict)
-                                        else ["detected"],
+                                        "pii_types": (
+                                            list(pii_map.keys())
+                                            if isinstance(pii_map, dict)
+                                            else ["detected"]
+                                        ),
                                     }
                                 )
 
@@ -543,9 +545,11 @@ class ComplianceAgent(BaseAgent):
                     "action": action,
                     "jurisdictions_checked": [j.value for j in jurisdictions],
                     "results": formatted_results,
-                    "overall_compliant": all(r["status"] == "compliant" for r in formatted_results)
-                    if formatted_results
-                    else True,
+                    "overall_compliant": (
+                        all(r["status"] == "compliant" for r in formatted_results)
+                        if formatted_results
+                        else True
+                    ),
                     "source": "compliance_system",
                 }
 
@@ -578,9 +582,9 @@ class ComplianceAgent(BaseAgent):
                     "pii_detected": pii_found,
                     "masked_text": masked_text,
                     "pii_categories": list(pii_map.keys()) if isinstance(pii_map, dict) else [],
-                    "pii_count": len(pii_map)
-                    if isinstance(pii_map, dict)
-                    else (1 if pii_found else 0),
+                    "pii_count": (
+                        len(pii_map) if isinstance(pii_map, dict) else (1 if pii_found else 0)
+                    ),
                     "source": "pii_system",
                 }
 

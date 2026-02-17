@@ -380,9 +380,11 @@ class ChatbotTestRunner:
                 "total_tests": len(self.results),
                 "passed_tests": sum(1 for r in self.results if r["pass"]),
                 "failed_tests": sum(1 for r in self.results if not r["pass"]),
-                "pass_rate": sum(1 for r in self.results if r["pass"]) / len(self.results) * 100
-                if self.results
-                else 0,
+                "pass_rate": (
+                    sum(1 for r in self.results if r["pass"]) / len(self.results) * 100
+                    if self.results
+                    else 0
+                ),
             },
             "results": self.results,
         }

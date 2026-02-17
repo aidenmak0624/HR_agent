@@ -611,9 +611,7 @@ class BiasAuditor:
                     severity = (
                         BiasSeverity.CRITICAL
                         if gap_pct > 15
-                        else BiasSeverity.HIGH
-                        if gap_pct > 10
-                        else BiasSeverity.MEDIUM
+                        else BiasSeverity.HIGH if gap_pct > 10 else BiasSeverity.MEDIUM
                     )
                     incidents.append(
                         BiasIncident(
@@ -670,9 +668,7 @@ class BiasAuditor:
                         severity = (
                             BiasSeverity.CRITICAL
                             if gap_pct > 15
-                            else BiasSeverity.HIGH
-                            if gap_pct > 10
-                            else BiasSeverity.MEDIUM
+                            else BiasSeverity.HIGH if gap_pct > 10 else BiasSeverity.MEDIUM
                         )
                         incidents.append(
                             BiasIncident(

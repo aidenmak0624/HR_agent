@@ -591,9 +591,11 @@ class WorkdayConnector(HRISConnector):
         try:
             payload = {
                 "employee_id": request.employee_id,
-                "leave_type": request.leave_type.value
-                if isinstance(request.leave_type, LeaveType)
-                else request.leave_type,
+                "leave_type": (
+                    request.leave_type.value
+                    if isinstance(request.leave_type, LeaveType)
+                    else request.leave_type
+                ),
                 "start_date": request.start_date.isoformat(),
                 "end_date": request.end_date.isoformat(),
                 "reason": request.reason,

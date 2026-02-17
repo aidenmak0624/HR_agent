@@ -196,9 +196,9 @@ class RequestTrace:
             "correlation_id": self.correlation_id,
             "agent_type": self.agent_type,
             "query": self.query,
-            "total_duration_ms": round(self.total_duration_ms, 2)
-            if self.total_duration_ms
-            else None,
+            "total_duration_ms": (
+                round(self.total_duration_ms, 2) if self.total_duration_ms else None
+            ),
             "success": self.success,
             "error": self.error,
             "span_count": len(self.spans),

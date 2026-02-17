@@ -1,4 +1,5 @@
 """Tests for Workday HRIS Connector."""
+
 import pytest
 import requests
 from datetime import datetime, timedelta

@@ -95,15 +95,13 @@ try:
     print("=" * 70)
     print(" COMPLETE CODE FOR _decide_tool_node")
     print("=" * 70)
-    print(
-        """
+    print("""
 # Replace this section in your _decide_tool_node function:
 
 if suggested_tool != "rag_search":
     logger.info(f"DECIDE: Using plan-suggested tool '{suggested_tool}' directly")
     
-    # ✅ CORRECTED TOOL INPUTS:"""
-    )
+    # ✅ CORRECTED TOOL INPUTS:""")
 
     for tool_name, tool_instance in tools.items():
         if tool_name == "rag_search":
@@ -120,9 +118,11 @@ if suggested_tool != "rag_search":
                 params.append(
                     {
                         "name": param_name,
-                        "default": param.default
-                        if param.default != inspect.Parameter.empty
-                        else "REQUIRED",
+                        "default": (
+                            param.default
+                            if param.default != inspect.Parameter.empty
+                            else "REQUIRED"
+                        ),
                     }
                 )
 
@@ -141,8 +141,7 @@ if suggested_tool != "rag_search":
                     print(f'            "{p["name"]}": state.get("{p["name"]}", ""),')
             print(f"        }}")
 
-    print(
-        """    else:
+    print("""    else:
         tool_input = {"query": state.get("query", "")}
     
     state["current_tool"] = suggested_tool
@@ -152,8 +151,7 @@ if suggested_tool != "rag_search":
         "reasoning": f"Plan step explicitly suggests {suggested_tool}"
     })
     return state
-"""
-    )
+""")
 
     print("\n✅ Copy the code above and replace the corresponding section in your agent_brain.py!")
 

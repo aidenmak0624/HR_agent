@@ -1,4 +1,5 @@
 """Tests for RBAC module."""
+
 import pytest
 from src.core.rbac import (
     RoleLevel,

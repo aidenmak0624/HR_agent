@@ -17,6 +17,7 @@ Leave policy by seniority:
   IC:           12 vacation, 10 sick, 3 personal
   Junior/Intern: 10 vacation, 8 sick, 3 personal
 """
+
 from __future__ import annotations
 
 import logging

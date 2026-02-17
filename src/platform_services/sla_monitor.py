@@ -661,9 +661,7 @@ class SLAMonitorService:
                 trend = (
                     "improving"
                     if second_half_avg > first_half_avg
-                    else "degrading"
-                    if second_half_avg < first_half_avg
-                    else "stable"
+                    else "degrading" if second_half_avg < first_half_avg else "stable"
                 )
             else:
                 trend = "insufficient_data"

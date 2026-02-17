@@ -196,9 +196,11 @@ class LocalDBConnector(HRISConnector):
         try:
             new_req = DBLeaveReq(
                 employee_id=int(request.employee_id),
-                leave_type=request.leave_type.value
-                if hasattr(request.leave_type, "value")
-                else str(request.leave_type),
+                leave_type=(
+                    request.leave_type.value
+                    if hasattr(request.leave_type, "value")
+                    else str(request.leave_type)
+                ),
                 start_date=request.start_date,
                 end_date=request.end_date,
                 reason=request.reason,

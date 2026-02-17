@@ -3,6 +3,7 @@
 Note: These tests focus on service interfaces and behavior patterns.
 External dependencies (LLM, RAG, etc.) are mocked at module level.
 """
+
 import pytest
 from unittest.mock import MagicMock, patch
 

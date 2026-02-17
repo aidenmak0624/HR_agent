@@ -15,7 +15,6 @@ from src.api.health_routes import (
     HealthCheckService,
 )
 
-
 # ============================================================================
 # HealthStatus Enum Tests
 # ============================================================================
@@ -471,9 +470,7 @@ class TestCheckMemory:
     @patch("psutil.virtual_memory")
     def test_check_memory_critical(self, mock_mem):
         """Test check_memory critical state."""
-        mock_mem.return_value = MagicMock(
-            percent=95, available=0.5 * 1024**3, total=8 * 1024**3
-        )
+        mock_mem.return_value = MagicMock(percent=95, available=0.5 * 1024**3, total=8 * 1024**3)
         service = HealthCheckService()
         result = service.check_memory()
 

@@ -485,9 +485,7 @@ class CostDashboardService:
                 trend = (
                     "increasing"
                     if recent_avg > early_avg
-                    else "decreasing"
-                    if recent_avg < early_avg
-                    else "stable"
+                    else "decreasing" if recent_avg < early_avg else "stable"
                 )
             else:
                 trend = "stable"

@@ -622,11 +622,11 @@ class ConnectionPoolManager:
                     pool_instance.config.min_connections,
                     int(stats.peak_connections * 1.2),  # 20% buffer above peak
                 ),
-                "action": "increase"
-                if peak_ratio > 0.8
-                else "maintain"
-                if peak_ratio > 0.5
-                else "decrease",
+                "action": (
+                    "increase"
+                    if peak_ratio > 0.8
+                    else "maintain" if peak_ratio > 0.5 else "decrease"
+                ),
             }
 
             return recommendation

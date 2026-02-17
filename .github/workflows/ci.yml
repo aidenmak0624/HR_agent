@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install flake8 black mypy
+          pip install flake8 'black==26.1.0' mypy
           pip install -r requirements.txt
 
       - name: Run Black (check)

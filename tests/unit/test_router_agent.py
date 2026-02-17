@@ -1,4 +1,5 @@
 """Tests for Router Agent module."""
+
 import pytest
 from unittest.mock import MagicMock
 from src.agents.router_agent import RouterAgent

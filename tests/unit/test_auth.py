@@ -1,4 +1,5 @@
 """Tests for JWT authentication module."""
+
 import pytest
 import json
 from datetime import datetime, timedelta

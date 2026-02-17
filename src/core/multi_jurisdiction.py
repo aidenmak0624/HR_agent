@@ -715,9 +715,9 @@ class MultiJurisdictionEngine:
 
             result = {
                 "shortest_deadline_hours": min_hours if min_hours != float("inf") else 72,
-                "shortest_deadline_jurisdiction": min_jurisdiction.value
-                if min_jurisdiction
-                else None,
+                "shortest_deadline_jurisdiction": (
+                    min_jurisdiction.value if min_jurisdiction else None
+                ),
                 "by_jurisdiction": {
                     j.value: self._jurisdiction_configs[j].breach_notification_hours
                     for j in jurisdictions
@@ -915,9 +915,9 @@ class MultiJurisdictionEngine:
                 "total_checks": total_checks,
                 "compliant": compliant_count,
                 "non_compliant": non_compliant_count,
-                "compliance_rate": round(compliant_count / total_checks * 100, 1)
-                if total_checks > 0
-                else 0,
+                "compliance_rate": (
+                    round(compliant_count / total_checks * 100, 1) if total_checks > 0 else 0
+                ),
             }
 
             self._log_audit_trail(

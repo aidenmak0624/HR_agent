@@ -1,4 +1,5 @@
 """Tests for document generation service."""
+
 import pytest
 from datetime import datetime
 from unittest.mock import MagicMock, patch

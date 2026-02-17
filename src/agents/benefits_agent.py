@@ -278,9 +278,9 @@ class BenefitsAgent(BaseAgent):
                             "plan_type": e.plan_type.value,
                             "status": e.status.value,
                             "coverage_level": e.coverage_level.value,
-                            "effective_date": e.effective_date.isoformat()
-                            if e.effective_date
-                            else None,
+                            "effective_date": (
+                                e.effective_date.isoformat() if e.effective_date else None
+                            ),
                         }
                         for e in employee_enrollments
                     ],
@@ -425,9 +425,9 @@ class BenefitsAgent(BaseAgent):
                     "employee_id": employee_id,
                     "plan_count": len(plans_data),
                     "cost_estimates": costs,
-                    "lowest_cost_plan": min(costs.items(), key=lambda x: x[1]["monthly"])[0]
-                    if costs
-                    else None,
+                    "lowest_cost_plan": (
+                        min(costs.items(), key=lambda x: x[1]["monthly"])[0] if costs else None
+                    ),
                     "health_profile": employee_health_profile,
                     "source": "comparison_system",
                 }

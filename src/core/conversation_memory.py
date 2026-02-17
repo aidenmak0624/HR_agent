@@ -333,9 +333,9 @@ class ConversationMemoryStore:
             "active_sessions": session_count,
             "total_messages": total_messages,
             "total_tokens": total_tokens,
-            "avg_messages_per_session": total_messages / session_count
-            if session_count > 0
-            else 0.0,
+            "avg_messages_per_session": (
+                total_messages / session_count if session_count > 0 else 0.0
+            ),
             "avg_tokens_per_session": total_tokens / session_count if session_count > 0 else 0.0,
         }
 

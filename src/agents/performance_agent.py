@@ -410,9 +410,11 @@ class PerformanceAgent(BaseAgent):
                     "target_date": target_date,
                     "weight": weight,
                     "is_smart_compliant": is_smart,
-                    "validation_message": "Goal meets SMART criteria"
-                    if is_smart
-                    else "Review goal for SMART compliance",
+                    "validation_message": (
+                        "Goal meets SMART criteria"
+                        if is_smart
+                        else "Review goal for SMART compliance"
+                    ),
                     "source": "goal_system",
                 }
 
@@ -511,17 +513,19 @@ class PerformanceAgent(BaseAgent):
                     "bias_scan": {
                         "scanned": True,
                         "incidents_found": len(bias_incidents),
-                        "warnings": [
-                            {
-                                "category": str(inc.category.value),
-                                "severity": str(inc.severity.value),
-                                "description": inc.description,
-                                "recommendations": inc.recommendations,
-                            }
-                            for inc in bias_incidents
-                        ]
-                        if bias_incidents
-                        else [],
+                        "warnings": (
+                            [
+                                {
+                                    "category": str(inc.category.value),
+                                    "severity": str(inc.severity.value),
+                                    "description": inc.description,
+                                    "recommendations": inc.recommendations,
+                                }
+                                for inc in bias_incidents
+                            ]
+                            if bias_incidents
+                            else []
+                        ),
                     },
                     "source": "feedback_system",
                 }

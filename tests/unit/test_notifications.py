@@ -1,4 +1,5 @@
 """Tests for notification service module."""
+
 import pytest
 from datetime import datetime
 from unittest.mock import MagicMock, patch
@@ -184,7 +185,7 @@ class TestNotificationTemplates:
         notification = service.send_notification(
             recipient_id="emp-009",
             template_id="workflow_submitted",
-            context={"entity_type": "Promotion"}
+            context={"entity_type": "Promotion"},
             # Missing "approver_role"
         )
 

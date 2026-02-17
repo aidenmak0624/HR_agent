@@ -81,8 +81,7 @@ class SQLiteCheckpointStore:
         """Create checkpoints table if it doesn't exist."""
         conn = sqlite3.connect(self.db_path)
         try:
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS checkpoints (
                     thread_id TEXT NOT NULL,
                     checkpoint_id TEXT NOT NULL,
@@ -91,14 +90,11 @@ class SQLiteCheckpointStore:
                     agent_type TEXT DEFAULT '',
                     PRIMARY KEY (thread_id, checkpoint_id)
                 )
-            """
-            )
-            conn.execute(
-                """
+            """)
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_checkpoints_thread
                 ON checkpoints(thread_id, created_at DESC)
-            """
-            )
+            """)
             conn.commit()
         finally:
             conn.close()

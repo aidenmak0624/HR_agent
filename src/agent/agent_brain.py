@@ -367,7 +367,9 @@ class HRAssistantAgent:
 
         # Get current plan step
         current_plan_step = state["plan"][state["current_step"]]
-        logger.info(f"DECIDE: 📋 Current plan step [{state['current_step']}]: '{current_plan_step}'")
+        logger.info(
+            f"DECIDE: 📋 Current plan step [{state['current_step']}]: '{current_plan_step}'"
+        )
 
         # Extract suggested tool from plan
         suggested_tool = self._extract_tool_from_plan_step(current_plan_step)

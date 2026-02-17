@@ -440,9 +440,9 @@ class OnboardingAgent(BaseAgent):
                         context={
                             "task_title": task.title,
                             "employee_name": checklist.employee_name,
-                            "due_date": task.due_date.strftime("%Y-%m-%d")
-                            if task.due_date
-                            else "TBD",
+                            "due_date": (
+                                task.due_date.strftime("%Y-%m-%d") if task.due_date else "TBD"
+                            ),
                         },
                         priority=NotificationPriority.NORMAL,
                     )
