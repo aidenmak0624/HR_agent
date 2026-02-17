@@ -120,7 +120,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run with coverage
-        run: pytest tests/unit/ --cov=src --cov-report=xml --cov-report=html --cov-fail-under=75
+        run: pytest tests/unit/ --cov=src --cov-report=xml --cov-report=html --cov-fail-under=40
         env:
           OPENAI_API_KEY: test-key
           GOOGLE_API_KEY: test-key

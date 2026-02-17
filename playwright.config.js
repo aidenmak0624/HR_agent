@@ -19,11 +19,11 @@ module.exports = defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1,
   reporter: [
-    ['html', { outputFolder: '/sessions/elegant-sharp-bohr/playwright-report', open: 'never' }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['list'],
   ],
 
-  outputDir: '/sessions/elegant-sharp-bohr/pw-test-results',
+  outputDir: 'test-results',
 
   use: {
     baseURL: 'http://localhost:5050',
