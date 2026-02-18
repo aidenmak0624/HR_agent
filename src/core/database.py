@@ -417,6 +417,28 @@ class QueryLog(Base):
         return f"<QueryLog(agent={self.agent_type}, confidence={self.confidence})>"
 
 
+class NotificationRecord(Base, TimestampMixin):
+    """Notification record for the MCP notification tools.
+
+    Stores in-app / email notifications sent through the MCP server so that
+    clients can query read/unread status and delivery history.
+    """
+
+    __tablename__ = "notification_records"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    recipient_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=False, index=True)
+    subject: Mapped[str] = mapped_column(String(500), nullable=False)
+    body: Mapped[str] = mapped_column(String(5000), nullable=False)
+    priority: Mapped[str] = mapped_column(String(20), default="normal", nullable=False)  # low/normal/high/urgent
+    status: Mapped[str] = mapped_column(String(20), default="sent", nullable=False)  # sent/read/archived
+    channel: Mapped[str] = mapped_column(String(50), default="in_app", nullable=False)  # in_app/email/both
+    read_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    def __repr__(self) -> str:
+        return f"<NotificationRecord(id={self.id}, recipient={self.recipient_id}, status={self.status})>"
+
+
 # Database configuration — PostgreSQL preferred, SQLite fallback for local dev
 import pathlib as _pathlib
 import os as _os

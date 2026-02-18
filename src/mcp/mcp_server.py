@@ -1,19 +1,17 @@
 """
 MCP Server — JSON-RPC 2.0 compatible server for HR Agent tools.
 
-Implements the Model Context Protocol server interface that exposes
-all specialist agent tools via a standardised protocol. Supports:
-- initialize: Server capabilities and info
-- tools/list: Dynamic tool discovery
-- tools/call: Tool invocation with arguments
+Legacy wrapper that preserves backward compatibility while delegating to
+the new HRMCPServer (v2.0) for full MCP protocol support.
 
-This bridges the gap between native Python tool functions and the
-MCP standard, enabling any MCP client to use HR agent tools.
-
-Usage:
+The MCPServer class is kept for existing code that uses:
     server = MCPServer("hr-agent-platform", "1.0.0")
     server.register_agent("leave_request", LeaveRequestAgent(llm))
     response = server.handle_request({"jsonrpc": "2.0", "method": "tools/list", "id": 1})
+
+For new code, prefer:
+    from src.mcp.server import create_mcp_server
+    server = create_mcp_server()
 """
 
 import json
@@ -29,15 +27,18 @@ class MCPServer:
     """
     JSON-RPC 2.0 server implementing the Model Context Protocol.
 
+    This is the LEGACY interface. It supports agent-registered tools via
+    MCPToolRegistry. For the full MCP v2.0 server with resources, prompts,
+    and transport support, use HRMCPServer from src.mcp.server.
+
     Provides three core methods:
     1. initialize — Returns server info and capabilities
     2. tools/list — Returns all available tool descriptors
     3. tools/call — Executes a tool and returns the result
 
-    Attributes:
-        name: Server name (e.g., "hr-agent-platform")
-        version: Server version string
-        registry: MCPToolRegistry managing all tool descriptors
+    Also proxies to HRMCPServer methods when available:
+    4. resources/list, resources/read — Data resources
+    5. prompts/list, prompts/get — Workflow prompts
     """
 
     # MCP Protocol version
@@ -56,12 +57,29 @@ class MCPServer:
         self.registry = MCPToolRegistry()
         self._initialized = False
 
+        # Try to create the new v2 server for extended capabilities
+        self._v2_server = None
+        try:
+            from src.mcp.server import HRMCPServer
+            self._v2_server = HRMCPServer(name=name, version=version)
+            logger.info(f"MCPServer: v2 server available ({self._v2_server.get_stats()['tools']} built-in tools)")
+        except Exception as e:
+            logger.debug(f"MCPServer: v2 server not available ({e}), using legacy mode")
+
         # Method dispatch table
         self._methods = {
             "initialize": self._handle_initialize,
             "tools/list": self._handle_tools_list,
             "tools/call": self._handle_tools_call,
             "ping": self._handle_ping,
+            # Extended methods (delegated to v2 server)
+            "resources/list": self._handle_v2_delegate,
+            "resources/read": self._handle_v2_delegate,
+            "resources/templates/list": self._handle_v2_delegate,
+            "prompts/list": self._handle_v2_delegate,
+            "prompts/get": self._handle_v2_delegate,
+            "logging/setLevel": self._handle_v2_delegate,
+            "notifications/initialized": self._handle_v2_delegate,
         }
 
         logger.info(f"MCPServer: Created '{name}' v{version}")
@@ -109,7 +127,10 @@ class MCPServer:
             return self._error_response(req_id, -32601, f"Method not found: {method}")
 
         try:
-            result = handler(params)
+            if handler == self._handle_v2_delegate:
+                result = self._handle_v2_delegate(params, method=method)
+            else:
+                result = handler(params)
             return self._success_response(req_id, result)
         except Exception as e:
             logger.error(f"MCPServer: Error handling {method}: {e}")
@@ -143,13 +164,18 @@ class MCPServer:
             Server info including name, version, protocol version, and capabilities.
         """
         self._initialized = True
+        capabilities = {
+            "tools": {"listChanged": False},
+        }
+        # Add extended capabilities if v2 server is available
+        if self._v2_server:
+            capabilities["resources"] = {"subscribe": False, "listChanged": False}
+            capabilities["prompts"] = {"listChanged": False}
+            capabilities["logging"] = {}
+
         return {
             "protocolVersion": self.PROTOCOL_VERSION,
-            "capabilities": {
-                "tools": {
-                    "listChanged": False,
-                },
-            },
+            "capabilities": capabilities,
             "serverInfo": {
                 "name": self.name,
                 "version": self.version,
@@ -160,24 +186,37 @@ class MCPServer:
         """
         Handle tools/list request — return all available tools.
 
-        Returns:
-            Dict with "tools" key containing list of tool descriptors.
+        Merges agent-registered tools with v2 built-in tools.
         """
+        # Agent-registered tools
         agent_filter = params.get("agent_type")
-        tools = self.registry.list_tools(agent_type=agent_filter)
-        return {"tools": tools}
+        legacy_tools = self.registry.list_tools(agent_type=agent_filter)
+
+        # v2 built-in tools
+        v2_tools = []
+        if self._v2_server and not agent_filter:
+            v2_result = self._v2_server._handle_tools_list(params)
+            v2_tools = v2_result.get("tools", [])
+
+        # Merge (v2 tools first, then agent-registered)
+        seen_names = set()
+        merged = []
+        for tool in v2_tools:
+            if tool["name"] not in seen_names:
+                merged.append(tool)
+                seen_names.add(tool["name"])
+        for tool in legacy_tools:
+            if tool["name"] not in seen_names:
+                merged.append(tool)
+                seen_names.add(tool["name"])
+
+        return {"tools": merged}
 
     def _handle_tools_call(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Handle tools/call request — execute a tool.
 
-        Args:
-            params: Must contain:
-                - name: Fully qualified tool name
-                - arguments: Dict with tool arguments
-
-        Returns:
-            Tool execution result in MCP content format.
+        Tries v2 built-in tools first, then falls back to agent-registered tools.
         """
         tool_name = params.get("name", "")
         arguments = params.get("arguments", {})
@@ -185,12 +224,34 @@ class MCPServer:
         if not tool_name:
             raise ValueError("Tool name is required")
 
+        # Try v2 built-in tools first
+        if self._v2_server:
+            try:
+                return self._v2_server._handle_tools_call(params)
+            except KeyError:
+                pass  # Not a v2 tool, try legacy
+
+        # Fall back to agent-registered tools
         result = self.registry.call_tool(tool_name, arguments)
         return result
 
     def _handle_ping(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle ping request — health check."""
         return {"status": "ok"}
+
+    def _handle_v2_delegate(self, params: Dict[str, Any], method: str = "") -> Dict[str, Any]:
+        """Delegate to v2 server for extended MCP methods."""
+        if not self._v2_server:
+            raise ValueError(f"Method {method} requires v2 server (not available)")
+        response = self._v2_server.handle_request({
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": params,
+            "id": "delegate",
+        })
+        if "error" in response:
+            raise Exception(response["error"]["message"])
+        return response.get("result", {})
 
     # ==================== Response Helpers ====================
 
@@ -219,11 +280,18 @@ class MCPServer:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get server statistics."""
-        return {
+        stats = {
             "server_name": self.name,
             "version": self.version,
             "protocol_version": self.PROTOCOL_VERSION,
             "initialized": self._initialized,
-            "total_tools": self.registry.get_tool_count(),
+            "agent_registered_tools": self.registry.get_tool_count(),
             "agent_types": self.registry.get_agent_types(),
         }
+        if self._v2_server:
+            v2_stats = self._v2_server.get_stats()
+            stats["v2_builtin_tools"] = v2_stats["tools"]
+            stats["v2_resources"] = v2_stats["resources"]
+            stats["v2_resource_templates"] = v2_stats["resource_templates"]
+            stats["v2_prompts"] = v2_stats["prompts"]
+        return stats

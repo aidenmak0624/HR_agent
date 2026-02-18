@@ -892,6 +892,49 @@ def register_legacy_api():
         logger.warning(f"⚠️  Legacy API not available: {e}")
 
 
+# ==================== MCP SERVER REGISTRATION ====================
+
+
+def register_mcp_server():
+    """Register MCP (Model Context Protocol) server blueprint.
+
+    Exposes the HR Agent tools, resources, and prompts via the MCP protocol.
+    Endpoints:
+        POST /mcp/       — JSON-RPC 2.0 MCP requests (legacy)
+        GET  /mcp/sse     — Server-Sent Events stream (legacy)
+        GET  /mcp/health  — MCP server health check (legacy)
+
+    The official MCP SDK server is also registered and can be started
+    independently via ``python run_mcp.py`` (stdio / SSE / streamable-http).
+    """
+    try:
+        from src.mcp.server import create_mcp_server
+
+        mcp_server = create_mcp_server()
+        mcp_blueprint = mcp_server.get_flask_blueprint()
+        app.register_blueprint(mcp_blueprint, url_prefix="/mcp")
+
+        # Store reference for other components
+        app.mcp_server = mcp_server
+
+        stats = mcp_server.get_stats()
+        logger.info(
+            f"✅ MCP server registered at /mcp/ "
+            f"({stats['tools']} tools, {stats['resources']} resources, "
+            f"{stats['prompts']} prompts)"
+        )
+    except Exception as e:
+        logger.warning(f"⚠️  MCP server registration failed: {e}")
+
+    # Also make the official SDK FastMCP server importable for standalone usage
+    try:
+        from src.mcp.fastmcp_server import mcp as _fastmcp  # noqa: F401
+        app.fastmcp_server = _fastmcp
+        logger.info("✅ FastMCP (official SDK) server loaded — run via 'python run_mcp.py'")
+    except Exception as e:
+        logger.warning(f"⚠️  FastMCP server not available: {e}")
+
+
 # ==================== STARTUP BANNER ====================
 
 
@@ -923,12 +966,18 @@ def print_startup_banner():
 ║     GET    /                      - API overview              ║
 ║     GET    /api/v2/health         - System health             ║
 ║                                                               ║
+║  🤖 MCP (Model Context Protocol)                             ║
+║     POST   /mcp/                  - JSON-RPC 2.0 endpoint     ║
+║     GET    /mcp/sse               - SSE event stream          ║
+║     GET    /mcp/health            - MCP server health         ║
+║                                                               ║
 ║  ⚙️  SERVICE ARCHITECTURE                                    ║
 ║     - AgentService: Multi-agent orchestration                ║
 ║     - LLMService: LLM provider integration (Google Gemini)    ║
 ║     - RAGService: Document retrieval & search                 ║
 ║     - RouterAgent: Intent classification & dispatch           ║
 ║     - APIGateway: Rate limiting & request handling            ║
+║     - MCPServer: Model Context Protocol (22 tools)           ║
 ║                                                               ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Running on port 5050                                          ║
@@ -981,6 +1030,7 @@ def create_app():
     # Register API blueprints
     register_api_v2()
     register_legacy_api()
+    register_mcp_server()
 
     # Print startup banner
     print_startup_banner()
