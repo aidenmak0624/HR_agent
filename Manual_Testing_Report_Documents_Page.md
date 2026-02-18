@@ -98,6 +98,28 @@ However, the "Additional Information" field does allow customization to add engi
 ### Overall Verdict
 The documents page **fits well for general business HR needs**. The UI is polished, the generation flow works (aside from the attribution bug), and the template selection covers standard HR document types. For engineering-specific use, it's adequate but could be enhanced with dedicated templates.
 
+---
+
+## Bug Fix Verification (commit 9a42225)
+
+All 3 bugs confirmed **FIXED** on the live site:
+
+| Bug | Status | Evidence |
+|-----|--------|----------|
+| **Bug 1** (attribution) | ✅ FIXED | Dropdown now uses numeric DB IDs (e.g. `value: "62"` for Angela Torres). Generated `Offer_Letter_Angela_Torres.pdf` correctly attributed to **Angela Torres** |
+| **Bug 2** (sidebar) | ✅ FIXED | `data-min-role` changed to `employee`. "Documents" link visible on both Documents and Dashboard pages |
+| **Bug 3** (favicon) | ✅ FIXED | Inline SVG favicon `👥` present in `<head>`, no more 404 |
+
+### Sidebar Now Visible (Bug 2)
+````carousel
+![Documents link visible in sidebar on Documents page](/Users/chinweimak/.gemini/antigravity/brain/a156ffb6-6010-434b-835a-c66de383099b/favicon_and_sidebar_check_1771381054092.png)
+<!-- slide -->
+![Documents link visible in sidebar on Dashboard page](/Users/chinweimak/.gemini/antigravity/brain/a156ffb6-6010-434b-835a-c66de383099b/dashboard_sidebar_check_1771381079528.png)
+````
+
+### Employee Attribution Fixed (Bug 1)
+![Recent docs showing Offer_Letter_Angela_Torres.pdf correctly attributed to Angela Torres](/Users/chinweimak/.gemini/antigravity/brain/a156ffb6-6010-434b-835a-c66de383099b/recent_docs_after_1771381202719.png)
+
 ## Browser Recordings
 ![Documents page load and initial test](/Users/chinweimak/.gemini/antigravity/brain/a156ffb6-6010-434b-835a-c66de383099b/.system_generated/recordings/documents_page_load.webp)
 ![Template generation and dark mode testing](/Users/chinweimak/.gemini/antigravity/brain/a156ffb6-6010-434b-835a-c66de383099b/.system_generated/recordings/template_generation_test.webp)

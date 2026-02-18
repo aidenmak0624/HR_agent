@@ -751,6 +751,9 @@ class APIGateway:
                 "   Try: 'I need an employment certificate'\n\n"
                 "🎓 **Onboarding** — New hire guides, orientation schedules, setup checklists.\n"
                 "   Try: 'I'm a new employee, what should I do?'\n\n"
+                "🔒 **Compliance & GDPR** — Data privacy rights, GDPR requests, employment law.\n"
+                "   Try: 'What are my GDPR rights?' or 'How do I submit a data access request?'\n\n"
+                "⚠️ *Note: Benefits enrollment changes and external HRIS integrations are coming soon.*\n\n"
                 "Just ask me anything HR-related!",
                 "agent_type": "general_assistant",
                 "confidence": 0.95,
@@ -838,7 +841,8 @@ class APIGateway:
                 "Retirement: 401(k) via Fidelity — dollar-for-dollar match on first 4%, plus 50¢ on next 2% (max 5% match). Auto-enrolled at 6%.\n\n"
                 "Other: Dental (100% preventive), Vision ($10 copay), Life Insurance (2x salary), STD/LTD (60% salary), "
                 "EAP (8 free sessions), $7,500 tuition reimbursement, $75/mo gym subsidy, $500 wellness stipend.\n\n"
-                "Open enrollment: November 1-15. Contact: benefits@technova.com | ext. 2105",
+                "Open enrollment: November 1-15. Contact: benefits@technova.com | ext. 2105\n\n"
+                "⚠️ *Self-service enrollment changes are coming soon. For now, contact benefits@technova.com to make changes.*",
                 "agent_type": "benefits_agent",
                 "confidence": 0.90,
             },
@@ -1728,6 +1732,111 @@ class APIGateway:
                 "Contact: leave@technova.com | ext. 2110",
                 "agent_type": "leave_agent",
                 "confidence": 0.88,
+            },
+            # --- GDPR & DATA PRIVACY ---
+            "gdpr data access request": {
+                "answer": "GDPR Data Subject Access Request (DSAR) at TechNova:\n\n"
+                "As an employee or EU/EEA data subject, you have the right to request access to all "
+                "personal data TechNova holds about you under GDPR Article 15.\n\n"
+                "**How to submit a DSAR:**\n"
+                "1. Email privacy@technova.com with subject line 'DSAR — [Your Name]'\n"
+                "2. Include your full name, employee ID, and the specific data you'd like\n"
+                "3. Our Data Protection Officer (DPO) will acknowledge within 3 business days\n"
+                "4. Full response provided within **30 calendar days** (extendable to 90 days for complex requests)\n\n"
+                "**Data you can request:**\n"
+                "• Personnel file and employment records\n"
+                "• Payroll and compensation history\n"
+                "• Performance reviews and feedback\n"
+                "• Time and attendance records\n"
+                "• Benefits enrollment data\n"
+                "• Any automated decision-making data\n\n"
+                "Your data will be provided in a commonly used electronic format (PDF/CSV).\n"
+                "Contact: privacy@technova.com | DPO: dpo@technova.com | ext. 2150",
+                "agent_type": "compliance_agent",
+                "confidence": 0.95,
+            },
+            "gdpr": {
+                "answer": "TechNova GDPR Compliance Overview:\n\n"
+                "TechNova complies with the EU General Data Protection Regulation (GDPR) for all employees, "
+                "candidates, and contractors in the EU/EEA.\n\n"
+                "**Your Data Subject Rights:**\n"
+                "• **Right of Access** (Art. 15) — Request a copy of your personal data\n"
+                "• **Right to Rectification** (Art. 16) — Correct inaccurate data\n"
+                "• **Right to Erasure** (Art. 17) — Request deletion (subject to legal retention)\n"
+                "• **Right to Restrict Processing** (Art. 18) — Limit how your data is used\n"
+                "• **Right to Data Portability** (Art. 20) — Receive your data in machine-readable format\n"
+                "• **Right to Object** (Art. 21) — Object to certain processing activities\n\n"
+                "**Data Protection Officer:** dpo@technova.com\n"
+                "**Privacy Team:** privacy@technova.com | ext. 2150\n\n"
+                "To exercise any right, email privacy@technova.com. Response within 30 days.",
+                "agent_type": "compliance_agent",
+                "confidence": 0.93,
+            },
+            "data access request": {
+                "answer": "Data Subject Access Request (DSAR) at TechNova:\n\n"
+                "You can request access to all personal data we hold about you.\n\n"
+                "**Steps:**\n"
+                "1. Email privacy@technova.com with 'DSAR' in the subject line\n"
+                "2. Provide your name and employee ID for verification\n"
+                "3. Specify the data categories you're interested in\n"
+                "4. Response within 30 calendar days\n\n"
+                "Available data: Personnel records, payroll history, performance reviews, "
+                "attendance, benefits enrollment, automated decision data.\n\n"
+                "Contact: privacy@technova.com | DPO: dpo@technova.com | ext. 2150",
+                "agent_type": "compliance_agent",
+                "confidence": 0.93,
+            },
+            "data subject": {
+                "answer": "Data Subject Rights under GDPR at TechNova:\n\n"
+                "As a data subject, you have the following rights:\n\n"
+                "• **Access** — Request copies of your personal data (within 30 days)\n"
+                "• **Rectification** — Have inaccurate data corrected\n"
+                "• **Erasure** — Request deletion of your data (where legally permitted)\n"
+                "• **Portability** — Receive data in CSV/PDF format\n"
+                "• **Restriction** — Limit processing in certain situations\n"
+                "• **Object** — Object to processing based on legitimate interests\n\n"
+                "Email privacy@technova.com to exercise any of these rights.\n"
+                "Contact: DPO: dpo@technova.com | ext. 2150",
+                "agent_type": "compliance_agent",
+                "confidence": 0.93,
+            },
+            "data privacy": {
+                "answer": "TechNova Data Privacy Practices:\n\n"
+                "We process employee data under strict privacy principles:\n\n"
+                "• **Lawful basis**: Employment contract, legal obligation, legitimate interest, or consent\n"
+                "• **Data minimization**: We only collect what's necessary\n"
+                "• **Security**: Encryption at rest and in transit, access controls, audit logging\n"
+                "• **Retention**: Data kept only as long as necessary (3-7 years depending on type)\n"
+                "• **Breach notification**: Within 72 hours to authorities, without undue delay to affected individuals\n\n"
+                "Our Data Protection Officer oversees all privacy matters.\n"
+                "Contact: privacy@technova.com | DPO: dpo@technova.com | ext. 2150",
+                "agent_type": "compliance_agent",
+                "confidence": 0.90,
+            },
+            "data deletion": {
+                "answer": "Right to Erasure ('Right to Be Forgotten') at TechNova:\n\n"
+                "Under GDPR Article 17, you may request deletion of your personal data when:\n"
+                "• Data is no longer necessary for its original purpose\n"
+                "• You withdraw consent (where consent was the basis)\n"
+                "• Data was unlawfully processed\n\n"
+                "**Limitations:** Some data must be retained for legal compliance:\n"
+                "• Tax records: 7 years\n"
+                "• Payroll records: 3 years\n"
+                "• Health & safety records: As long as legally required\n\n"
+                "To request: Email privacy@technova.com with 'Data Deletion Request' in the subject.\n"
+                "Response within 30 days. Contact: DPO: dpo@technova.com | ext. 2150",
+                "agent_type": "compliance_agent",
+                "confidence": 0.90,
+            },
+            "right to be forgotten": {
+                "answer": "Right to Be Forgotten (GDPR Article 17) at TechNova:\n\n"
+                "You can request erasure of your personal data. Submit your request to "
+                "privacy@technova.com.\n\n"
+                "Note: Certain records must be retained by law (tax: 7 years, payroll: 3 years). "
+                "The DPO will explain which data can and cannot be deleted.\n"
+                "Response within 30 days. Contact: dpo@technova.com | ext. 2150",
+                "agent_type": "compliance_agent",
+                "confidence": 0.90,
             },
         }
 
@@ -2629,6 +2738,37 @@ class APIGateway:
                 metrics.setdefault("department_headcount", {"Engineering": 45})
 
             metrics.setdefault("monthly_queries", [45, 52, 38, 65, 72, 58])
+
+            # Provide analytics chart data with sample-data labels
+            metrics.setdefault(
+                "turnover_trend", [2.1, 2.3, 1.8, 2.5, 3.2, 2.8, 2.4, 2.9, 3.1, 2.6, 2.2, 2.0]
+            )
+            metrics.setdefault(
+                "leave_utilization", {"Vacation": 65, "Sick Leave": 45, "Personal Days": 30}
+            )
+            metrics.setdefault(
+                "agent_performance",
+                {
+                    "Policy Agent": 35,
+                    "Leave Agent": 25,
+                    "Benefits Agent": 20,
+                    "Payroll Agent": 10,
+                    "Onboarding Agent": 10,
+                },
+            )
+
+            # Flag which fields use sample/demo data vs live DB data
+            metrics["data_sources"] = {
+                "total_employees": "live",
+                "open_leave_requests": "live",
+                "pending_approvals": "live",
+                "department_headcount": "live",
+                "turnover_trend": "sample",
+                "leave_utilization": "sample",
+                "agent_performance": "sample",
+                "monthly_queries": "sample",
+            }
+
             # Include role in response so frontend knows the data scope
             metrics["role"] = user_role
 

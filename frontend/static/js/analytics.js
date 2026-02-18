@@ -44,6 +44,15 @@ function initCharts(data) {
     initTurnoverChart(data.turnover_trend || []);
     initLeaveChart(data.leave_utilization || {});
     initAgentChart(data.agent_performance || {});
+
+    // Show data source notice if sample data is present
+    const notice = document.getElementById('data-source-notice');
+    if (notice && data.data_sources) {
+        const hasSample = Object.values(data.data_sources).some(v => v === 'sample');
+        notice.style.display = hasSample ? 'block' : 'none';
+    } else if (notice) {
+        notice.style.display = 'block'; // show by default as safety
+    }
 }
 
 // Headcount by Department Chart

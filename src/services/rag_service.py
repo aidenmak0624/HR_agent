@@ -288,7 +288,7 @@ class RAGService:
     # ==================== SAMPLE DOCUMENTS ====================
 
     def _create_sample_documents(self) -> None:
-        """Create sample HR policy documents for demo."""
+        """Create sample HR policy documents for demo and ingest all policy files."""
         logger.info("Creating sample HR documents...")
 
         data_dir = Path("./data/policies")
@@ -410,3 +410,36 @@ EMPLOYEE BENEFITS GUIDE
                     logger.warning(f"Failed to create/ingest {filename}: {e}")
 
         logger.info("✅ Sample documents created and indexed")
+
+        # Ingest all policy files from data/policies/ (covers GDPR, FMLA, etc.)
+        self._ingest_all_policy_files(data_dir)
+
+    def _ingest_all_policy_files(self, data_dir: Path) -> None:
+        """Ingest all .txt policy files not already indexed."""
+        compliance_keywords = ["gdpr", "fmla", "ada", "discrimination", "harassment", "safety"]
+        for txt_file in sorted(data_dir.glob("*.txt")):
+            filename = txt_file.name
+            # Skip files already handled as sample docs
+            if filename in ("remote_work_policy.txt", "pto_policy.txt", "benefits_guide.txt"):
+                continue
+            try:
+                name_lower = filename.lower()
+                if any(kw in name_lower for kw in compliance_keywords):
+                    collection = "compliance_docs"
+                    doc_type = "compliance"
+                elif "benefit" in name_lower:
+                    collection = "benefits_guides"
+                    doc_type = "benefit"
+                else:
+                    collection = "hr_policies"
+                    doc_type = "policy"
+
+                chunk_count = self.rag_pipeline.ingest_document(
+                    file_path=str(txt_file),
+                    doc_type=doc_type,
+                    collection=collection,
+                    metadata={"source": filename},
+                )
+                logger.info(f"Ingested {chunk_count} chunks from {filename} → {collection}")
+            except Exception as e:
+                logger.warning(f"Failed to ingest {filename}: {e}")
