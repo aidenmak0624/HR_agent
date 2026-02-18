@@ -16,21 +16,21 @@ test.describe('Role Switching & Navigation', () => {
     await page.waitForTimeout(500);
 
     // Role-gated items should be hidden for employee
-    // Visible: dashboard, chat, leave, settings
-    // Hidden: workflows (manager+), documents (hr_admin), analytics (manager+)
+    // Visible: dashboard, chat, leave, settings, documents
+    // Hidden: workflows (manager+), analytics (manager+)
     const visibleItems = page.locator('.sidebar-nav .nav-item:not([style*="display: none"]):not(.hidden)');
     // We check that the gated items are hidden
     const workflowsItem = page.locator('.nav-item[data-page="workflows"]');
     const documentsItem = page.locator('.nav-item[data-page="documents"]');
     const analyticsItem = page.locator('.nav-item[data-page="analytics"]');
 
-    // These should be hidden via applyRoleVisibility
+    // Workflows and Analytics should be hidden via applyRoleVisibility
     await expect(workflowsItem).toBeHidden();
-    await expect(documentsItem).toBeHidden();
+    await expect(documentsItem).toBeVisible(); // Documents visible to all roles
     await expect(analyticsItem).toBeHidden();
   });
 
-  test('Manager should see workflows and analytics but not documents', async ({ page }) => {
+  test('Manager should see workflows, analytics, and documents', async ({ page }) => {
     await goToPage(page, '/dashboard', 'manager');
     await page.waitForTimeout(500);
 
@@ -40,7 +40,7 @@ test.describe('Role Switching & Navigation', () => {
 
     await expect(workflowsItem).toBeVisible();
     await expect(analyticsItem).toBeVisible();
-    await expect(documentsItem).toBeHidden();
+    await expect(documentsItem).toBeVisible(); // Documents visible to all roles
   });
 
   test('HR Admin should see all 7 nav items', async ({ page }) => {
