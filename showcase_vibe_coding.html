@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding Journey — Building an Enterprise Platform with AI</title>
+<style>
+:root{--bg:#faf9f7;--bg2:#f5f3ef;--card:#fff;--bdr:#e7e5e0;--tx:#1c1917;--txm:#78716c;--pri:#9333ea;--pri-l:#c084fc;--pri-bg:#faf5ff;--acc:#ea580c;--acc-bg:#fff7ed;--grn:#16a34a;--grn-bg:#f0fdf4;--blu:#2563eb;--blu-bg:#eff6ff;--cyn:#0891b2;--cyn-bg:#ecfeff;--warm:#292524}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.7}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1c1917 0%,#292524 30%,#44403c 100%);color:#fff;padding:80px 24px 64px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 70%,rgba(147,51,234,.2) 0%,transparent 50%),radial-gradient(circle at 70% 30%,rgba(234,88,12,.15) 0%,transparent 50%)}
+.hero-inner{position:relative;max-width:900px;margin:0 auto}
+.badge{display:inline-block;background:rgba(147,51,234,.2);border:1px solid rgba(147,51,234,.4);color:#c084fc;padding:6px 18px;border-radius:99px;font-size:.82rem;font-weight:600;letter-spacing:.5px;margin-bottom:24px}
+.hero h1{font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:20px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#c084fc,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.1rem;color:#a8a29e;max-width:700px;margin:0 auto 36px}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.hero-stat .num{font-size:2.2rem;font-weight:800;color:#c084fc}
+.hero-stat .lbl{font-size:.82rem;color:#a8a29e;margin-top:2px}
+
+/* NAV */
+.nav{display:flex;justify-content:center;gap:4px;background:#fff;border-bottom:2px solid var(--bdr);padding:0 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.06);flex-wrap:wrap}
+.nav button{padding:14px 20px;border:none;background:none;cursor:pointer;font-size:.88rem;color:var(--txm);font-weight:600;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.nav button:hover{color:var(--pri);background:var(--pri-bg)}
+.nav button.active{color:var(--pri);border-bottom-color:var(--pri)}
+
+.container{max-width:1100px;margin:0 auto;padding:40px 20px}
+.section{display:none}.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:16px;border:1px solid var(--bdr);padding:32px;margin-bottom:28px;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.card h2{font-size:1.5rem;color:var(--warm);margin-bottom:8px}
+.card .sub{color:var(--txm);font-size:.95rem;margin-bottom:20px}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:40px}
+.timeline::before{content:'';position:absolute;left:16px;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--pri),var(--acc));border-radius:2px}
+.tl-item{position:relative;margin-bottom:36px}
+.tl-item::before{content:'';position:absolute;left:-30px;top:6px;width:16px;height:16px;border-radius:50%;border:3px solid var(--pri-l);background:#fff}
+.tl-item.done::before{background:var(--grn);border-color:var(--grn)}
+.tl-item .tl-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.tl-item .tl-date{font-size:.78rem;color:var(--txm);background:var(--bg2);padding:2px 10px;border-radius:99px}
+.tl-item .tl-dur{font-size:.78rem;color:var(--pri);background:var(--pri-bg);padding:2px 10px;border-radius:99px;font-weight:600}
+.tl-item h3{font-size:1.05rem;color:var(--warm)}
+.tl-item p{font-size:.9rem;color:#57534e;margin-top:4px}
+.tl-item .tl-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.tl-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600}
+.tl-tag-grn{background:var(--grn-bg);color:var(--grn);border:1px solid #bbf7d0}
+.tl-tag-blu{background:var(--blu-bg);color:var(--blu);border:1px solid #bfdbfe}
+.tl-tag-pur{background:var(--pri-bg);color:var(--pri);border:1px solid #e9d5ff}
+.tl-tag-org{background:var(--acc-bg);color:var(--acc);border:1px solid #fed7aa}
+
+/* AI TOOL CARD */
+.tool-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:24px;text-align:center;transition:transform .2s}
+.tool-card:hover{transform:translateY(-2px)}
+.tool-card .icon{font-size:2.2rem;margin-bottom:10px}
+.tool-card h3{font-size:1rem;margin-bottom:6px}
+.tool-card p{font-size:.85rem;color:var(--txm)}
+.tool-card .pct{font-size:1.6rem;font-weight:800;color:var(--pri);margin-top:8px}
+
+/* QUOTE */
+.quote{background:linear-gradient(135deg,var(--pri-bg),var(--acc-bg));border-left:4px solid var(--pri);padding:24px 28px;border-radius:0 14px 14px 0;margin:24px 0;font-style:italic;color:#44403c;font-size:1.05rem}
+.quote cite{display:block;margin-top:8px;font-style:normal;font-size:.85rem;color:var(--txm);font-weight:600}
+
+/* METRIC BAR */
+.metric-bar{margin:12px 0}
+.metric-bar .label{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px}
+.metric-bar .bar{height:10px;background:var(--bg2);border-radius:99px;overflow:hidden}
+.metric-bar .fill{height:100%;border-radius:99px;transition:width .6s}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{background:var(--warm);color:#fff;padding:12px 16px;text-align:left;font-weight:600}
+td{padding:12px 16px;border-bottom:1px solid var(--bdr)}
+tr:hover td{background:#fafaf9}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 20px;color:var(--txm);font-size:.85rem;border-top:1px solid var(--bdr);margin-top:40px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<div class="hero-inner">
+  <div class="badge">VIBE CODING CASE STUDY</div>
+  <h1>From Zero to <em>Enterprise Platform</em> with AI-Assisted Development</h1>
+  <p>How a solo developer built a 51,000-line enterprise HR platform with 2,079 tests across 9 iterations using Claude Code, GitHub Copilot, and modern AI-powered workflows.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">9</div><div class="lbl">Dev Iterations</div></div>
+    <div class="hero-stat"><div class="num">51K</div><div class="lbl">Lines of Code</div></div>
+    <div class="hero-stat"><div class="num">2,079</div><div class="lbl">Tests Written</div></div>
+    <div class="hero-stat"><div class="num">111</div><div class="lbl">Python Modules</div></div>
+  </div>
+</div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="show('philosophy')">Philosophy</button>
+  <button onclick="show('tools')">AI Toolkit</button>
+  <button onclick="show('timeline')">Build Timeline</button>
+  <button onclick="show('testing')">Testing Story</button>
+  <button onclick="show('metrics')">Metrics & Learnings</button>
+</div>
+
+<div class="container">
+
+<!-- ═══ PHILOSOPHY ═══ -->
+<div id="philosophy" class="section active">
+  <div class="card">
+    <h2>What Is Vibe Coding?</h2>
+    <p class="sub">A development philosophy where AI handles the bulk of code generation while the human focuses on architecture, quality, and product direction.</p>
+    <p style="font-size:.95rem;color:#44403c;margin-bottom:16px">Vibe coding isn't about letting AI write random code. It's a disciplined workflow where you describe what you want at a high level — the architecture, the constraints, the user experience — and then collaborate with AI tools to produce production-quality code at a pace that would be impossible alone.</p>
+    <p style="font-size:.95rem;color:#44403c">The key insight: <strong>AI excels at the "how" (implementation) while humans excel at the "what" and "why" (product decisions, architecture, quality standards).</strong></p>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="border-left:4px solid var(--pri)">
+      <h2>Human Responsibilities</h2>
+      <ul style="list-style:none;padding:0">
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🧭 Architecture decisions and system design</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🎯 Product requirements and acceptance criteria</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🔍 Code review and quality gating</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🧪 Testing strategy and edge case identification</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🔒 Security and compliance requirements</li>
+        <li style="padding:8px 0">📋 Iteration planning and prioritization</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:4px solid var(--acc)">
+      <h2>AI Responsibilities</h2>
+      <ul style="list-style:none;padding:0">
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">⚡ Rapid code generation from specs</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🧪 Comprehensive test suite generation</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🔧 Boilerplate and CRUD scaffolding</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">📝 Documentation and docstrings</li>
+        <li style="padding:8px 0;border-bottom:1px solid var(--bdr)">🐛 Bug identification and fix suggestions</li>
+        <li style="padding:8px 0">🔄 Refactoring and code cleanup</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quote">
+    "The platform doesn't sleep. An AI-powered HR assistant means employees in any timezone get instant, policy-accurate answers at 2 AM or 2 PM — no waiting for HR to open in another country. That's the real value of an AI agent: it solves the international timezone problem."
+    <cite>— Core design principle for 24/7 global HR support</cite>
+  </div>
+</div>
+
+<!-- ═══ AI TOOLKIT ═══ -->
+<div id="tools" class="section">
+  <div class="card">
+    <h2>The AI-Powered Development Stack</h2>
+    <p class="sub">Three AI tools working in concert, each playing a distinct role in the development workflow.</p>
+  </div>
+
+  <div class="g3">
+    <div class="tool-card" style="border-top:4px solid var(--pri)">
+      <div class="icon">🟣</div>
+      <h3>Claude Code</h3>
+      <p>Primary development engine. Used for architecture design, multi-file code generation, complex agent logic, testing strategies, and iterative refinement via terminal-based conversations.</p>
+      <div class="pct">~70%</div>
+      <p style="font-size:.78rem;color:var(--txm)">of total code output</p>
+    </div>
+    <div class="tool-card" style="border-top:4px solid var(--blu)">
+      <div class="icon">🤖</div>
+      <h3>GitHub Copilot</h3>
+      <p>In-editor companion for real-time autocomplete, inline suggestions, and project integration. Excels at filling in patterns, completing functions from context, and maintaining code consistency.</p>
+      <div class="pct">~20%</div>
+      <p style="font-size:.78rem;color:var(--txm)">inline completions & integration</p>
+    </div>
+    <div class="tool-card" style="border-top:4px solid var(--cyn)">
+      <div class="icon">🎭</div>
+      <h3>Playwright</h3>
+      <p>AI-assisted browser testing framework. Used for end-to-end UI validation with 14 spec files covering login, dashboard, chat, role switching, mobile responsiveness, and API health.</p>
+      <div class="pct">14</div>
+      <p style="font-size:.78rem;color:var(--txm)">browser test suites</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How the Tools Work Together</h2>
+    <p class="sub">Each tool has a sweet spot — the key is knowing when to use which.</p>
+    <table>
+      <tr><th>Task</th><th>Primary Tool</th><th>Why</th></tr>
+      <tr><td>Design new agent architecture</td><td><strong>Claude Code</strong></td><td>Multi-file reasoning, understands system-wide implications</td></tr>
+      <tr><td>Implement agent from spec</td><td><strong>Claude Code</strong></td><td>Generates complete modules with tests in one pass</td></tr>
+      <tr><td>Fill in function bodies</td><td><strong>Copilot</strong></td><td>Fast inline completions from surrounding context</td></tr>
+      <tr><td>Write API route handlers</td><td><strong>Claude Code</strong> + <strong>Copilot</strong></td><td>Claude generates structure, Copilot fills patterns</td></tr>
+      <tr><td>Fix integration issues</td><td><strong>Copilot</strong></td><td>Real-time suggestions while debugging in editor</td></tr>
+      <tr><td>Generate test suites</td><td><strong>Claude Code</strong></td><td>Comprehensive edge case coverage from spec understanding</td></tr>
+      <tr><td>Browser E2E testing</td><td><strong>Playwright</strong></td><td>14 spec files testing real user flows across browsers</td></tr>
+      <tr><td>CI/CD pipeline debugging</td><td><strong>Claude Code</strong></td><td>Log analysis, config fixes, deployment troubleshooting</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Vibe Coding Workflow Loop</h2>
+    <p class="sub">The iterative cycle used for every feature and iteration.</p>
+    <div style="display:flex;justify-content:center;align-items:center;gap:0;flex-wrap:wrap;margin:20px 0">
+      <div style="padding:14px 20px;border-radius:12px;background:var(--pri-bg);border:2px solid var(--pri-l);font-weight:700;color:var(--pri);font-size:.88rem">1. Define Spec</div>
+      <div style="padding:0 10px;color:var(--txm);font-size:1.4rem">→</div>
+      <div style="padding:14px 20px;border-radius:12px;background:var(--blu-bg);border:2px solid #93c5fd;font-weight:700;color:var(--blu);font-size:.88rem">2. AI Generate</div>
+      <div style="padding:0 10px;color:var(--txm);font-size:1.4rem">→</div>
+      <div style="padding:14px 20px;border-radius:12px;background:var(--grn-bg);border:2px solid #86efac;font-weight:700;color:var(--grn);font-size:.88rem">3. Test</div>
+      <div style="padding:0 10px;color:var(--txm);font-size:1.4rem">→</div>
+      <div style="padding:14px 20px;border-radius:12px;background:var(--acc-bg);border:2px solid #fdba74;font-weight:700;color:var(--acc);font-size:.88rem">4. Review & Refine</div>
+      <div style="padding:0 10px;color:var(--txm);font-size:1.4rem">↻</div>
+    </div>
+    <p style="font-size:.88rem;color:#57534e;text-align:center">Each iteration follows this cycle: human writes the spec → AI generates code + tests → run tests → review, fix, iterate. The human stays in the driver's seat on architecture and quality.</p>
+  </div>
+</div>
+
+<!-- ═══ TIMELINE ═══ -->
+<div id="timeline" class="section">
+  <div class="card">
+    <h2>Build Timeline — 9 Iterations</h2>
+    <p class="sub">From a simple chatbot to an enterprise-grade multi-agent platform, one iteration at a time.</p>
+  </div>
+
+  <div class="card">
+    <div class="timeline">
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 1 — Foundation</h3>
+          <span class="tl-date">Nov 2025</span>
+        </div>
+        <p>Transformed the Human Rights Education chatbot into a multi-agent architecture. Built auth system, RBAC with 5 permission levels, 7 core agents, RAG with ChromaDB, and HRIS connectors for Workday & BambooHR.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-grn">163 tests passing</span>
+          <span class="tl-tag tl-tag-blu">16 modules</span>
+          <span class="tl-tag tl-tag-pur">7 agents</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 2 — Workflows & Compliance</h3>
+          <span class="tl-date">Early Feb 2026</span>
+        </div>
+        <p>Added leave request workflows with multi-level approval chains, GDPR compliance framework, bias audit logging, policy violation detection, and employee lifecycle management.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-grn">Leave approval chains</span>
+          <span class="tl-tag tl-tag-pur">GDPR framework</span>
+          <span class="tl-tag tl-tag-org">Bias audit</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 3 — Database & Persistence</h3>
+          <span class="tl-date">Feb 2026</span>
+        </div>
+        <p>PostgreSQL schema with 15+ tables, SQLAlchemy ORM models, Alembic migrations, Flask integration with session management, conversation history, and frontend UI rebuild.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-blu">15+ tables</span>
+          <span class="tl-tag tl-tag-grn">SQLAlchemy ORM</span>
+          <span class="tl-tag tl-tag-org">Frontend rebuild</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 4 — LLM Gateway</h3>
+          <span class="tl-date">Feb 2026</span>
+        </div>
+        <p>OpenAI GPT-4 integration as primary model, Google Gemini fallback, cost tracking per request, streaming support, token counting, and LangSmith tracing integration.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-pur">Multi-model</span>
+          <span class="tl-tag tl-tag-grn">Auto-failover</span>
+          <span class="tl-tag tl-tag-blu">Cost tracking</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 5 — DevOps & Integrations</h3>
+          <span class="tl-date">Feb 2026</span>
+        </div>
+        <p>Docker + Docker Compose setup, GitHub Actions CI/CD, Slack bot with /hr commands, Microsoft Teams adaptive cards, Redis conversation memory, and env-specific configs.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-blu">Docker</span>
+          <span class="tl-tag tl-tag-grn">CI/CD</span>
+          <span class="tl-tag tl-tag-pur">Slack + Teams</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 6 — Security & Metrics</h3>
+          <span class="tl-date">Feb 2026</span>
+        </div>
+        <p>PII detection and automatic masking, API rate limiting (60 req/min), security headers, request encryption, Prometheus metrics, and Grafana dashboards.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-org">PII masking</span>
+          <span class="tl-tag tl-tag-grn">Rate limiting</span>
+          <span class="tl-tag tl-tag-blu">Prometheus</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 7 — CCPA & Multi-Jurisdiction</h3>
+          <span class="tl-date">Feb 2026</span>
+        </div>
+        <p>CCPA implementation, multi-jurisdiction engine (US, EU, Canada, Australia), data localization enforcement, right-to-erasure automation, WebSocket support, Redis caching.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-pur">CCPA</span>
+          <span class="tl-tag tl-tag-grn">4 jurisdictions</span>
+          <span class="tl-tag tl-tag-blu">WebSocket</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 8 — Platform & Enterprise</h3>
+          <span class="tl-date">Feb 2026</span>
+        </div>
+        <p>Admin API, health check endpoints (live/ready), feature flags, SLA monitoring, audit reports with export, backup/restore system, feedback collection.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-org">Admin API</span>
+          <span class="tl-tag tl-tag-grn">Health checks</span>
+          <span class="tl-tag tl-tag-pur">Feature flags</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Iteration 9 — Expanded Org & QA</h3>
+          <span class="tl-date">Feb 8, 2026</span>
+        </div>
+        <p>Expanded from 3 demo users to 67-employee org (8 departments, management hierarchy). 6 multi-role case studies, auth upgrade to resolve real tokens, file reorganization.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-blu">67 employees</span>
+          <span class="tl-tag tl-tag-grn">50/50 case study tests</span>
+          <span class="tl-tag tl-tag-org">100% pass rate</span>
+        </div>
+      </div>
+
+      <div class="tl-item done">
+        <div class="tl-head">
+          <h3>Final — CI/CD, Deployment & Polish</h3>
+          <span class="tl-date">Feb 17, 2026</span>
+        </div>
+        <p>Google Cloud Run deployment, CI pipeline with Black/Flake8, 17 CI bug fixes in one day, Playwright E2E tests adapted for cloud, gap analysis and final polish.</p>
+        <div class="tl-stats">
+          <span class="tl-tag tl-tag-grn">Cloud Run deployed</span>
+          <span class="tl-tag tl-tag-pur">14 Playwright specs</span>
+          <span class="tl-tag tl-tag-org">17 commits in 1 day</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TESTING STORY ═══ -->
+<div id="testing" class="section">
+  <div class="card">
+    <h2>The Testing Story</h2>
+    <p class="sub">How AI-generated tests evolved from basic assertions to comprehensive coverage.</p>
+  </div>
+
+  <div class="g3" style="margin-bottom:24px">
+    <div style="text-align:center;padding:24px;background:var(--grn-bg);border:1px solid #bbf7d0;border-radius:14px">
+      <div style="font-size:2.4rem;font-weight:800;color:var(--grn)">2,079</div>
+      <div style="font-size:.85rem;color:#166534">Test Functions</div>
+    </div>
+    <div style="text-align:center;padding:24px;background:var(--blu-bg);border:1px solid #bfdbfe;border-radius:14px">
+      <div style="font-size:2.4rem;font-weight:800;color:var(--blu)">29,515</div>
+      <div style="font-size:.85rem;color:#1e40af">Lines of Test Code</div>
+    </div>
+    <div style="text-align:center;padding:24px;background:var(--pri-bg);border:1px solid #e9d5ff;border-radius:14px">
+      <div style="font-size:2.4rem;font-weight:800;color:var(--pri)">0.57:1</div>
+      <div style="font-size:.85rem;color:#6b21a8">Test:Code Ratio</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Testing Layers</h2>
+    <table>
+      <tr><th>Layer</th><th>Files</th><th>What It Tests</th><th>AI Tool Used</th></tr>
+      <tr><td><strong>Unit Tests</strong></td><td>68 files</td><td>Every module individually — agents, core services, middleware, APIs, connectors</td><td>Claude Code generated, human reviewed</td></tr>
+      <tr><td><strong>Integration Tests</strong></td><td>Frontend flows</td><td>Full user journeys through the web interface</td><td>Claude Code + manual validation</td></tr>
+      <tr><td><strong>E2E Chatbot Tests</strong></td><td>Conversation runner</td><td>Multi-turn agent conversations with expected output validation</td><td>Claude Code designed scenarios</td></tr>
+      <tr><td><strong>Playwright Browser Tests</strong></td><td>14 spec files</td><td>Login, dashboard, chat, roles, leave, analytics, documents, mobile, API</td><td>Playwright framework + Claude Code specs</td></tr>
+      <tr><td><strong>Case Study Tests</strong></td><td>6 scenarios</td><td>Multi-role HR scenarios across departments (50 assertions, 100% pass)</td><td>Claude Code + domain knowledge</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Playwright E2E Coverage</h2>
+    <p class="sub">14 browser test suites testing the real deployed application</p>
+    <div class="g2">
+      <div>
+        <div class="metric-bar"><div class="label"><span>00-smoke (health check)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>01-login (auth flows)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>02-dashboard (widgets)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>03-settings (preferences)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>04-role-switching (RBAC)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>05-leave (workflows)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>06-workflows (approvals)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+      </div>
+      <div>
+        <div class="metric-bar"><div class="label"><span>07-analytics (charts)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>08-documents (downloads)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>09-chat (agent conversations)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>10-api-health (endpoints)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>11-notifications (alerts)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>12-pdf-export (documents)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+        <div class="metric-bar"><div class="label"><span>13-mobile-responsive (viewport)</span><span style="color:var(--grn)">✓</span></div><div class="bar"><div class="fill" style="width:100%;background:var(--grn)"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ METRICS & LEARNINGS ═══ -->
+<div id="metrics" class="section">
+  <div class="card">
+    <h2>By the Numbers</h2>
+    <p class="sub">Quantified output from the vibe coding approach.</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Metric</th><th>Value</th><th>Notes</th></tr>
+      <tr><td>Total source code</td><td><strong>51,423 lines</strong></td><td>111 Python modules in src/</td></tr>
+      <tr><td>Total test code</td><td><strong>29,515 lines</strong></td><td>68 test files + 14 Playwright specs</td></tr>
+      <tr><td>Test functions</td><td><strong>2,079</strong></td><td>Unit + integration + E2E + case studies</td></tr>
+      <tr><td>Frontend</td><td><strong>31 files</strong></td><td>HTML/Jinja2 templates + CSS + JS</td></tr>
+      <tr><td>Development iterations</td><td><strong>9 iterations</strong></td><td>Each with progress report and test suite</td></tr>
+      <tr><td>Agents built</td><td><strong>8 + router</strong></td><td>Policy, Benefits, Leave, Employee, Onboarding, Performance, Compliance, Analytics</td></tr>
+      <tr><td>HRIS connectors</td><td><strong>4</strong></td><td>Workday, BambooHR, Payroll, Custom DB</td></tr>
+      <tr><td>Compliance frameworks</td><td><strong>4</strong></td><td>GDPR, CCPA, HIPAA, multi-jurisdiction</td></tr>
+      <tr><td>CI/CD pipeline</td><td><strong>GitHub Actions → Cloud Run</strong></td><td>Lint, test, build, deploy — fully automated</td></tr>
+      <tr><td>Git commits (deploy day)</td><td><strong>17 commits in 1 day</strong></td><td>Feb 17: CI fixes, bug fixes, final polish</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Key Learnings from Vibe Coding</h2>
+    <div class="g2">
+      <div style="padding:20px;background:var(--pri-bg);border-radius:12px;border:1px solid #e9d5ff">
+        <h3 style="color:var(--pri);margin-bottom:8px">✅ What Worked</h3>
+        <ul style="list-style:none;padding:0;font-size:.9rem;color:#44403c">
+          <li style="padding:6px 0">• Claude Code for architecture-level code generation — entire modules with tests in one pass</li>
+          <li style="padding:6px 0">• Copilot for in-editor flow — fills in patterns and maintains consistency</li>
+          <li style="padding:6px 0">• Playwright for catching UI regressions that unit tests miss</li>
+          <li style="padding:6px 0">• Iterative development with clear specs per iteration</li>
+          <li style="padding:6px 0">• AI-generated tests caught real bugs before manual testing</li>
+        </ul>
+      </div>
+      <div style="padding:20px;background:var(--acc-bg);border-radius:12px;border:1px solid #fed7aa">
+        <h3 style="color:var(--acc);margin-bottom:8px">⚠️ Watch Out For</h3>
+        <ul style="list-style:none;padding:0;font-size:.9rem;color:#44403c">
+          <li style="padding:6px 0">• AI can generate plausible-looking but subtly wrong code — always review</li>
+          <li style="padding:6px 0">• Test coverage numbers can be misleading if tests don't assert the right things</li>
+          <li style="padding:6px 0">• Architecture decisions still require human judgment — AI follows, doesn't lead</li>
+          <li style="padding:6px 0">• Integration issues between AI-generated modules need manual debugging</li>
+          <li style="padding:6px 0">• CI/CD setup took 17 commits in one day to get right — pipelines are fiddly</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    "Vibe coding is not about replacing developers — it's about amplifying them. One developer with the right AI tools can build what would traditionally take a small team. The human brings the vision, the AI brings the velocity."
+    <cite>— Reflection on the development process</cite>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  Vibe Coding Journey — Multi-Agent HR Intelligence Platform<br>
+  Built with Claude Code · GitHub Copilot · Playwright · Python · LangGraph
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -36,12 +36,12 @@ test.describe('Analytics PDF Export', () => {
 
     // Check that chart canvases exist
     const headcount = page.locator('#headcountChart');
-    const turnover = page.locator('#turnoverChart');
+    const queryVolume = page.locator('#queryVolumeChart');
     const leave = page.locator('#leaveChart');
     const agent = page.locator('#agentChart');
 
     await expect(headcount).toBeVisible();
-    await expect(turnover).toBeVisible();
+    await expect(queryVolume).toBeVisible();
     await expect(leave).toBeVisible();
     await expect(agent).toBeVisible();
   });

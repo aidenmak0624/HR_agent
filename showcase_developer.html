@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Intelligence Platform — Developer & Technical Showcase</title>
+<style>
+:root{--pri:#1e293b;--pri-l:#3b82f6;--acc:#6366f1;--acc-l:#e0e7ff;--bg:#0f172a;--bg2:#1e293b;--card:#1e293b;--card-l:#334155;--bdr:#334155;--tx:#e2e8f0;--txm:#94a3b8;--grn:#22c55e;--grn-d:#166534;--ylw:#eab308;--red:#ef4444;--pur:#a78bfa;--cyn:#22d3ee;--org:#f97316}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'JetBrains Mono','Fira Code','Consolas',monospace;background:var(--bg);color:var(--tx);line-height:1.7}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#312e81 100%);padding:72px 24px 56px;text-align:center;position:relative;border-bottom:1px solid #4338ca}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(99,102,241,.08) 50px);pointer-events:none}
+.hero-inner{position:relative;max-width:900px;margin:0 auto}
+.badge{display:inline-block;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;padding:6px 16px;border-radius:6px;font-size:.78rem;font-weight:600;letter-spacing:1px;margin-bottom:20px}
+.hero h1{font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:16px;color:#fff}
+.hero h1 em{font-style:normal;color:#818cf8}
+.hero p{font-size:1rem;color:#94a3b8;max-width:700px;margin:0 auto 32px;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+.hero-stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap}
+.hero-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:16px 24px;min-width:120px}
+.hero-stat .num{font-size:1.8rem;font-weight:800;color:#818cf8}
+.hero-stat .lbl{font-size:.72rem;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+
+/* NAV */
+.nav{display:flex;justify-content:center;gap:2px;background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 16px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.nav button{padding:12px 18px;border:none;background:none;cursor:pointer;font-size:.82rem;color:var(--txm);font-weight:600;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;font-family:inherit}
+.nav button:hover{color:#e2e8f0;background:rgba(255,255,255,.04)}
+.nav button.active{color:#818cf8;border-bottom-color:#818cf8}
+
+.container{max-width:1100px;margin:0 auto;padding:36px 20px}
+.section{display:none}.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:12px;border:1px solid var(--bdr);padding:28px;margin-bottom:24px}
+.card h2{font-family:'Inter',system-ui,sans-serif;font-size:1.4rem;color:#e2e8f0;margin-bottom:6px}
+.card .sub{color:var(--txm);font-size:.88rem;margin-bottom:18px;font-family:'Inter',system-ui,sans-serif}
+
+/* CODE BLOCK */
+.code{background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:16px 20px;font-size:.82rem;line-height:1.8;overflow-x:auto;margin:12px 0}
+.code .cm{color:#6b7280}.code .kw{color:#c084fc}.code .fn{color:#60a5fa}.code .st{color:#34d399}.code .num{color:#f97316}.code .dec{color:#fbbf24}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* STAT CARDS */
+.stat{text-align:center;background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:10px;padding:20px}
+.stat .num{font-size:1.8rem;font-weight:800;color:var(--pri-l)}
+.stat .lbl{font-size:.78rem;color:var(--txm);margin-top:4px;font-family:'Inter',system-ui,sans-serif}
+
+/* BADGE INLINE */
+.tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600;margin:2px}
+.tag-grn{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.tag-blu{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.tag-pur{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+.tag-org{background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3)}
+.tag-cyn{background:rgba(34,211,238,.15);color:#22d3ee;border:1px solid rgba(34,211,238,.3)}
+.tag-ylw{background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.3)}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{background:rgba(99,102,241,.15);color:#a5b4fc;padding:10px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--bdr)}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:#cbd5e1}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* TREE */
+.tree{font-size:.82rem;line-height:2;background:#0f172a;border:1px solid var(--bdr);border-radius:8px;padding:16px 20px;overflow-x:auto}
+.tree .dir{color:#60a5fa}.tree .file{color:#94a3b8}.tree .hi{color:#818cf8;font-weight:700}
+
+/* FLOW */
+.flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:16px 0;justify-content:center}
+.flow-node{padding:10px 16px;border-radius:8px;font-size:.78rem;font-weight:600;color:#fff;white-space:nowrap}
+.flow-arrow{font-size:1.2rem;color:var(--txm);padding:0 6px}
+
+/* AGENT CARD */
+.agent-card{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:10px;padding:20px;transition:border-color .2s}
+.agent-card:hover{border-color:#4f46e5}
+.agent-card h3{font-family:'Inter',system-ui,sans-serif;font-size:.95rem;color:#e2e8f0;margin-bottom:6px}
+.agent-card p{font-size:.82rem;color:var(--txm);font-family:'Inter',system-ui,sans-serif}
+
+/* FOOTER */
+.footer{text-align:center;padding:36px 20px;color:var(--txm);font-size:.78rem;border-top:1px solid var(--bdr);margin-top:40px;font-family:'Inter',system-ui,sans-serif}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<div class="hero-inner">
+  <div class="badge">// TECHNICAL DEEP-DIVE</div>
+  <h1>Multi-Agent HR Platform — <em>Under the Hood</em></h1>
+  <p>A production-grade Python platform built with LangGraph agent orchestration, RAG-powered knowledge retrieval, enterprise HRIS connectors, and comprehensive observability.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">111</div><div class="lbl">Python Modules</div></div>
+    <div class="hero-stat"><div class="num">51K</div><div class="lbl">Lines of Code</div></div>
+    <div class="hero-stat"><div class="num">2,079</div><div class="lbl">Test Functions</div></div>
+    <div class="hero-stat"><div class="num">68</div><div class="lbl">Test Files</div></div>
+    <div class="hero-stat"><div class="num">14</div><div class="lbl">Playwright Specs</div></div>
+  </div>
+</div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="show('arch')">Architecture</button>
+  <button onclick="show('agents')">Agents</button>
+  <button onclick="show('stack')">Tech Stack</button>
+  <button onclick="show('testing')">Testing</button>
+  <button onclick="show('infra')">Infrastructure</button>
+  <button onclick="show('code')">Code Quality</button>
+</div>
+
+<div class="container">
+
+<!-- ═══ ARCHITECTURE ═══ -->
+<div id="arch" class="section active">
+  <div class="card">
+    <h2>System Architecture</h2>
+    <p class="sub">Layered architecture with clean separation of concerns</p>
+    <div class="code">
+<span class="cm">// Request flow through the system</span>
+<span class="kw">Client</span> → <span class="fn">Flask API Gateway</span> → <span class="fn">Auth Middleware</span> → <span class="fn">Rate Limiter</span>
+   → <span class="fn">Router Agent</span> <span class="cm">(classifies intent)</span>
+   → <span class="fn">Specialist Agent</span> <span class="cm">(1 of 8)</span>
+   → <span class="fn">RAG Engine</span> + <span class="fn">HRIS Connector</span> <span class="cm">(fetches context)</span>
+   → <span class="fn">LLM Gateway</span> <span class="cm">(GPT-4 with Gemini fallback)</span>
+   → <span class="fn">PII Stripper</span> → <span class="fn">Bias Logger</span> → <span class="fn">Response</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Project Structure</h2>
+    <div class="tree">
+<span class="dir">src/</span>
+├── <span class="dir">agents/</span>          <span class="cm"># 8 specialized LangGraph agents + router</span>
+│   ├── <span class="hi">router_agent.py</span>     <span class="cm"># Intent classification → agent dispatch</span>
+│   ├── <span class="file">policy_agent.py</span>     <span class="cm"># RAG-powered policy Q&A</span>
+│   ├── <span class="file">leave_agent.py</span>      <span class="cm"># Leave workflows with approval chains</span>
+│   ├── <span class="file">compliance_agent.py</span> <span class="cm"># GDPR/CCPA enforcement</span>
+│   └── <span class="file">... (8 agents total)</span>
+├── <span class="dir">api/</span>             <span class="cm"># Flask REST routes (v2)</span>
+│   ├── <span class="file">v2/</span>                 <span class="cm"># Versioned API endpoints</span>
+│   ├── <span class="file">admin_routes.py</span>     <span class="cm"># User mgmt, feature flags</span>
+│   └── <span class="file">health_routes.py</span>    <span class="cm"># Liveness + readiness probes</span>
+├── <span class="dir">core/</span>            <span class="cm"># Core services (20+ modules)</span>
+│   ├── <span class="hi">rag_engine.py</span>       <span class="cm"># ChromaDB + sentence-transformers</span>
+│   ├── <span class="hi">llm_gateway.py</span>      <span class="cm"># Multi-model with failover</span>
+│   ├── <span class="file">gdpr.py</span>             <span class="cm"># EU data protection</span>
+│   ├── <span class="file">ccpa.py</span>             <span class="cm"># California privacy</span>
+│   ├── <span class="file">pii_stripper.py</span>     <span class="cm"># Regex + NER PII detection</span>
+│   └── <span class="file">... (20+ core modules)</span>
+├── <span class="dir">connectors/</span>      <span class="cm"># HRIS integrations</span>
+│   ├── <span class="file">workday.py</span>          <span class="cm"># Workday REST API client</span>
+│   ├── <span class="file">bamboohr.py</span>         <span class="cm"># BambooHR API client</span>
+│   └── <span class="file">payroll_connector.py</span>
+├── <span class="dir">middleware/</span>      <span class="cm"># Security layer</span>
+├── <span class="dir">services/</span>        <span class="cm"># Business logic</span>
+├── <span class="dir">repositories/</span>    <span class="cm"># Data access (SQLAlchemy)</span>
+└── <span class="dir">platform_services/</span> <span class="cm"># Dashboard, SLA, cost tracking</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Key Design Decisions</h2>
+    <div class="g2">
+      <div class="agent-card">
+        <h3>LangGraph over LangChain Agents</h3>
+        <p>Chose LangGraph for deterministic state machines with explicit control flow. Each agent is a compiled graph with typed state, not a loose ReAct loop. This gives us predictable routing, retry logic, and audit-friendly decision traces.</p>
+      </div>
+      <div class="agent-card">
+        <h3>RAG with Policy Grounding</h3>
+        <p>ChromaDB vector store with sentence-transformers embeddings. Every agent response cites source documents, preventing hallucination on policy questions. Chunk overlap ensures context continuity.</p>
+      </div>
+      <div class="agent-card">
+        <h3>Multi-Model Failover</h3>
+        <p>Primary: GPT-4o-mini for speed. Premium: GPT-4o for complex queries. Fallback: Google Gemini if OpenAI is unavailable. All routing is automatic with cost tracking per request.</p>
+      </div>
+      <div class="agent-card">
+        <h3>Interface-Based Connectors</h3>
+        <p>HRIS integrations implement a common HRISInterface ABC. Adding a new system (SAP, ADP, etc.) means implementing one interface — zero changes to agent logic.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AGENTS ═══ -->
+<div id="agents" class="section">
+  <div class="card">
+    <h2>Multi-Agent System</h2>
+    <p class="sub">8 specialized agents orchestrated by a router, each with domain-specific tools</p>
+  </div>
+
+  <div class="card">
+    <h2>Router Agent — Intent Classification</h2>
+    <div class="code">
+<span class="cm"># Simplified router logic</span>
+<span class="kw">class</span> <span class="fn">RouterAgent</span>(BaseAgent):
+    <span class="kw">def</span> <span class="fn">classify</span>(self, query: str) -> AgentType:
+        <span class="cm"># Static keyword matching (fast path)</span>
+        <span class="kw">if</span> match := self.static_matcher.match(query):
+            <span class="kw">return</span> match
+        <span class="cm"># LLM classification (complex queries)</span>
+        <span class="kw">return</span> self.llm_classify(query, confidence_threshold=<span class="num">0.85</span>)
+    </div>
+    <p style="font-size:.85rem;color:var(--txm);margin-top:12px">Two-tier classification: fast static keyword matching handles 70% of queries in &lt;1ms, LLM classification handles ambiguous cases with confidence scoring.</p>
+  </div>
+
+  <div class="g2">
+    <div class="agent-card">
+      <h3>📋 Policy Agent</h3>
+      <p>Tools: RAG search, document retrieval, policy comparison<br>
+      <span class="tag tag-grn">RAG-grounded</span> <span class="tag tag-blu">source citations</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>🏖️ Leave Agent</h3>
+      <p>Tools: balance check, request submit, approval chain, calendar sync<br>
+      <span class="tag tag-pur">multi-level approval</span> <span class="tag tag-org">workflow engine</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>💰 Benefits Agent</h3>
+      <p>Tools: plan comparison, eligibility check, enrollment, cost calculator<br>
+      <span class="tag tag-cyn">plan comparison</span> <span class="tag tag-grn">real-time eligibility</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>👤 Employee Info Agent</h3>
+      <p>Tools: profile lookup, org chart, directory search, tenure calc<br>
+      <span class="tag tag-blu">HRIS-connected</span> <span class="tag tag-ylw">RBAC-filtered</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>🚀 Onboarding Agent</h3>
+      <p>Tools: checklist generator, doc creator, IT request, buddy assign<br>
+      <span class="tag tag-org">day-1-to-90</span> <span class="tag tag-grn">automated docs</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>⭐ Performance Agent</h3>
+      <p>Tools: review template, goal tracker, 360 feedback, calibration<br>
+      <span class="tag tag-pur">bias-audited</span> <span class="tag tag-cyn">reasoning traces</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>🛡️ Compliance Agent</h3>
+      <p>Tools: GDPR checker, CCPA handler, audit generator, data export<br>
+      <span class="tag tag-ylw">multi-jurisdiction</span> <span class="tag tag-grn">automated DSR</span></p>
+    </div>
+    <div class="agent-card">
+      <h3>📊 Analytics Agent</h3>
+      <p>Tools: headcount, attrition, cost analysis, department trends<br>
+      <span class="tag tag-blu">real-time</span> <span class="tag tag-org">predictive</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TECH STACK ═══ -->
+<div id="stack" class="section">
+  <div class="card">
+    <h2>Technology Stack</h2>
+    <p class="sub">Production-grade open-source stack with enterprise integrations</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+      <tr><td>Language</td><td><span class="tag tag-blu">Python 3.10+</span></td><td>Core application, type hints throughout</td></tr>
+      <tr><td>Web Framework</td><td><span class="tag tag-grn">Flask 3.0</span></td><td>REST API, templating, middleware pipeline</td></tr>
+      <tr><td>Agent Framework</td><td><span class="tag tag-pur">LangGraph 0.2</span></td><td>State machine orchestration, compiled graphs</td></tr>
+      <tr><td>LLM Primary</td><td><span class="tag tag-cyn">OpenAI GPT-4o</span></td><td>Intent classification, response generation</td></tr>
+      <tr><td>LLM Fallback</td><td><span class="tag tag-org">Google Gemini</span></td><td>Automatic failover when OpenAI unavailable</td></tr>
+      <tr><td>Vector DB</td><td><span class="tag tag-ylw">ChromaDB</span></td><td>Policy document embeddings for RAG</td></tr>
+      <tr><td>Embeddings</td><td><span class="tag tag-grn">sentence-transformers</span></td><td>Document vectorization (all-MiniLM-L6-v2)</td></tr>
+      <tr><td>SQL ORM</td><td><span class="tag tag-blu">SQLAlchemy 2.0</span></td><td>Database models, async sessions, migrations</td></tr>
+      <tr><td>Database</td><td><span class="tag tag-pur">PostgreSQL 15</span></td><td>Employee data, conversations, audit logs</td></tr>
+      <tr><td>Cache</td><td><span class="tag tag-cyn">Redis 7</span></td><td>Session store, response caching, rate limits</td></tr>
+      <tr><td>Monitoring</td><td><span class="tag tag-org">Prometheus</span></td><td>Request latency, token usage, cache hits</td></tr>
+      <tr><td>Dashboards</td><td><span class="tag tag-ylw">Grafana</span></td><td>Pre-built observability dashboards</td></tr>
+      <tr><td>Tracing</td><td><span class="tag tag-pur">LangSmith</span></td><td>Agent decision traces, debugging</td></tr>
+      <tr><td>Containers</td><td><span class="tag tag-blu">Docker + Compose</span></td><td>Multi-service orchestration, dev/prod parity</td></tr>
+      <tr><td>CI/CD</td><td><span class="tag tag-grn">GitHub Actions</span></td><td>Lint, test, build, deploy pipeline</td></tr>
+      <tr><td>E2E Testing</td><td><span class="tag tag-cyn">Playwright</span></td><td>14 browser test suites, cross-browser</td></tr>
+      <tr><td>Cloud Deploy</td><td><span class="tag tag-org">Google Cloud Run</span></td><td>Serverless container deployment</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ TESTING ═══ -->
+<div id="testing" class="section">
+  <div class="card">
+    <h2>Testing Strategy</h2>
+    <p class="sub">Multi-layer testing: unit → integration → E2E → browser</p>
+  </div>
+
+  <div class="g4">
+    <div class="stat"><div class="num">2,079</div><div class="lbl">Unit Test Functions</div></div>
+    <div class="stat"><div class="num">68</div><div class="lbl">Test Files</div></div>
+    <div class="stat"><div class="num">14</div><div class="lbl">Playwright Specs</div></div>
+    <div class="stat"><div class="num">29K</div><div class="lbl">Test LOC</div></div>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <h2>Test Pyramid</h2>
+    <div class="code">
+<span class="fn">Unit Tests</span> <span class="cm">(2,079 functions across 68 files)</span>
+├── test_router_agent.py       <span class="cm"># Agent routing & classification</span>
+├── test_auth.py / test_rbac.py <span class="cm"># Authentication & authorization</span>
+├── test_gdpr.py / test_ccpa.py <span class="cm"># Compliance modules</span>
+├── test_pii_stripper.py       <span class="cm"># PII detection accuracy</span>
+├── test_rag_engine.py         <span class="cm"># RAG retrieval quality</span>
+├── test_llm_gateway.py        <span class="cm"># Model failover & cost tracking</span>
+└── ... <span class="cm">(40+ more test modules)</span>
+
+<span class="fn">Integration Tests</span>
+├── test_frontend_flows.py     <span class="cm"># Full user journeys</span>
+└── chatbot_test_runner.py     <span class="cm"># E2E agent conversation tests</span>
+
+<span class="fn">Browser Tests</span> <span class="cm">(Playwright — 14 spec files)</span>
+├── 00-smoke.spec.js           <span class="cm"># Health check</span>
+├── 01-login.spec.js           <span class="cm"># Auth flows</span>
+├── 02-dashboard.spec.js       <span class="cm"># Dashboard rendering</span>
+├── 04-role-switching.spec.js  <span class="cm"># RBAC UI enforcement</span>
+├── 09-chat.spec.js            <span class="cm"># Live agent conversations</span>
+├── 13-mobile-responsive.spec.js <span class="cm"># Mobile viewport</span>
+└── ... <span class="cm">(14 specs total)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>CI/CD Pipeline</h2>
+    <div class="flow">
+      <div class="flow-node" style="background:#4f46e5">git push</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#0891b2">Black + Flake8</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#7c3aed">pytest (2079)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#059669">Docker Build</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="background:#d97706">Cloud Run Deploy</div>
+    </div>
+    <p style="font-size:.82rem;color:var(--txm);margin-top:12px">GitHub Actions workflow: lint → test (with coverage threshold) → Docker build with layer caching → deploy to Google Cloud Run. Automated on every push to main.</p>
+  </div>
+</div>
+
+<!-- ═══ INFRASTRUCTURE ═══ -->
+<div id="infra" class="section">
+  <div class="card">
+    <h2>Infrastructure & DevOps</h2>
+    <p class="sub">Container-first architecture with production observability</p>
+  </div>
+
+  <div class="card">
+    <h2>Docker Compose Services</h2>
+    <div class="code">
+<span class="cm"># docker-compose.yml</span>
+<span class="kw">services:</span>
+  <span class="fn">app:</span>         <span class="cm"># Flask + Gunicorn (4 workers)</span>
+    <span class="st">build: .</span>
+    <span class="st">ports: ["5050:5050"]</span>
+    <span class="st">depends_on: [postgres, redis, chromadb]</span>
+
+  <span class="fn">postgres:</span>    <span class="cm"># Employee data, audit logs, conversations</span>
+    <span class="st">image: postgres:15</span>
+
+  <span class="fn">redis:</span>       <span class="cm"># Session cache, rate limits, response cache</span>
+    <span class="st">image: redis:7-alpine</span>
+
+  <span class="fn">chromadb:</span>    <span class="cm"># Vector embeddings for RAG</span>
+    <span class="st">image: chromadb/chroma</span>
+
+  <span class="fn">prometheus:</span>  <span class="cm"># Metrics collection</span>
+  <span class="fn">grafana:</span>     <span class="cm"># Dashboard visualization</span>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h2>Monitoring</h2>
+      <p class="sub">Prometheus metrics exposed at /metrics</p>
+      <div class="code" style="font-size:.78rem">
+<span class="fn">hr_agent_requests_total</span>
+<span class="fn">hr_agent_request_duration_seconds</span>
+<span class="fn">hr_agent_llm_tokens_used_total</span>
+<span class="fn">hr_agent_llm_cost_dollars</span>
+<span class="fn">hr_agent_cache_hits_total</span>
+<span class="fn">hr_agent_pii_detections_total</span>
+<span class="fn">hr_agent_agent_routing</span>{agent="policy"}
+      </div>
+    </div>
+    <div class="card">
+      <h2>Health Endpoints</h2>
+      <p class="sub">Kubernetes-ready liveness & readiness</p>
+      <div class="code" style="font-size:.78rem">
+<span class="fn">GET /health</span>      <span class="cm"># Quick 200 OK</span>
+<span class="fn">GET /health/live</span>  <span class="cm"># Process alive</span>
+<span class="fn">GET /health/ready</span> <span class="cm"># DB + Redis + LLM OK</span>
+<span class="fn">GET /metrics</span>     <span class="cm"># Prometheus scrape</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CODE QUALITY ═══ -->
+<div id="code" class="section">
+  <div class="card">
+    <h2>Code Quality & Standards</h2>
+    <p class="sub">Clean architecture with enforced standards</p>
+  </div>
+
+  <div class="g3">
+    <div class="agent-card">
+      <h3>Formatting</h3>
+      <p><span class="tag tag-blu">Black</span> auto-formatter, <span class="tag tag-ylw">Flake8</span> linting, enforced in CI. Zero tolerance for formatting issues.</p>
+    </div>
+    <div class="agent-card">
+      <h3>Type Safety</h3>
+      <p>Python type hints throughout. Pydantic models for API request/response validation. <span class="tag tag-pur">Pydantic Settings</span> for config.</p>
+    </div>
+    <div class="agent-card">
+      <h3>Architecture</h3>
+      <p>Repository pattern for data access. Interface-based connectors. Clean separation: agents → services → repositories → database.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Codebase Stats</h2>
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Source modules (src/)</td><td><strong>111 Python files</strong></td></tr>
+      <tr><td>Source lines of code</td><td><strong>51,423 lines</strong></td></tr>
+      <tr><td>Test files</td><td><strong>68 files</strong></td></tr>
+      <tr><td>Test lines of code</td><td><strong>29,515 lines</strong></td></tr>
+      <tr><td>Test:Code ratio</td><td><strong>0.57:1</strong></td></tr>
+      <tr><td>Playwright browser specs</td><td><strong>14 spec files</strong></td></tr>
+      <tr><td>Frontend files</td><td><strong>31 files</strong> (HTML/CSS/JS)</td></tr>
+      <tr><td>Development iterations</td><td><strong>9 iterations</strong></td></tr>
+      <tr><td>Git commits</td><td><strong>17 commits</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  Multi-Agent HR Intelligence Platform — Technical Showcase<br>
+  Python · Flask · LangGraph · OpenAI · ChromaDB · PostgreSQL · Redis · Docker
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

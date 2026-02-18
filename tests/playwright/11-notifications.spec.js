@@ -65,9 +65,8 @@ test.describe('Real-time Notifications', () => {
     const bell = page.locator('.bell-btn');
     await bell.click();
     const panel = page.locator('#notification-panel');
-    const isVisible = await panel.isVisible();
-    // Panel should be visible after clicking bell
-    expect(isVisible).toBe(true);
+    // Panel should be visible after clicking bell (wait for CSS transition)
+    await expect(panel).toBeVisible({ timeout: 5000 });
   });
 
   // ---- Notification Flow: Submit Leave → Check Notification ----
