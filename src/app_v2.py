@@ -929,6 +929,7 @@ def register_mcp_server():
     # Also make the official SDK FastMCP server importable for standalone usage
     try:
         from src.mcp.fastmcp_server import mcp as _fastmcp  # noqa: F401
+
         app.fastmcp_server = _fastmcp
         logger.info("✅ FastMCP (official SDK) server loaded — run via 'python run_mcp.py'")
     except Exception as e:

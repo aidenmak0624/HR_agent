@@ -61,8 +61,11 @@ class MCPServer:
         self._v2_server = None
         try:
             from src.mcp.server import HRMCPServer
+
             self._v2_server = HRMCPServer(name=name, version=version)
-            logger.info(f"MCPServer: v2 server available ({self._v2_server.get_stats()['tools']} built-in tools)")
+            logger.info(
+                f"MCPServer: v2 server available ({self._v2_server.get_stats()['tools']} built-in tools)"
+            )
         except Exception as e:
             logger.debug(f"MCPServer: v2 server not available ({e}), using legacy mode")
 
@@ -243,12 +246,14 @@ class MCPServer:
         """Delegate to v2 server for extended MCP methods."""
         if not self._v2_server:
             raise ValueError(f"Method {method} requires v2 server (not available)")
-        response = self._v2_server.handle_request({
-            "jsonrpc": "2.0",
-            "method": method,
-            "params": params,
-            "id": "delegate",
-        })
+        response = self._v2_server.handle_request(
+            {
+                "jsonrpc": "2.0",
+                "method": method,
+                "params": params,
+                "id": "delegate",
+            }
+        )
         if "error" in response:
             raise Exception(response["error"]["message"])
         return response.get("result", {})

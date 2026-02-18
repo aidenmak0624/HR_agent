@@ -119,7 +119,9 @@ class SSETransport:
         try:
             from flask import Flask
         except ImportError:
-            raise ImportError("Flask is required for SSE transport. Install with: pip install flask")
+            raise ImportError(
+                "Flask is required for SSE transport. Install with: pip install flask"
+            )
 
         app = Flask(__name__)
         bp = self.server.get_flask_blueprint()
@@ -129,12 +131,15 @@ class SSETransport:
         @app.route("/health")
         def health():
             from flask import jsonify
-            return jsonify({
-                "status": "ok",
-                "server": self.server.name,
-                "version": self.server.version,
-                "transport": "sse",
-            })
+
+            return jsonify(
+                {
+                    "status": "ok",
+                    "server": self.server.name,
+                    "version": self.server.version,
+                    "transport": "sse",
+                }
+            )
 
         self._app = app
         return app

@@ -52,9 +52,11 @@ if _PROJECT_ROOT not in sys.path:
 # MCP Protocol Types
 # ============================================================
 
+
 @dataclass
 class ToolDefinition:
     """MCP tool descriptor."""
+
     name: str
     description: str
     input_schema: Dict[str, Any]
@@ -64,6 +66,7 @@ class ToolDefinition:
 @dataclass
 class ResourceDefinition:
     """MCP resource descriptor."""
+
     uri: str
     name: str
     description: str
@@ -74,6 +77,7 @@ class ResourceDefinition:
 @dataclass
 class ResourceTemplate:
     """MCP resource template (URI with parameters)."""
+
     uri_template: str
     name: str
     description: str
@@ -84,6 +88,7 @@ class ResourceTemplate:
 @dataclass
 class PromptArgument:
     """MCP prompt argument."""
+
     name: str
     description: str
     required: bool = True
@@ -92,6 +97,7 @@ class PromptArgument:
 @dataclass
 class PromptDefinition:
     """MCP prompt descriptor."""
+
     name: str
     description: str
     arguments: List[PromptArgument] = field(default_factory=list)
@@ -122,6 +128,7 @@ def _ensure_db():
         return
     try:
         from src.core.database import init_db, SessionLocal
+
         if SessionLocal is None:
             init_db()
         _db_initialized = True
@@ -134,6 +141,7 @@ def _get_session():
     _ensure_db()
     try:
         from src.core.database import SessionLocal
+
         if SessionLocal is None:
             return None
         return SessionLocal()
@@ -160,12 +168,14 @@ def _with_session(fn):
 # Tool Implementations
 # ============================================================
 
+
 def _tool_get_leave_balance(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Get an employee's leave balance."""
     employee_id = arguments.get("employee_id")
 
     def _query(session):
         from src.core.database import LeaveBalance, Employee
+
         emp_id = int(employee_id) if employee_id else 1
         emp = session.query(Employee).filter_by(id=emp_id).first()
         balance = session.query(LeaveBalance).filter_by(employee_id=emp_id).first()
@@ -174,9 +184,11 @@ def _tool_get_leave_balance(arguments: Dict[str, Any]) -> Dict[str, Any]:
             return {
                 "employee_id": str(emp_id),
                 "employee_name": f"{emp.first_name} {emp.last_name}" if emp else "Unknown",
-                "balances": {"vacation": {"total": 20, "used": 0, "remaining": 20},
-                             "sick": {"total": 10, "used": 0, "remaining": 10},
-                             "personal": {"total": 5, "used": 0, "remaining": 5}},
+                "balances": {
+                    "vacation": {"total": 20, "used": 0, "remaining": 20},
+                    "sick": {"total": 10, "used": 0, "remaining": 10},
+                    "personal": {"total": 5, "used": 0, "remaining": 5},
+                },
             }
         return {
             "employee_id": str(emp_id),
@@ -216,6 +228,7 @@ def _tool_submit_leave_request(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _submit(session):
         from src.core.database import LeaveRequest as LR
+
         emp_id = int(employee_id)
         leave_req = LR(
             employee_id=emp_id,
@@ -247,25 +260,24 @@ def _tool_get_leave_history(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import LeaveRequest as LR
+
         emp_id = int(employee_id) if employee_id else 1
         requests = (
-            session.query(LR)
-            .filter_by(employee_id=emp_id)
-            .order_by(LR.id.desc())
-            .limit(50)
-            .all()
+            session.query(LR).filter_by(employee_id=emp_id).order_by(LR.id.desc()).limit(50).all()
         )
         history = []
         for req in requests:
-            history.append({
-                "request_id": str(req.id),
-                "leave_type": req.leave_type,
-                "start_date": req.start_date,
-                "end_date": req.end_date,
-                "status": req.status,
-                "reason": req.reason or "",
-                "created_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
-            })
+            history.append(
+                {
+                    "request_id": str(req.id),
+                    "leave_type": req.leave_type,
+                    "start_date": req.start_date,
+                    "end_date": req.end_date,
+                    "status": req.status,
+                    "reason": req.reason or "",
+                    "created_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
+                }
+            )
         return {"employee_id": str(emp_id), "history": history, "count": len(history)}
 
     return _with_session(_query)
@@ -280,6 +292,7 @@ def _tool_approve_leave_request(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _approve(session):
         from src.core.database import LeaveRequest as LR, LeaveBalance
+
         leave_req = session.query(LR).filter_by(id=int(request_id)).first()
         if not leave_req:
             return {"error": f"Leave request {request_id} not found"}
@@ -324,6 +337,7 @@ def _tool_reject_leave_request(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _reject(session):
         from src.core.database import LeaveRequest as LR
+
         leave_req = session.query(LR).filter_by(id=int(request_id)).first()
         if not leave_req:
             return {"error": f"Leave request {request_id} not found"}
@@ -344,8 +358,10 @@ def _tool_reject_leave_request(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 def _tool_get_pending_approvals(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """List all pending leave approvals."""
+
     def _query(session):
         from src.core.database import LeaveRequest as LR, Employee
+
         pending = (
             session.query(LR)
             .filter(LR.status.in_(["pending", "Pending"]))
@@ -362,23 +378,26 @@ def _tool_get_pending_approvals(arguments: Dict[str, Any]) -> Dict[str, Any]:
                 days = (end - start).days + 1
             except (ValueError, TypeError):
                 days = 1
-            items.append({
-                "request_id": str(req.id),
-                "requester": name,
-                "employee_id": str(req.employee_id),
-                "leave_type": req.leave_type,
-                "start_date": req.start_date,
-                "end_date": req.end_date,
-                "days": days,
-                "reason": req.reason or "",
-                "requested_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
-            })
+            items.append(
+                {
+                    "request_id": str(req.id),
+                    "requester": name,
+                    "employee_id": str(req.employee_id),
+                    "leave_type": req.leave_type,
+                    "start_date": req.start_date,
+                    "end_date": req.end_date,
+                    "days": days,
+                    "reason": req.reason or "",
+                    "requested_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
+                }
+            )
         return {"pending_approvals": items, "count": len(items)}
 
     return _with_session(_query)
 
 
 # -- Employee Management Tools --
+
 
 def _tool_get_employee_profile(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Get employee profile by ID or email."""
@@ -387,6 +406,7 @@ def _tool_get_employee_profile(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import Employee
+
         emp = None
         if employee_id:
             emp = session.query(Employee).filter_by(id=int(employee_id)).first()
@@ -418,6 +438,7 @@ def _tool_search_employees(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import Employee
+
         q = session.query(Employee)
         if department:
             q = q.filter_by(department=department)
@@ -432,14 +453,16 @@ def _tool_search_employees(arguments: Dict[str, Any]) -> Dict[str, Any]:
         employees = q.order_by(Employee.last_name).limit(limit).all()
         results = []
         for emp in employees:
-            results.append({
-                "id": emp.id,
-                "name": f"{emp.first_name} {emp.last_name}",
-                "email": emp.email,
-                "department": emp.department,
-                "role_level": emp.role_level,
-                "status": emp.status,
-            })
+            results.append(
+                {
+                    "id": emp.id,
+                    "name": f"{emp.first_name} {emp.last_name}",
+                    "email": emp.email,
+                    "department": emp.department,
+                    "role_level": emp.role_level,
+                    "status": emp.status,
+                }
+            )
         return {"employees": results, "count": len(results)}
 
     return _with_session(_query)
@@ -456,6 +479,7 @@ def _tool_update_employee(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _update(session):
         from src.core.database import Employee
+
         emp = session.query(Employee).filter_by(id=int(employee_id)).first()
         if not emp:
             return {"error": f"Employee {employee_id} not found"}
@@ -479,21 +503,26 @@ def _tool_update_employee(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 # -- Benefits Tools --
 
+
 def _tool_list_benefits_plans(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """List available benefits plans."""
+
     def _query(session):
         from src.core.database import BenefitsPlan
+
         plans = session.query(BenefitsPlan).filter_by(is_active=True).all()
         data = []
         for p in plans:
-            data.append({
-                "id": p.id,
-                "name": p.name,
-                "plan_type": p.plan_type,
-                "provider": p.provider,
-                "premium_monthly": p.premium_monthly,
-                "coverage_details": p.coverage_details or {},
-            })
+            data.append(
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "plan_type": p.plan_type,
+                    "provider": p.provider,
+                    "premium_monthly": p.premium_monthly,
+                    "coverage_details": p.coverage_details or {},
+                }
+            )
         return {"plans": data, "count": len(data)}
 
     return _with_session(_query)
@@ -505,20 +534,23 @@ def _tool_get_benefits_enrollments(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import BenefitsEnrollment, BenefitsPlan
+
         emp_id = int(employee_id) if employee_id else 1
         enrollments = session.query(BenefitsEnrollment).filter_by(employee_id=emp_id).all()
         data = []
         for e in enrollments:
             plan = session.query(BenefitsPlan).filter_by(id=e.plan_id).first()
-            data.append({
-                "id": e.id,
-                "plan_id": e.plan_id,
-                "plan_name": plan.name if plan else "Unknown",
-                "plan_type": plan.plan_type if plan else "",
-                "coverage_level": e.coverage_level,
-                "status": e.status,
-                "enrolled_at": e.enrolled_at.isoformat() if e.enrolled_at else None,
-            })
+            data.append(
+                {
+                    "id": e.id,
+                    "plan_id": e.plan_id,
+                    "plan_name": plan.name if plan else "Unknown",
+                    "plan_type": plan.plan_type if plan else "",
+                    "coverage_level": e.coverage_level,
+                    "status": e.status,
+                    "enrolled_at": e.enrolled_at.isoformat() if e.enrolled_at else None,
+                }
+            )
         return {"enrollments": data, "count": len(data)}
 
     return _with_session(_query)
@@ -534,6 +566,7 @@ def _tool_enroll_in_benefit(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _enroll(session):
         from src.core.database import BenefitsEnrollment, BenefitsPlan
+
         emp_id = int(employee_id)
         plan = session.query(BenefitsPlan).filter_by(id=int(plan_id), is_active=True).first()
         if not plan:
@@ -575,6 +608,7 @@ def _tool_enroll_in_benefit(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 # -- Document Tools --
 
+
 def _tool_list_document_templates(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """List available document templates."""
     return {
@@ -582,7 +616,11 @@ def _tool_list_document_templates(arguments: Dict[str, Any]) -> Dict[str, Any]:
             {"template_id": "t1", "name": "Offer Letter", "type": "offer_letter"},
             {"template_id": "t2", "name": "Employment Contract", "type": "employment_contract"},
             {"template_id": "t3", "name": "Termination Letter", "type": "termination_letter"},
-            {"template_id": "t4", "name": "Employment Certificate", "type": "employment_certificate"},
+            {
+                "template_id": "t4",
+                "name": "Employment Certificate",
+                "type": "employment_certificate",
+            },
             {"template_id": "t5", "name": "Promotion Letter", "type": "promotion_letter"},
             {"template_id": "t6", "name": "Experience Letter", "type": "experience_letter"},
         ],
@@ -599,12 +637,17 @@ def _tool_generate_document(arguments: Dict[str, Any]) -> Dict[str, Any]:
         return {"error": "template_id is required"}
 
     template_names = {
-        "t1": "Offer Letter", "t2": "Employment Contract", "t3": "Termination Letter",
-        "t4": "Employment Certificate", "t5": "Promotion Letter", "t6": "Experience Letter",
+        "t1": "Offer Letter",
+        "t2": "Employment Contract",
+        "t3": "Termination Letter",
+        "t4": "Employment Certificate",
+        "t5": "Promotion Letter",
+        "t6": "Experience Letter",
     }
 
     def _generate(session):
         from src.core.database import GeneratedDocument
+
         emp_id = int(employee_id) if employee_id else 1
         doc = GeneratedDocument(
             employee_id=emp_id,
@@ -620,7 +663,9 @@ def _tool_generate_document(arguments: Dict[str, Any]) -> Dict[str, Any]:
             "template_id": template_id,
             "template_name": doc.template_name,
             "status": "finalized",
-            "created_at": doc.created_at.isoformat() if doc.created_at else datetime.utcnow().isoformat(),
+            "created_at": (
+                doc.created_at.isoformat() if doc.created_at else datetime.utcnow().isoformat()
+            ),
             "message": f"Generated {doc.template_name} successfully.",
         }
 
@@ -629,25 +674,29 @@ def _tool_generate_document(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 # -- Performance Tools --
 
+
 def _tool_get_performance_reviews(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Get performance reviews for an employee."""
     employee_id = arguments.get("employee_id")
 
     def _query(session):
         from src.core.database import PerformanceReview
+
         emp_id = int(employee_id) if employee_id else 1
         reviews = session.query(PerformanceReview).filter_by(employee_id=emp_id).all()
         data = []
         for r in reviews:
-            data.append({
-                "id": r.id,
-                "review_period": r.review_period,
-                "rating": r.rating,
-                "strengths": r.strengths,
-                "areas_for_improvement": r.areas_for_improvement,
-                "comments": r.comments,
-                "status": r.status,
-            })
+            data.append(
+                {
+                    "id": r.id,
+                    "review_period": r.review_period,
+                    "rating": r.rating,
+                    "strengths": r.strengths,
+                    "areas_for_improvement": r.areas_for_improvement,
+                    "comments": r.comments,
+                    "status": r.status,
+                }
+            )
         return {"reviews": data, "count": len(data)}
 
     return _with_session(_query)
@@ -659,19 +708,22 @@ def _tool_get_performance_goals(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import PerformanceGoal
+
         emp_id = int(employee_id) if employee_id else 1
         goals = session.query(PerformanceGoal).filter_by(employee_id=emp_id).all()
         data = []
         for g in goals:
-            data.append({
-                "id": g.id,
-                "title": g.title,
-                "description": g.description,
-                "category": g.category,
-                "status": g.status,
-                "target_date": g.target_date.isoformat() if g.target_date else None,
-                "progress_pct": g.progress_pct,
-            })
+            data.append(
+                {
+                    "id": g.id,
+                    "title": g.title,
+                    "description": g.description,
+                    "category": g.category,
+                    "status": g.status,
+                    "target_date": g.target_date.isoformat() if g.target_date else None,
+                    "progress_pct": g.progress_pct,
+                }
+            )
         return {"goals": data, "count": len(data)}
 
     return _with_session(_query)
@@ -679,31 +731,36 @@ def _tool_get_performance_goals(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 # -- Onboarding Tools --
 
+
 def _tool_get_onboarding_checklist(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Get onboarding checklist for an employee."""
     employee_id = arguments.get("employee_id")
 
     def _query(session):
         from src.core.database import OnboardingChecklist
+
         emp_id = int(employee_id) if employee_id else 1
         tasks = session.query(OnboardingChecklist).filter_by(employee_id=emp_id).all()
         data = []
         for t in tasks:
-            data.append({
-                "id": t.id,
-                "task_name": t.task_name,
-                "category": t.category,
-                "description": t.description,
-                "status": t.status,
-                "due_date": t.due_date.isoformat() if t.due_date else None,
-                "completed_at": t.completed_at.isoformat() if t.completed_at else None,
-            })
+            data.append(
+                {
+                    "id": t.id,
+                    "task_name": t.task_name,
+                    "category": t.category,
+                    "description": t.description,
+                    "status": t.status,
+                    "due_date": t.due_date.isoformat() if t.due_date else None,
+                    "completed_at": t.completed_at.isoformat() if t.completed_at else None,
+                }
+            )
         return {"tasks": data, "count": len(data)}
 
     return _with_session(_query)
 
 
 # -- Policy & Knowledge Tools --
+
 
 def _tool_search_policies(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Search HR policies using the RAG knowledge base."""
@@ -713,6 +770,7 @@ def _tool_search_policies(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     try:
         from src.services.rag_service import RAGService
+
         rag = RAGService()
         results = rag.search(query, top_k=int(arguments.get("top_k", 5)))
         return {"query": query, "results": results, "count": len(results)}
@@ -721,9 +779,18 @@ def _tool_search_policies(arguments: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "query": query,
             "results": [
-                {"title": "Leave Policy", "summary": "Employees receive vacation, sick, and personal days annually."},
-                {"title": "Benefits Policy", "summary": "Health, dental, vision, and 401(k) plans available."},
-                {"title": "Code of Conduct", "summary": "Professional behavior and ethics guidelines."},
+                {
+                    "title": "Leave Policy",
+                    "summary": "Employees receive vacation, sick, and personal days annually.",
+                },
+                {
+                    "title": "Benefits Policy",
+                    "summary": "Health, dental, vision, and 401(k) plans available.",
+                },
+                {
+                    "title": "Code of Conduct",
+                    "summary": "Professional behavior and ethics guidelines.",
+                },
             ],
             "count": 3,
             "note": f"RAG service unavailable ({e}), showing common policies.",
@@ -738,6 +805,7 @@ def _tool_ask_hr_question(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     try:
         from flask import current_app
+
         agent_service = current_app.agent_service
         result = agent_service.process_query(question, user_context={"role": "employee"})
         return {
@@ -750,6 +818,7 @@ def _tool_ask_hr_question(arguments: Dict[str, Any]) -> Dict[str, Any]:
         # Standalone mode — try RAG only
         try:
             from src.services.rag_service import RAGService
+
             rag = RAGService()
             results = rag.search(question, top_k=3)
             context = "\n".join(str(r) for r in results) if results else "No context found."
@@ -766,10 +835,13 @@ def _tool_ask_hr_question(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 # -- Analytics Tools --
 
+
 def _tool_get_hr_metrics(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Get HR analytics metrics."""
+
     def _query(session):
         from src.core.database import Employee, LeaveRequest, QueryLog
+
         metrics = {}
         metrics["total_employees"] = session.query(Employee).count()
         metrics["pending_leave_requests"] = (
@@ -809,29 +881,41 @@ def _tool_get_recent_activity(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import LeaveRequest, Employee, GeneratedDocument
+
         activities = []
 
         # Recent leave requests
-        for lr in session.query(LeaveRequest).order_by(LeaveRequest.created_at.desc()).limit(10).all():
+        for lr in (
+            session.query(LeaveRequest).order_by(LeaveRequest.created_at.desc()).limit(10).all()
+        ):
             emp = session.query(Employee).filter_by(id=lr.employee_id).first()
             name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
-            activities.append({
-                "type": "leave",
-                "message": f"{name} — {lr.leave_type} request ({lr.status})",
-                "detail": f"{lr.start_date} to {lr.end_date}",
-                "timestamp": lr.created_at.isoformat() if lr.created_at else None,
-            })
+            activities.append(
+                {
+                    "type": "leave",
+                    "message": f"{name} — {lr.leave_type} request ({lr.status})",
+                    "detail": f"{lr.start_date} to {lr.end_date}",
+                    "timestamp": lr.created_at.isoformat() if lr.created_at else None,
+                }
+            )
 
         # Recent documents
-        for doc in session.query(GeneratedDocument).order_by(GeneratedDocument.created_at.desc()).limit(5).all():
+        for doc in (
+            session.query(GeneratedDocument)
+            .order_by(GeneratedDocument.created_at.desc())
+            .limit(5)
+            .all()
+        ):
             emp = session.query(Employee).filter_by(id=doc.employee_id).first()
             name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
-            activities.append({
-                "type": "document",
-                "message": f"Document generated: {doc.template_name}",
-                "detail": f"For {name}",
-                "timestamp": doc.created_at.isoformat() if doc.created_at else None,
-            })
+            activities.append(
+                {
+                    "type": "document",
+                    "message": f"Document generated: {doc.template_name}",
+                    "detail": f"For {name}",
+                    "timestamp": doc.created_at.isoformat() if doc.created_at else None,
+                }
+            )
 
         activities.sort(key=lambda a: a.get("timestamp") or "0000", reverse=True)
         return {"activities": activities[:limit], "count": len(activities[:limit])}
@@ -864,7 +948,11 @@ TOOLS: List[ToolDefinition] = [
             "type": "object",
             "properties": {
                 "employee_id": {"type": "string", "description": "Employee ID"},
-                "leave_type": {"type": "string", "enum": ["vacation", "sick", "personal", "parental", "bereavement"], "description": "Type of leave"},
+                "leave_type": {
+                    "type": "string",
+                    "enum": ["vacation", "sick", "personal", "parental", "bereavement"],
+                    "description": "Type of leave",
+                },
                 "start_date": {"type": "string", "description": "Start date (YYYY-MM-DD)"},
                 "end_date": {"type": "string", "description": "End date (YYYY-MM-DD)"},
                 "reason": {"type": "string", "description": "Reason for leave request"},
@@ -892,7 +980,10 @@ TOOLS: List[ToolDefinition] = [
             "type": "object",
             "properties": {
                 "request_id": {"type": "string", "description": "Leave request ID to approve"},
-                "approver_id": {"type": "string", "description": "ID of the approving manager/HR admin"},
+                "approver_id": {
+                    "type": "string",
+                    "description": "ID of the approving manager/HR admin",
+                },
             },
             "required": ["request_id"],
         },
@@ -920,7 +1011,6 @@ TOOLS: List[ToolDefinition] = [
         },
         handler=_tool_get_pending_approvals,
     ),
-
     # -- Employee Management (3) --
     ToolDefinition(
         name="get_employee_profile",
@@ -929,7 +1019,10 @@ TOOLS: List[ToolDefinition] = [
             "type": "object",
             "properties": {
                 "employee_id": {"type": "string", "description": "Employee ID (numeric)"},
-                "email": {"type": "string", "description": "Employee email address (alternative lookup)"},
+                "email": {
+                    "type": "string",
+                    "description": "Employee email address (alternative lookup)",
+                },
             },
         },
         handler=_tool_get_employee_profile,
@@ -940,9 +1033,15 @@ TOOLS: List[ToolDefinition] = [
         input_schema={
             "type": "object",
             "properties": {
-                "query": {"type": "string", "description": "Search query (name, email, department)"},
+                "query": {
+                    "type": "string",
+                    "description": "Search query (name, email, department)",
+                },
                 "department": {"type": "string", "description": "Filter by department"},
-                "limit": {"type": "integer", "description": "Maximum results (default: 20, max: 100)"},
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum results (default: 20, max: 100)",
+                },
             },
         },
         handler=_tool_search_employees,
@@ -971,7 +1070,6 @@ TOOLS: List[ToolDefinition] = [
         },
         handler=_tool_update_employee,
     ),
-
     # -- Benefits (3) --
     ToolDefinition(
         name="list_benefits_plans",
@@ -999,13 +1097,16 @@ TOOLS: List[ToolDefinition] = [
             "properties": {
                 "employee_id": {"type": "string", "description": "Employee ID"},
                 "plan_id": {"type": "string", "description": "Benefits plan ID"},
-                "coverage_level": {"type": "string", "enum": ["employee", "employee_spouse", "employee_children", "family"], "description": "Coverage level"},
+                "coverage_level": {
+                    "type": "string",
+                    "enum": ["employee", "employee_spouse", "employee_children", "family"],
+                    "description": "Coverage level",
+                },
             },
             "required": ["employee_id", "plan_id"],
         },
         handler=_tool_enroll_in_benefit,
     ),
-
     # -- Documents (2) --
     ToolDefinition(
         name="list_document_templates",
@@ -1027,7 +1128,6 @@ TOOLS: List[ToolDefinition] = [
         },
         handler=_tool_generate_document,
     ),
-
     # -- Performance (2) --
     ToolDefinition(
         name="get_performance_reviews",
@@ -1053,7 +1153,6 @@ TOOLS: List[ToolDefinition] = [
         },
         handler=_tool_get_performance_goals,
     ),
-
     # -- Onboarding (1) --
     ToolDefinition(
         name="get_onboarding_checklist",
@@ -1067,7 +1166,6 @@ TOOLS: List[ToolDefinition] = [
         },
         handler=_tool_get_onboarding_checklist,
     ),
-
     # -- Policy & Knowledge (2) --
     ToolDefinition(
         name="search_policies",
@@ -1094,7 +1192,6 @@ TOOLS: List[ToolDefinition] = [
         },
         handler=_tool_ask_hr_question,
     ),
-
     # -- Analytics (2) --
     ToolDefinition(
         name="get_hr_metrics",
@@ -1120,16 +1217,25 @@ TOOLS: List[ToolDefinition] = [
 # Resource Registry (8 resources)
 # ============================================================
 
+
 def _resource_employees(uri: str) -> Dict[str, Any]:
     """Fetch employee directory."""
+
     def _query(session):
         from src.core.database import Employee
+
         employees = session.query(Employee).order_by(Employee.last_name).all()
         return [
-            {"id": e.id, "name": f"{e.first_name} {e.last_name}",
-             "email": e.email, "department": e.department, "status": e.status}
+            {
+                "id": e.id,
+                "name": f"{e.first_name} {e.last_name}",
+                "email": e.email,
+                "department": e.department,
+                "status": e.status,
+            }
             for e in employees
         ]
+
     return _with_session(_query)
 
 
@@ -1141,17 +1247,23 @@ def _resource_employee_by_id(uri: str) -> Dict[str, Any]:
 
     def _query(session):
         from src.core.database import Employee
+
         emp = session.query(Employee).filter_by(id=int(emp_id)).first()
         if not emp:
             return {"error": f"Employee {emp_id} not found"}
         return {
-            "id": emp.id, "hris_id": emp.hris_id,
-            "first_name": emp.first_name, "last_name": emp.last_name,
-            "email": emp.email, "department": emp.department,
-            "role_level": emp.role_level, "manager_id": emp.manager_id,
+            "id": emp.id,
+            "hris_id": emp.hris_id,
+            "first_name": emp.first_name,
+            "last_name": emp.last_name,
+            "email": emp.email,
+            "department": emp.department,
+            "role_level": emp.role_level,
+            "manager_id": emp.manager_id,
             "hire_date": emp.hire_date.isoformat() if emp.hire_date else None,
             "status": emp.status,
         }
+
     return _with_session(_query)
 
 
@@ -1159,14 +1271,29 @@ def _resource_policies(uri: str) -> Dict[str, Any]:
     """Fetch available policy topics."""
     return {
         "policies": [
-            {"name": "Leave Policy", "description": "Vacation, sick, and personal leave guidelines"},
-            {"name": "Benefits Policy", "description": "Health, dental, vision, and retirement plans"},
+            {
+                "name": "Leave Policy",
+                "description": "Vacation, sick, and personal leave guidelines",
+            },
+            {
+                "name": "Benefits Policy",
+                "description": "Health, dental, vision, and retirement plans",
+            },
             {"name": "Code of Conduct", "description": "Professional behavior and ethics"},
-            {"name": "Remote Work Policy", "description": "Work from home guidelines and expectations"},
-            {"name": "Performance Review Policy", "description": "Annual review process and criteria"},
+            {
+                "name": "Remote Work Policy",
+                "description": "Work from home guidelines and expectations",
+            },
+            {
+                "name": "Performance Review Policy",
+                "description": "Annual review process and criteria",
+            },
             {"name": "Onboarding Policy", "description": "New hire onboarding procedures"},
             {"name": "GDPR & Privacy Policy", "description": "Data protection and privacy rights"},
-            {"name": "Anti-Discrimination Policy", "description": "Equal opportunity and inclusion"},
+            {
+                "name": "Anti-Discrimination Policy",
+                "description": "Equal opportunity and inclusion",
+            },
         ],
         "note": "Use the search_policies tool for detailed policy content.",
     }
@@ -1265,6 +1392,7 @@ RESOURCE_TEMPLATES: List[ResourceTemplate] = [
 # ============================================================
 # Prompt Registry (5 prompts)
 # ============================================================
+
 
 def _prompt_leave_request(arguments: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Generate leave request guidance prompt."""
@@ -1387,8 +1515,14 @@ PROMPTS: List[PromptDefinition] = [
         name="leave_request",
         description="Step-by-step guidance for submitting an employee leave request.",
         arguments=[
-            PromptArgument(name="employee_name", description="Name of the employee requesting leave"),
-            PromptArgument(name="leave_type", description="Type of leave (vacation, sick, personal)", required=False),
+            PromptArgument(
+                name="employee_name", description="Name of the employee requesting leave"
+            ),
+            PromptArgument(
+                name="leave_type",
+                description="Type of leave (vacation, sick, personal)",
+                required=False,
+            ),
         ],
         handler=_prompt_leave_request,
     ),
@@ -1397,7 +1531,9 @@ PROMPTS: List[PromptDefinition] = [
         description="Complete onboarding workflow for new hire employees.",
         arguments=[
             PromptArgument(name="employee_name", description="Name of the new hire"),
-            PromptArgument(name="department", description="Department the employee is joining", required=False),
+            PromptArgument(
+                name="department", description="Department the employee is joining", required=False
+            ),
         ],
         handler=_prompt_onboarding_guide,
     ),
@@ -1414,7 +1550,11 @@ PROMPTS: List[PromptDefinition] = [
         description="Preparation workflow for employee performance reviews.",
         arguments=[
             PromptArgument(name="employee_name", description="Name of the employee being reviewed"),
-            PromptArgument(name="review_period", description="Review period (e.g., 'Q1 2024', 'Annual 2024')", required=False),
+            PromptArgument(
+                name="review_period",
+                description="Review period (e.g., 'Q1 2024', 'Annual 2024')",
+                required=False,
+            ),
         ],
         handler=_prompt_performance_review,
     ),
@@ -1432,6 +1572,7 @@ PROMPTS: List[PromptDefinition] = [
 # ============================================================
 # MCP Server Core
 # ============================================================
+
 
 class HRMCPServer:
     """
@@ -1479,9 +1620,11 @@ class HRMCPServer:
             "logging/setLevel": self._handle_set_log_level,
         }
 
-        logger.info(f"HRMCPServer: Created '{name}' v{version} with {len(TOOLS)} tools, "
-                     f"{len(RESOURCES)} resources, {len(RESOURCE_TEMPLATES)} templates, "
-                     f"{len(PROMPTS)} prompts")
+        logger.info(
+            f"HRMCPServer: Created '{name}' v{version} with {len(TOOLS)} tools, "
+            f"{len(RESOURCES)} resources, {len(RESOURCE_TEMPLATES)} templates, "
+            f"{len(PROMPTS)} prompts"
+        )
 
     # ------------------------------------------------------------------
     # Public API
@@ -1557,8 +1700,10 @@ class HRMCPServer:
         """Handle initialize — return server capabilities."""
         self._initialized = True
         client_info = params.get("clientInfo", {})
-        logger.info(f"MCP: Initialized by {client_info.get('name', 'unknown')} "
-                     f"v{client_info.get('version', '?')}")
+        logger.info(
+            f"MCP: Initialized by {client_info.get('name', 'unknown')} "
+            f"v{client_info.get('version', '?')}"
+        )
         return {
             "protocolVersion": self.PROTOCOL_VERSION,
             "capabilities": {
@@ -1645,11 +1790,13 @@ class HRMCPServer:
         if resource and resource.handler:
             data = resource.handler(uri)
             return {
-                "contents": [{
-                    "uri": uri,
-                    "mimeType": resource.mime_type,
-                    "text": json.dumps(data, indent=2, default=str),
-                }]
+                "contents": [
+                    {
+                        "uri": uri,
+                        "mimeType": resource.mime_type,
+                        "text": json.dumps(data, indent=2, default=str),
+                    }
+                ]
             }
 
         # Try template match
@@ -1658,11 +1805,13 @@ class HRMCPServer:
                 if tmpl.handler:
                     data = tmpl.handler(uri)
                     return {
-                        "contents": [{
-                            "uri": uri,
-                            "mimeType": tmpl.mime_type,
-                            "text": json.dumps(data, indent=2, default=str),
-                        }]
+                        "contents": [
+                            {
+                                "uri": uri,
+                                "mimeType": tmpl.mime_type,
+                                "text": json.dumps(data, indent=2, default=str),
+                            }
+                        ]
                     }
 
         raise KeyError(f"Resource not found: {uri}")
@@ -1733,12 +1882,13 @@ class HRMCPServer:
     def _match_uri_template(template: str, uri: str) -> bool:
         """Check if a URI matches a template pattern (e.g., hr://employees/{id})."""
         import re
+
         # Convert template to regex: {param} -> [^/]+
-        pattern = re.sub(r'\{[^}]+\}', r'[^/]+', re.escape(template))
-        pattern = pattern.replace(r'\{', '{').replace(r'\}', '}')
+        pattern = re.sub(r"\{[^}]+\}", r"[^/]+", re.escape(template))
+        pattern = pattern.replace(r"\{", "{").replace(r"\}", "}")
         # Re-do properly
-        pattern = re.sub(r'\{[^}]+\}', '[^/]+', template)
-        pattern = "^" + re.escape(pattern).replace(r'\[^/\]\+', '[^/]+') + "$"
+        pattern = re.sub(r"\{[^}]+\}", "[^/]+", template)
+        pattern = "^" + re.escape(pattern).replace(r"\[^/\]\+", "[^/]+") + "$"
         # Simpler approach
         parts_tmpl = template.split("/")
         parts_uri = uri.split("/")
@@ -1838,6 +1988,7 @@ class HRMCPServer:
         def mcp_sse():
             """SSE endpoint for MCP server-to-client messages."""
             import queue
+
             msg_queue = queue.Queue()
 
             def generate():
@@ -1866,15 +2017,17 @@ class HRMCPServer:
         @bp.route("/health", methods=["GET"])
         def mcp_health():
             """Health check."""
-            return jsonify({
-                "status": "ok",
-                "server": self.name,
-                "version": self.version,
-                "protocol_version": self.PROTOCOL_VERSION,
-                "tools": len(TOOLS),
-                "resources": len(RESOURCES) + len(RESOURCE_TEMPLATES),
-                "prompts": len(PROMPTS),
-            })
+            return jsonify(
+                {
+                    "status": "ok",
+                    "server": self.name,
+                    "version": self.version,
+                    "protocol_version": self.PROTOCOL_VERSION,
+                    "tools": len(TOOLS),
+                    "resources": len(RESOURCES) + len(RESOURCE_TEMPLATES),
+                    "prompts": len(PROMPTS),
+                }
+            )
 
         return bp
 
@@ -1902,6 +2055,7 @@ class HRMCPServer:
 # ============================================================
 # Factory
 # ============================================================
+
 
 def create_mcp_server(name: str = "hr-agent-platform", version: str = "2.0.0") -> HRMCPServer:
     """

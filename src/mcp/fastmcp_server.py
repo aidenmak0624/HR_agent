@@ -62,6 +62,7 @@ def _ensure_db():
         return
     try:
         from src.core.database import init_db, SessionLocal
+
         if SessionLocal is None:
             init_db()
         _db_initialized = True
@@ -74,6 +75,7 @@ def _get_session():
     _ensure_db()
     try:
         from src.core.database import SessionLocal
+
         if SessionLocal is None:
             return None
         return SessionLocal()
@@ -100,6 +102,7 @@ def _with_session(fn):
 # LEAVE MANAGEMENT TOOLS (6)
 # ============================================================
 
+
 @mcp.tool()
 def get_leave_balance(employee_id: str) -> str:
     """Get an employee's current leave balance including vacation, sick, and personal days remaining.
@@ -107,8 +110,10 @@ def get_leave_balance(employee_id: str) -> str:
     Args:
         employee_id: Employee ID (numeric string)
     """
+
     def _query(session):
         from src.core.database import LeaveBalance, Employee
+
         emp_id = int(employee_id)
         emp = session.query(Employee).filter_by(id=emp_id).first()
         balance = session.query(LeaveBalance).filter_by(employee_id=emp_id).first()
@@ -116,22 +121,34 @@ def get_leave_balance(employee_id: str) -> str:
             return {
                 "employee_id": str(emp_id),
                 "employee_name": f"{emp.first_name} {emp.last_name}" if emp else "Unknown",
-                "balances": {"vacation": {"total": 20, "used": 0, "remaining": 20},
-                             "sick": {"total": 10, "used": 0, "remaining": 10},
-                             "personal": {"total": 5, "used": 0, "remaining": 5}},
+                "balances": {
+                    "vacation": {"total": 20, "used": 0, "remaining": 20},
+                    "sick": {"total": 10, "used": 0, "remaining": 10},
+                    "personal": {"total": 5, "used": 0, "remaining": 5},
+                },
             }
         return {
             "employee_id": str(emp_id),
             "employee_name": f"{emp.first_name} {emp.last_name}" if emp else "Unknown",
             "balances": {
-                "vacation": {"total": balance.vacation_total, "used": balance.vacation_used,
-                             "remaining": balance.vacation_total - balance.vacation_used},
-                "sick": {"total": balance.sick_total, "used": balance.sick_used,
-                         "remaining": balance.sick_total - balance.sick_used},
-                "personal": {"total": balance.personal_total, "used": balance.personal_used,
-                             "remaining": balance.personal_total - balance.personal_used},
+                "vacation": {
+                    "total": balance.vacation_total,
+                    "used": balance.vacation_used,
+                    "remaining": balance.vacation_total - balance.vacation_used,
+                },
+                "sick": {
+                    "total": balance.sick_total,
+                    "used": balance.sick_used,
+                    "remaining": balance.sick_total - balance.sick_used,
+                },
+                "personal": {
+                    "total": balance.personal_total,
+                    "used": balance.personal_used,
+                    "remaining": balance.personal_total - balance.personal_used,
+                },
             },
         }
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -152,23 +169,32 @@ def submit_leave_request(
         end_date: End date in YYYY-MM-DD format
         reason: Reason for leave request
     """
+
     def _submit(session):
         from src.core.database import LeaveRequest as LR
+
         emp_id = int(employee_id)
         leave_req = LR(
-            employee_id=emp_id, leave_type=leave_type,
-            start_date=start_date, end_date=end_date,
-            reason=reason, status="pending",
+            employee_id=emp_id,
+            leave_type=leave_type,
+            start_date=start_date,
+            end_date=end_date,
+            reason=reason,
+            status="pending",
         )
         session.add(leave_req)
         session.commit()
         return {
-            "request_id": str(leave_req.id), "status": "pending",
-            "employee_id": str(emp_id), "leave_type": leave_type,
-            "start_date": start_date, "end_date": end_date,
+            "request_id": str(leave_req.id),
+            "status": "pending",
+            "employee_id": str(emp_id),
+            "leave_type": leave_type,
+            "start_date": start_date,
+            "end_date": end_date,
             "reason": reason,
             "message": "Leave request submitted successfully and is pending approval.",
         }
+
     return json.dumps(_with_session(_submit), indent=2, default=str)
 
 
@@ -179,19 +205,29 @@ def get_leave_history(employee_id: str) -> str:
     Args:
         employee_id: Employee ID
     """
+
     def _query(session):
         from src.core.database import LeaveRequest as LR
+
         emp_id = int(employee_id)
-        requests = session.query(LR).filter_by(employee_id=emp_id).order_by(LR.id.desc()).limit(50).all()
+        requests = (
+            session.query(LR).filter_by(employee_id=emp_id).order_by(LR.id.desc()).limit(50).all()
+        )
         history = []
         for req in requests:
-            history.append({
-                "request_id": str(req.id), "leave_type": req.leave_type,
-                "start_date": req.start_date, "end_date": req.end_date,
-                "status": req.status, "reason": req.reason or "",
-                "created_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
-            })
+            history.append(
+                {
+                    "request_id": str(req.id),
+                    "leave_type": req.leave_type,
+                    "start_date": req.start_date,
+                    "end_date": req.end_date,
+                    "status": req.status,
+                    "reason": req.reason or "",
+                    "created_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
+                }
+            )
         return {"employee_id": str(emp_id), "history": history, "count": len(history)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -203,8 +239,10 @@ def approve_leave_request(request_id: str, approver_id: str = "") -> str:
         request_id: Leave request ID to approve
         approver_id: ID of the approving manager/HR admin
     """
+
     def _approve(session):
         from src.core.database import LeaveRequest as LR, LeaveBalance
+
         leave_req = session.query(LR).filter_by(id=int(request_id)).first()
         if not leave_req:
             return {"error": f"Leave request {request_id} not found"}
@@ -228,9 +266,13 @@ def approve_leave_request(request_id: str, approver_id: str = "") -> str:
             elif leave_req.leave_type == "personal":
                 balance.personal_used += days
         session.commit()
-        return {"request_id": request_id, "status": "approved",
-                "approved_at": datetime.utcnow().isoformat(),
-                "message": "Leave request approved successfully."}
+        return {
+            "request_id": request_id,
+            "status": "approved",
+            "approved_at": datetime.utcnow().isoformat(),
+            "message": "Leave request approved successfully.",
+        }
+
     return json.dumps(_with_session(_approve), indent=2, default=str)
 
 
@@ -242,8 +284,10 @@ def reject_leave_request(request_id: str, reason: str = "") -> str:
         request_id: Leave request ID to reject
         reason: Reason for rejection
     """
+
     def _reject(session):
         from src.core.database import LeaveRequest as LR
+
         leave_req = session.query(LR).filter_by(id=int(request_id)).first()
         if not leave_req:
             return {"error": f"Leave request {request_id} not found"}
@@ -251,17 +295,30 @@ def reject_leave_request(request_id: str, reason: str = "") -> str:
             return {"error": f"Request is already {leave_req.status}"}
         leave_req.status = "rejected"
         session.commit()
-        return {"request_id": request_id, "status": "rejected", "reason": reason,
-                "rejected_at": datetime.utcnow().isoformat(), "message": "Leave request rejected."}
+        return {
+            "request_id": request_id,
+            "status": "rejected",
+            "reason": reason,
+            "rejected_at": datetime.utcnow().isoformat(),
+            "message": "Leave request rejected.",
+        }
+
     return json.dumps(_with_session(_reject), indent=2, default=str)
 
 
 @mcp.tool()
 def get_pending_approvals() -> str:
     """List all pending leave approval requests for manager/HR review."""
+
     def _query(session):
         from src.core.database import LeaveRequest as LR, Employee
-        pending = session.query(LR).filter(LR.status.in_(["pending", "Pending"])).order_by(LR.id.desc()).all()
+
+        pending = (
+            session.query(LR)
+            .filter(LR.status.in_(["pending", "Pending"]))
+            .order_by(LR.id.desc())
+            .all()
+        )
         items = []
         for req in pending:
             emp = session.query(Employee).filter_by(id=req.employee_id).first()
@@ -272,20 +329,28 @@ def get_pending_approvals() -> str:
                 days = (end - start).days + 1
             except (ValueError, TypeError):
                 days = 1
-            items.append({
-                "request_id": str(req.id), "requester": name,
-                "employee_id": str(req.employee_id), "leave_type": req.leave_type,
-                "start_date": req.start_date, "end_date": req.end_date,
-                "days": days, "reason": req.reason or "",
-                "requested_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
-            })
+            items.append(
+                {
+                    "request_id": str(req.id),
+                    "requester": name,
+                    "employee_id": str(req.employee_id),
+                    "leave_type": req.leave_type,
+                    "start_date": req.start_date,
+                    "end_date": req.end_date,
+                    "days": days,
+                    "reason": req.reason or "",
+                    "requested_at": req.created_at.strftime("%Y-%m-%d") if req.created_at else "",
+                }
+            )
         return {"pending_approvals": items, "count": len(items)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
 # ============================================================
 # EMPLOYEE MANAGEMENT TOOLS (3)
 # ============================================================
+
 
 @mcp.tool()
 def get_employee_profile(employee_id: str = "", email: str = "") -> str:
@@ -295,8 +360,10 @@ def get_employee_profile(employee_id: str = "", email: str = "") -> str:
         employee_id: Employee ID (numeric). Provide either this or email.
         email: Employee email address (alternative lookup)
     """
+
     def _query(session):
         from src.core.database import Employee
+
         emp = None
         if employee_id:
             emp = session.query(Employee).filter_by(id=int(employee_id)).first()
@@ -305,13 +372,18 @@ def get_employee_profile(employee_id: str = "", email: str = "") -> str:
         if not emp:
             return {"error": "Employee not found"}
         return {
-            "id": emp.id, "hris_id": emp.hris_id,
-            "first_name": emp.first_name, "last_name": emp.last_name,
-            "email": emp.email, "department": emp.department,
-            "role_level": emp.role_level, "manager_id": emp.manager_id,
+            "id": emp.id,
+            "hris_id": emp.hris_id,
+            "first_name": emp.first_name,
+            "last_name": emp.last_name,
+            "email": emp.email,
+            "department": emp.department,
+            "role_level": emp.role_level,
+            "manager_id": emp.manager_id,
             "hire_date": emp.hire_date.isoformat() if emp.hire_date else None,
             "status": emp.status,
         }
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -328,27 +400,45 @@ def search_employees(query: str = "", department: str = "", limit: int = 20) -> 
 
     def _query(session):
         from src.core.database import Employee
+
         q = session.query(Employee)
         if department:
             q = q.filter_by(department=department)
         if query:
             search = f"%{query}%"
             q = q.filter(
-                (Employee.first_name.ilike(search)) | (Employee.last_name.ilike(search))
-                | (Employee.email.ilike(search)) | (Employee.department.ilike(search))
+                (Employee.first_name.ilike(search))
+                | (Employee.last_name.ilike(search))
+                | (Employee.email.ilike(search))
+                | (Employee.department.ilike(search))
             )
         employees = q.order_by(Employee.last_name).limit(limit).all()
-        results = [{"id": emp.id, "name": f"{emp.first_name} {emp.last_name}",
-                     "email": emp.email, "department": emp.department,
-                     "role_level": emp.role_level, "status": emp.status} for emp in employees]
+        results = [
+            {
+                "id": emp.id,
+                "name": f"{emp.first_name} {emp.last_name}",
+                "email": emp.email,
+                "department": emp.department,
+                "role_level": emp.role_level,
+                "status": emp.status,
+            }
+            for emp in employees
+        ]
         return {"employees": results, "count": len(results)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
 @mcp.tool()
-def update_employee(employee_id: str, first_name: str = "", last_name: str = "",
-                    email: str = "", department: str = "", role_level: str = "",
-                    status: str = "") -> str:
+def update_employee(
+    employee_id: str,
+    first_name: str = "",
+    last_name: str = "",
+    email: str = "",
+    department: str = "",
+    role_level: str = "",
+    status: str = "",
+) -> str:
     """Update employee record fields. HR admin operation.
 
     Args:
@@ -361,18 +451,25 @@ def update_employee(employee_id: str, first_name: str = "", last_name: str = "",
         status: New status (leave empty to skip)
     """
     updates = {}
-    if first_name: updates["first_name"] = first_name
-    if last_name: updates["last_name"] = last_name
-    if email: updates["email"] = email
-    if department: updates["department"] = department
-    if role_level: updates["role_level"] = role_level
-    if status: updates["status"] = status
+    if first_name:
+        updates["first_name"] = first_name
+    if last_name:
+        updates["last_name"] = last_name
+    if email:
+        updates["email"] = email
+    if department:
+        updates["department"] = department
+    if role_level:
+        updates["role_level"] = role_level
+    if status:
+        updates["status"] = status
 
     if not updates:
         return json.dumps({"error": "No fields provided to update"})
 
     def _update(session):
         from src.core.database import Employee
+
         emp = session.query(Employee).filter_by(id=int(employee_id)).first()
         if not emp:
             return {"error": f"Employee {employee_id} not found"}
@@ -382,8 +479,12 @@ def update_employee(employee_id: str, first_name: str = "", last_name: str = "",
             updated.append(fld)
         emp.updated_at = datetime.utcnow()
         session.commit()
-        return {"employee_id": str(emp.id), "updated_fields": updated,
-                "message": f"Updated {', '.join(updated)} for {emp.first_name} {emp.last_name}."}
+        return {
+            "employee_id": str(emp.id),
+            "updated_fields": updated,
+            "message": f"Updated {', '.join(updated)} for {emp.first_name} {emp.last_name}.",
+        }
+
     return json.dumps(_with_session(_update), indent=2, default=str)
 
 
@@ -391,16 +492,28 @@ def update_employee(employee_id: str, first_name: str = "", last_name: str = "",
 # BENEFITS TOOLS (3)
 # ============================================================
 
+
 @mcp.tool()
 def list_benefits_plans() -> str:
     """List all active benefits plans including health, dental, vision, and retirement options."""
+
     def _query(session):
         from src.core.database import BenefitsPlan
+
         plans = session.query(BenefitsPlan).filter_by(is_active=True).all()
-        data = [{"id": p.id, "name": p.name, "plan_type": p.plan_type, "provider": p.provider,
-                 "premium_monthly": p.premium_monthly, "coverage_details": p.coverage_details or {}}
-                for p in plans]
+        data = [
+            {
+                "id": p.id,
+                "name": p.name,
+                "plan_type": p.plan_type,
+                "provider": p.provider,
+                "premium_monthly": p.premium_monthly,
+                "coverage_details": p.coverage_details or {},
+            }
+            for p in plans
+        ]
         return {"plans": data, "count": len(data)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -411,21 +524,28 @@ def get_benefits_enrollments(employee_id: str) -> str:
     Args:
         employee_id: Employee ID
     """
+
     def _query(session):
         from src.core.database import BenefitsEnrollment, BenefitsPlan
+
         emp_id = int(employee_id)
         enrollments = session.query(BenefitsEnrollment).filter_by(employee_id=emp_id).all()
         data = []
         for e in enrollments:
             plan = session.query(BenefitsPlan).filter_by(id=e.plan_id).first()
-            data.append({
-                "id": e.id, "plan_id": e.plan_id,
-                "plan_name": plan.name if plan else "Unknown",
-                "plan_type": plan.plan_type if plan else "",
-                "coverage_level": e.coverage_level, "status": e.status,
-                "enrolled_at": e.enrolled_at.isoformat() if e.enrolled_at else None,
-            })
+            data.append(
+                {
+                    "id": e.id,
+                    "plan_id": e.plan_id,
+                    "plan_name": plan.name if plan else "Unknown",
+                    "plan_type": plan.plan_type if plan else "",
+                    "coverage_level": e.coverage_level,
+                    "status": e.status,
+                    "enrolled_at": e.enrolled_at.isoformat() if e.enrolled_at else None,
+                }
+            )
         return {"enrollments": data, "count": len(data)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -438,26 +558,40 @@ def enroll_in_benefit(employee_id: str, plan_id: str, coverage_level: str = "emp
         plan_id: Benefits plan ID
         coverage_level: Coverage level (employee, employee_spouse, employee_children, family)
     """
+
     def _enroll(session):
         from src.core.database import BenefitsEnrollment, BenefitsPlan
+
         emp_id = int(employee_id)
         plan = session.query(BenefitsPlan).filter_by(id=int(plan_id), is_active=True).first()
         if not plan:
             return {"error": "Plan not found or inactive"}
-        existing = (session.query(BenefitsEnrollment)
-                    .join(BenefitsPlan, BenefitsEnrollment.plan_id == BenefitsPlan.id)
-                    .filter(BenefitsEnrollment.employee_id == emp_id,
-                            BenefitsPlan.plan_type == plan.plan_type,
-                            BenefitsEnrollment.status == "active").first())
+        existing = (
+            session.query(BenefitsEnrollment)
+            .join(BenefitsPlan, BenefitsEnrollment.plan_id == BenefitsPlan.id)
+            .filter(
+                BenefitsEnrollment.employee_id == emp_id,
+                BenefitsPlan.plan_type == plan.plan_type,
+                BenefitsEnrollment.status == "active",
+            )
+            .first()
+        )
         if existing:
             existing.status = "terminated"
-        enrollment = BenefitsEnrollment(employee_id=emp_id, plan_id=plan.id,
-                                        coverage_level=coverage_level, status="active")
+        enrollment = BenefitsEnrollment(
+            employee_id=emp_id, plan_id=plan.id, coverage_level=coverage_level, status="active"
+        )
         session.add(enrollment)
         session.commit()
-        return {"enrollment_id": str(enrollment.id), "plan_name": plan.name,
-                "plan_type": plan.plan_type, "coverage_level": coverage_level,
-                "status": "active", "message": f"Successfully enrolled in {plan.name}."}
+        return {
+            "enrollment_id": str(enrollment.id),
+            "plan_name": plan.name,
+            "plan_type": plan.plan_type,
+            "coverage_level": coverage_level,
+            "status": "active",
+            "message": f"Successfully enrolled in {plan.name}.",
+        }
+
     return json.dumps(_with_session(_enroll), indent=2, default=str)
 
 
@@ -465,20 +599,28 @@ def enroll_in_benefit(employee_id: str, plan_id: str, coverage_level: str = "emp
 # DOCUMENT TOOLS (2)
 # ============================================================
 
+
 @mcp.tool()
 def list_document_templates() -> str:
     """List available HR document templates (offer letters, contracts, certificates)."""
-    return json.dumps({
-        "templates": [
-            {"template_id": "t1", "name": "Offer Letter", "type": "offer_letter"},
-            {"template_id": "t2", "name": "Employment Contract", "type": "employment_contract"},
-            {"template_id": "t3", "name": "Termination Letter", "type": "termination_letter"},
-            {"template_id": "t4", "name": "Employment Certificate", "type": "employment_certificate"},
-            {"template_id": "t5", "name": "Promotion Letter", "type": "promotion_letter"},
-            {"template_id": "t6", "name": "Experience Letter", "type": "experience_letter"},
-        ],
-        "count": 6,
-    }, indent=2)
+    return json.dumps(
+        {
+            "templates": [
+                {"template_id": "t1", "name": "Offer Letter", "type": "offer_letter"},
+                {"template_id": "t2", "name": "Employment Contract", "type": "employment_contract"},
+                {"template_id": "t3", "name": "Termination Letter", "type": "termination_letter"},
+                {
+                    "template_id": "t4",
+                    "name": "Employment Certificate",
+                    "type": "employment_certificate",
+                },
+                {"template_id": "t5", "name": "Promotion Letter", "type": "promotion_letter"},
+                {"template_id": "t6", "name": "Experience Letter", "type": "experience_letter"},
+            ],
+            "count": 6,
+        },
+        indent=2,
+    )
 
 
 @mcp.tool()
@@ -491,32 +633,49 @@ def generate_document(template_id: str, employee_id: str = "", parameters: str =
         parameters: Additional template parameters as JSON string
     """
     template_names = {
-        "t1": "Offer Letter", "t2": "Employment Contract", "t3": "Termination Letter",
-        "t4": "Employment Certificate", "t5": "Promotion Letter", "t6": "Experience Letter",
+        "t1": "Offer Letter",
+        "t2": "Employment Contract",
+        "t3": "Termination Letter",
+        "t4": "Employment Certificate",
+        "t5": "Promotion Letter",
+        "t6": "Experience Letter",
     }
 
     def _generate(session):
         from src.core.database import GeneratedDocument
+
         emp_id = int(employee_id) if employee_id else 1
         try:
             params = json.loads(parameters) if isinstance(parameters, str) else parameters
         except json.JSONDecodeError:
             params = {}
-        doc = GeneratedDocument(employee_id=emp_id, template_id=template_id,
-                                template_name=template_names.get(template_id, "Unknown"),
-                                status="finalized", parameters=params)
+        doc = GeneratedDocument(
+            employee_id=emp_id,
+            template_id=template_id,
+            template_name=template_names.get(template_id, "Unknown"),
+            status="finalized",
+            parameters=params,
+        )
         session.add(doc)
         session.commit()
-        return {"document_id": str(doc.id), "template_id": template_id,
-                "template_name": doc.template_name, "status": "finalized",
-                "created_at": doc.created_at.isoformat() if doc.created_at else datetime.utcnow().isoformat(),
-                "message": f"Generated {doc.template_name} successfully."}
+        return {
+            "document_id": str(doc.id),
+            "template_id": template_id,
+            "template_name": doc.template_name,
+            "status": "finalized",
+            "created_at": (
+                doc.created_at.isoformat() if doc.created_at else datetime.utcnow().isoformat()
+            ),
+            "message": f"Generated {doc.template_name} successfully.",
+        }
+
     return json.dumps(_with_session(_generate), indent=2, default=str)
 
 
 # ============================================================
 # PERFORMANCE TOOLS (2)
 # ============================================================
+
 
 @mcp.tool()
 def get_performance_reviews(employee_id: str) -> str:
@@ -525,14 +684,26 @@ def get_performance_reviews(employee_id: str) -> str:
     Args:
         employee_id: Employee ID
     """
+
     def _query(session):
         from src.core.database import PerformanceReview
+
         emp_id = int(employee_id)
         reviews = session.query(PerformanceReview).filter_by(employee_id=emp_id).all()
-        data = [{"id": r.id, "review_period": r.review_period, "rating": r.rating,
-                 "strengths": r.strengths, "areas_for_improvement": r.areas_for_improvement,
-                 "comments": r.comments, "status": r.status} for r in reviews]
+        data = [
+            {
+                "id": r.id,
+                "review_period": r.review_period,
+                "rating": r.rating,
+                "strengths": r.strengths,
+                "areas_for_improvement": r.areas_for_improvement,
+                "comments": r.comments,
+                "status": r.status,
+            }
+            for r in reviews
+        ]
         return {"reviews": data, "count": len(data)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -543,21 +714,33 @@ def get_performance_goals(employee_id: str) -> str:
     Args:
         employee_id: Employee ID
     """
+
     def _query(session):
         from src.core.database import PerformanceGoal
+
         emp_id = int(employee_id)
         goals = session.query(PerformanceGoal).filter_by(employee_id=emp_id).all()
-        data = [{"id": g.id, "title": g.title, "description": g.description,
-                 "category": g.category, "status": g.status,
-                 "target_date": g.target_date.isoformat() if g.target_date else None,
-                 "progress_pct": g.progress_pct} for g in goals]
+        data = [
+            {
+                "id": g.id,
+                "title": g.title,
+                "description": g.description,
+                "category": g.category,
+                "status": g.status,
+                "target_date": g.target_date.isoformat() if g.target_date else None,
+                "progress_pct": g.progress_pct,
+            }
+            for g in goals
+        ]
         return {"goals": data, "count": len(data)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
 # ============================================================
 # ONBOARDING TOOLS (1)
 # ============================================================
+
 
 @mcp.tool()
 def get_onboarding_checklist(employee_id: str) -> str:
@@ -566,22 +749,33 @@ def get_onboarding_checklist(employee_id: str) -> str:
     Args:
         employee_id: Employee ID
     """
+
     def _query(session):
         from src.core.database import OnboardingChecklist
+
         emp_id = int(employee_id)
         tasks = session.query(OnboardingChecklist).filter_by(employee_id=emp_id).all()
-        data = [{"id": t.id, "task_name": t.task_name, "category": t.category,
-                 "description": t.description, "status": t.status,
-                 "due_date": t.due_date.isoformat() if t.due_date else None,
-                 "completed_at": t.completed_at.isoformat() if t.completed_at else None}
-                for t in tasks]
+        data = [
+            {
+                "id": t.id,
+                "task_name": t.task_name,
+                "category": t.category,
+                "description": t.description,
+                "status": t.status,
+                "due_date": t.due_date.isoformat() if t.due_date else None,
+                "completed_at": t.completed_at.isoformat() if t.completed_at else None,
+            }
+            for t in tasks
+        ]
         return {"tasks": data, "count": len(data)}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
 # ============================================================
 # POLICY & KNOWLEDGE TOOLS (2)
 # ============================================================
+
 
 @mcp.tool()
 def search_policies(query: str, top_k: int = 5) -> str:
@@ -593,20 +787,35 @@ def search_policies(query: str, top_k: int = 5) -> str:
     """
     try:
         from src.services.rag_service import RAGService
+
         rag = RAGService()
         results = rag.search(query, top_k=top_k)
-        return json.dumps({"query": query, "results": results, "count": len(results)}, indent=2, default=str)
+        return json.dumps(
+            {"query": query, "results": results, "count": len(results)}, indent=2, default=str
+        )
     except Exception as e:
-        return json.dumps({
-            "query": query,
-            "results": [
-                {"title": "Leave Policy", "summary": "Employees receive vacation, sick, and personal days annually."},
-                {"title": "Benefits Policy", "summary": "Health, dental, vision, and 401(k) plans available."},
-                {"title": "Code of Conduct", "summary": "Professional behavior and ethics guidelines."},
-            ],
-            "count": 3,
-            "note": f"RAG service unavailable ({e}), showing common policies.",
-        }, indent=2)
+        return json.dumps(
+            {
+                "query": query,
+                "results": [
+                    {
+                        "title": "Leave Policy",
+                        "summary": "Employees receive vacation, sick, and personal days annually.",
+                    },
+                    {
+                        "title": "Benefits Policy",
+                        "summary": "Health, dental, vision, and 401(k) plans available.",
+                    },
+                    {
+                        "title": "Code of Conduct",
+                        "summary": "Professional behavior and ethics guidelines.",
+                    },
+                ],
+                "count": 3,
+                "note": f"RAG service unavailable ({e}), showing common policies.",
+            },
+            indent=2,
+        )
 
 
 @mcp.tool()
@@ -618,25 +827,37 @@ def ask_hr_question(question: str) -> str:
     """
     try:
         from flask import current_app
+
         agent_service = current_app.agent_service
         result = agent_service.process_query(question, user_context={"role": "employee"})
-        return json.dumps({
-            "question": question,
-            "answer": result.get("response", result.get("answer", str(result))),
-            "confidence": result.get("confidence", 0.0),
-            "agent_type": result.get("agent_type", "unknown"),
-        }, indent=2, default=str)
+        return json.dumps(
+            {
+                "question": question,
+                "answer": result.get("response", result.get("answer", str(result))),
+                "confidence": result.get("confidence", 0.0),
+                "agent_type": result.get("agent_type", "unknown"),
+            },
+            indent=2,
+            default=str,
+        )
     except Exception:
         try:
             from src.services.rag_service import RAGService
+
             rag = RAGService()
             results = rag.search(question, top_k=3)
             context = "\n".join(str(r) for r in results) if results else "No context found."
-            return json.dumps({
-                "question": question, "answer": context,
-                "confidence": 0.5, "agent_type": "rag_fallback",
-                "note": "Agent service unavailable; showing RAG results.",
-            }, indent=2, default=str)
+            return json.dumps(
+                {
+                    "question": question,
+                    "answer": context,
+                    "confidence": 0.5,
+                    "agent_type": "rag_fallback",
+                    "note": "Agent service unavailable; showing RAG results.",
+                },
+                indent=2,
+                default=str,
+            )
         except Exception as e2:
             return json.dumps({"question": question, "error": f"No AI service available: {e2}"})
 
@@ -645,19 +866,26 @@ def ask_hr_question(question: str) -> str:
 # ANALYTICS TOOLS (2 existing + 3 NEW)
 # ============================================================
 
+
 @mcp.tool()
 def get_hr_metrics() -> str:
     """Get HR analytics dashboard metrics: headcount, leave stats, department breakdown, query volume."""
+
     def _query(session):
         from src.core.database import Employee, LeaveRequest
+
         metrics = {}
         metrics["total_employees"] = session.query(Employee).count()
         metrics["active_employees"] = session.query(Employee).filter_by(status="active").count()
         metrics["pending_leave_requests"] = (
-            session.query(LeaveRequest).filter(LeaveRequest.status.in_(["pending", "Pending"])).count()
+            session.query(LeaveRequest)
+            .filter(LeaveRequest.status.in_(["pending", "Pending"]))
+            .count()
         )
         metrics["approved_leave_requests"] = (
-            session.query(LeaveRequest).filter(LeaveRequest.status.in_(["approved", "Approved"])).count()
+            session.query(LeaveRequest)
+            .filter(LeaveRequest.status.in_(["approved", "Approved"]))
+            .count()
         )
         dept_counts = {}
         for emp in session.query(Employee).filter_by(status="active").all():
@@ -665,11 +893,15 @@ def get_hr_metrics() -> str:
         metrics["department_headcount"] = dept_counts
         try:
             from src.core.database import QueryLog
+
             today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-            metrics["queries_today"] = session.query(QueryLog).filter(QueryLog.created_at >= today).count()
+            metrics["queries_today"] = (
+                session.query(QueryLog).filter(QueryLog.created_at >= today).count()
+            )
         except Exception:
             metrics["queries_today"] = 0
         return metrics
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -684,25 +916,40 @@ def get_recent_activity(limit: int = 20) -> str:
 
     def _query(session):
         from src.core.database import LeaveRequest, Employee, GeneratedDocument
+
         activities = []
-        for lr in session.query(LeaveRequest).order_by(LeaveRequest.created_at.desc()).limit(10).all():
+        for lr in (
+            session.query(LeaveRequest).order_by(LeaveRequest.created_at.desc()).limit(10).all()
+        ):
             emp = session.query(Employee).filter_by(id=lr.employee_id).first()
             name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
-            activities.append({
-                "type": "leave", "message": f"{name} — {lr.leave_type} request ({lr.status})",
-                "detail": f"{lr.start_date} to {lr.end_date}",
-                "timestamp": lr.created_at.isoformat() if lr.created_at else None,
-            })
-        for doc in session.query(GeneratedDocument).order_by(GeneratedDocument.created_at.desc()).limit(5).all():
+            activities.append(
+                {
+                    "type": "leave",
+                    "message": f"{name} — {lr.leave_type} request ({lr.status})",
+                    "detail": f"{lr.start_date} to {lr.end_date}",
+                    "timestamp": lr.created_at.isoformat() if lr.created_at else None,
+                }
+            )
+        for doc in (
+            session.query(GeneratedDocument)
+            .order_by(GeneratedDocument.created_at.desc())
+            .limit(5)
+            .all()
+        ):
             emp = session.query(Employee).filter_by(id=doc.employee_id).first()
             name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
-            activities.append({
-                "type": "document", "message": f"Document generated: {doc.template_name}",
-                "detail": f"For {name}",
-                "timestamp": doc.created_at.isoformat() if doc.created_at else None,
-            })
+            activities.append(
+                {
+                    "type": "document",
+                    "message": f"Document generated: {doc.template_name}",
+                    "detail": f"For {name}",
+                    "timestamp": doc.created_at.isoformat() if doc.created_at else None,
+                }
+            )
         activities.sort(key=lambda a: a.get("timestamp") or "0000", reverse=True)
         return {"activities": activities[:limit], "count": len(activities[:limit])}
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -753,13 +1000,17 @@ def run_sql_analytics(query_description: str) -> str:
 
     query_key = query_description.strip().lower().replace(" ", "_")
     if query_key not in SAFE_QUERIES:
-        return json.dumps({
-            "error": f"Unknown query: {query_description}",
-            "available_queries": list(SAFE_QUERIES.keys()),
-        }, indent=2)
+        return json.dumps(
+            {
+                "error": f"Unknown query: {query_description}",
+                "available_queries": list(SAFE_QUERIES.keys()),
+            },
+            indent=2,
+        )
 
     def _run(session):
         from sqlalchemy import text
+
         result = session.execute(text(SAFE_QUERIES[query_key]))
         columns = list(result.keys())
         rows = [dict(zip(columns, row)) for row in result.fetchall()]
@@ -775,9 +1026,13 @@ def get_department_report(department: str) -> str:
     Args:
         department: Department name (e.g., Engineering, HR, Marketing)
     """
+
     def _query(session):
         from src.core.database import Employee, LeaveRequest, LeaveBalance
-        employees = session.query(Employee).filter(Employee.department.ilike(f"%{department}%")).all()
+
+        employees = (
+            session.query(Employee).filter(Employee.department.ilike(f"%{department}%")).all()
+        )
         if not employees:
             return {"error": f"No employees found in department matching '{department}'"}
 
@@ -787,14 +1042,22 @@ def get_department_report(department: str) -> str:
         for e in active:
             role_breakdown[e.role_level] = role_breakdown.get(e.role_level, 0) + 1
 
-        pending_leaves = session.query(LeaveRequest).filter(
-            LeaveRequest.employee_id.in_(emp_ids),
-            LeaveRequest.status.in_(["pending", "Pending"])
-        ).count()
-        approved_leaves = session.query(LeaveRequest).filter(
-            LeaveRequest.employee_id.in_(emp_ids),
-            LeaveRequest.status.in_(["approved", "Approved"])
-        ).count()
+        pending_leaves = (
+            session.query(LeaveRequest)
+            .filter(
+                LeaveRequest.employee_id.in_(emp_ids),
+                LeaveRequest.status.in_(["pending", "Pending"]),
+            )
+            .count()
+        )
+        approved_leaves = (
+            session.query(LeaveRequest)
+            .filter(
+                LeaveRequest.employee_id.in_(emp_ids),
+                LeaveRequest.status.in_(["approved", "Approved"]),
+            )
+            .count()
+        )
 
         return {
             "department": department,
@@ -803,19 +1066,28 @@ def get_department_report(department: str) -> str:
             "role_breakdown": role_breakdown,
             "pending_leave_requests": pending_leaves,
             "approved_leave_requests": approved_leaves,
-            "employees": [{"id": e.id, "name": f"{e.first_name} {e.last_name}",
-                           "role": e.role_level, "status": e.status,
-                           "hire_date": e.hire_date.isoformat() if e.hire_date else None}
-                          for e in employees],
+            "employees": [
+                {
+                    "id": e.id,
+                    "name": f"{e.first_name} {e.last_name}",
+                    "role": e.role_level,
+                    "status": e.status,
+                    "hire_date": e.hire_date.isoformat() if e.hire_date else None,
+                }
+                for e in employees
+            ],
         }
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
 @mcp.tool()
 def get_attrition_metrics() -> str:
     """Get employee attrition/turnover metrics across all departments."""
+
     def _query(session):
         from src.core.database import Employee
+
         all_emps = session.query(Employee).all()
         total = len(all_emps)
         active = sum(1 for e in all_emps if e.status == "active")
@@ -832,13 +1104,18 @@ def get_attrition_metrics() -> str:
                 dept_attrition[e.department]["inactive"] += 1
 
         for dept, data in dept_attrition.items():
-            data["attrition_rate"] = round(data["inactive"] / data["total"] * 100, 1) if data["total"] > 0 else 0
+            data["attrition_rate"] = (
+                round(data["inactive"] / data["total"] * 100, 1) if data["total"] > 0 else 0
+            )
 
         return {
-            "total_employees": total, "active": active, "inactive_or_terminated": inactive,
+            "total_employees": total,
+            "active": active,
+            "inactive_or_terminated": inactive,
             "overall_attrition_rate": round(inactive / total * 100, 1) if total > 0 else 0,
             "department_attrition": dept_attrition,
         }
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -846,9 +1123,9 @@ def get_attrition_metrics() -> str:
 # NOTIFICATION TOOLS (2 NEW)
 # ============================================================
 
+
 @mcp.tool()
-def send_notification(recipient_id: str, subject: str, body: str,
-                      priority: str = "normal") -> str:
+def send_notification(recipient_id: str, subject: str, body: str, priority: str = "normal") -> str:
     """Send an in-app notification to an employee.
 
     Args:
@@ -857,8 +1134,10 @@ def send_notification(recipient_id: str, subject: str, body: str,
         body: Notification body text
         priority: Priority level (low, normal, high, urgent)
     """
+
     def _send(session):
         from src.core.database import NotificationRecord
+
         notif = NotificationRecord(
             recipient_id=int(recipient_id),
             subject=subject,
@@ -889,6 +1168,7 @@ def send_notification(recipient_id: str, subject: str, body: str,
     # Fallback: use in-memory notification service
     try:
         from src.core.notifications import NotificationService
+
         svc = NotificationService()
         notif = svc.send(
             recipient_id=recipient_id,
@@ -897,20 +1177,32 @@ def send_notification(recipient_id: str, subject: str, body: str,
             body=body,
             priority=priority,
         )
-        return json.dumps({
-            "notification_id": getattr(notif, "id", "generated"),
-            "recipient_id": recipient_id, "subject": subject,
-            "priority": priority, "status": "sent",
-            "message": f"Notification sent to employee {recipient_id}.",
-        }, indent=2, default=str)
+        return json.dumps(
+            {
+                "notification_id": getattr(notif, "id", "generated"),
+                "recipient_id": recipient_id,
+                "subject": subject,
+                "priority": priority,
+                "status": "sent",
+                "message": f"Notification sent to employee {recipient_id}.",
+            },
+            indent=2,
+            default=str,
+        )
     except Exception as e:
-        return json.dumps({
-            "notification_id": f"notif-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
-            "recipient_id": recipient_id, "subject": subject,
-            "priority": priority, "status": "sent",
-            "message": f"Notification queued for employee {recipient_id}.",
-            "note": f"Using fallback delivery ({e})",
-        }, indent=2, default=str)
+        return json.dumps(
+            {
+                "notification_id": f"notif-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+                "recipient_id": recipient_id,
+                "subject": subject,
+                "priority": priority,
+                "status": "sent",
+                "message": f"Notification queued for employee {recipient_id}.",
+                "note": f"Using fallback delivery ({e})",
+            },
+            indent=2,
+            default=str,
+        )
 
 
 @mcp.tool()
@@ -926,16 +1218,24 @@ def get_notifications(employee_id: str, status: str = "", limit: int = 20) -> st
 
     def _query(session):
         from src.core.database import NotificationRecord
+
         q = session.query(NotificationRecord).filter_by(recipient_id=int(employee_id))
         if status:
             q = q.filter_by(status=status)
         notifications = q.order_by(NotificationRecord.created_at.desc()).limit(limit).all()
-        data = [{
-            "id": n.id, "subject": n.subject, "body": n.body,
-            "priority": n.priority, "status": n.status, "channel": n.channel,
-            "created_at": n.created_at.isoformat() if n.created_at else None,
-            "read_at": n.read_at.isoformat() if hasattr(n, 'read_at') and n.read_at else None,
-        } for n in notifications]
+        data = [
+            {
+                "id": n.id,
+                "subject": n.subject,
+                "body": n.body,
+                "priority": n.priority,
+                "status": n.status,
+                "channel": n.channel,
+                "created_at": n.created_at.isoformat() if n.created_at else None,
+                "read_at": n.read_at.isoformat() if hasattr(n, "read_at") and n.read_at else None,
+            }
+            for n in notifications
+        ]
         return {"employee_id": employee_id, "notifications": data, "count": len(data)}
 
     try:
@@ -945,15 +1245,21 @@ def get_notifications(employee_id: str, status: str = "", limit: int = 20) -> st
     except Exception:
         pass
 
-    return json.dumps({
-        "employee_id": employee_id, "notifications": [],
-        "count": 0, "note": "Notification table not available, returning empty list.",
-    }, indent=2)
+    return json.dumps(
+        {
+            "employee_id": employee_id,
+            "notifications": [],
+            "count": 0,
+            "note": "Notification table not available, returning empty list.",
+        },
+        indent=2,
+    )
 
 
 # ============================================================
 # WORKFLOW APPROVAL TOOLS (2 NEW)
 # ============================================================
+
 
 @mcp.tool()
 def approve_workflow(workflow_id: str, approver_id: str, comments: str = "") -> str:
@@ -966,28 +1272,39 @@ def approve_workflow(workflow_id: str, approver_id: str, comments: str = "") -> 
     """
     try:
         from src.core.workflow_engine import WorkflowEngine
+
         engine = WorkflowEngine()
         result = engine.approve_step(
             instance_id=workflow_id,
             approver_id=approver_id,
             comments=comments,
         )
-        return json.dumps({
-            "workflow_id": workflow_id, "status": "approved",
-            "approver_id": approver_id, "comments": comments,
-            "result": str(result),
-            "message": f"Workflow {workflow_id} approved.",
-        }, indent=2, default=str)
+        return json.dumps(
+            {
+                "workflow_id": workflow_id,
+                "status": "approved",
+                "approver_id": approver_id,
+                "comments": comments,
+                "result": str(result),
+                "message": f"Workflow {workflow_id} approved.",
+            },
+            indent=2,
+            default=str,
+        )
     except Exception as e:
         # Fallback: try treating it as a leave request approval
         try:
             result = json.loads(approve_leave_request(workflow_id, approver_id))
             return json.dumps(result, indent=2, default=str)
         except Exception:
-            return json.dumps({
-                "workflow_id": workflow_id, "status": "error",
-                "error": str(e),
-            }, indent=2)
+            return json.dumps(
+                {
+                    "workflow_id": workflow_id,
+                    "status": "error",
+                    "error": str(e),
+                },
+                indent=2,
+            )
 
 
 @mcp.tool()
@@ -1001,42 +1318,64 @@ def reject_workflow(workflow_id: str, approver_id: str, reason: str = "") -> str
     """
     try:
         from src.core.workflow_engine import WorkflowEngine
+
         engine = WorkflowEngine()
         result = engine.reject_step(
             instance_id=workflow_id,
             approver_id=approver_id,
             comments=reason,
         )
-        return json.dumps({
-            "workflow_id": workflow_id, "status": "rejected",
-            "approver_id": approver_id, "reason": reason,
-            "result": str(result),
-            "message": f"Workflow {workflow_id} rejected.",
-        }, indent=2, default=str)
+        return json.dumps(
+            {
+                "workflow_id": workflow_id,
+                "status": "rejected",
+                "approver_id": approver_id,
+                "reason": reason,
+                "result": str(result),
+                "message": f"Workflow {workflow_id} rejected.",
+            },
+            indent=2,
+            default=str,
+        )
     except Exception as e:
         try:
             result = json.loads(reject_leave_request(workflow_id, reason))
             return json.dumps(result, indent=2, default=str)
         except Exception:
-            return json.dumps({
-                "workflow_id": workflow_id, "status": "error",
-                "error": str(e),
-            }, indent=2)
+            return json.dumps(
+                {
+                    "workflow_id": workflow_id,
+                    "status": "error",
+                    "error": str(e),
+                },
+                indent=2,
+            )
 
 
 # ============================================================
 # RESOURCES (8)
 # ============================================================
 
+
 @mcp.resource("hr://employees")
 def resource_employees() -> str:
     """Complete employee directory with names, departments, and contact info."""
+
     def _query(session):
         from src.core.database import Employee
+
         employees = session.query(Employee).order_by(Employee.last_name).all()
-        return [{"id": e.id, "name": f"{e.first_name} {e.last_name}",
-                 "email": e.email, "department": e.department, "status": e.status}
-                for e in employees]
+        return [
+            {
+                "id": e.id,
+                "name": f"{e.first_name} {e.last_name}",
+                "email": e.email,
+                "department": e.department,
+                "status": e.status,
+            }
+            for e in employees
+        ]
+
     return json.dumps(_with_session(_query), indent=2, default=str)
 
 
@@ -1049,19 +1388,37 @@ def resource_employee_by_id(employee_id: str) -> str:
 @mcp.resource("hr://policies")
 def resource_policies() -> str:
     """List of available HR policy topics and summaries."""
-    return json.dumps({
-        "policies": [
-            {"name": "Leave Policy", "description": "Vacation, sick, and personal leave guidelines"},
-            {"name": "Benefits Policy", "description": "Health, dental, vision, and retirement plans"},
-            {"name": "Code of Conduct", "description": "Professional behavior and ethics"},
-            {"name": "Remote Work Policy", "description": "Work from home guidelines"},
-            {"name": "Performance Review Policy", "description": "Annual review process and criteria"},
-            {"name": "Onboarding Policy", "description": "New hire onboarding procedures"},
-            {"name": "GDPR & Privacy Policy", "description": "Data protection and privacy rights"},
-            {"name": "Anti-Discrimination Policy", "description": "Equal opportunity and inclusion"},
-        ],
-        "note": "Use the search_policies tool for detailed policy content.",
-    }, indent=2)
+    return json.dumps(
+        {
+            "policies": [
+                {
+                    "name": "Leave Policy",
+                    "description": "Vacation, sick, and personal leave guidelines",
+                },
+                {
+                    "name": "Benefits Policy",
+                    "description": "Health, dental, vision, and retirement plans",
+                },
+                {"name": "Code of Conduct", "description": "Professional behavior and ethics"},
+                {"name": "Remote Work Policy", "description": "Work from home guidelines"},
+                {
+                    "name": "Performance Review Policy",
+                    "description": "Annual review process and criteria",
+                },
+                {"name": "Onboarding Policy", "description": "New hire onboarding procedures"},
+                {
+                    "name": "GDPR & Privacy Policy",
+                    "description": "Data protection and privacy rights",
+                },
+                {
+                    "name": "Anti-Discrimination Policy",
+                    "description": "Equal opportunity and inclusion",
+                },
+            ],
+            "note": "Use the search_policies tool for detailed policy content.",
+        },
+        indent=2,
+    )
 
 
 @mcp.resource("hr://benefits/plans")
@@ -1099,6 +1456,7 @@ def resource_metrics() -> str:
 # ============================================================
 # PROMPTS (5)
 # ============================================================
+
 
 @mcp.prompt()
 def leave_request(employee_name: str, leave_type: str = "vacation") -> str:
@@ -1177,10 +1535,12 @@ def policy_inquiry(topic: str) -> str:
 # Ensure NotificationRecord exists in database models
 # ============================================================
 
+
 def _ensure_notification_table():
     """Create NotificationRecord table if it doesn't exist."""
     try:
         from src.core.database import Base, engine
+
         if engine is not None:
             # Check if the model exists
             try:
@@ -1197,25 +1557,35 @@ def _ensure_notification_table():
 # Entry point for standalone running
 # ============================================================
 
+
 def main():
     """Run the FastMCP server."""
     import argparse
 
     parser = argparse.ArgumentParser(description="HR Agent MCP Server (Official SDK)")
-    parser.add_argument("--transport", "-t", choices=["stdio", "streamable-http", "sse"],
-                        default="stdio", help="Transport mode (default: stdio)")
+    parser.add_argument(
+        "--transport",
+        "-t",
+        choices=["stdio", "streamable-http", "sse"],
+        default="stdio",
+        help="Transport mode (default: stdio)",
+    )
     parser.add_argument("--port", "-p", type=int, default=8080, help="Port for HTTP transport")
     parser.add_argument("--host", default="0.0.0.0", help="Host for HTTP transport")
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    logging.basicConfig(level=log_level, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-                        stream=sys.stderr)
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        stream=sys.stderr,
+    )
 
     # Initialize database
     try:
         from src.core.database import init_db
+
         init_db()
         _ensure_notification_table()
         logger.info("Database initialized")
