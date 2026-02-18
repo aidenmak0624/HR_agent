@@ -8,7 +8,7 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Callable
 from collections import defaultdict
@@ -190,6 +190,12 @@ class APIGateway:
         )
         self.blueprint.route("/benefits/enrollments", methods=["GET"])(
             self._rate_limit_middleware(self._get_benefits_enrollments)
+        )
+        self.blueprint.route("/benefits/enroll", methods=["POST"])(
+            self._rate_limit_middleware(self._enroll_in_benefit)
+        )
+        self.blueprint.route("/activity/recent", methods=["GET"])(
+            self._rate_limit_middleware(self._get_recent_activity)
         )
         self.blueprint.route("/onboarding/checklist", methods=["GET"])(
             self._rate_limit_middleware(self._get_onboarding_checklist)
@@ -665,6 +671,18 @@ class APIGateway:
                 },
             )
             self._log_request("POST", "/api/v2/query", True)
+
+            # --- Log query to DB for analytics ---
+            try:
+                self._log_query_to_db(
+                    query=query,
+                    agent_type=result.get("agent_type", "unknown"),
+                    confidence=result.get("confidence", 0.0),
+                    execution_time_ms=result.get("execution_time_ms", 0),
+                )
+            except Exception:
+                pass  # analytics logging should never break chat
+
             return jsonify(response.to_dict()), 200
 
         except Exception as e:
@@ -753,7 +771,8 @@ class APIGateway:
                 "   Try: 'I'm a new employee, what should I do?'\n\n"
                 "🔒 **Compliance & GDPR** — Data privacy rights, GDPR requests, employment law.\n"
                 "   Try: 'What are my GDPR rights?' or 'How do I submit a data access request?'\n\n"
-                "⚠️ *Note: Benefits enrollment changes and external HRIS integrations are coming soon.*\n\n"
+                "💼 **Benefits Enrollment** — View plans and enroll in benefits directly.\n"
+                "   Try: 'What benefits plans are available?'\n\n"
                 "Just ask me anything HR-related!",
                 "agent_type": "general_assistant",
                 "confidence": 0.95,
@@ -842,7 +861,7 @@ class APIGateway:
                 "Other: Dental (100% preventive), Vision ($10 copay), Life Insurance (2x salary), STD/LTD (60% salary), "
                 "EAP (8 free sessions), $7,500 tuition reimbursement, $75/mo gym subsidy, $500 wellness stipend.\n\n"
                 "Open enrollment: November 1-15. Contact: benefits@technova.com | ext. 2105\n\n"
-                "⚠️ *Self-service enrollment changes are coming soon. For now, contact benefits@technova.com to make changes.*",
+                "You can view and enroll in benefits plans through the Benefits page.",
                 "agent_type": "benefits_agent",
                 "confidence": 0.90,
             },
@@ -2716,57 +2735,182 @@ class APIGateway:
 
             # Ensure dashboard-critical keys always present (role-appropriate defaults)
             if user_role == "hr_admin":
-                metrics.setdefault("total_employees", 285)
-                metrics.setdefault("open_leave_requests", 3)
-                metrics.setdefault("pending_approvals", 5)
-                metrics.setdefault("queries_today", 24)
+                metrics.setdefault("total_employees", 0)
+                metrics.setdefault("open_leave_requests", 0)
+                metrics.setdefault("pending_approvals", 0)
                 metrics.setdefault(
                     "department_headcount",
-                    {"Engineering": 45, "Sales": 38, "HR": 22, "Finance": 28, "Operations": 35},
+                    {"Engineering": 0},
                 )
             elif user_role == "manager":
-                metrics.setdefault("total_employees", 45)
-                metrics.setdefault("open_leave_requests", 2)
-                metrics.setdefault("pending_approvals", 2)
-                metrics.setdefault("queries_today", 8)
-                metrics.setdefault("department_headcount", {"Engineering": 45})
-            else:
-                metrics.setdefault("total_employees", 45)
-                metrics.setdefault("open_leave_requests", 1)
+                metrics.setdefault("total_employees", 0)
+                metrics.setdefault("open_leave_requests", 0)
                 metrics.setdefault("pending_approvals", 0)
-                metrics.setdefault("queries_today", 3)
-                metrics.setdefault("department_headcount", {"Engineering": 45})
+                metrics.setdefault("department_headcount", {"Engineering": 0})
+            else:
+                metrics.setdefault("total_employees", 0)
+                metrics.setdefault("open_leave_requests", 0)
+                metrics.setdefault("pending_approvals", 0)
+                metrics.setdefault("department_headcount", {"Engineering": 0})
 
-            metrics.setdefault("monthly_queries", [45, 52, 38, 65, 72, 58])
+            # --- Live analytics from DB ---
+            try:
+                from src.core.database import QueryLog, LeaveBalance
 
-            # Provide analytics chart data with sample-data labels
-            metrics.setdefault(
-                "turnover_trend", [2.1, 2.3, 1.8, 2.5, 3.2, 2.8, 2.4, 2.9, 3.1, 2.6, 2.2, 2.0]
-            )
-            metrics.setdefault(
-                "leave_utilization", {"Vacation": 65, "Sick Leave": 45, "Personal Days": 30}
-            )
-            metrics.setdefault(
-                "agent_performance",
-                {
-                    "Policy Agent": 35,
-                    "Leave Agent": 25,
-                    "Benefits Agent": 20,
-                    "Payroll Agent": 10,
-                    "Onboarding Agent": 10,
-                },
-            )
+                analytics_session = self._get_db_session()
+                if analytics_session:
+                    try:
+                        from sqlalchemy import func
 
-            # Flag which fields use sample/demo data vs live DB data
+                        now = datetime.utcnow()
+                        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+                        # queries_today — count from query_logs
+                        metrics["queries_today"] = (
+                            analytics_session.query(QueryLog)
+                            .filter(QueryLog.created_at >= today_start)
+                            .count()
+                        )
+
+                        # monthly_queries — last 6 months from query_logs
+                        monthly = []
+                        for i in range(5, -1, -1):
+                            month_start = (now.replace(day=1) - timedelta(days=i * 30)).replace(
+                                day=1, hour=0, minute=0, second=0, microsecond=0
+                            )
+                            if i > 0:
+                                month_end = (
+                                    now.replace(day=1) - timedelta(days=(i - 1) * 30)
+                                ).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+                            else:
+                                month_end = now
+                            cnt = (
+                                analytics_session.query(QueryLog)
+                                .filter(
+                                    QueryLog.created_at >= month_start,
+                                    QueryLog.created_at < month_end,
+                                )
+                                .count()
+                            )
+                            monthly.append(cnt)
+                        metrics["monthly_queries"] = monthly
+
+                        # leave_utilization — aggregate from leave_balances
+                        balances = analytics_session.query(LeaveBalance).all()
+                        if balances:
+                            vacation_used = sum(b.vacation_used for b in balances)
+                            sick_used = sum(b.sick_used for b in balances)
+                            personal_used = sum(b.personal_used for b in balances)
+                            metrics["leave_utilization"] = {
+                                "Vacation": vacation_used,
+                                "Sick Leave": sick_used,
+                                "Personal Days": personal_used,
+                            }
+                        else:
+                            metrics["leave_utilization"] = {
+                                "Vacation": 0,
+                                "Sick Leave": 0,
+                                "Personal Days": 0,
+                            }
+
+                        # agent_performance — query volume per agent from query_logs
+                        agent_counts = (
+                            analytics_session.query(
+                                QueryLog.agent_type,
+                                func.count(QueryLog.id).label("cnt"),
+                            )
+                            .group_by(QueryLog.agent_type)
+                            .all()
+                        )
+                        if agent_counts:
+                            agent_map = {
+                                "policy_agent": "Policy Agent",
+                                "leave_agent": "Leave Agent",
+                                "benefits_agent": "Benefits Agent",
+                                "payroll_agent": "Payroll Agent",
+                                "onboarding_agent": "Onboarding Agent",
+                                "compliance_agent": "Compliance Agent",
+                                "general_assistant": "General Assistant",
+                                "performance_agent": "Performance Agent",
+                            }
+                            metrics["agent_performance"] = {
+                                agent_map.get(row.agent_type, row.agent_type): row.cnt
+                                for row in agent_counts
+                            }
+                        else:
+                            metrics["agent_performance"] = {}
+
+                        # query_volume_trend — last 12 months of query volume
+                        volume_trend = []
+                        for i in range(11, -1, -1):
+                            month_start = (now.replace(day=1) - timedelta(days=i * 30)).replace(
+                                day=1, hour=0, minute=0, second=0, microsecond=0
+                            )
+                            if i > 0:
+                                month_end = (
+                                    now.replace(day=1) - timedelta(days=(i - 1) * 30)
+                                ).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+                            else:
+                                month_end = now
+                            cnt = (
+                                analytics_session.query(QueryLog)
+                                .filter(
+                                    QueryLog.created_at >= month_start,
+                                    QueryLog.created_at < month_end,
+                                )
+                                .count()
+                            )
+                            volume_trend.append(cnt)
+                        metrics["query_volume_trend"] = volume_trend
+
+                        # avg_confidence — average confidence across all queries
+                        avg_conf = (
+                            analytics_session.query(func.avg(QueryLog.confidence))
+                            .filter(QueryLog.confidence > 0)
+                            .scalar()
+                        )
+                        metrics["avg_confidence"] = round(float(avg_conf or 0), 2)
+
+                        # avg_leave_days_used — per employee from leave_balances
+                        if balances:
+                            total_used = sum(
+                                b.vacation_used + b.sick_used + b.personal_used for b in balances
+                            )
+                            metrics["avg_leave_days_used"] = round(total_used / len(balances), 1)
+                        else:
+                            metrics["avg_leave_days_used"] = 0
+
+                    except Exception as analytics_err:
+                        logger.warning(f"Analytics query error: {analytics_err}")
+                    finally:
+                        analytics_session.close()
+            except Exception:
+                pass
+
+            # Fallback defaults for analytics fields
+            metrics.setdefault("queries_today", 0)
+            metrics.setdefault("monthly_queries", [0, 0, 0, 0, 0, 0])
+            metrics.setdefault(
+                "leave_utilization", {"Vacation": 0, "Sick Leave": 0, "Personal Days": 0}
+            )
+            metrics.setdefault("agent_performance", {})
+            metrics.setdefault("query_volume_trend", [0] * 12)
+            metrics.setdefault("avg_confidence", 0)
+            metrics.setdefault("avg_leave_days_used", 0)
+
+            # All data is now live from the database
             metrics["data_sources"] = {
                 "total_employees": "live",
                 "open_leave_requests": "live",
                 "pending_approvals": "live",
                 "department_headcount": "live",
-                "turnover_trend": "sample",
-                "leave_utilization": "sample",
-                "agent_performance": "sample",
-                "monthly_queries": "sample",
+                "query_volume_trend": "live",
+                "leave_utilization": "live",
+                "agent_performance": "live",
+                "monthly_queries": "live",
+                "queries_today": "live",
+                "avg_confidence": "live",
+                "avg_leave_days_used": "live",
             }
 
             # Include role in response so frontend knows the data scope
@@ -3318,6 +3462,189 @@ class APIGateway:
             logger.error(f"Get benefits enrollments error: {e}")
             return jsonify(APIResponse(success=False, error=str(e)).to_dict()), 500
 
+    def _enroll_in_benefit(self):
+        """POST /api/v2/benefits/enroll – Enroll current employee in a benefits plan."""
+        try:
+            from src.core.database import BenefitsEnrollment, BenefitsPlan
+
+            data = request.get_json() or {}
+            plan_id = data.get("plan_id")
+            coverage_level = data.get("coverage_level", "employee")
+
+            if not plan_id:
+                return (
+                    jsonify(APIResponse(success=False, error="plan_id is required").to_dict()),
+                    400,
+                )
+
+            session = self._get_db_session()
+            if not session:
+                return (
+                    jsonify(APIResponse(success=False, error="Database unavailable").to_dict()),
+                    503,
+                )
+            try:
+                employee, role = self._get_current_employee(session)
+                if not employee:
+                    return (
+                        jsonify(APIResponse(success=False, error="Employee not found").to_dict()),
+                        404,
+                    )
+
+                # Verify plan exists and is active
+                plan = session.query(BenefitsPlan).filter_by(id=plan_id, is_active=True).first()
+                if not plan:
+                    return (
+                        jsonify(
+                            APIResponse(success=False, error="Plan not found or inactive").to_dict()
+                        ),
+                        404,
+                    )
+
+                # Check for existing enrollment in same plan type
+                existing = (
+                    session.query(BenefitsEnrollment)
+                    .join(BenefitsPlan, BenefitsEnrollment.plan_id == BenefitsPlan.id)
+                    .filter(
+                        BenefitsEnrollment.employee_id == employee.id,
+                        BenefitsPlan.plan_type == plan.plan_type,
+                        BenefitsEnrollment.status == "active",
+                    )
+                    .first()
+                )
+                if existing:
+                    # Switch: deactivate old enrollment
+                    existing.status = "terminated"
+
+                enrollment = BenefitsEnrollment(
+                    employee_id=employee.id,
+                    plan_id=plan.id,
+                    coverage_level=coverage_level,
+                    status="active",
+                )
+                session.add(enrollment)
+                session.commit()
+
+                return (
+                    jsonify(
+                        APIResponse(
+                            success=True,
+                            data={
+                                "id": enrollment.id,
+                                "plan_id": plan.id,
+                                "plan_name": plan.name,
+                                "plan_type": plan.plan_type,
+                                "coverage_level": coverage_level,
+                                "status": "active",
+                                "message": f"Enrolled in {plan.name}",
+                            },
+                        ).to_dict()
+                    ),
+                    201,
+                )
+            except Exception as enroll_err:
+                session.rollback()
+                logger.error(f"Benefits enrollment error: {enroll_err}")
+                return (
+                    jsonify(APIResponse(success=False, error=str(enroll_err)).to_dict()),
+                    500,
+                )
+            finally:
+                session.close()
+        except Exception as e:
+            logger.error(f"Benefits enroll error: {e}")
+            return jsonify(APIResponse(success=False, error=str(e)).to_dict()), 500
+
+    def _get_recent_activity(self):
+        """GET /api/v2/activity/recent – Live activity feed from DB events."""
+        try:
+            from src.core.database import LeaveRequest, Employee, QueryLog, GeneratedDocument
+
+            session = self._get_db_session()
+            if not session:
+                return jsonify(APIResponse(success=True, data=[]).to_dict()), 200
+            try:
+                employee, role = self._get_current_employee(session)
+                activities = []
+
+                # Recent leave requests
+                leave_q = session.query(LeaveRequest).order_by(LeaveRequest.created_at.desc())
+                if role == "employee" and employee:
+                    leave_q = leave_q.filter_by(employee_id=employee.id)
+                for lr in leave_q.limit(10).all():
+                    emp = session.query(Employee).filter_by(id=lr.employee_id).first()
+                    emp_name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
+                    status_icon = {
+                        "pending": "⏳",
+                        "Pending": "⏳",
+                        "approved": "✅",
+                        "Approved": "✅",
+                        "rejected": "❌",
+                        "Rejected": "❌",
+                    }.get(lr.status, "📋")
+                    activities.append(
+                        {
+                            "type": "leave",
+                            "icon": status_icon,
+                            "message": f"{emp_name} – {lr.leave_type} request ({lr.status})",
+                            "detail": f"{lr.start_date} to {lr.end_date}",
+                            "timestamp": lr.created_at.isoformat() if lr.created_at else None,
+                        }
+                    )
+
+                # Recent documents generated
+                doc_q = session.query(GeneratedDocument).order_by(
+                    GeneratedDocument.created_at.desc()
+                )
+                if role == "employee" and employee:
+                    doc_q = doc_q.filter_by(employee_id=employee.id)
+                for doc in doc_q.limit(5).all():
+                    emp = session.query(Employee).filter_by(id=doc.employee_id).first()
+                    emp_name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
+                    activities.append(
+                        {
+                            "type": "document",
+                            "icon": "📄",
+                            "message": f"Document generated: {doc.template_name}",
+                            "detail": f"For {emp_name}",
+                            "timestamp": doc.created_at.isoformat() if doc.created_at else None,
+                        }
+                    )
+
+                # Recent chat queries
+                query_q = session.query(QueryLog).order_by(QueryLog.created_at.desc())
+                if role == "employee" and employee:
+                    query_q = query_q.filter_by(employee_id=employee.id)
+                for ql in query_q.limit(5).all():
+                    activities.append(
+                        {
+                            "type": "query",
+                            "icon": "💬",
+                            "message": f"Chat query → {ql.agent_type}",
+                            "detail": ql.query[:80] + ("..." if len(ql.query) > 80 else ""),
+                            "timestamp": ql.created_at.isoformat() if ql.created_at else None,
+                        }
+                    )
+
+                # Sort all activities by timestamp (newest first)
+                activities.sort(key=lambda a: a.get("timestamp") or "0000", reverse=True)
+
+                return (
+                    jsonify(
+                        APIResponse(
+                            success=True,
+                            data=activities[:20],
+                            metadata={"count": len(activities[:20])},
+                        ).to_dict()
+                    ),
+                    200,
+                )
+            finally:
+                session.close()
+        except Exception as e:
+            logger.error(f"Recent activity error: {e}")
+            return jsonify(APIResponse(success=False, error=str(e)).to_dict()), 500
+
     def _get_onboarding_checklist(self):
         """GET /api/v2/onboarding/checklist – List onboarding tasks for current employee."""
         try:
@@ -3448,6 +3775,34 @@ class APIGateway:
         }
         self.request_log.append(log_entry)
         logger.info(f"API: {method} {endpoint} - {'OK' if success else 'FAILED'}")
+
+    def _log_query_to_db(
+        self, query: str, agent_type: str, confidence: float, execution_time_ms: int
+    ) -> None:
+        """Persist each chat query for live analytics (queries_today, agent_performance, etc.)."""
+        try:
+            from src.core.database import QueryLog
+
+            session = self._get_db_session()
+            if not session:
+                return
+            try:
+                employee, _ = self._get_current_employee(session)
+                log = QueryLog(
+                    employee_id=employee.id if employee else None,
+                    query=query[:2000],
+                    agent_type=agent_type or "unknown",
+                    confidence=confidence or 0.0,
+                    execution_time_ms=execution_time_ms or 0,
+                )
+                session.add(log)
+                session.commit()
+            except Exception:
+                session.rollback()
+            finally:
+                session.close()
+        except Exception:
+            pass  # never break chat for analytics
 
     def get_request_log(self, limit: int = 100) -> List[Dict[str, Any]]:
         return self.request_log[-limit:]

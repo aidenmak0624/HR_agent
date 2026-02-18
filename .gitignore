@@ -1,31 +1,58 @@
+# ─── Secrets & Environment ───
 .env
 .env.local
 .env.*.local
 *.key
 secrets.json
+
+# ─── Python ───
 __pycache__/
 *.py[cod]
+*.pyo
 venv/
 .venv/
-chromadb/
+.coverage
+htmlcov/
+*.egg-info/
+
+# ─── Data & Databases ───
 *.db
-*.log
-logs/
+*.db-journal
+chromadb/
+chromadb_hr/
+data/un_documents/
+data/processed/
+
+# ─── IDE & OS ───
 .vscode/
 .idea/
 .DS_Store
-.pytest_cache/
+*.swp
+*.swo
+*~
 
-# Large data files
-data/un_documents/
-data/processed/
-chromadb_hr/
-hr_platform.db-journal
-test_write_check
-.coverage
-*.docx
-.~lock.*
+# ─── Test Artifacts ───
+.pytest_cache/
 test-results/
 test-results-old/
 playwright-report/
+test_screenshots/
+
+# ─── Node ───
 node_modules/
+
+# ─── Build & Logs ───
+*.log
+logs/
+
+# ─── Temp & Lock Files ───
+*.tmp
+.~lock.*
+~$*
+test_write_check
+
+# ─── Office Documents (generated, not source) ───
+*.docx
+
+# ─── Reorganization script (one-time use) ───
+reorganize.sh

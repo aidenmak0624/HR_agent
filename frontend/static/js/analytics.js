@@ -5,7 +5,7 @@
 
 // Chart instances
 let headcountChart = null;
-let turnoverChart = null;
+let queryVolumeChart = null;
 let leaveChart = null;
 let agentChart = null;
 
@@ -41,17 +41,21 @@ async function loadAnalytics() {
 // Initialize Charts
 function initCharts(data) {
     initHeadcountChart(data.department_headcount || {});
-    initTurnoverChart(data.turnover_trend || []);
+    initQueryVolumeChart(data.query_volume_trend || []);
     initLeaveChart(data.leave_utilization || {});
     initAgentChart(data.agent_performance || {});
 
-    // Show data source notice if sample data is present
-    const notice = document.getElementById('data-source-notice');
-    if (notice && data.data_sources) {
-        const hasSample = Object.values(data.data_sources).some(v => v === 'sample');
-        notice.style.display = hasSample ? 'block' : 'none';
-    } else if (notice) {
-        notice.style.display = 'block'; // show by default as safety
+    // Update summary statistics from live API data
+    const headcountEl = document.getElementById('stat-headcount');
+    if (headcountEl) headcountEl.textContent = formatNumber(data.total_employees || 0);
+    const queriesTodayEl = document.getElementById('stat-queries-today');
+    if (queriesTodayEl) queriesTodayEl.textContent = formatNumber(data.queries_today || 0);
+    const avgLeaveEl = document.getElementById('stat-avg-leave');
+    if (avgLeaveEl) avgLeaveEl.textContent = data.avg_leave_days_used || 0;
+    const avgConfEl = document.getElementById('stat-avg-confidence');
+    if (avgConfEl) {
+        const conf = data.avg_confidence || 0;
+        avgConfEl.textContent = conf > 0 ? (conf * 100).toFixed(0) + '%' : '–';
     }
 }
 
@@ -104,26 +108,26 @@ function initHeadcountChart(deptData) {
     }
 }
 
-// Turnover Trend Chart
-function initTurnoverChart(turnoverData) {
-    const ctx = document.getElementById('turnoverChart');
+// Query Volume Trend Chart (live from DB)
+function initQueryVolumeChart(volumeData) {
+    const ctx = document.getElementById('queryVolumeChart');
     if (!ctx) return;
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const turnover = turnoverData.length > 0 ? turnoverData : [2.1, 2.3, 1.8, 2.5, 3.2, 2.8, 2.4, 2.9, 3.1, 2.6, 2.2, 2.0];
+    const volume = volumeData.length > 0 ? volumeData : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-    if (turnoverChart) {
-        turnoverChart.data.labels = months;
-        turnoverChart.data.datasets[0].data = turnover;
-        turnoverChart.update();
+    if (queryVolumeChart) {
+        queryVolumeChart.data.labels = months;
+        queryVolumeChart.data.datasets[0].data = volume;
+        queryVolumeChart.update();
     } else {
-        turnoverChart = new Chart(ctx, {
+        queryVolumeChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: months,
                 datasets: [{
-                    label: 'Turnover Rate (%)',
-                    data: turnover,
+                    label: 'Queries',
+                    data: volume,
                     borderColor: '#73C41D',
                     backgroundColor: 'rgba(115, 196, 29, 0.1)',
                     borderWidth: 2,
@@ -146,8 +150,7 @@ function initTurnoverChart(turnoverData) {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        max: 5
+                        beginAtZero: true
                     }
                 }
             }
@@ -161,7 +164,7 @@ function initLeaveChart(leaveData) {
     if (!ctx) return;
 
     const labels = Object.keys(leaveData).length > 0 ? Object.keys(leaveData) : ['Vacation', 'Sick Leave', 'Personal Days'];
-    const data = Object.keys(leaveData).length > 0 ? Object.values(leaveData) : [65, 45, 30];
+    const data = Object.keys(leaveData).length > 0 ? Object.values(leaveData) : [0, 0, 0];
 
     if (leaveChart) {
         leaveChart.data.labels = labels;
@@ -201,12 +204,12 @@ function initAgentChart(agentData) {
     const ctx = document.getElementById('agentChart');
     if (!ctx) return;
 
-    const agents = Object.keys(agentData).length > 0 ? Object.keys(agentData) : ['HR Agent', 'Benefits Agent', 'Payroll Agent', 'Leave Agent'];
-    const resolution = Object.keys(agentData).length > 0 ? Object.values(agentData) : [87, 92, 78, 85];
+    const agents = Object.keys(agentData).length > 0 ? Object.keys(agentData) : [];
+    const queryCounts = Object.keys(agentData).length > 0 ? Object.values(agentData) : [];
 
     if (agentChart) {
         agentChart.data.labels = agents;
-        agentChart.data.datasets[0].data = resolution;
+        agentChart.data.datasets[0].data = queryCounts;
         agentChart.update();
     } else {
         agentChart = new Chart(ctx, {
@@ -214,8 +217,8 @@ function initAgentChart(agentData) {
             data: {
                 labels: agents,
                 datasets: [{
-                    label: 'Resolution Rate (%)',
-                    data: resolution,
+                    label: 'Query Count',
+                    data: queryCounts,
                     backgroundColor: '#73C41D',
                     borderRadius: 6,
                     borderSkipped: false
@@ -231,8 +234,7 @@ function initAgentChart(agentData) {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        max: 100
+                        beginAtZero: true
                     }
                 }
             }
@@ -308,22 +310,30 @@ async function exportAnalytics() {
     }
 }
 
-// Generate CSV from current chart data as fallback
+// Generate CSV from current chart data
 function generateClientCSV() {
     let csv = 'Category,Metric,Value\n';
-    // Headcount data
-    const depts = ['Engineering', 'Sales', 'HR', 'Finance', 'Operations'];
-    const counts = [45, 38, 22, 28, 35];
-    depts.forEach((d, i) => { csv += `Headcount,${d},${counts[i]}\n`; });
-    // Turnover data
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const turnover = [2.1,2.3,1.8,2.5,3.2,2.8,2.4,2.9,3.1,2.6,2.2,2.0];
-    months.forEach((m, i) => { csv += `Turnover Rate %,${m},${turnover[i]}\n`; });
-    // Key metrics
-    csv += 'Key Metric,Total Headcount,285\n';
-    csv += 'Key Metric,Turnover Rate,5.2%\n';
-    csv += 'Key Metric,Avg Leave Days,12.4\n';
-    csv += 'Key Metric,Agent Resolution Rate,87%\n';
+    // Headcount data from chart
+    if (headcountChart) {
+        const labels = headcountChart.data.labels || [];
+        const data = headcountChart.data.datasets[0]?.data || [];
+        labels.forEach((d, i) => { csv += `Headcount,${d},${data[i] || 0}\n`; });
+    }
+    // Query volume data from chart
+    if (queryVolumeChart) {
+        const labels = queryVolumeChart.data.labels || [];
+        const data = queryVolumeChart.data.datasets[0]?.data || [];
+        labels.forEach((m, i) => { csv += `Query Volume,${m},${data[i] || 0}\n`; });
+    }
+    // Key metrics from DOM
+    const headcount = document.getElementById('stat-headcount')?.textContent || '0';
+    const queries = document.getElementById('stat-queries-today')?.textContent || '0';
+    const avgLeave = document.getElementById('stat-avg-leave')?.textContent || '0';
+    const avgConf = document.getElementById('stat-avg-confidence')?.textContent || '0';
+    csv += `Key Metric,Total Headcount,${headcount}\n`;
+    csv += `Key Metric,Queries Today,${queries}\n`;
+    csv += `Key Metric,Avg Leave Days Used,${avgLeave}\n`;
+    csv += `Key Metric,Avg Agent Confidence,${avgConf}\n`;
     return csv;
 }
 
@@ -390,8 +400,8 @@ async function exportAnalyticsPDF() {
         pdf.line(14, 28, pageWidth - 14, 28);
 
         // Capture each chart as image
-        const chartIds = ['headcountChart', 'turnoverChart', 'leaveChart', 'agentChart'];
-        const chartTitles = ['Headcount by Department', 'Turnover Trend', 'Leave Utilization', 'Agent Query Performance'];
+        const chartIds = ['headcountChart', 'queryVolumeChart', 'leaveChart', 'agentChart'];
+        const chartTitles = ['Headcount by Department', 'Query Volume Trend', 'Leave Days Used', 'Queries by Agent'];
         let y = 34;
         const chartW = (pageWidth - 42) / 2;
         const chartH = 70;

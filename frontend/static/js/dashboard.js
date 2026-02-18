@@ -37,10 +37,10 @@ function showKPISkeletons() {
 // Update KPI Cards (use ?? instead of || so that 0 is not treated as falsy)
 function updateKPICards(data) {
     const kpiElements = {
-        'kpi-employees': data.total_employees ?? 285,
-        'kpi-leave-requests': data.open_leave_requests ?? 3,
-        'kpi-approvals': data.pending_approvals ?? 5,
-        'kpi-queries': data.queries_today ?? 24
+        'kpi-employees': data.total_employees ?? 0,
+        'kpi-leave-requests': data.open_leave_requests ?? 0,
+        'kpi-approvals': data.pending_approvals ?? 0,
+        'kpi-queries': data.queries_today ?? 0
     };
 
     for (const [id, value] of Object.entries(kpiElements)) {
@@ -113,10 +113,10 @@ function initDepartmentChart(deptData) {
         departmentChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: departments.length > 0 ? departments : ['Engineering', 'Sales', 'HR', 'Finance', 'Operations'],
+                labels: departments.length > 0 ? departments : [],
                 datasets: [{
                     label: 'Employee Count',
-                    data: counts.length > 0 ? counts : [45, 38, 22, 28, 35],
+                    data: counts.length > 0 ? counts : [],
                     backgroundColor: [
                         '#2E86AB',
                         '#A23B72',
@@ -156,7 +156,7 @@ function initQueryTrendChart(queryData) {
 
     // Prepare data
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const queries = queryData.length > 0 ? queryData : [45, 52, 38, 65, 72, 58];
+    const queries = queryData.length > 0 ? queryData : [0, 0, 0, 0, 0, 0];
 
     if (queryTrendChart) {
         queryTrendChart.data.labels = months;
@@ -203,55 +203,9 @@ function initQueryTrendChart(queryData) {
     }
 }
 
-// Activity Feed — pulls recent leave requests and renders timeline
-async function loadActivityFeed() {
-    const feedContainer = document.getElementById('activity-feed');
-    if (!feedContainer) return;
-
-    try {
-        const response = await apiCall('/api/v2/leave/history');
-        if (response && response.data && response.data.history && response.data.history.length > 0) {
-            const items = response.data.history.slice(0, 6); // show latest 6
-            feedContainer.innerHTML = '';
-
-            items.forEach(item => {
-                const iconMap = {
-                    'Approved': '&#9989;',
-                    'Pending': '&#9203;',
-                    'Rejected': '&#10060;'
-                };
-                const icon = iconMap[item.status] || '&#128196;';
-                const dateStr = formatDate(item.requested_date || item.start_date);
-
-                const div = document.createElement('div');
-                div.className = 'activity-item';
-                div.innerHTML = `
-                    <span class="activity-icon">${icon}</span>
-                    <div class="activity-content">
-                        <p class="activity-text">${item.type} leave (${item.status})</p>
-                        <span class="activity-time">${dateStr}</span>
-                    </div>
-                `;
-                feedContainer.appendChild(div);
-            });
-        }
-        // If no API data, keep whatever static HTML was already there
-    } catch (error) {
-        console.warn('Activity feed: using static HTML fallback', error);
-    }
-}
-
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     setActivePage('dashboard');
-    fetchMetrics();
-    loadActivityFeed();
-
-    // Auto-refresh every 60 seconds
-    setInterval(() => {
-        fetchMetrics();
-        loadActivityFeed();
-    }, 60000);
 
     console.log('Dashboard.js loaded successfully');
 });
@@ -259,4 +213,3 @@ document.addEventListener('DOMContentLoaded', () => {
 // Export for debugging
 window.fetchMetrics = fetchMetrics;
 window.initializeCharts = initializeCharts;
-window.loadActivityFeed = loadActivityFeed;

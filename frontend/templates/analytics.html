@@ -5,11 +5,6 @@
 
 {% block content %}
 <div class="analytics-page">
-    <!-- Data Source Notice -->
-    <div id="data-source-notice" class="data-notice" style="display:none; background: var(--bg-light, #F5F7FA); border: 1px solid var(--border-color, #E0E0E0); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; color: var(--text-secondary, #6B7280);">
-        ℹ️ <strong>Data Sources:</strong> Headcount data is live from the database. Turnover trend, leave utilization, and query data are <span class="sample-badge" style="background: #FF9800; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">SAMPLE DATA</span> for demonstration purposes.
-    </div>
-
     <!-- Filters Section -->
     <section class="filters-section">
         <div class="filter-group">
@@ -43,51 +38,51 @@
             <canvas id="headcountChart" class="analytics-chart"></canvas>
         </div>
 
-        <!-- Turnover Trend -->
+        <!-- Query Volume Trend (live from DB) -->
         <div class="chart-wrapper">
-            <h3 class="chart-title">Turnover Trend (Last 12 Months) <span class="sample-badge" style="background: #FF9800; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; vertical-align: middle;">SAMPLE DATA</span></h3>
-            <canvas id="turnoverChart" class="analytics-chart"></canvas>
+            <h3 class="chart-title">Query Volume Trend (Last 12 Months)</h3>
+            <canvas id="queryVolumeChart" class="analytics-chart"></canvas>
         </div>
 
         <!-- Leave Utilization -->
         <div class="chart-wrapper">
-            <h3 class="chart-title">Leave Utilization by Type <span class="sample-badge" style="background: #FF9800; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; vertical-align: middle;">SAMPLE DATA</span></h3>
+            <h3 class="chart-title">Leave Days Used by Type</h3>
             <canvas id="leaveChart" class="analytics-chart"></canvas>
         </div>
 
         <!-- Agent Performance -->
         <div class="chart-wrapper">
-            <h3 class="chart-title">Agent Query Performance</h3>
+            <h3 class="chart-title">Queries by Agent</h3>
             <canvas id="agentChart" class="analytics-chart"></canvas>
         </div>
     </section>
 
-    <!-- Summary Statistics -->
+    <!-- Summary Statistics (populated dynamically from API) -->
     <section class="summary-stats-section">
-        <h3 class="section-title">Key Metrics Summary <span class="sample-badge" style="background: #FF9800; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; vertical-align: middle;">SAMPLE DATA</span></h3>
+        <h3 class="section-title">Key Metrics Summary</h3>
         <div class="stats-grid">
             <div class="stat-card">
                 <p class="stat-label">Total Headcount</p>
-                <h3 class="stat-value">285</h3>
-                <p class="stat-change">+8 this quarter</p>
+                <h3 class="stat-value" id="stat-headcount">–</h3>
+                <p class="stat-change">Live from database</p>
             </div>
 
             <div class="stat-card">
-                <p class="stat-label">Turnover Rate</p>
-                <h3 class="stat-value">5.2%</h3>
-                <p class="stat-change">-0.5% vs last quarter</p>
+                <p class="stat-label">Queries Today</p>
+                <h3 class="stat-value" id="stat-queries-today">–</h3>
+                <p class="stat-change">Live from query logs</p>
             </div>
 
             <div class="stat-card">
                 <p class="stat-label">Avg Leave Days Used</p>
-                <h3 class="stat-value">12.4</h3>
-                <p class="stat-change">+2 days vs last year</p>
+                <h3 class="stat-value" id="stat-avg-leave">–</h3>
+                <p class="stat-change">Per employee average</p>
             </div>
 
             <div class="stat-card">
-                <p class="stat-label">Agent Resolution Rate</p>
-                <h3 class="stat-value">87%</h3>
-                <p class="stat-change">+5% this month</p>
+                <p class="stat-label">Avg Agent Confidence</p>
+                <h3 class="stat-value" id="stat-avg-confidence">–</h3>
+                <p class="stat-change">Across all queries</p>
             </div>
         </div>
     </section>

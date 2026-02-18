@@ -76,52 +76,13 @@
         </div>
     </section>
 
-    <!-- Recent Activity -->
+    <!-- Recent Activity (loaded dynamically from DB) -->
     <section class="activity-section">
-        <h3 class="section-title">Recent Activity <span style="background: #FF9800; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; vertical-align: middle;">SAMPLE</span></h3>
+        <h3 class="section-title">Recent Activity</h3>
         <div class="activity-feed" id="activity-feed">
-            <div class="activity-item">
-                <div class="activity-icon">💬</div>
-                <div class="activity-content">
-                    <p class="activity-title">Agent Query Processed</p>
-                    <p class="activity-detail">Salary inquiry - answered by Finance Agent</p>
-                    <p class="activity-time">2 hours ago</p>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-icon">✅</div>
-                <div class="activity-content">
-                    <p class="activity-title">Leave Request Approved</p>
-                    <p class="activity-detail">5 days vacation - John Smith</p>
-                    <p class="activity-time">4 hours ago</p>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-icon">📄</div>
-                <div class="activity-content">
-                    <p class="activity-title">Document Generated</p>
-                    <p class="activity-detail">Employment Certificate - Sarah Johnson</p>
-                    <p class="activity-time">1 day ago</p>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-icon">⚙️</div>
-                <div class="activity-content">
-                    <p class="activity-title">Workflow Completed</p>
-                    <p class="activity-detail">Onboarding process - New hire</p>
-                    <p class="activity-time">2 days ago</p>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-icon">💬</div>
-                <div class="activity-content">
-                    <p class="activity-title">Agent Query Processed</p>
-                    <p class="activity-detail">Benefits inquiry - answered by HR Agent</p>
-                    <p class="activity-time">3 days ago</p>
+            <div class="activity-item" id="activity-loading">
+                <div class="activity-content" style="text-align:center; color:var(--text-secondary); padding:16px;">
+                    Loading recent activity...
                 </div>
             </div>
         </div>
@@ -141,13 +102,13 @@
                 <span style="color:#4CAF50;">●</span> Document Generation — <strong>Live</strong>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:var(--bg-light, #F5F7FA);font-size:0.85rem;">
-                <span style="color:#FF9800;">●</span> Benefits Enrollment — <strong>Coming Soon</strong>
+                <span style="color:#4CAF50;">●</span> Benefits Enrollment — <strong>Live</strong>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:var(--bg-light, #F5F7FA);font-size:0.85rem;">
-                <span style="color:#FF9800;">●</span> Predictive Analytics — <strong>Coming Soon</strong>
+                <span style="color:#4CAF50;">●</span> Analytics & Reporting — <strong>Live</strong>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:var(--bg-light, #F5F7FA);font-size:0.85rem;">
-                <span style="color:#FF9800;">●</span> HRIS Integration — <strong>Coming Soon</strong>
+                <span style="color:#4CAF50;">●</span> Workflow Approvals — <strong>Live</strong>
             </div>
         </div>
     </section>
@@ -159,7 +120,53 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         fetchMetrics();
+        loadRecentActivity();
         setInterval(fetchMetrics, 60000); // Refresh every 60 seconds
     });
+
+    async function loadRecentActivity() {
+        try {
+            const response = await apiCall('/api/v2/activity/recent');
+            const feed = document.getElementById('activity-feed');
+            if (!feed) return;
+            feed.innerHTML = '';
+
+            const activities = (response && response.data) ? response.data : [];
+            if (activities.length === 0) {
+                feed.innerHTML = '<div class="activity-item"><div class="activity-content" style="text-align:center;color:var(--text-secondary);padding:16px;">No recent activity. Start chatting or submitting leave requests!</div></div>';
+                return;
+            }
+
+            activities.forEach(function(a) {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                const timeStr = a.timestamp ? timeAgo(new Date(a.timestamp)) : '';
+                item.innerHTML = '<div class="activity-icon">' + (a.icon || '📋') + '</div>' +
+                    '<div class="activity-content">' +
+                    '<p class="activity-title">' + escapeHtml(a.message) + '</p>' +
+                    '<p class="activity-detail">' + escapeHtml(a.detail || '') + '</p>' +
+                    '<p class="activity-time">' + timeStr + '</p>' +
+                    '</div>';
+                feed.appendChild(item);
+            });
+        } catch (e) {
+            console.error('Error loading activity:', e);
+        }
+    }
+
+    function timeAgo(date) {
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return Math.floor(diff/60) + ' minutes ago';
+        if (diff < 86400) return Math.floor(diff/3600) + ' hours ago';
+        return Math.floor(diff/86400) + ' days ago';
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 </script>
 {% endblock %}

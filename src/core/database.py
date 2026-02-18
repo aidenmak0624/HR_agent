@@ -361,6 +361,62 @@ class EventLog(Base):
         return f"<EventLog(type={self.event_type}, source={self.source})>"
 
 
+class ChatConversation(Base):
+    """Persisted chat conversation for history & analytics."""
+
+    __tablename__ = "chat_conversations"
+
+    id: Mapped[str] = mapped_column(String(100), primary_key=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"), nullable=False)
+    title: Mapped[str] = mapped_column(String(500), default="Chat Conversation", nullable=False)
+    agent_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
+
+    def __repr__(self) -> str:
+        return f"<ChatConversation(id={self.id}, employee_id={self.employee_id})>"
+
+
+class ChatMessage(Base):
+    """Individual message within a chat conversation."""
+
+    __tablename__ = "chat_messages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[str] = mapped_column(
+        String(100), ForeignKey("chat_conversations.id"), nullable=False
+    )
+    role: Mapped[str] = mapped_column(String(50), nullable=False)
+    content: Mapped[str] = mapped_column(String(5000), nullable=False)
+    agent_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    confidence: Mapped[Optional[float]] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<ChatMessage(conversation_id={self.conversation_id}, role={self.role})>"
+
+
+class QueryLog(Base):
+    """Log of every query processed through the chat system, used for analytics."""
+
+    __tablename__ = "query_logs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    employee_id: Mapped[Optional[int]] = mapped_column(ForeignKey("employees.id"), nullable=True)
+    query: Mapped[str] = mapped_column(String(2000), nullable=False)
+    agent_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    confidence: Mapped[float] = mapped_column(default=0.0, nullable=False)
+    execution_time_ms: Mapped[int] = mapped_column(default=0, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False, index=True
+    )
+
+    def __repr__(self) -> str:
+        return f"<QueryLog(agent={self.agent_type}, confidence={self.confidence})>"
+
+
 # Database configuration — PostgreSQL preferred, SQLite fallback for local dev
 import pathlib as _pathlib
 import os as _os
