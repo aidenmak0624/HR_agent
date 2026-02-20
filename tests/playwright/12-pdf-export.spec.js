@@ -55,4 +55,17 @@ test.describe('Analytics PDF Export', () => {
     const count = await statCards.count();
     expect(count).toBeGreaterThanOrEqual(4);
   });
+
+  test('API: PDF export should return PDF bytes', async ({ page }) => {
+    const response = await page.request.get('/api/v2/metrics/export/pdf', {
+      headers: { 'X-User-Role': 'hr_admin' },
+    });
+
+    expect(response.status()).toBe(200);
+    const contentType = (response.headers()['content-type'] || '').toLowerCase();
+    expect(contentType).toContain('application/pdf');
+
+    const body = await response.body();
+    expect(body.subarray(0, 5).toString()).toBe('%PDF-');
+  });
 });

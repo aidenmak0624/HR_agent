@@ -19,6 +19,9 @@ class Settings(BaseSettings):
         GOOGLE_API_KEY: Google API key for services
         BAMBOOHR_API_KEY: BambooHR API key
         BAMBOOHR_SUBDOMAIN: BambooHR subdomain
+        WORKDAY_CLIENT_ID: Workday OAuth client ID
+        WORKDAY_CLIENT_SECRET: Workday OAuth client secret
+        WORKDAY_TENANT_URL: Workday tenant base URL
         HRIS_PROVIDER: HRIS provider (bamboohr/workday/custom_db)
         LOG_LEVEL: Logging level
         DEBUG: Debug mode flag
@@ -48,6 +51,9 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str = ""  # Fallback LLM provider
     BAMBOOHR_API_KEY: str = ""
     BAMBOOHR_SUBDOMAIN: str = ""
+    WORKDAY_CLIENT_ID: str = ""
+    WORKDAY_CLIENT_SECRET: str = ""
+    WORKDAY_TENANT_URL: str = ""
     
     # HRIS Configuration
     HRIS_PROVIDER: Literal["bamboohr", "workday", "custom_db"] = "bamboohr"

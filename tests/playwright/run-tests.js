@@ -376,24 +376,28 @@ async function suite_settings(page) {
 async function suite_roles(page) {
   console.log('\n🔀 ROLE SWITCHING & NAVIGATION');
 
-  await runTest('Employee: role-gated items hidden', async () => {
+  await runTest('Employee: manager-only links hidden, employee links visible', async () => {
     await goTo(page, '/dashboard', 'employee');
     await page.waitForTimeout(500);
     assert(await page.locator('.nav-item[data-page="workflows"]').isHidden(), 'Workflows visible for employee');
-    assert(await page.locator('.nav-item[data-page="documents"]').isHidden(), 'Documents visible for employee');
+    assert(await page.locator('.nav-item[data-page="benefits"]').isVisible(), 'Benefits hidden for employee');
+    assert(await page.locator('.nav-item[data-page="documents"]').isVisible(), 'Documents hidden for employee');
     assert(await page.locator('.nav-item[data-page="analytics"]').isHidden(), 'Analytics visible for employee');
   });
 
-  await runTest('Manager: workflows and analytics visible', async () => {
+  await runTest('Manager: workflows, analytics, benefits, and documents visible', async () => {
     await goTo(page, '/dashboard', 'manager');
     await page.waitForTimeout(500);
     assert(await page.locator('.nav-item[data-page="workflows"]').isVisible(), 'Workflows hidden for manager');
     assert(await page.locator('.nav-item[data-page="analytics"]').isVisible(), 'Analytics hidden for manager');
+    assert(await page.locator('.nav-item[data-page="benefits"]').isVisible(), 'Benefits hidden for manager');
+    assert(await page.locator('.nav-item[data-page="documents"]').isVisible(), 'Documents hidden for manager');
   });
 
-  await runTest('HR Admin: all 7 nav items visible', async () => {
+  await runTest('HR Admin: all 8 nav items visible', async () => {
     await goTo(page, '/dashboard', 'hr_admin');
     await page.waitForTimeout(500);
+    assert(await page.locator('.nav-item[data-page="benefits"]').isVisible());
     assert(await page.locator('.nav-item[data-page="workflows"]').isVisible());
     assert(await page.locator('.nav-item[data-page="documents"]').isVisible());
     assert(await page.locator('.nav-item[data-page="analytics"]').isVisible());
@@ -423,6 +427,13 @@ async function suite_roles(page) {
     await page.locator('.nav-item[data-page="leave"]').click();
     await page.waitForLoadState('domcontentloaded');
     assertContains(page.url(), '/leave');
+  });
+
+  await runTest('Navigate to /benefits via sidebar', async () => {
+    await goTo(page, '/dashboard', 'employee');
+    await page.locator('.nav-item[data-page="benefits"]').click();
+    await page.waitForLoadState('domcontentloaded');
+    assertContains(page.url(), '/benefits');
   });
 
   await runTest('Navigate to /chat via sidebar', async () => {

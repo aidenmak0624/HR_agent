@@ -371,107 +371,93 @@ async function exportAnalyticsPDF() {
     if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
 
     try {
-        // Check if jsPDF is available
-        if (typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined') {
-            showToast('PDF library loading... please try again in a moment', 'info');
-            if (btn) { btn.disabled = false; btn.textContent = '📄 Export PDF'; }
-            return;
-        }
-
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('landscape', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        // Title
-        pdf.setFontSize(20);
-        pdf.setTextColor(115, 196, 29);
-        pdf.text('HR Analytics Report', 14, 18);
-
-        pdf.setFontSize(10);
-        pdf.setTextColor(100);
         const dept = document.getElementById('department-filter')?.value || 'All Departments';
         const dateFrom = document.getElementById('date-from')?.value || '';
         const dateTo = document.getElementById('date-to')?.value || '';
-        pdf.text(`Department: ${dept}  |  Period: ${dateFrom || 'Start'} to ${dateTo || 'End'}  |  Generated: ${new Date().toLocaleDateString()}`, 14, 25);
+        const queryParams = new URLSearchParams();
+        if (dateFrom) queryParams.append('date_from', dateFrom);
+        if (dateTo) queryParams.append('date_to', dateTo);
+        if (dept && dept !== 'All Departments') queryParams.append('department', dept);
 
-        // Line separator
-        pdf.setDrawColor(200);
-        pdf.line(14, 28, pageWidth - 14, 28);
+        const token = localStorage.getItem('auth_token');
+        const currentRole = localStorage.getItem('hr_current_role') || 'employee';
 
-        // Capture each chart as image
-        const chartIds = ['headcountChart', 'queryVolumeChart', 'leaveChart', 'agentChart'];
-        const chartTitles = ['Headcount by Department', 'Query Volume Trend', 'Leave Days Used', 'Queries by Agent'];
-        let y = 34;
-        const chartW = (pageWidth - 42) / 2;
-        const chartH = 70;
-
-        for (let i = 0; i < chartIds.length; i++) {
-            const canvas = document.getElementById(chartIds[i]);
-            if (!canvas) continue;
-
-            const col = i % 2;
-            const row = Math.floor(i / 2);
-            const x = 14 + col * (chartW + 14);
-            const yPos = y + row * (chartH + 18);
-
-            // Chart title
-            pdf.setFontSize(11);
-            pdf.setTextColor(50);
-            pdf.text(chartTitles[i], x, yPos);
-
-            // Render chart to image
-            const imgData = canvas.toDataURL('image/png', 1.0);
-            pdf.addImage(imgData, 'PNG', x, yPos + 3, chartW, chartH);
-        }
-
-        // Key Metrics Summary at bottom
-        const metricsY = y + 2 * (chartH + 18) + 5;
-        pdf.setFontSize(13);
-        pdf.setTextColor(115, 196, 29);
-        pdf.text('Key Metrics Summary', 14, metricsY);
-
-        const metrics = [
-            { label: 'Total Headcount', value: '285', change: '+8 this quarter' },
-            { label: 'Turnover Rate', value: '5.2%', change: '-0.5% vs last quarter' },
-            { label: 'Avg Leave Days Used', value: '12.4', change: '+2 days vs last year' },
-            { label: 'Agent Resolution Rate', value: '87%', change: '+5% this month' },
-        ];
-
-        // Try to read live values from the page
-        const statCards = document.querySelectorAll('.stat-card');
-        statCards.forEach((card, idx) => {
-            if (idx < metrics.length) {
-                const val = card.querySelector('.stat-value');
-                const chg = card.querySelector('.stat-change');
-                if (val) metrics[idx].value = val.textContent.trim();
-                if (chg) metrics[idx].change = chg.textContent.trim();
+        // Prefer server-side export so PDF works even when CDN libs fail to load.
+        const serverResp = await fetch(`/api/v2/metrics/export/pdf?${queryParams.toString()}`, {
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : '',
+                'X-User-Role': currentRole
             }
         });
 
-        pdf.setFontSize(10);
-        pdf.setTextColor(60);
-        metrics.forEach((m, i) => {
-            const mx = 14 + i * 68;
-            pdf.setFont(undefined, 'bold');
-            pdf.text(m.value, mx, metricsY + 8);
-            pdf.setFont(undefined, 'normal');
-            pdf.text(m.label, mx, metricsY + 13);
+        if (serverResp.ok) {
+            const blob = await serverResp.blob();
+            const contentType = (serverResp.headers.get('content-type') || '').toLowerCase();
+            if (blob.size > 0 && contentType.includes('application/pdf')) {
+                const disposition = serverResp.headers.get('content-disposition') || '';
+                const match = disposition.match(/filename\*?=(?:UTF-8''|\"?)([^\";]+)/i);
+                const filename = match ? decodeURIComponent(match[1].replace(/\"/g, '')) : `HR_Analytics_Report_${new Date().toISOString().slice(0, 10)}.pdf`;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('PDF report exported successfully', 'success');
+                return;
+            }
+        }
+
+        // Fallback to client-side jsPDF generation if available.
+        if (typeof window.jspdf !== 'undefined') {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('landscape', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            pdf.setFontSize(20);
+            pdf.setTextColor(115, 196, 29);
+            pdf.text('HR Analytics Report', 14, 18);
+            pdf.setFontSize(10);
             pdf.setTextColor(100);
-            pdf.text(m.change, mx, metricsY + 18);
-            pdf.setTextColor(60);
-        });
+            pdf.text(`Department: ${dept}  |  Period: ${dateFrom || 'Start'} to ${dateTo || 'End'}  |  Generated: ${new Date().toLocaleDateString()}`, 14, 25);
+            pdf.setDrawColor(200);
+            pdf.line(14, 28, pageWidth - 14, 28);
 
-        // Footer
-        pdf.setFontSize(8);
-        pdf.setTextColor(150);
-        pdf.text('HR Multi-Agent Intelligence Platform — Confidential', pageWidth / 2, pageHeight - 6, { align: 'center' });
+            const chartIds = ['headcountChart', 'queryVolumeChart', 'leaveChart', 'agentChart'];
+            const chartTitles = ['Headcount by Department', 'Query Volume Trend', 'Leave Days Used', 'Queries by Agent'];
+            const y = 34;
+            const chartW = (pageWidth - 42) / 2;
+            const chartH = 70;
 
-        pdf.save(`HR_Analytics_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
-        showToast('PDF report exported successfully', 'success');
+            for (let i = 0; i < chartIds.length; i++) {
+                const canvas = document.getElementById(chartIds[i]);
+                if (!canvas) continue;
+                const col = i % 2;
+                const row = Math.floor(i / 2);
+                const x = 14 + col * (chartW + 14);
+                const yPos = y + row * (chartH + 18);
+                pdf.setFontSize(11);
+                pdf.setTextColor(50);
+                pdf.text(chartTitles[i], x, yPos);
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                pdf.addImage(imgData, 'PNG', x, yPos + 3, chartW, chartH);
+            }
+
+            pdf.setFontSize(8);
+            pdf.setTextColor(150);
+            pdf.text('HR Multi-Agent Intelligence Platform — Confidential', pageWidth / 2, pageHeight - 6, { align: 'center' });
+            pdf.save(`HR_Analytics_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+            showToast('PDF report exported successfully', 'success');
+            return;
+        }
+
+        showToast('PDF export fallback: opening print dialog', 'info');
+        window.print();
     } catch (error) {
         console.error('PDF export error:', error);
-        // Fallback to window.print()
         showToast('Using print dialog as fallback...', 'info');
         window.print();
     } finally {

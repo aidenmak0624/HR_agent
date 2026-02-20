@@ -1,0 +1,26 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: 👥
+    - heading "HR Agent" [level=1] [ref=e6]
+    - paragraph [ref=e7]: Your intelligent HR management platform for the modern workplace
+    - generic [ref=e8]: 💼
+  - generic [ref=e10]:
+    - generic [ref=e11]:
+      - button "Sign In" [ref=e12] [cursor=pointer]
+      - button "Create Account" [ref=e13] [cursor=pointer]
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Welcome Back" [level=2] [ref=e16]
+        - paragraph [ref=e17]: Sign in to your account to continue
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: Email Address
+          - textbox "Email Address" [ref=e21]:
+            - /placeholder: you@example.com
+        - generic [ref=e22]:
+          - generic [ref=e23]: Password
+          - textbox "Password" [ref=e24]:
+            - /placeholder: Enter your password
+        - button "Sign In" [ref=e26] [cursor=pointer]
+        - link "Forgot your password?" [ref=e28] [cursor=pointer]:
+          - /url: "#"

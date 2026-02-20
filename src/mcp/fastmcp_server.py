@@ -915,7 +915,13 @@ def get_recent_activity(limit: int = 20) -> str:
     limit = min(limit, 50)
 
     def _query(session):
-        from src.core.database import LeaveRequest, Employee, GeneratedDocument
+        from src.core.database import (
+            LeaveRequest,
+            Employee,
+            GeneratedDocument,
+            BenefitsEnrollment,
+            BenefitsPlan,
+        )
 
         activities = []
         for lr in (
@@ -945,6 +951,27 @@ def get_recent_activity(limit: int = 20) -> str:
                     "message": f"Document generated: {doc.template_name}",
                     "detail": f"For {name}",
                     "timestamp": doc.created_at.isoformat() if doc.created_at else None,
+                }
+            )
+
+        for enrollment in (
+            session.query(BenefitsEnrollment)
+            .order_by(BenefitsEnrollment.enrolled_at.desc())
+            .limit(5)
+            .all()
+        ):
+            emp = session.query(Employee).filter_by(id=enrollment.employee_id).first()
+            plan = session.query(BenefitsPlan).filter_by(id=enrollment.plan_id).first()
+            name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
+            plan_name = plan.name if plan else "Unknown Plan"
+            plan_type = plan.plan_type if plan else "benefits"
+            status = (enrollment.status or "active").lower()
+            activities.append(
+                {
+                    "type": "benefits",
+                    "message": f"{name} — Benefits update ({status})",
+                    "detail": f"{plan_name} ({plan_type}) • Coverage: {enrollment.coverage_level}",
+                    "timestamp": enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None,
                 }
             )
         activities.sort(key=lambda a: a.get("timestamp") or "0000", reverse=True)
@@ -1529,6 +1556,245 @@ def policy_inquiry(topic: str) -> str:
         "4. Note any exceptions or special cases\n\n"
         f"My question is about: {topic}"
     )
+
+
+# ============================================================
+# BAMBOOHR INTEGRATION TOOLS (9)
+# ============================================================
+# These tools delegate to the BambooHR REST API via the connector.
+# They are only functional when BAMBOOHR_API_KEY and BAMBOOHR_SUBDOMAIN
+# are configured. Otherwise they return a helpful configuration error.
+
+
+def _get_bamboohr_connector():
+    """Get BambooHR connector if configured, else raise RuntimeError."""
+    api_key = os.environ.get("BAMBOOHR_API_KEY", "").strip()
+    subdomain = os.environ.get("BAMBOOHR_SUBDOMAIN", "").strip()
+    placeholders = {"", "your-bamboohr-api-key", "not-set", "your-company-subdomain"}
+    if not api_key or api_key.lower() in placeholders:
+        raise RuntimeError(
+            "BAMBOOHR_API_KEY is not configured. "
+            "Set it in your .env or as an environment variable."
+        )
+    if not subdomain or subdomain.lower() in placeholders:
+        raise RuntimeError(
+            "BAMBOOHR_SUBDOMAIN is not configured. "
+            "Set it in your .env or as an environment variable."
+        )
+    from src.connectors.bamboohr import BambooHRConnector
+
+    return BambooHRConnector(api_key=api_key, subdomain=subdomain)
+
+
+def _bamboohr_error(e: Exception) -> str:
+    return json.dumps(
+        {
+            "error": str(e),
+            "hint": "Ensure BAMBOOHR_API_KEY and BAMBOOHR_SUBDOMAIN are set correctly.",
+        },
+        indent=2,
+    )
+
+
+@mcp.tool()
+def bamboohr_get_employee(employee_id: str) -> str:
+    """Retrieve a single employee profile from BambooHR by their ID.
+
+    Args:
+        employee_id: BambooHR employee ID (numeric string)
+    """
+    try:
+        connector = _get_bamboohr_connector()
+        emp = connector.get_employee(employee_id)
+        if emp is None:
+            return json.dumps({"error": f"Employee {employee_id} not found in BambooHR"})
+        return json.dumps(emp.model_dump(), indent=2, default=str)
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_search_employees(
+    department: str = "", status: str = "", location: str = "", job_title: str = ""
+) -> str:
+    """Search the BambooHR employee directory. Omit all filters to list everyone.
+
+    Args:
+        department: Filter by department name
+        status: Filter by status (active, inactive, on_leave, terminated)
+        location: Filter by office location
+        job_title: Filter by job title
+    """
+    try:
+        connector = _get_bamboohr_connector()
+        filters = {}
+        if department:
+            filters["department"] = department
+        if status:
+            filters["status"] = status
+        if location:
+            filters["location"] = location
+        if job_title:
+            filters["job_title"] = job_title
+        employees = connector.search_employees(filters)
+        results = [emp.model_dump() for emp in employees]
+        return json.dumps({"employees": results, "count": len(results)}, indent=2, default=str)
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_get_leave_balance(employee_id: str) -> str:
+    """Get an employee's leave balance from BambooHR (PTO, sick, personal days).
+
+    Args:
+        employee_id: BambooHR employee ID
+    """
+    try:
+        connector = _get_bamboohr_connector()
+        balances = connector.get_leave_balance(employee_id)
+        return json.dumps(
+            {"employee_id": employee_id, "balances": [b.model_dump() for b in balances]},
+            indent=2,
+            default=str,
+        )
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_get_leave_requests(employee_id: str, status: str = "") -> str:
+    """Get leave requests for an employee from BambooHR.
+
+    Args:
+        employee_id: BambooHR employee ID
+        status: Optional filter — pending, approved, denied, cancelled
+    """
+    try:
+        connector = _get_bamboohr_connector()
+        requests_list = connector.get_leave_requests(employee_id, status=status or None)
+        return json.dumps(
+            {"employee_id": employee_id, "requests": [r.model_dump() for r in requests_list]},
+            indent=2,
+            default=str,
+        )
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_submit_leave_request(
+    employee_id: str,
+    leave_type: str,
+    start_date: str,
+    end_date: str,
+    reason: str = "",
+) -> str:
+    """Submit a leave request to BambooHR (creates a pending request needing approval).
+
+    Args:
+        employee_id: BambooHR employee ID
+        leave_type: pto, sick, personal, unpaid, or other
+        start_date: Start date (YYYY-MM-DD)
+        end_date: End date (YYYY-MM-DD)
+        reason: Optional reason
+    """
+    try:
+        from src.connectors.hris_interface import LeaveRequest as LR, LeaveType, LeaveStatus
+
+        connector = _get_bamboohr_connector()
+        type_map = {
+            "pto": LeaveType.PTO, "vacation": LeaveType.PTO,
+            "sick": LeaveType.SICK, "personal": LeaveType.PERSONAL,
+            "unpaid": LeaveType.UNPAID,
+        }
+        lt = type_map.get(leave_type.lower(), LeaveType.OTHER)
+        req = LR(
+            employee_id=employee_id,
+            leave_type=lt,
+            start_date=datetime.fromisoformat(start_date),
+            end_date=datetime.fromisoformat(end_date),
+            status=LeaveStatus.PENDING,
+            reason=reason,
+            submitted_at=datetime.utcnow(),
+        )
+        result = connector.submit_leave_request(req)
+        return json.dumps(
+            {"request_id": result.id, "status": result.status.value, "message": "Submitted to BambooHR."},
+            indent=2,
+            default=str,
+        )
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_get_org_chart(department: str = "") -> str:
+    """Get the organization hierarchy from BambooHR.
+
+    Args:
+        department: Optional department filter
+    """
+    try:
+        connector = _get_bamboohr_connector()
+        nodes = connector.get_org_chart(department=department or None)
+
+        def _ser(n):
+            return {
+                "employee_id": n.employee_id, "name": n.name,
+                "title": n.title, "department": n.department,
+                "direct_reports": [_ser(dr) for dr in n.direct_reports],
+            }
+
+        return json.dumps({"org_chart": [_ser(n) for n in nodes]}, indent=2, default=str)
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_get_benefits(employee_id: str) -> str:
+    """Get benefits enrollments for an employee from BambooHR.
+
+    Args:
+        employee_id: BambooHR employee ID
+    """
+    try:
+        connector = _get_bamboohr_connector()
+        plans = connector.get_benefits(employee_id)
+        return json.dumps(
+            {"employee_id": employee_id, "benefits": [p.model_dump() for p in plans]},
+            indent=2,
+            default=str,
+        )
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def bamboohr_health_check() -> str:
+    """Verify connectivity to BambooHR API. Returns status and configured subdomain."""
+    try:
+        connector = _get_bamboohr_connector()
+        ok = connector.health_check()
+        sub = os.environ.get("BAMBOOHR_SUBDOMAIN", "?")
+        return json.dumps(
+            {"status": "healthy" if ok else "unhealthy", "subdomain": sub},
+            indent=2,
+        )
+    except Exception as e:
+        return _bamboohr_error(e)
+
+
+@mcp.tool()
+def get_hris_provider_info() -> str:
+    """Show which HRIS provider is active (BambooHR, Workday, or local DB) and its status."""
+    try:
+        from src.connectors.factory import get_hris_connector_resolution
+
+        info = get_hris_connector_resolution(force_refresh=True)
+        return json.dumps(info, indent=2)
+    except Exception as e:
+        return json.dumps({"error": str(e)}, indent=2)
 
 
 # ============================================================

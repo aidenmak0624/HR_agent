@@ -69,6 +69,9 @@ class TestSettings(BaseSettings):
     # BambooHR credentials — mock values
     BAMBOOHR_API_KEY: str = "test-bamboohr-key"
     BAMBOOHR_SUBDOMAIN: str = "test-company"
+    WORKDAY_CLIENT_ID: str = "test-workday-client-id"
+    WORKDAY_CLIENT_SECRET: str = "test-workday-client-secret"
+    WORKDAY_TENANT_URL: str = "https://workday.test.local"
 
     # HRIS provider — use custom_db (no external HRIS)
     HRIS_PROVIDER: str = "custom_db"

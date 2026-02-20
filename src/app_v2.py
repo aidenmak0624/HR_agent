@@ -428,6 +428,12 @@ def leave_page():
     return render_template("leave.html", current_page="leave", user="Guest")
 
 
+@app.route("/benefits", methods=["GET"])
+def benefits_page():
+    """Benefits enrollment page."""
+    return render_template("benefits.html", current_page="benefits", user="Guest")
+
+
 @app.route("/workflows", methods=["GET"])
 def workflows_page():
     """Workflows page."""

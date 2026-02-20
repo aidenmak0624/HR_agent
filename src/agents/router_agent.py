@@ -548,10 +548,20 @@ Return JSON:
                 # Inject HRIS connector
                 if "hris_connector" in sig.parameters:
                     try:
-                        from src.connectors.local_db import LocalDBConnector
+                        from src.connectors.factory import (
+                            get_hris_connector,
+                            get_hris_connector_resolution,
+                        )
 
-                        kwargs["hris_connector"] = LocalDBConnector()
-                        logger.info(f"DISPATCH: Injecting LocalDBConnector into {class_name}")
+                        connector = get_hris_connector()
+                        resolution = get_hris_connector_resolution()
+                        kwargs["hris_connector"] = connector
+                        logger.info(
+                            "DISPATCH: Injecting %s (%s) into %s",
+                            resolution.get("resolved_provider", "unknown"),
+                            connector.__class__.__name__,
+                            class_name,
+                        )
                     except Exception as conn_err:
                         logger.warning(f"DISPATCH: Could not inject connector: {conn_err}")
 
@@ -685,9 +695,9 @@ Return JSON:
         # Enrich prompt with real DB context when available
         db_context = ""
         try:
-            from src.connectors.local_db import LocalDBConnector
+            from src.connectors.factory import get_hris_connector
 
-            connector = LocalDBConnector()
+            connector = get_hris_connector()
             uid = user_context.get("user_id", "")
 
             if intent in ("leave", "leave_request") and uid and uid != "unknown":

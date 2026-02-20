@@ -5,6 +5,8 @@ request validation, authentication, and comprehensive error handling.
 """
 
 import logging
+import json
+import re
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -114,6 +116,12 @@ class APIGateway:
     def _register_routes(self) -> None:
         """Register API routes."""
         self.blueprint.route("/health", methods=["GET"])(self._health_check)
+        self.blueprint.route("/integrations/hris/status", methods=["GET"])(
+            self._rate_limit_middleware(self._get_hris_status)
+        )
+        self.blueprint.route("/integrations/mcp/status", methods=["GET"])(
+            self._rate_limit_middleware(self._get_mcp_status)
+        )
         self.blueprint.route("/query", methods=["POST"])(self._rate_limit_middleware(self._query))
         # Auth endpoints (no rate limit)
         self.blueprint.route("/auth/token", methods=["POST"])(self._auth_token)
@@ -161,6 +169,9 @@ class APIGateway:
         )
         self.blueprint.route("/metrics/export", methods=["GET"])(
             self._rate_limit_middleware(self._export_metrics)
+        )
+        self.blueprint.route("/metrics/export/pdf", methods=["GET"])(
+            self._rate_limit_middleware(self._export_metrics_pdf)
         )
         # Wave 4 – Profile & Employee Management
         self.blueprint.route("/profile", methods=["GET"])(
@@ -599,6 +610,161 @@ class APIGateway:
         response = APIResponse(success=True, data={"status": "healthy", "version": "2.0"})
         return jsonify(response.to_dict()), 200
 
+    def _get_hris_status(self):
+        """Return active HRIS provider details and optional connectivity check."""
+        try:
+            from src.connectors.factory import get_hris_connector, get_hris_connector_resolution
+
+            check_requested = str(request.args.get("check", "0")).strip().lower() in {
+                "1",
+                "true",
+                "yes",
+                "on",
+            }
+
+            connector = get_hris_connector()
+            resolution = get_hris_connector_resolution()
+            payload = {
+                "requested_provider": resolution.get("requested_provider"),
+                "active_provider": resolution.get("resolved_provider"),
+                "connector_class": resolution.get("connector_class", connector.__class__.__name__),
+                "using_fallback": bool(resolution.get("using_fallback", False)),
+                "fallback_reason": resolution.get("fallback_reason", ""),
+                "health_check_requested": check_requested,
+            }
+
+            if check_requested:
+                try:
+                    payload["healthy"] = bool(connector.health_check())
+                except Exception as health_err:
+                    payload["healthy"] = False
+                    payload["health_error"] = str(health_err)
+
+            return jsonify(APIResponse(success=True, data=payload).to_dict()), 200
+        except Exception as e:
+            logger.error(f"HRIS status endpoint failed: {e}")
+            return (
+                jsonify(
+                    APIResponse(
+                        success=False,
+                        error="Failed to resolve HRIS integration status",
+                    ).to_dict()
+                ),
+                500,
+            )
+
+    def _call_mcp_tool(self, tool_name: str, arguments: Optional[Dict[str, Any]] = None):
+        """Invoke an MCP tool through the in-process MCP server."""
+        mcp_server = getattr(current_app, "mcp_server", None)
+        if mcp_server is None:
+            return None, "MCP server is not registered"
+
+        request_id = f"api-gw-{tool_name}-{int(time.time() * 1000)}"
+        request_payload = {
+            "jsonrpc": "2.0",
+            "id": request_id,
+            "method": "tools/call",
+            "params": {
+                "name": tool_name,
+                "arguments": arguments or {},
+            },
+        }
+
+        response = mcp_server.handle_request(request_payload)
+        if not response:
+            return None, "No response from MCP server"
+        if isinstance(response, dict) and response.get("error"):
+            return None, response["error"].get("message", "Unknown MCP error")
+
+        result = response.get("result", {}) if isinstance(response, dict) else {}
+        content = result.get("content", []) if isinstance(result, dict) else []
+        content_text = (
+            str(content[0].get("text", "")) if isinstance(content, list) and content else ""
+        )
+        if result.get("isError"):
+            return None, content_text or f"MCP tool '{tool_name}' returned an error"
+
+        if not content_text:
+            return {}, None
+        try:
+            return json.loads(content_text), None
+        except json.JSONDecodeError:
+            return {"raw_text": content_text}, None
+
+    def _get_mcp_status(self):
+        """Return MCP health/statistics and current HRIS resolution for UI visibility."""
+        try:
+            from src.connectors.factory import get_hris_connector, get_hris_connector_resolution
+
+            check_requested = str(request.args.get("check", "1")).strip().lower() in {
+                "1",
+                "true",
+                "yes",
+                "on",
+            }
+
+            connector = get_hris_connector(force_refresh=check_requested)
+            resolution = get_hris_connector_resolution(force_refresh=check_requested)
+
+            hris_payload = {
+                "requested_provider": resolution.get("requested_provider"),
+                "active_provider": resolution.get("resolved_provider"),
+                "connector_class": resolution.get("connector_class", connector.__class__.__name__),
+                "using_fallback": bool(resolution.get("using_fallback", False)),
+                "fallback_reason": resolution.get("fallback_reason", ""),
+            }
+            if check_requested:
+                try:
+                    hris_payload["healthy"] = bool(connector.health_check())
+                except Exception as health_err:
+                    hris_payload["healthy"] = False
+                    hris_payload["health_error"] = str(health_err)
+
+            mcp_payload = {
+                "status": "unavailable",
+                "server": "hr-agent-platform",
+                "version": "",
+                "protocol_version": "",
+                "tools": 0,
+                "resources": 0,
+                "prompts": 0,
+            }
+            mcp_server = getattr(current_app, "mcp_server", None)
+            if mcp_server is not None:
+                try:
+                    stats = mcp_server.get_stats()
+                    mcp_payload = {
+                        "status": "ok",
+                        "server": stats.get("server_name", "hr-agent-platform"),
+                        "version": stats.get("version", ""),
+                        "protocol_version": stats.get("protocol_version", ""),
+                        "tools": int(stats.get("tools", 0)),
+                        "resources": int(stats.get("resources", 0))
+                        + int(stats.get("resource_templates", 0)),
+                        "prompts": int(stats.get("prompts", 0)),
+                    }
+                except Exception as mcp_err:
+                    mcp_payload["status"] = "error"
+                    mcp_payload["error"] = str(mcp_err)
+
+            payload = {
+                "mcp": mcp_payload,
+                "hris": hris_payload,
+                "health_check_requested": check_requested,
+            }
+            return jsonify(APIResponse(success=True, data=payload).to_dict()), 200
+        except Exception as e:
+            logger.error(f"MCP status endpoint failed: {e}")
+            return (
+                jsonify(
+                    APIResponse(
+                        success=False,
+                        error="Failed to resolve MCP integration status",
+                    ).to_dict()
+                ),
+                500,
+            )
+
     def _query(self):
         """Main agent query endpoint.
 
@@ -835,6 +1001,240 @@ class APIGateway:
                 "execution_time_ms": 2,
                 "reasoning_trace": ["Farewell detected", "Closing conversation"],
             }
+
+        # ------ Personal benefits lookup with strict ownership guard ------
+        benefits_terms = (
+            "benefit",
+            "benefits",
+            "plan",
+            "plans",
+            "coverage",
+            "insurance",
+            "medical",
+            "dental",
+            "vision",
+            "401k",
+            "retirement",
+            "enrollment",
+            "enrolled",
+        )
+        has_benefits_signal = any(term in query_lower for term in benefits_terms)
+        first_person_signal = (
+            "my " in query_lower
+            or query_lower.startswith("my")
+            or " me " in f" {query_lower} "
+            or " mine " in f" {query_lower} "
+            or query_lower.startswith("show me")
+            or query_lower.startswith("can i")
+        )
+        possible_other_person_signal = (
+            any(
+                marker in query_lower
+                for marker in (
+                    "his ",
+                    "her ",
+                    "their ",
+                    "someone else",
+                    "another employee",
+                    "other employee",
+                    "employee id",
+                )
+            )
+            or bool(
+                re.search(
+                    r"\b[a-z]+(?:\s+[a-z]+)?'s\s+(?:benefits?|plan|coverage|insurance)\b",
+                    query_lower,
+                )
+            )
+        )
+        wants_personal_benefits = (
+            "my plan" in query_lower
+            or (first_person_signal and has_benefits_signal)
+            or (possible_other_person_signal and has_benefits_signal)
+        )
+
+        if wants_personal_benefits:
+            try:
+                from src.core.database import Employee, BenefitsEnrollment, BenefitsPlan
+
+                session = self._get_db_session()
+                if session is None:
+                    return {
+                        "answer": "I couldn't reach the benefits system right now. Please try again, or open the Benefits page.",
+                        "agent_type": "benefits_agent",
+                        "confidence": 0.65,
+                        "request_id": f"static_{int(time.time())}",
+                        "execution_time_ms": 6,
+                        "reasoning_trace": ["Personal benefits intent detected", "Database unavailable"],
+                    }
+                try:
+                    employee, _ = self._get_current_employee(session)
+                    if not employee:
+                        return {
+                            "answer": "I couldn't verify your employee profile, so I can't retrieve benefits enrollments right now.",
+                            "agent_type": "benefits_agent",
+                            "confidence": 0.60,
+                            "request_id": f"static_{int(time.time())}",
+                            "execution_time_ms": 6,
+                            "reasoning_trace": [
+                                "Personal benefits intent detected",
+                                "Current employee not resolved",
+                            ],
+                        }
+
+                    # Policy guard: block requests targeting any employee other than the current user.
+                    asks_for_other_employee = possible_other_person_signal
+
+                    id_match = re.search(r"\bemployee\s*id\s*[:#]?\s*(\d+)\b", query_lower)
+                    if id_match:
+                        try:
+                            requested_id = int(id_match.group(1))
+                            if requested_id != int(employee.id):
+                                asks_for_other_employee = True
+                        except Exception:
+                            pass
+
+                    email_tokens = re.findall(
+                        r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}",
+                        query_lower,
+                    )
+                    employee_email = (employee.email or "").lower()
+                    for email_token in email_tokens:
+                        if email_token.lower() != employee_email:
+                            asks_for_other_employee = True
+                            break
+
+                    if not asks_for_other_employee:
+                        # Detect full-name references to someone else.
+                        employees = session.query(
+                            Employee.id, Employee.first_name, Employee.last_name
+                        ).all()
+                        for emp in employees:
+                            full_name = f"{emp.first_name} {emp.last_name}".strip().lower()
+                            if full_name and full_name in query_lower and int(emp.id) != int(employee.id):
+                                asks_for_other_employee = True
+                                break
+
+                    if asks_for_other_employee:
+                        return {
+                            "answer": "I can only access your own benefits information. I can’t show another employee’s plan due to privacy policy.",
+                            "agent_type": "benefits_agent",
+                            "confidence": 0.97,
+                            "request_id": f"static_{int(time.time())}",
+                            "execution_time_ms": 6,
+                            "reasoning_trace": [
+                                "Personal benefits intent detected",
+                                "Ownership/privacy guard triggered",
+                            ],
+                        }
+
+                    # Prefer configured HRIS provider (Workday/BambooHR) when active.
+                    # Falls back to local DB path when the active connector is local_db.
+                    try:
+                        from src.connectors.factory import (
+                            get_hris_connector,
+                            get_hris_connector_resolution,
+                        )
+
+                        connector = get_hris_connector()
+                        resolution = get_hris_connector_resolution()
+                        active_provider = resolution.get("resolved_provider", "local_db")
+
+                        if active_provider != "local_db":
+                            provider_employee_id = str(employee.hris_id or employee.id)
+                            plans = connector.get_benefits(provider_employee_id)
+
+                            if not plans:
+                                return {
+                                    "answer": "You currently have no active benefits enrollments on file. You can enroll from the Benefits page.",
+                                    "agent_type": "benefits_agent",
+                                    "confidence": 0.95,
+                                    "request_id": f"static_{int(time.time())}",
+                                    "execution_time_ms": 6,
+                                    "reasoning_trace": [
+                                        "Personal benefits intent detected",
+                                        f"No active plans returned by {active_provider}",
+                                    ],
+                                }
+
+                            lines = ["Your current benefits enrollments:"]
+                            for plan in plans:
+                                raw_plan_type = (
+                                    plan.plan_type.value
+                                    if hasattr(plan.plan_type, "value")
+                                    else str(plan.plan_type)
+                                )
+                                plan_type = raw_plan_type.replace("_", " ").title()
+                                coverage = (plan.coverage_level or "employee").replace("_", " ").title()
+                                premium = float(plan.employee_cost or 0)
+                                lines.append(
+                                    f"• {plan.name} ({plan_type}) — Coverage: {coverage}, Premium: ${premium:.2f}/month"
+                                )
+                            lines.append("")
+                            lines.append("For privacy, I can only show your own benefits data.")
+
+                            return {
+                                "answer": "\n".join(lines),
+                                "agent_type": "benefits_agent",
+                                "confidence": 0.97,
+                                "request_id": f"static_{int(time.time())}",
+                                "execution_time_ms": 6,
+                                "reasoning_trace": [
+                                    "Personal benefits intent detected",
+                                    f"Returned {len(plans)} plan(s) from {active_provider}",
+                                ],
+                            }
+                    except Exception as provider_err:
+                        logger.warning(f"Benefits lookup via configured HRIS failed: {provider_err}")
+
+                    active_enrollments = (
+                        session.query(BenefitsEnrollment)
+                        .filter_by(employee_id=employee.id, status="active")
+                        .order_by(BenefitsEnrollment.enrolled_at.desc())
+                        .all()
+                    )
+
+                    if not active_enrollments:
+                        return {
+                            "answer": "You currently have no active benefits enrollments on file. You can enroll from the Benefits page.",
+                            "agent_type": "benefits_agent",
+                            "confidence": 0.95,
+                            "request_id": f"static_{int(time.time())}",
+                            "execution_time_ms": 6,
+                            "reasoning_trace": [
+                                "Personal benefits intent detected",
+                                "No active enrollments found for current user",
+                            ],
+                        }
+
+                    lines = ["Your current benefits enrollments:"]
+                    for enr in active_enrollments:
+                        plan = session.query(BenefitsPlan).filter_by(id=enr.plan_id).first()
+                        plan_name = plan.name if plan else f"Plan #{enr.plan_id}"
+                        plan_type = (plan.plan_type if plan else "unknown").title()
+                        premium = plan.premium_monthly if plan and plan.premium_monthly is not None else 0
+                        coverage = (enr.coverage_level or "employee").replace("_", " ").title()
+                        lines.append(
+                            f"• {plan_name} ({plan_type}) — Coverage: {coverage}, Premium: ${float(premium):.2f}/month"
+                        )
+                    lines.append("")
+                    lines.append("For privacy, I can only show your own benefits data.")
+
+                    return {
+                        "answer": "\n".join(lines),
+                        "agent_type": "benefits_agent",
+                        "confidence": 0.97,
+                        "request_id": f"static_{int(time.time())}",
+                        "execution_time_ms": 6,
+                        "reasoning_trace": [
+                            "Personal benefits intent detected",
+                            f"Returned {len(active_enrollments)} active enrollment(s) for current user",
+                        ],
+                    }
+                finally:
+                    session.close()
+            except Exception as own_benefits_err:
+                logger.warning(f"Personal benefits lookup fallback error: {own_benefits_err}")
 
         # ------ HR domain-specific responses (real company data) ------
         static_responses = {
@@ -2990,6 +3390,192 @@ class APIGateway:
             logger.error(f"Export metrics error: {e}")
             return jsonify(APIResponse(success=False, error=str(e)).to_dict()), 500
 
+    @staticmethod
+    def _pdf_escape(text: str) -> str:
+        """Escape text for use in a PDF text object."""
+        if text is None:
+            return ""
+        return (
+            str(text)
+            .replace("\\", "\\\\")
+            .replace("(", "\\(")
+            .replace(")", "\\)")
+            .replace("\n", " ")
+            .replace("\r", " ")
+        )
+
+    def _build_simple_pdf(self, title: str, lines: List[str]) -> bytes:
+        """Build a lightweight single-page PDF without external dependencies."""
+        safe_title = self._pdf_escape(title)
+        # Keep enough room for title, metadata, and body text.
+        max_lines = 46
+        rendered_lines = [self._pdf_escape(line) for line in lines[:max_lines]]
+
+        content_commands = [
+            "BT",
+            "/F1 18 Tf",
+            "50 770 Td",
+            f"({safe_title}) Tj",
+            "0 -24 Td",
+            "/F1 11 Tf",
+        ]
+        for line in rendered_lines:
+            content_commands.append(f"({line}) Tj")
+            content_commands.append("0 -14 Td")
+        content_commands.append("ET")
+
+        content_stream = "\n".join(content_commands).encode("latin-1", errors="replace")
+
+        objects = [
+            b"<< /Type /Catalog /Pages 2 0 R >>",
+            b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            (
+                b"<< /Type /Page /Parent 2 0 R "
+                b"/MediaBox [0 0 612 792] "
+                b"/Resources << /Font << /F1 4 0 R >> >> "
+                b"/Contents 5 0 R >>"
+            ),
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+            (
+                b"<< /Length "
+                + str(len(content_stream)).encode("ascii")
+                + b" >>\nstream\n"
+                + content_stream
+                + b"\nendstream"
+            ),
+        ]
+
+        pdf = bytearray()
+        pdf.extend(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+        offsets: List[int] = [0]
+
+        for idx, obj in enumerate(objects, start=1):
+            offsets.append(len(pdf))
+            pdf.extend(f"{idx} 0 obj\n".encode("ascii"))
+            pdf.extend(obj)
+            pdf.extend(b"\nendobj\n")
+
+        xref_start = len(pdf)
+        pdf.extend(f"xref\n0 {len(objects) + 1}\n".encode("ascii"))
+        pdf.extend(b"0000000000 65535 f \n")
+        for offset in offsets[1:]:
+            pdf.extend(f"{offset:010d} 00000 n \n".encode("ascii"))
+
+        pdf.extend(
+            (
+                f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\n"
+                f"startxref\n{xref_start}\n%%EOF"
+            ).encode("ascii")
+        )
+        return bytes(pdf)
+
+    def _export_metrics_pdf(self):
+        """Export analytics metrics as PDF (manager and HR roles)."""
+        try:
+            user_context = g.get("user_context") or {}
+            user_role = user_context.get("role", "employee")
+
+            if user_role == "employee":
+                return (
+                    jsonify(
+                        APIResponse(
+                            success=False, error="Access denied: manager or HR role required"
+                        ).to_dict()
+                    ),
+                    403,
+                )
+
+            # Reuse metrics payload from the existing endpoint logic.
+            metrics_result = self._get_metrics()
+            response_obj, status_code = (
+                metrics_result
+                if isinstance(metrics_result, tuple)
+                else (metrics_result, 200)
+            )
+
+            if status_code != 200:
+                return response_obj, status_code
+
+            payload = (
+                response_obj.get_json(silent=True)
+                if hasattr(response_obj, "get_json")
+                else None
+            )
+            metrics = (payload or {}).get("data") or {}
+
+            date_from = request.args.get("date_from", "start")
+            date_to = request.args.get("date_to", "end")
+            department = request.args.get("department", "all")
+
+            dept_counts = metrics.get("department_headcount") or {}
+            leave_util = metrics.get("leave_utilization") or {}
+            agent_perf = metrics.get("agent_performance") or {}
+            query_trend = metrics.get("query_volume_trend") or []
+
+            lines = [
+                f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC",
+                f"Role Scope: {user_role}",
+                f"Department Filter: {department}",
+                f"Date Range: {date_from} to {date_to}",
+                "",
+                "Key Metrics",
+                f"- Total Employees: {metrics.get('total_employees', 0)}",
+                f"- Open Leave Requests: {metrics.get('open_leave_requests', 0)}",
+                f"- Pending Approvals: {metrics.get('pending_approvals', 0)}",
+                f"- Queries Today: {metrics.get('queries_today', 0)}",
+                f"- Avg Leave Days Used: {metrics.get('avg_leave_days_used', 0)}",
+                f"- Avg Agent Confidence: {metrics.get('avg_confidence', 0)}",
+                "",
+                "Department Headcount",
+            ]
+
+            if dept_counts:
+                for dept_name, count in sorted(dept_counts.items()):
+                    lines.append(f"- {dept_name}: {count}")
+            else:
+                lines.append("- No department data available")
+
+            lines.append("")
+            lines.append("Leave Utilization")
+            if leave_util:
+                for leave_type, total_used in leave_util.items():
+                    lines.append(f"- {leave_type}: {total_used}")
+            else:
+                lines.append("- No leave utilization data available")
+
+            lines.append("")
+            lines.append("Agent Performance (Query Count)")
+            if agent_perf:
+                for agent_name, count in sorted(agent_perf.items()):
+                    lines.append(f"- {agent_name}: {count}")
+            else:
+                lines.append("- No agent performance data available")
+
+            lines.append("")
+            lines.append(
+                "Query Volume Trend (last 12 points): "
+                + ", ".join(str(v) for v in query_trend)
+                if query_trend
+                else "Query Volume Trend (last 12 points): no data"
+            )
+
+            pdf_bytes = self._build_simple_pdf("HR Analytics Report", lines)
+
+            from flask import Response
+
+            filename = f"hr_analytics_{date_from}_to_{date_to}.pdf"
+            return Response(
+                pdf_bytes,
+                mimetype="application/pdf",
+                headers={
+                    "Content-Disposition": f"attachment; filename={filename}",
+                    "Cache-Control": "no-store",
+                },
+            )
+        except Exception as e:
+            logger.error(f"Export metrics PDF error: {e}")
+            return jsonify(APIResponse(success=False, error=str(e)).to_dict()), 500
+
     # ------------------------------------------------------------------
     # Wave 2: Multi-Agent Integration
     # ------------------------------------------------------------------
@@ -3387,6 +3973,25 @@ class APIGateway:
     def _get_benefits_plans(self):
         """GET /api/v2/benefits/plans – List all active benefits plans."""
         try:
+            mcp_data, mcp_error = self._call_mcp_tool("list_benefits_plans", {})
+            if isinstance(mcp_data, dict) and isinstance(mcp_data.get("plans"), list):
+                plans = mcp_data.get("plans", [])
+                return (
+                    jsonify(
+                        APIResponse(
+                            success=True,
+                            data=plans,
+                            metadata={
+                                "count": mcp_data.get("count", len(plans)),
+                                "source": "mcp",
+                            },
+                        ).to_dict()
+                    ),
+                    200,
+                )
+            if mcp_error:
+                logger.warning(f"MCP list_benefits_plans failed; using DB fallback: {mcp_error}")
+
             from src.core.database import BenefitsPlan
 
             session = self._get_db_session()
@@ -3408,7 +4013,9 @@ class APIGateway:
                 return (
                     jsonify(
                         APIResponse(
-                            success=True, data=data, metadata={"count": len(data)}
+                            success=True,
+                            data=data,
+                            metadata={"count": len(data), "source": "local_db"},
                         ).to_dict()
                     ),
                     200,
@@ -3431,6 +4038,31 @@ class APIGateway:
                 employee, role = self._get_current_employee(session)
                 if not employee:
                     return jsonify(APIResponse(success=True, data=[]).to_dict()), 200
+
+                mcp_data, mcp_error = self._call_mcp_tool(
+                    "get_benefits_enrollments",
+                    {"employee_id": str(employee.id)},
+                )
+                if isinstance(mcp_data, dict) and isinstance(mcp_data.get("enrollments"), list):
+                    enrollments = mcp_data.get("enrollments", [])
+                    return (
+                        jsonify(
+                            APIResponse(
+                                success=True,
+                                data=enrollments,
+                                metadata={
+                                    "count": mcp_data.get("count", len(enrollments)),
+                                    "source": "mcp",
+                                },
+                            ).to_dict()
+                        ),
+                        200,
+                    )
+                if mcp_error:
+                    logger.warning(
+                        f"MCP get_benefits_enrollments failed; using DB fallback: {mcp_error}"
+                    )
+
                 enrollments = (
                     session.query(BenefitsEnrollment).filter_by(employee_id=employee.id).all()
                 )
@@ -3451,7 +4083,9 @@ class APIGateway:
                 return (
                     jsonify(
                         APIResponse(
-                            success=True, data=data, metadata={"count": len(data)}
+                            success=True,
+                            data=data,
+                            metadata={"count": len(data), "source": "local_db"},
                         ).to_dict()
                     ),
                     200,
@@ -3490,6 +4124,44 @@ class APIGateway:
                         jsonify(APIResponse(success=False, error="Employee not found").to_dict()),
                         404,
                     )
+
+                mcp_data, mcp_error = self._call_mcp_tool(
+                    "enroll_in_benefit",
+                    {
+                        "employee_id": str(employee.id),
+                        "plan_id": str(plan_id),
+                        "coverage_level": str(coverage_level or "employee"),
+                    },
+                )
+                if isinstance(mcp_data, dict) and not mcp_data.get("error"):
+                    enrollment_id = mcp_data.get("enrollment_id")
+                    if enrollment_id is not None:
+                        return (
+                            jsonify(
+                                APIResponse(
+                                    success=True,
+                                    data={
+                                        "id": enrollment_id,
+                                        "plan_id": plan_id,
+                                        "plan_name": mcp_data.get("plan_name", ""),
+                                        "plan_type": mcp_data.get("plan_type", ""),
+                                        "coverage_level": mcp_data.get(
+                                            "coverage_level",
+                                            coverage_level,
+                                        ),
+                                        "status": mcp_data.get("status", "active"),
+                                        "message": mcp_data.get(
+                                            "message",
+                                            f"Enrolled in {mcp_data.get('plan_name', 'selected plan')}",
+                                        ),
+                                    },
+                                    metadata={"source": "mcp"},
+                                ).to_dict()
+                            ),
+                            201,
+                        )
+                if mcp_error:
+                    logger.warning(f"MCP enroll_in_benefit failed; using DB fallback: {mcp_error}")
 
                 # Verify plan exists and is active
                 plan = session.query(BenefitsPlan).filter_by(id=plan_id, is_active=True).first()
@@ -3538,6 +4210,7 @@ class APIGateway:
                                 "status": "active",
                                 "message": f"Enrolled in {plan.name}",
                             },
+                            metadata={"source": "local_db"},
                         ).to_dict()
                     ),
                     201,
@@ -3558,7 +4231,14 @@ class APIGateway:
     def _get_recent_activity(self):
         """GET /api/v2/activity/recent – Live activity feed from DB events."""
         try:
-            from src.core.database import LeaveRequest, Employee, QueryLog, GeneratedDocument
+            from src.core.database import (
+                LeaveRequest,
+                Employee,
+                QueryLog,
+                GeneratedDocument,
+                BenefitsEnrollment,
+                BenefitsPlan,
+            )
 
             session = self._get_db_session()
             if not session:
@@ -3608,6 +4288,40 @@ class APIGateway:
                             "message": f"Document generated: {doc.template_name}",
                             "detail": f"For {emp_name}",
                             "timestamp": doc.created_at.isoformat() if doc.created_at else None,
+                        }
+                    )
+
+                # Recent benefits enrollments
+                benefits_q = session.query(BenefitsEnrollment).order_by(
+                    BenefitsEnrollment.enrolled_at.desc()
+                )
+                if role == "employee" and employee:
+                    benefits_q = benefits_q.filter_by(employee_id=employee.id)
+                for enrollment in benefits_q.limit(5).all():
+                    emp = session.query(Employee).filter_by(id=enrollment.employee_id).first()
+                    plan = session.query(BenefitsPlan).filter_by(id=enrollment.plan_id).first()
+                    emp_name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
+                    plan_name = plan.name if plan else "Unknown Plan"
+                    plan_type = plan.plan_type if plan else "benefits"
+                    status = (enrollment.status or "active").lower()
+                    status_icon = {
+                        "active": "💳",
+                        "terminated": "🔁",
+                        "waived": "⚪",
+                    }.get(status, "💳")
+                    activities.append(
+                        {
+                            "type": "benefits",
+                            "icon": status_icon,
+                            "message": f"{emp_name} – Benefits update ({status})",
+                            "detail": (
+                                f"{plan_name} ({plan_type}) • Coverage: {enrollment.coverage_level}"
+                            ),
+                            "timestamp": (
+                                enrollment.enrolled_at.isoformat()
+                                if enrollment.enrolled_at
+                                else None
+                            ),
                         }
                     )
 

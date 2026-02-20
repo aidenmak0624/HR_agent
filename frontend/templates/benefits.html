@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Benefits Enrollment - HR Intelligence Platform{% endblock %}
+{% block page_title %}Benefits Enrollment{% endblock %}
+
+{% block content %}
+<div class="benefits-page" data-testid="benefits-page">
+    <section class="benefits-toolbar">
+        <div>
+            <h3 class="section-title" style="margin:0;">Manage Your Benefits</h3>
+            <p class="benefits-subtitle">Review active enrollments and enroll in available plans.</p>
+        </div>
+        <div class="benefits-toolbar-actions">
+            <button id="benefits-refresh-btn" class="btn-secondary" type="button">Refresh Data</button>
+            <p class="benefits-last-synced">Last synced: <span id="benefits-last-synced">--</span></p>
+        </div>
+    </section>
+
+    <section class="benefits-integration" data-testid="benefits-integration-status">
+        <div class="integration-pills">
+            <div id="mcp-status-pill" class="integration-pill status-loading">
+                <span class="integration-label">MCP</span>
+                <span id="mcp-status-text">Checking...</span>
+            </div>
+            <div id="hris-status-pill" class="integration-pill status-loading">
+                <span class="integration-label">HRIS</span>
+                <span id="hris-status-text">Checking...</span>
+            </div>
+        </div>
+        <p id="integration-status-detail" class="integration-detail">
+            Verifying live integration status...
+        </p>
+    </section>
+
+    <section class="benefits-section" data-testid="benefits-enrollments-section">
+        <div class="section-header-row">
+            <h3 class="section-title">Current Enrollments</h3>
+        </div>
+        <div id="current-enrollments" class="enrollments-grid" data-testid="benefits-enrollments">
+            <div class="loading-state">Loading your enrollments...</div>
+        </div>
+    </section>
+
+    <section class="benefits-section" data-testid="benefits-plans-section">
+        <div class="section-header-row">
+            <h3 class="section-title">Available Plans</h3>
+        </div>
+        <div id="benefits-plans" class="plans-grid" data-testid="benefits-plans">
+            <div class="loading-state">Loading benefits plans...</div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.benefits-page {
+    display: grid;
+    gap: 20px;
+}
+
+.benefits-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.benefits-subtitle {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.benefits-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.benefits-last-synced {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.benefits-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.benefits-integration {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: grid;
+    gap: 10px;
+}
+
+.integration-pills {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.integration-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.integration-pill.status-live {
+    background: rgba(29, 171, 94, 0.16);
+    color: #1d7a45;
+}
+
+.integration-pill.status-warning {
+    background: rgba(245, 158, 11, 0.18);
+    color: #92400e;
+}
+
+.integration-pill.status-offline {
+    background: rgba(229, 62, 62, 0.16);
+    color: #b42318;
+}
+
+.integration-pill.status-loading {
+    background: rgba(107, 114, 128, 0.18);
+    color: #374151;
+}
+
+.integration-label {
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.integration-detail {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.section-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.enrollments-grid,
+.plans-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.plans-grid {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+}
+
+.enrollment-item,
+.benefit-plan-card {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    padding: 14px;
+}
+
+.enrollment-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.enrollment-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.enrollment-meta {
+    margin: 6px 0 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.status-badge.status-active {
+    background: rgba(29, 171, 94, 0.14);
+    color: #1d7a45;
+}
+
+.status-badge.status-terminated {
+    background: rgba(229, 62, 62, 0.15);
+    color: #b42318;
+}
+
+.status-badge.status-waived {
+    background: rgba(107, 114, 128, 0.18);
+    color: #4b5563;
+}
+
+.plan-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.plan-name {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.plan-provider {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.plan-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: capitalize;
+    background: rgba(91, 163, 196, 0.16);
+    color: var(--accent-dark, #2f6a87);
+}
+
+.plan-cost {
+    margin: 8px 0 10px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.plan-details {
+    margin: 0 0 12px;
+    padding-left: 18px;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.plan-details li {
+    margin-bottom: 5px;
+}
+
+.plan-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.coverage-select {
+    flex: 1;
+    min-width: 0;
+}
+
+.enroll-btn {
+    min-width: 110px;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    background: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.enroll-btn:hover {
+    opacity: 0.9;
+}
+
+.enroll-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.plan-current-note {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: #1d7a45;
+    font-weight: 600;
+}
+
+.loading-state,
+.empty-state,
+.error-state {
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+}
+
+.error-state {
+    color: #b42318;
+    border-color: rgba(229, 62, 62, 0.4);
+}
+
+@media (max-width: 900px) {
+    .benefits-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .benefits-section {
+        padding: 14px;
+    }
+
+    .plan-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .enroll-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/benefits.js"></script>
+{% endblock %}

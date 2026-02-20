@@ -9,6 +9,8 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from sqlalchemy import text
+
 from .hris_interface import (
     BenefitsPlan,
     Employee,
@@ -299,7 +301,7 @@ class LocalDBConnector(HRISConnector):
     def health_check(self) -> bool:
         try:
             session = self._get_session()
-            session.execute("SELECT 1")
+            session.execute(text("SELECT 1"))
             session.close()
             return True
         except Exception:

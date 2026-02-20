@@ -250,3 +250,9 @@ jobs:
         run: |
           docker build -t hr-platform:test .
           docker run --rm hr-platform:test python -c "from src.app_v2 import create_app; print('Build OK')"
+
+  # ── Cloud Run Deployment ──────────────────────────────
+  # Auto-deploy is handled by Cloud Run's native continuous deployment
+  # from GitHub (configured in GCP Console). No extra CI job needed.
+  # Push to main → Cloud Run builds from Dockerfile → deploys automatically.
+  # Service URL: https://hr-platform-837558695367.us-central1.run.app

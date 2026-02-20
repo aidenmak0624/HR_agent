@@ -42,6 +42,9 @@ class DevelopmentSettings(BaseSettings):
     GOOGLE_API_KEY: str = ""
     BAMBOOHR_API_KEY: str = ""
     BAMBOOHR_SUBDOMAIN: str = ""
+    WORKDAY_CLIENT_ID: str = ""
+    WORKDAY_CLIENT_SECRET: str = ""
+    WORKDAY_TENANT_URL: str = ""
 
     # HRIS Configuration
     HRIS_PROVIDER: str = "custom_db"

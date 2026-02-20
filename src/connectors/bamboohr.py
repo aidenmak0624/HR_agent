@@ -65,6 +65,7 @@ class BambooHRConnector(HRISConnector):
         self.api_key = api_key
         self.subdomain = subdomain
         self._session = self._create_session()
+        self.last_health_error: str = ""
 
     def _create_session(self) -> requests.Session:
         """
@@ -414,13 +415,36 @@ class BambooHRConnector(HRISConnector):
         Returns:
             True if healthy, False otherwise
         """
-        try:
-            self._make_request("GET", "/employees/", params={"limit": 1})
-            logger.info("BambooHR health check passed")
-            return True
-        except Exception as e:
-            logger.error(f"BambooHR health check failed: {e}")
-            return False
+        self.last_health_error = ""
+
+        # Prefer endpoints that this connector actually uses in normal flows.
+        # Some tenants return 404 for generic /employees/ even with valid auth.
+        candidate_endpoints = [
+            ("/employees/directory", {}),
+            ("/meta/fields", {}),
+        ]
+
+        for endpoint, kwargs in candidate_endpoints:
+            try:
+                self._make_request("GET", endpoint, **kwargs)
+                logger.info(f"BambooHR health check passed via {endpoint}")
+                self.last_health_error = ""
+                return True
+            except NotFoundError:
+                # Try the next known endpoint.
+                continue
+            except (AuthenticationError, ConnectionError, RateLimitError, ConnectorError) as e:
+                self.last_health_error = str(e)
+                logger.error(f"BambooHR health check failed: {e}")
+                return False
+            except Exception as e:
+                self.last_health_error = str(e)
+                logger.error(f"BambooHR health check failed: {e}")
+                return False
+
+        self.last_health_error = "No valid BambooHR API endpoint responded"
+        logger.error("BambooHR health check failed: no valid endpoint responded")
+        return False
 
     # ========================================================================
     # Helper Methods

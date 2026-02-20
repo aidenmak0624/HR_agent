@@ -99,6 +99,7 @@ const COMMANDS = [
     { id: 'dashboard', title: 'Go to Dashboard', description: 'View main dashboard', icon: '📊', action: () => navigateTo('/dashboard') },
     { id: 'chat', title: 'Go to Chat', description: 'Open chat interface', icon: '💬', action: () => navigateTo('/chat') },
     { id: 'leave', title: 'Go to Leave', description: 'Manage leave requests', icon: '🏖️', action: () => navigateTo('/leave') },
+    { id: 'benefits', title: 'Go to Benefits', description: 'Enroll in benefit plans', icon: '💳', action: () => navigateTo('/benefits') },
     { id: 'workflows', title: 'Go to Workflows', description: 'View workflows', icon: '📋', action: () => navigateTo('/workflows') },
     { id: 'documents', title: 'Go to Documents', description: 'View documents', icon: '📄', action: () => navigateTo('/documents') },
     { id: 'analytics', title: 'Go to Analytics', description: 'View analytics', icon: '📈', action: () => navigateTo('/analytics') },
@@ -158,7 +159,8 @@ function openCommandPalette() {
     if (!overlay) return;
 
     commandPaletteOpen = true;
-    overlay.classList.add('active');
+    // Keep both classes for CSS compatibility across versions.
+    overlay.classList.add('active', 'show');
     selectedCommandIndex = -1;
 
     // Focus search input and populate all commands
@@ -178,7 +180,7 @@ function closeCommandPalette(event) {
 
     const overlay = document.getElementById('command-palette-overlay');
     if (overlay) {
-        overlay.classList.remove('active');
+        overlay.classList.remove('active', 'show');
     }
     commandPaletteOpen = false;
     selectedCommandIndex = -1;

@@ -8,7 +8,20 @@
       "cwd": "/path/to/HR_agent",
       "env": {
         "DATABASE_URL": "sqlite:///hr_platform.db",
-        "OPENAI_API_KEY": "your-openai-api-key"
+        "OPENAI_API_KEY": "your-openai-api-key",
+        "BAMBOOHR_API_KEY": "your-bamboohr-api-key",
+        "BAMBOOHR_SUBDOMAIN": "your-company-subdomain"
+      }
+    },
+    "bamboohr": {
+      "command": "python",
+      "args": [
+        "-m", "src.mcp.bamboohr_mcp"
+      ],
+      "cwd": "/path/to/HR_agent",
+      "env": {
+        "BAMBOOHR_API_KEY": "your-bamboohr-api-key",
+        "BAMBOOHR_SUBDOMAIN": "your-company-subdomain"
       }
     }
   }

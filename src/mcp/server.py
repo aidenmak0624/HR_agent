@@ -883,7 +883,13 @@ def _tool_get_recent_activity(arguments: Dict[str, Any]) -> Dict[str, Any]:
     limit = min(int(arguments.get("limit", 20)), 50)
 
     def _query(session):
-        from src.core.database import LeaveRequest, Employee, GeneratedDocument
+        from src.core.database import (
+            LeaveRequest,
+            Employee,
+            GeneratedDocument,
+            BenefitsEnrollment,
+            BenefitsPlan,
+        )
 
         activities = []
 
@@ -917,6 +923,28 @@ def _tool_get_recent_activity(arguments: Dict[str, Any]) -> Dict[str, Any]:
                     "message": f"Document generated: {doc.template_name}",
                     "detail": f"For {name}",
                     "timestamp": doc.created_at.isoformat() if doc.created_at else None,
+                }
+            )
+
+        # Recent benefits enrollments
+        for enrollment in (
+            session.query(BenefitsEnrollment)
+            .order_by(BenefitsEnrollment.enrolled_at.desc())
+            .limit(5)
+            .all()
+        ):
+            emp = session.query(Employee).filter_by(id=enrollment.employee_id).first()
+            plan = session.query(BenefitsPlan).filter_by(id=enrollment.plan_id).first()
+            name = f"{emp.first_name} {emp.last_name}" if emp else "Unknown"
+            plan_name = plan.name if plan else "Unknown Plan"
+            plan_type = plan.plan_type if plan else "benefits"
+            status = (enrollment.status or "active").lower()
+            activities.append(
+                {
+                    "type": "benefits",
+                    "message": f"{name} — Benefits update ({status})",
+                    "detail": f"{plan_name} ({plan_type}) • Coverage: {enrollment.coverage_level}",
+                    "timestamp": enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None,
                 }
             )
 
