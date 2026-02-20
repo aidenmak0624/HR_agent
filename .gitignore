@@ -50,9 +50,13 @@ logs/
 .~lock.*
 ~$*
 test_write_check
+testwrite*
 
-# ─── Office Documents (generated, not source) ───
-*.docx
+# ─── Server Logs & DB ───
+server.log
+hr_platform.db
 
-# ─── Reorganization script (one-time use) ───
-reorganize.sh
+# ─── Claude Config (local only) ───
+claude_desktop_config.json
+CLAUDE.md
+.claude/

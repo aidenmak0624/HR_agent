@@ -1,57 +1,32 @@
 #!/bin/bash
-# ─────────────────────────────────────────────────────────
-# HR Platform — Deploy Script
-# Usage:  ./scripts/deploy.sh [up|down|logs|migrate|status]
-# ─────────────────────────────────────────────────────────
-set -euo pipefail
+# HR Platform — Build & Deploy to Cloud Run
+# Usage: ./deploy.sh
 
-COMPOSE_FILE="docker-compose.yml"
-PROJECT="hr-platform"
+set -e
 
-case "${1:-up}" in
-  up)
-    echo "Starting HR Platform..."
-    docker compose -f $COMPOSE_FILE -p $PROJECT up -d --build
-    echo ""
-    echo "Waiting for health check..."
-    sleep 10
-    curl -s http://localhost/api/v2/health | python3 -m json.tool 2>/dev/null || echo "Still starting..."
-    echo ""
-    echo "HR Platform is running at http://localhost"
-    ;;
+PROJECT="hr-intelligence-app"
+IMAGE="gcr.io/${PROJECT}/hr-platform:latest"
+REGION="us-central1"
+SERVICE="hr-platform"
 
-  down)
-    echo "Stopping HR Platform..."
-    docker compose -f $COMPOSE_FILE -p $PROJECT down
-    ;;
+echo "🔨 Building image..."
+gcloud builds submit --tag "$IMAGE" --project "$PROJECT"
 
-  logs)
-    docker compose -f $COMPOSE_FILE -p $PROJECT logs -f --tail=100 ${2:-app}
-    ;;
+echo "🚀 Deploying to Cloud Run..."
+gcloud run deploy "$SERVICE" \
+  --image "$IMAGE" \
+  --region "$REGION" \
+  --platform managed \
+  --port 5050 \
+  --memory 1Gi \
+  --min-instances 1 \
+  --allow-unauthenticated \
+  --set-env-vars "WORKERS=2,TIMEOUT=120,LOG_LEVEL=INFO,ENVIRONMENT=production" \
+  --update-secrets "OPENAI_API_KEY=hr-openai-key:latest,DATABASE_URL=hr-database-url:latest,JWT_SECRET=hr-jwt-secret:latest" \
+  --add-cloudsql-instances "${PROJECT}:${REGION}:hr-platform-db" \
+  --project "$PROJECT"
 
-  migrate)
-    echo "Running database migrations..."
-    docker compose -f $COMPOSE_FILE -p $PROJECT exec app \
-      alembic upgrade head
-    echo "Seeding demo data..."
-    docker compose -f $COMPOSE_FILE -p $PROJECT exec app \
-      python -c "from src.core.database import seed_demo_data; seed_demo_data()"
-    ;;
-
-  status)
-    docker compose -f $COMPOSE_FILE -p $PROJECT ps
-    echo ""
-    echo "Health check:"
-    curl -s http://localhost/api/v2/health | python3 -m json.tool 2>/dev/null || echo "Unavailable"
-    ;;
-
-  restart)
-    echo "Restarting app container..."
-    docker compose -f $COMPOSE_FILE -p $PROJECT restart app nginx
-    ;;
-
-  *)
-    echo "Usage: $0 [up|down|logs|migrate|status|restart]"
-    exit 1
-    ;;
-esac
+echo ""
+echo "✅ Deployed! Testing health endpoint..."
+sleep 5
+curl -s "https://hr-platform-837558695367.${REGION}.run.app/api/v2/health" | python3 -m json.tool
