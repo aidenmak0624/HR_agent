@@ -944,7 +944,9 @@ def _tool_get_recent_activity(arguments: Dict[str, Any]) -> Dict[str, Any]:
                     "type": "benefits",
                     "message": f"{name} — Benefits update ({status})",
                     "detail": f"{plan_name} ({plan_type}) • Coverage: {enrollment.coverage_level}",
-                    "timestamp": enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None,
+                    "timestamp": (
+                        enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None
+                    ),
                 }
             )
 
