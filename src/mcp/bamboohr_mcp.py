@@ -209,9 +209,7 @@ def bamboohr_get_leave_requests(employee_id: str, status: str = "") -> str:
     """
     try:
         connector = _get_connector()
-        requests = connector.get_leave_requests(
-            employee_id, status=status if status else None
-        )
+        requests = connector.get_leave_requests(employee_id, status=status if status else None)
         results = [r.model_dump() for r in requests]
         return json.dumps(
             {
@@ -464,15 +462,9 @@ def main():
         default="stdio",
         help="Transport mode (default: stdio)",
     )
-    parser.add_argument(
-        "--port", "-p", type=int, default=8090, help="Port for HTTP transport"
-    )
-    parser.add_argument(
-        "--host", default="0.0.0.0", help="Host for HTTP transport"
-    )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable debug logging"
-    )
+    parser.add_argument("--port", "-p", type=int, default=8090, help="Port for HTTP transport")
+    parser.add_argument("--host", default="0.0.0.0", help="Host for HTTP transport")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
     log_level = logging.DEBUG if args.verbose else logging.INFO

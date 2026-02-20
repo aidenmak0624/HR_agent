@@ -31,10 +31,10 @@ from src.connectors.hris_interface import (
     PlanType,
 )
 
-
 # ============================================================
 # Fixtures
 # ============================================================
+
 
 @pytest.fixture
 def mock_employee():
@@ -203,7 +203,9 @@ class TestBambooHRMCPStandalone:
                 from src.mcp.bamboohr_mcp import bamboohr_submit_leave_request
 
                 result = json.loads(
-                    bamboohr_submit_leave_request("101", "pto", "2025-07-01", "2025-07-05", "Vacation")
+                    bamboohr_submit_leave_request(
+                        "101", "pto", "2025-07-01", "2025-07-05", "Vacation"
+                    )
                 )
                 assert result["status"] == "pending"
                 assert result["request_id"] == "lr-999"
@@ -253,7 +255,9 @@ class TestBambooHRMCPStandalone:
 
     def test_missing_credentials_returns_error(self):
         """Tools should return a helpful error when credentials are missing."""
-        with patch.dict(os.environ, {"BAMBOOHR_API_KEY": "", "BAMBOOHR_SUBDOMAIN": ""}, clear=False):
+        with patch.dict(
+            os.environ, {"BAMBOOHR_API_KEY": "", "BAMBOOHR_SUBDOMAIN": ""}, clear=False
+        ):
             import src.mcp.bamboohr_mcp as mod
 
             mod._connector = None

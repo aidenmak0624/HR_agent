@@ -29,6 +29,7 @@ def __getattr__(name):
     does not require the `mcp` pip package to be installed."""
     if name == "fastmcp_server":
         from src.mcp.fastmcp_server import mcp as _fastmcp_server
+
         return _fastmcp_server
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

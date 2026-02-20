@@ -971,7 +971,9 @@ def get_recent_activity(limit: int = 20) -> str:
                     "type": "benefits",
                     "message": f"{name} — Benefits update ({status})",
                     "detail": f"{plan_name} ({plan_type}) • Coverage: {enrollment.coverage_level}",
-                    "timestamp": enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None,
+                    "timestamp": (
+                        enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None
+                    ),
                 }
             )
         activities.sort(key=lambda a: a.get("timestamp") or "0000", reverse=True)
@@ -1704,8 +1706,10 @@ def bamboohr_submit_leave_request(
 
         connector = _get_bamboohr_connector()
         type_map = {
-            "pto": LeaveType.PTO, "vacation": LeaveType.PTO,
-            "sick": LeaveType.SICK, "personal": LeaveType.PERSONAL,
+            "pto": LeaveType.PTO,
+            "vacation": LeaveType.PTO,
+            "sick": LeaveType.SICK,
+            "personal": LeaveType.PERSONAL,
             "unpaid": LeaveType.UNPAID,
         }
         lt = type_map.get(leave_type.lower(), LeaveType.OTHER)
@@ -1720,7 +1724,11 @@ def bamboohr_submit_leave_request(
         )
         result = connector.submit_leave_request(req)
         return json.dumps(
-            {"request_id": result.id, "status": result.status.value, "message": "Submitted to BambooHR."},
+            {
+                "request_id": result.id,
+                "status": result.status.value,
+                "message": "Submitted to BambooHR.",
+            },
             indent=2,
             default=str,
         )
@@ -1741,8 +1749,10 @@ def bamboohr_get_org_chart(department: str = "") -> str:
 
         def _ser(n):
             return {
-                "employee_id": n.employee_id, "name": n.name,
-                "title": n.title, "department": n.department,
+                "employee_id": n.employee_id,
+                "name": n.name,
+                "title": n.title,
+                "department": n.department,
                 "direct_reports": [_ser(dr) for dr in n.direct_reports],
             }
 

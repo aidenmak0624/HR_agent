@@ -1027,24 +1027,21 @@ class APIGateway:
             or query_lower.startswith("show me")
             or query_lower.startswith("can i")
         )
-        possible_other_person_signal = (
-            any(
-                marker in query_lower
-                for marker in (
-                    "his ",
-                    "her ",
-                    "their ",
-                    "someone else",
-                    "another employee",
-                    "other employee",
-                    "employee id",
-                )
+        possible_other_person_signal = any(
+            marker in query_lower
+            for marker in (
+                "his ",
+                "her ",
+                "their ",
+                "someone else",
+                "another employee",
+                "other employee",
+                "employee id",
             )
-            or bool(
-                re.search(
-                    r"\b[a-z]+(?:\s+[a-z]+)?'s\s+(?:benefits?|plan|coverage|insurance)\b",
-                    query_lower,
-                )
+        ) or bool(
+            re.search(
+                r"\b[a-z]+(?:\s+[a-z]+)?'s\s+(?:benefits?|plan|coverage|insurance)\b",
+                query_lower,
             )
         )
         wants_personal_benefits = (
@@ -1065,7 +1062,10 @@ class APIGateway:
                         "confidence": 0.65,
                         "request_id": f"static_{int(time.time())}",
                         "execution_time_ms": 6,
-                        "reasoning_trace": ["Personal benefits intent detected", "Database unavailable"],
+                        "reasoning_trace": [
+                            "Personal benefits intent detected",
+                            "Database unavailable",
+                        ],
                     }
                 try:
                     employee, _ = self._get_current_employee(session)
@@ -1111,7 +1111,11 @@ class APIGateway:
                         ).all()
                         for emp in employees:
                             full_name = f"{emp.first_name} {emp.last_name}".strip().lower()
-                            if full_name and full_name in query_lower and int(emp.id) != int(employee.id):
+                            if (
+                                full_name
+                                and full_name in query_lower
+                                and int(emp.id) != int(employee.id)
+                            ):
                                 asks_for_other_employee = True
                                 break
 
@@ -1165,7 +1169,9 @@ class APIGateway:
                                     else str(plan.plan_type)
                                 )
                                 plan_type = raw_plan_type.replace("_", " ").title()
-                                coverage = (plan.coverage_level or "employee").replace("_", " ").title()
+                                coverage = (
+                                    (plan.coverage_level or "employee").replace("_", " ").title()
+                                )
                                 premium = float(plan.employee_cost or 0)
                                 lines.append(
                                     f"• {plan.name} ({plan_type}) — Coverage: {coverage}, Premium: ${premium:.2f}/month"
@@ -1185,7 +1191,9 @@ class APIGateway:
                                 ],
                             }
                     except Exception as provider_err:
-                        logger.warning(f"Benefits lookup via configured HRIS failed: {provider_err}")
+                        logger.warning(
+                            f"Benefits lookup via configured HRIS failed: {provider_err}"
+                        )
 
                     active_enrollments = (
                         session.query(BenefitsEnrollment)
@@ -1212,7 +1220,9 @@ class APIGateway:
                         plan = session.query(BenefitsPlan).filter_by(id=enr.plan_id).first()
                         plan_name = plan.name if plan else f"Plan #{enr.plan_id}"
                         plan_type = (plan.plan_type if plan else "unknown").title()
-                        premium = plan.premium_monthly if plan and plan.premium_monthly is not None else 0
+                        premium = (
+                            plan.premium_monthly if plan and plan.premium_monthly is not None else 0
+                        )
                         coverage = (enr.coverage_level or "employee").replace("_", " ").title()
                         lines.append(
                             f"• {plan_name} ({plan_type}) — Coverage: {coverage}, Premium: ${float(premium):.2f}/month"
@@ -3488,18 +3498,14 @@ class APIGateway:
             # Reuse metrics payload from the existing endpoint logic.
             metrics_result = self._get_metrics()
             response_obj, status_code = (
-                metrics_result
-                if isinstance(metrics_result, tuple)
-                else (metrics_result, 200)
+                metrics_result if isinstance(metrics_result, tuple) else (metrics_result, 200)
             )
 
             if status_code != 200:
                 return response_obj, status_code
 
             payload = (
-                response_obj.get_json(silent=True)
-                if hasattr(response_obj, "get_json")
-                else None
+                response_obj.get_json(silent=True) if hasattr(response_obj, "get_json") else None
             )
             metrics = (payload or {}).get("data") or {}
 
@@ -3553,8 +3559,7 @@ class APIGateway:
 
             lines.append("")
             lines.append(
-                "Query Volume Trend (last 12 points): "
-                + ", ".join(str(v) for v in query_trend)
+                "Query Volume Trend (last 12 points): " + ", ".join(str(v) for v in query_trend)
                 if query_trend
                 else "Query Volume Trend (last 12 points): no data"
             )

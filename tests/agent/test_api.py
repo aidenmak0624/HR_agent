@@ -127,7 +127,9 @@ def test_hris_status_endpoint_runs_health_check_when_requested(client, monkeypat
             return True
 
     connector = StubConnector()
-    monkeypatch.setattr("src.connectors.factory.get_hris_connector", lambda force_refresh=False: connector)
+    monkeypatch.setattr(
+        "src.connectors.factory.get_hris_connector", lambda force_refresh=False: connector
+    )
     monkeypatch.setattr(
         "src.connectors.factory.get_hris_connector_resolution",
         lambda force_refresh=False: {
@@ -218,7 +220,9 @@ def test_chat_my_plan_uses_active_hris_connector(client, monkeypatch):
             ]
 
     connector = StubConnector()
-    monkeypatch.setattr("src.connectors.factory.get_hris_connector", lambda force_refresh=False: connector)
+    monkeypatch.setattr(
+        "src.connectors.factory.get_hris_connector", lambda force_refresh=False: connector
+    )
     monkeypatch.setattr(
         "src.connectors.factory.get_hris_connector_resolution",
         lambda force_refresh=False: {

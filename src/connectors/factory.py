@@ -37,7 +37,9 @@ def _is_configured(value: Any) -> bool:
     return bool(text) and text.lower() not in _PLACEHOLDER_VALUES
 
 
-def _fallback_to_local_db(requested_provider: str, reason: str) -> Tuple[HRISConnector, Dict[str, Any]]:
+def _fallback_to_local_db(
+    requested_provider: str, reason: str
+) -> Tuple[HRISConnector, Dict[str, Any]]:
     """Build fallback connector metadata."""
     connector = LocalDBConnector()
     logger.warning(
@@ -119,7 +121,11 @@ def _create_connector() -> Tuple[HRISConnector, Dict[str, Any]]:
         client_id = str(getattr(settings, "WORKDAY_CLIENT_ID", "") or "").strip()
         client_secret = str(getattr(settings, "WORKDAY_CLIENT_SECRET", "") or "").strip()
         tenant_url = str(getattr(settings, "WORKDAY_TENANT_URL", "") or "").strip()
-        if not (_is_configured(client_id) and _is_configured(client_secret) and _is_configured(tenant_url)):
+        if not (
+            _is_configured(client_id)
+            and _is_configured(client_secret)
+            and _is_configured(tenant_url)
+        ):
             return _fallback_to_local_db(
                 requested_provider,
                 "Missing WORKDAY_CLIENT_ID, WORKDAY_CLIENT_SECRET, or WORKDAY_TENANT_URL.",
@@ -145,7 +151,9 @@ def _create_connector() -> Tuple[HRISConnector, Dict[str, Any]]:
         except Exception as exc:  # pragma: no cover - defensive path
             return _fallback_to_local_db(requested_provider, str(exc))
 
-    return _fallback_to_local_db(requested_provider, f"Unsupported HRIS_PROVIDER '{requested_provider}'.")
+    return _fallback_to_local_db(
+        requested_provider, f"Unsupported HRIS_PROVIDER '{requested_provider}'."
+    )
 
 
 def get_hris_connector(force_refresh: bool = False) -> HRISConnector:
